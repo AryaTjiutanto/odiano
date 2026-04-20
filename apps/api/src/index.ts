@@ -1,8 +1,14 @@
-import "./bootstrap/env";
-import { connectDB } from "./bootstrap/db";
+import "./bootstraps/env.bootstrap";
+import { connectDB } from "./bootstraps/db.bootstrap";
 import express from "express";
 import cors from "cors";
 import routes from "./routes/index";
+import cookieParser from "cookie-parser";
+import {Request, Response, NextFunction} from "express";
+import { AppError } from "./errors/appError.error";
+import { errorResponseData } from "./utils/response.util";
+import { ZodError } from "zod";
+import { ValidationError } from "@connect/shared";
 
 const PORT = process.env.PORT || "5050";
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || "localhost:5050";
@@ -16,8 +22,25 @@ app.use(cors({
     credentials : true,
     methods : ["POST", "GET", "DELETE", "PUT"]
 }));
+app.use(cookieParser())
 
 app.use("/", routes);
+app.use((err : any, req : Request, res:Response, next : NextFunction) => {
+    if(err instanceof AppError) {
+        return res.status(err.statusCode).json(errorResponseData(err.code, err.message, err.err));
+    }
+
+    if(err instanceof ZodError) {
+        const errors = err.issues.map<ValidationError>(issue => ({
+            path : issue.path.join("."),
+            message : issue.message,
+        }))
+
+        return res.status(400).json(errorResponseData<ValidationError[]>("BAD_REQUEST", "validation error", errors));
+    }
+    
+    res.status(500).json(errorResponseData("INTERNAL_SERVER_ERROR", "Something went wrong"));
+})
 
 app.listen(PORT, () => {
     console.log(`App running on port ${PORT}`);

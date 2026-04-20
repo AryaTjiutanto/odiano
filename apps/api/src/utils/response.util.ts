@@ -1,6 +1,6 @@
 import { ErrorResponseCode, ErrorResponseData, SuccessResponseCode, SuccessResponseData } from "@connect/shared"
 
-export const successResponseData = <T = null>(code : SuccessResponseCode, message: string, data : T) : SuccessResponseData<T> => {
+export const successResponseData = <T = null>(code : SuccessResponseCode, message: string, data : T | null = null) : SuccessResponseData<T> => {
     return {
         success : true,
         code,
@@ -9,7 +9,7 @@ export const successResponseData = <T = null>(code : SuccessResponseCode, messag
     }
 }
 
-export const errorResponseData = <T = null>(code : ErrorResponseCode, message : string, error : T) : ErrorResponseData<T> => {
+export const errorResponseData = <T = null>(code : ErrorResponseCode, message : string, error : T | null = null) : ErrorResponseData<T> => {
     return {
         success : false,
         code,

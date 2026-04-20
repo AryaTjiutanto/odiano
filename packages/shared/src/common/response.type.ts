@@ -1,4 +1,4 @@
-import { ErrorResponseCode, SuccessResponseCode } from "../consts"
+import { ErrorResponseCode, SuccessResponseCode } from "./response-code.const"
 
 export type SuccessResponseData<T = null> = {
     success: true,
@@ -12,4 +12,9 @@ export type ErrorResponseData<T = null> = {
     code : ErrorResponseCode,
     message : string,
     error : T | null,
+}
+
+export type ValidationError = {
+    path : string,
+    message : string,
 }
