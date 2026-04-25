@@ -1,0 +1,89 @@
+import loginImage from "../assets/img/login-img.svg";
+import googleLogo from "../assets/img/logo/google.svg";
+import { Link } from "react-router-dom";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { authenticateUserSchema, type AuthenticateUserSchema } from "@connect/shared";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+
+const Signin = () => {
+    const {
+        register,
+        handleSubmit,
+        formState : {errors},
+    } = useForm<AuthenticateUserSchema>({
+        mode : "onTouched",
+        resolver : zodResolver(authenticateUserSchema)
+    });
+
+    const onSubmit : SubmitHandler<AuthenticateUserSchema> = (data) => {
+
+    }
+
+    return (
+        <div className="h-full min-h-screen flex items-center">
+            <div className="grid grid-cols-12">
+                <div className="w-full col-span-7 flex items-center justify-center">
+                    <div className="h-[800px] w-[70%]">
+                        <img src={loginImage} className="h-full"></img>
+                    </div>
+                </div>
+                <div className="col-span-5 flex flex-col justify-center">
+                    <h1 className="text-5xl font-bold text-white">
+                        Discover what's happening right now
+                    </h1>
+                    <div className="w-[60%]">
+                        {/* sign in */}
+                        <form className="w-full mt-14" onSubmit={handleSubmit(onSubmit)}>
+                            <h2 className="">Sign in to your account</h2>
+                            <div className="mt-5 space-y-5">
+                                <div className="w-full space-y-1">
+                                    <input { ...register("email") } className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="youremail@gmail.com"></input>
+                                    {
+                                        errors.email && (
+                                            <p className="text-xs text-red-500">{errors.email.message}</p>
+                                        )
+                                    }
+                                </div>
+                                <div className="w-full space-y-1">
+                                    <input { ...register("password") } className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="password" placeholder="password"></input>
+                                    {
+                                        errors.password && (
+                                            <p className="text-xs text-red-500">{errors.password.message}</p>
+                                        )
+                                    }
+                                </div>
+                                <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer">
+                                    Signin
+                                </button>
+                            </div>
+                        </form>
+                        <div className="w-full flex items-center justify-between my-8">
+                            <div className="w-[45%] h-px bg-neutral-200"></div>
+                            <span>or</span>
+                            <div className="w-[45%] h-px bg-neutral-200"></div>
+                        </div>
+                        <div className="mt-10">
+                            <button className="w-full bg-white hover:bg-sky-50 h-12 rounded-full text-neutral-800 cursor-pointer relative duration-100">
+                                <img src={googleLogo} className="absolute top-0 bottom-0 my-auto left-5"></img>
+                                Continue with google
+                            </button>
+                        </div>
+
+                        {/* sign up */}
+                        <div className="w-full mt-16">
+                            <h1 className="text-2xl font-bold">Don't have an account yet?</h1>
+                            <Link to={"/signup"} className="mt-5 flex">
+                                <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer">
+                                    Create
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Signin;
