@@ -28,13 +28,13 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, username, email, password } = req.body;
+        const { dateOfBirth, email, password } = req.body;
     
-        if (!name || !username || !email || !password) {
+        if (!dateOfBirth || !email || !password) {
             throw new AppError(400, "BAD_REQUEST", "Something is missing");
         }
 
-        const authData = await authServices.signUp(name, username, email, password);
+        const authData = await authServices.signUp(dateOfBirth, email, password);
 
         res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
 

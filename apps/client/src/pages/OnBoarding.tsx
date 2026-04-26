@@ -45,7 +45,7 @@ const OnBoarding = () => {
                                                 <FontAwesomeIcon icon={faUser} className="text-[80px] text-neutral-700" />
                                         }
                                         <div className="grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-900/80 cursor-pointer opacity-0 group-hover:opacity-100 duration-100 z-10">
-                                            <FontAwesomeIcon icon={faUpload} className="text-4xl text-neutral-400" />
+                                            <FontAwesomeIcon icon={faUpload} className="text-4xl text-neutral-400"/>
                                         </div>
                                     </div>
                                 </label>

@@ -1,6 +1,6 @@
 export type UserDTO = {
     id : string,
-    username : string,
     email : string,
-    slug : string,
+    username : string | null,
+    slug : string | null,
 }

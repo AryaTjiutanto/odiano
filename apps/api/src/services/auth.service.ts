@@ -31,7 +31,7 @@ export const signIn = async (email: string, password: string): Promise<AuthToken
     };
 }
 
-export const signUp = async (name : string, username: string, email: string, password: string): Promise<AuthToken> => {
+export const signUp = async (dateOfBirth : string, email: string, password: string): Promise<AuthToken> => {
     const user = await User.findOne({ email }).lean();
 
     if (user) {
@@ -39,10 +39,9 @@ export const signUp = async (name : string, username: string, email: string, pas
     }
 
     const currentUser = await User.create({
-        name,
-        username,
         email,
-        password
+        password,
+        dateOfBirth
     });
 
     const userId = currentUser._id.toString();
