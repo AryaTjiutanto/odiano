@@ -3,10 +3,14 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service";
 import { AppError } from "../errors/appError.error";
 import { successResponseData } from "../utils/response.util";
-import { AUTH_TOKEN, SignInResponse, SignUpResponse, UserDTO } from "@connect/shared";
-import { authCookieOptions } from "../libs/auth/cookie";
+import { AUTH_TOKEN, CreateUserSchema, SignInResponse, SignUpResponse, UserDTO } from "@connect/shared";
+import { authCookieOptions } from "../libs/auth/auth.cookie";
+import { ReqBody } from "../types/request";
+import { type AuthenticateUserSchema } from "@connect/shared";
+import { RefreshToken } from "../models/refreshToken.mode";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
-export const signin = async (req: Request, res: Response, next: NextFunction) => {
+export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
     
@@ -26,7 +30,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
-export const signup = async (req: Request, res: Response, next: NextFunction) => {
+export const signup = async (req: ReqBody<CreateUserSchema>, res: Response, next: NextFunction) => {
     try {
         const { dateOfBirth, email, password } = req.body;
     
@@ -51,7 +55,7 @@ export const me = async (req: Request, res: Response, next : NextFunction) => {
         const userId = req.userId;
     
         if(!userId) {
-            throw new AppError(401, "UNAUTHORIZED", "unauthorized");
+            throw new UnauthorizedError();
         }
 
         const data = await authServices.me(userId);
@@ -80,6 +84,24 @@ export const refresh = async (req : Request, res : Response, next : NextFunction
             access_token: authData.access_token
         }))
     } catch (err) {
+        next(err);
+    }
+}
+
+export const logout = async (req : Request, res : Response, next : NextFunction) => {
+    try {
+        const refreshToken = req.cookies?.[AUTH_TOKEN.REFRESH];
+
+        if(!refreshToken) {
+            return res.status(200).json(successResponseData("OK", "Logged out successfully"));
+        }
+
+        await authServices.logout(refreshToken);
+
+        res.clearCookie(AUTH_TOKEN.REFRESH, authCookieOptions());
+
+        res.status(200).json(successResponseData("OK", "Logged out successfully"));
+    } catch(err) {
         next(err);
     }
 }

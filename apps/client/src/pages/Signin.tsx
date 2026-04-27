@@ -29,12 +29,12 @@ const Signin = () => {
                     </div>
                 </div>
                 <div className="col-span-5 flex flex-col justify-center">
-                    <h1 className="text-5xl font-bold text-white">
+                    <h1 className="xl:text-2xl 2xl:text-5xl font-bold text-white">
                         Discover what's happening right now
                     </h1>
-                    <div className="w-[60%]">
+                    <div className="w-[65%] 2xl:w-[60%] xl:mt-5 2xl:mt-14">
                         {/* sign in */}
-                        <form className="w-full mt-14" onSubmit={handleSubmit(onSubmit)}>
+                        <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
                             <h2 className="">Sign in to your account</h2>
                             <div className="mt-5 space-y-5">
                                 <div className="w-full space-y-1">
@@ -53,29 +53,34 @@ const Signin = () => {
                                         )
                                     }
                                 </div>
-                                <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer">
-                                    Signin
-                                </button>
+                                <div className="space-y-1">
+                                    <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer">
+                                        Signin
+                                    </button>
+                                    <Link className="text-sm underline hover:text-rose-500 duration-150" to={"#"}>
+                                        Forgot password
+                                    </Link>
+                                </div>
                             </div>
                         </form>
-                        <div className="w-full flex items-center justify-between my-8">
+                        <div className="w-full hidden 2xl:flex items-center justify-between my-8">
                             <div className="w-[45%] h-px bg-neutral-200"></div>
                             <span>or</span>
                             <div className="w-[45%] h-px bg-neutral-200"></div>
                         </div>
-                        <div className="mt-10">
-                            <button className="w-full bg-white hover:bg-sky-50 h-12 rounded-full text-neutral-800 cursor-pointer relative duration-100">
+                        <div className="mt-5 2xl:mt-10">
+                            <button className="w-full bg-white hover:bg-sky-50 h-12 rounded-lg text-neutral-800 cursor-pointer relative duration-100">
                                 <img src={googleLogo} className="absolute top-0 bottom-0 my-auto left-5"></img>
                                 Continue with google
                             </button>
                         </div>
 
                         {/* sign up */}
-                        <div className="w-full mt-16">
-                            <h1 className="text-2xl font-bold">Don't have an account yet?</h1>
+                        <div className="w-full xl:mt-8 2xl:mt-16">
+                            <h1 className="xl:text-lg 2xl:text-2xl font-bold ">Don't have an account yet?</h1>
                             <Link to={"/signup"} className="mt-5 flex">
                                 <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer">
-                                    Create
+                                    Create new account
                                 </button>
                             </Link>
                         </div>

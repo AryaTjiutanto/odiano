@@ -26,15 +26,15 @@ const OnBoarding = () => {
         <div className="bg-neutral-950 min-h-screen">
             {
                 (isCropping && originalImageUrl) && (
-                    <ImageCropper imageUrl={originalImageUrl} setImageCroppedUrl={setImageCroppedUrl} setIsCropping={setIsCropping}/>
+                    <ImageCropper aspect={1} imageUrl={originalImageUrl} setImageCroppedUrl={setImageCroppedUrl} setIsCropping={setIsCropping}/>
                 )
             }
             {
                 !isCropping &&
                 <div className="w-full text-neutral-100">
-                    <div className="w-full min-h-screen grid place-content-center">
+                    <div className="w-full min-h-screen grid place-content-center py-20 2xl:py-10">
                         <div className="w-full max-w-[550px] flex flex-col items-center">
-                            <h1 className="text-4xl font-bold">Let anyone know who are you</h1>
+                            <h1 className="text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
                             <div className="my-16">
                                 <label htmlFor="profile-input" className="">
                                     <div className="w-40 h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">

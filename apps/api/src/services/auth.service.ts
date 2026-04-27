@@ -1,10 +1,11 @@
 import { AUTH_TOKEN, AuthToken, UserDTO } from "@connect/shared";
 import { AppError } from "../errors/appError.error";
-import { generateAccessToken, generateRefreshToken } from "../libs/auth/jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
 import bcrypt from "bcrypt";
 import { RefreshToken } from "../models/refreshToken.mode";
 import { nanoid } from "nanoid";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -22,7 +23,7 @@ export const signIn = async (email: string, password: string): Promise<AuthToken
     }
 
     const userId = currentUser._id.toString();
-    const accessToken = generateAccessToken({ id: userId });
+    const accessToken = generateAccessToken({ userId });
     const refreshToken = await createRefreshToken(userId);
 
     return {
@@ -45,7 +46,7 @@ export const signUp = async (dateOfBirth : string, email: string, password: stri
     });
 
     const userId = currentUser._id.toString();
-    const accessToken = generateAccessToken({ id: userId });
+    const accessToken = generateAccessToken({ userId });
     const refreshToken = await createRefreshToken(userId);
 
     return {
@@ -73,13 +74,13 @@ export const refresh = async (userId: string, tokenId: string, token: string) : 
     const refreshToken = await RefreshToken.findOne({ tokenId });
 
     if (!refreshToken) {
-        throw new AppError(401, "UNAUTHORIZED", "Unauthorized");
+        throw new UnauthorizedError();
     }
 
     const isTokenValid = await bcrypt.compare(token, refreshToken.tokenHash);
 
     if (!isTokenValid) {
-        throw new AppError(401, "UNAUTHORIZED", "Unauthorized");
+        throw new UnauthorizedError();
     }
 
     if (Date.now() > refreshToken.expiresAt.getTime()) {
@@ -90,7 +91,7 @@ export const refresh = async (userId: string, tokenId: string, token: string) : 
         throw new AppError(401, "UNAUTHORIZED", "Invalid owner token");
     }
 
-    const newAccessToken = generateAccessToken({id : userId});
+    const newAccessToken = generateAccessToken({userId});
     const newRefreshToken = await createRefreshToken(userId);
 
     await refreshToken.deleteOne();
@@ -104,7 +105,7 @@ export const refresh = async (userId: string, tokenId: string, token: string) : 
 export const createRefreshToken = async (userId: string) => {
     const tokenId = nanoid(12);
 
-    const refreshToken = generateRefreshToken({ id: userId, tokenId});
+    const refreshToken = generateRefreshToken({ userId, tokenId});
 
     await RefreshToken.create({
         tokenHash: refreshToken,
@@ -115,3 +116,15 @@ export const createRefreshToken = async (userId: string) => {
 
     return refreshToken;
 }
+
+export const logout = async (refreshToken : string) => {
+    try {
+        const decoded = verifyRefreshToken(refreshToken);
+    
+        const result = await RefreshToken.deleteOne({tokenId : decoded.tokenId});
+    
+        return result;
+    } catch {
+        
+    }
+};

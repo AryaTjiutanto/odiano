@@ -1,27 +1,22 @@
 import { Request, Response, NextFunction} from "express";
 import { AppError } from "../errors/appError.error";
-import { User } from "../models/user.model";
 import * as userServices from "../services/user.service";
 import { ReqBody } from "../types/request";
 import { CreateUserProfileSchema } from "@connect/shared";
+import { successResponseData } from "../utils/response.util";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 export const onboarding = async (req : ReqBody<CreateUserProfileSchema>, res : Response, next : NextFunction) => {
     try {
         const userId = req.userId;
     
         if(!userId) {
-            throw new AppError(401, "UNAUTHORIZED", "Unauthorized");
+            throw new UnauthorizedError();
         }
-    
-        const user = User.findById(userId);
-    
-        if(!user) {
-            throw new AppError(404, "BAD_REQUEST", "Invalid ")
-        }
-    
-        const {profileImagePublicId, profileImageUrl, name, username, bio} = req.body;
 
-        await userServices.onboarding(userId, profileImageUrl, profileImagePublicId, name, username, bio);
+        await userServices.onboarding({userId, userData : req.body});
+
+        res.status(200).json(successResponseData("SUCCESS", "Success"));
     } catch (err) {
         next(err);
     }

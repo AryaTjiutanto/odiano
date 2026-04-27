@@ -5,8 +5,9 @@ import DotsLoader from "../ui/DotsLoader";
 
 type Payload = {
     imageUrl: string,
+    aspect : number,
     setIsCropping: React.Dispatch<React.SetStateAction<boolean>>,
-    setImageCroppedUrl: React.Dispatch<React.SetStateAction<string | null>>
+    setImageCroppedUrl: React.Dispatch<React.SetStateAction<string | null>>,
 }
 
 export const ImageCropper = (payload: Payload) => {
@@ -55,7 +56,7 @@ export const ImageCropper = (payload: Payload) => {
     return (
         <div className="w-full h-screen grid place-content-center py-20">
             {/* shortcut key */}
-            <div className="flex flex-col absolute top-20 left-32 text-neutral-100 bg-neutral-900 p-5 border border-neutral-700 rounded-lg">
+            <div className="flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-900 p-5 border border-neutral-700 rounded-lg">
                 <h1 className="font-bold">
                     Shortcut key
                 </h1>
@@ -89,7 +90,7 @@ export const ImageCropper = (payload: Payload) => {
                     <Cropper
                         crop={crop}
                         zoom={zoom}
-                        aspect={1 / 1}
+                        aspect={payload.aspect}
                         onCropChange={setCrop}
                         onZoomChange={setZoom}
                         image={payload.imageUrl}

@@ -7,6 +7,6 @@ export const authCookieOptions = () : CookieOptions => {
         httpOnly: true,
         sameSite: "lax",
         maxAge: oneDayAge * 30,
-        secure: !!process.env.NODE_ENV,
+        secure: process.env.NODE_ENV === "production",
     }
 }
