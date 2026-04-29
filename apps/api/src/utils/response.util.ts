@@ -9,11 +9,11 @@ export const successResponseData = <T = null>(code : SuccessResponseCode, messag
     }
 }
 
-export const errorResponseData = <T = null>(code : ErrorResponseCode, message : string, error : T | null = null) : ErrorResponseData<T> => {
+export const errorResponseData = <T = null>(code : ErrorResponseCode, message : string, errors : T | null = null) : ErrorResponseData<T> => {
     return {
         success : false,
         code,
         message,
-        error,
+        errors,
     }
 }

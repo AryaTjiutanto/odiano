@@ -9,6 +9,7 @@ import { AppError } from "./errors/appError.error";
 import { errorResponseData } from "./utils/response.util";
 import { ZodError } from "zod";
 import { ValidationError } from "@connect/shared";
+import helmet from "helmet";
 
 const PORT = process.env.PORT || "5050";
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || "localhost:5050";
@@ -22,7 +23,8 @@ app.use(cors({
     credentials : true,
     methods : ["POST", "GET", "DELETE", "PUT"]
 }));
-app.use(cookieParser())
+app.use(cookieParser());
+app.use(helmet());
 
 app.use("/", routes);
 app.use((err : any, req : Request, res:Response, next : NextFunction) => {

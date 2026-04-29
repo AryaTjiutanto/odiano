@@ -2,22 +2,48 @@ import loginImage from "../assets/img/login-img.svg";
 import googleLogo from "../assets/img/logo/google.svg";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { authenticateUserSchema, type AuthenticateUserSchema } from "@connect/shared";
+import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type ErrorResponseData, type SignInResponse, type ValidationError } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "../libs/api";
+import { useAppDispatch } from "../shared/hooks/useRedux";
+import { setAccessToken } from "../features/auth/auth.slice";
 
 
 const Signin = () => {
+    const dispatch = useAppDispatch();
+
     const {
         register,
         handleSubmit,
+        setError,
         formState : {errors},
     } = useForm<AuthenticateUserSchema>({
         mode : "onTouched",
         resolver : zodResolver(authenticateUserSchema)
     });
 
-    const onSubmit : SubmitHandler<AuthenticateUserSchema> = (data) => {
+    const onSubmit : SubmitHandler<AuthenticateUserSchema> = async (data) => {
+        try {
+            console.log(data);
+            const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/signin", data);
 
+            const accessToken = response.data.data?.[AUTH_TOKEN.ACCESS];
+
+            if(accessToken) {
+                dispatch(setAccessToken(accessToken));
+            }
+        } catch (err : any) {
+            const error = err.response?.data as ErrorResponseData<ValidationError[]>;
+
+            if(error.errors) {
+                Object.entries(error.errors).forEach(([index, field]) => {
+                    setError(field.path as keyof AuthenticateUserSchema, {
+                        type : "server",
+                        message : field.message
+                    })
+                })
+            }
+        }
     }
 
     return (

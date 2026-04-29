@@ -1,48 +1,67 @@
-import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
-import {store} from "../app/store";
-import { type SignInResponse, type SuccessResponseData } from "@connect/shared";
-import { logout, setAccessToken } from "../features/auth/auth.slice";
+import axios, { AxiosError, AxiosHeaders, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
+import { store } from "../app/store";
+import { refreshAccessToken } from "../features/auth/auth.thunk";
+import { useAppSelector } from "../shared/hooks/useRedux";
 
-export const api : AxiosInstance = axios.create({
-    url: import.meta.env.VITE_API_URL,
+let refreshPromise : Promise<string> | null = null;
+
+export const api: AxiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
 })
 
 api.interceptors.request.use(
-    (config : InternalAxiosRequestConfig) => {
+    (config: InternalAxiosRequestConfig) => {
         const token = store.getState().auth.accessToken;
 
-        if(token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+            if (!config.headers) {
+                config.headers = new AxiosHeaders();
+            }
+
+            config.headers.set("Authorization", `Bearer ${token}`);
         }
 
         return config;
     },
-    (err : AxiosError) => {
+    (err: AxiosError) => {
         return Promise.reject(err);
     }
 );
 
 api.interceptors.response.use(
     (res) => res,
-    async (error : AxiosError) => {
+    async (error: AxiosError) => {
         const originalConfig = error.config;
 
-        if(error.response?.status == 401 && !originalConfig?._retry && originalConfig?.url == "/auth/refresh") {
+        if (!originalConfig) {
+            return Promise.reject(error);
+        }
+
+        if (error.response?.status == 401 && !originalConfig?._retry && originalConfig?.url?.includes("/auth/refresh")) {
             try {
                 originalConfig._retry = true;
-                
-                const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/refresh");
 
-                const newAccessToken = response.data.data?.access_token || null;
-
-                if(newAccessToken) {
-                    originalConfig.headers.Authorization = `Bearer ${newAccessToken}`
-                    store.dispatch(setAccessToken(newAccessToken));
+                if(!refreshPromise) {
+                    refreshPromise = store.dispatch(refreshAccessToken()).unwrap()
+                        .finally(() => {
+                            refreshPromise = null;
+                        })
                 }
-            } catch {
-                store.dispatch(logout());
-                return Promise.reject(error);
+
+                const newAccessToken = await refreshPromise;
+
+                if (newAccessToken) {
+                    if (!originalConfig.headers) {
+                        originalConfig.headers = new AxiosHeaders();
+                    }
+
+                    originalConfig.headers.set("Authorization", `Bearer ${newAccessToken}`);
+                }
+
+                return api(originalConfig);
+            } catch (err) {
+                store.dispatch({ type: "auth/logout/fulfilled" });
             }
         }
 

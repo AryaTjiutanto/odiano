@@ -11,7 +11,7 @@ export type ErrorResponseData<T = null> = {
     success : false,
     code : ErrorResponseCode,
     message : string,
-    error : T | null,
+    errors : T | null,
 }
 
 export type ValidationError = {

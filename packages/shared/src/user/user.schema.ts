@@ -40,6 +40,7 @@ export const createUserProfileSchema = z.object({
 
 export const authenticateUserSchema = z.object({
     email: z.string()
+        .min(1, {message : "Email cannot be empty"})
         .email({ message: "Invalid email format" })
         .max(120, { message: "Email maximum 120 characters" })
         .trim(),

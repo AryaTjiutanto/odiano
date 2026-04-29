@@ -1,25 +1,53 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import { logout, refreshAccessToken } from "./auth.thunk";
 
 type AuthState = {
-    accessToken : string | null,
+    isAuthLoading: boolean,
+    accessToken: string | null,
+    isAuthenticated: boolean,
 }
 
-const initialState : AuthState = {
-    accessToken : null,
+const initialState: AuthState = {
+    isAuthLoading: true,
+    accessToken: null,
+    isAuthenticated: false
 }
 
 const authSlice = createSlice({
-    name : "auth",
+    name: "auth",
     initialState,
-    reducers : {
+    reducers: {
         setAccessToken(state, action: PayloadAction<string>) {
             state.accessToken = action.payload;
+            state.isAuthenticated = true;
+            state.isAuthLoading = false;
         },
-        logout(state) {
-            state.accessToken = null;
-        }
     },
+    extraReducers: (builder) => {
+        builder
+            .addCase(refreshAccessToken.pending, (state) => {
+                state.isAuthLoading = true;
+            })
+            .addCase(refreshAccessToken.fulfilled, (state, action: PayloadAction<string>) => {
+                state.accessToken = action.payload;
+                state.isAuthenticated = true;
+                state.isAuthLoading = false;
+            })
+            .addCase(refreshAccessToken.rejected, (state) => {
+                state.accessToken = null;
+                state.isAuthenticated = false;
+                state.isAuthLoading = false;
+            })
+            .addCase(logout.pending, (state) => {
+                state.isAuthLoading = true;
+            })
+            .addCase(logout.fulfilled, (state) => {
+                state.isAuthLoading = false;
+                state.accessToken = null;
+                state.isAuthenticated = false;
+            })
+    }
 })
 
-export const {setAccessToken, logout} = authSlice.actions;
+export const { setAccessToken } = authSlice.actions;
 export default authSlice.reducer; 
