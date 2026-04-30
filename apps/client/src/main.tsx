@@ -9,18 +9,36 @@ import AuthLayout from './layouts/AuthLayout.tsx'
 import OnBoarding from './pages/OnBoarding.tsx'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
+import MainLayout from './layouts/MainLayout.tsx'
+import ProfileIndex from './pages/Profile/Index.tsx'
+import RequireAuth from './guard/RequireAuth.tsx'
+import RequireGuest from './guard/RequireGuest.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<App />}></Route>
-          <Route element={<AuthLayout />}>
-            <Route path='/signin' element={<Signin />}></Route>
-            <Route path='/signup' element={<Signup />}></Route>
+          <Route element={<MainLayout />}>
+            <Route path='/' element={<App />}></Route>
+
+            {/* auth process */}
+            <Route element={<RequireGuest />}>
+              <Route element={<AuthLayout />}>
+                <Route path='/signin' element={<Signin />}></Route>
+                <Route path='/signup' element={<Signup />}></Route>
+              </Route>
+            </Route>
+
+            {/* auth */}
+            <Route element={<RequireAuth />}>
+              {/* onboarding */}
+              <Route path='/onboarding' element={<OnBoarding />}></Route>
+
+              {/* profile */}
+              <Route path='/profile' element={<ProfileIndex />}></Route>
+            </Route>
           </Route>
-          <Route path='/onboarding' element={<OnBoarding />}></Route>
         </Routes>
       </BrowserRouter>
     </Provider>

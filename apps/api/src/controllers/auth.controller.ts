@@ -26,6 +26,7 @@ export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response
             [AUTH_TOKEN.ACCESS]: authData.access_token,
         }))
     } catch (err) {
+        console.log(err);
         next(err);
     }
 }

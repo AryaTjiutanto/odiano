@@ -1,4 +1,4 @@
-import loginImage from "../assets/img/login-img.svg";
+import loginImage from "../assets/img/login-img.webp";
 import googleLogo from "../assets/img/logo/google.svg";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -7,41 +7,47 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { setAccessToken } from "../features/auth/auth.slice";
+import DotsLoader from "../components/ui/DotsLoader";
+import { useState } from "react";
 
 
 const Signin = () => {
     const dispatch = useAppDispatch();
+    const [signInErrorMessage, setSignInErrorMessage] = useState<string>("");
 
     const {
         register,
         handleSubmit,
         setError,
-        formState : {errors},
+        formState: { errors, isSubmitting },
     } = useForm<AuthenticateUserSchema>({
-        mode : "onTouched",
-        resolver : zodResolver(authenticateUserSchema)
+        mode: "onTouched",
+        resolver: zodResolver(authenticateUserSchema)
     });
 
-    const onSubmit : SubmitHandler<AuthenticateUserSchema> = async (data) => {
+    const onSubmit: SubmitHandler<AuthenticateUserSchema> = async (data) => {
         try {
-            console.log(data);
             const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/signin", data);
 
             const accessToken = response.data.data?.[AUTH_TOKEN.ACCESS];
 
-            if(accessToken) {
+            if (accessToken) {
                 dispatch(setAccessToken(accessToken));
             }
-        } catch (err : any) {
+        } catch (err: any) {
             const error = err.response?.data as ErrorResponseData<ValidationError[]>;
 
-            if(error.errors) {
+            if (error.errors) {
                 Object.entries(error.errors).forEach(([index, field]) => {
                     setError(field.path as keyof AuthenticateUserSchema, {
-                        type : "server",
-                        message : field.message
+                        type: "server",
+                        message: field.message
                     })
                 })
+            }
+
+            if(error.message && !error.errors) {
+                setSignInErrorMessage(error.message);
             }
         }
     }
@@ -50,8 +56,8 @@ const Signin = () => {
         <div className="h-full min-h-screen flex items-center">
             <div className="grid grid-cols-12">
                 <div className="w-full col-span-7 flex items-center justify-center">
-                    <div className="h-[800px] w-[70%]">
-                        <img src={loginImage} className="h-full"></img>
+                    <div className="h-[800px] w-[70%] flex items-center">
+                        <img src={loginImage} className="h-fit"></img>
                     </div>
                 </div>
                 <div className="col-span-5 flex flex-col justify-center">
@@ -64,7 +70,7 @@ const Signin = () => {
                             <h2 className="">Sign in to your account</h2>
                             <div className="mt-5 space-y-5">
                                 <div className="w-full space-y-1">
-                                    <input { ...register("email") } className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="youremail@gmail.com"></input>
+                                    <input {...register("email")} className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="youremail@gmail.com"></input>
                                     {
                                         errors.email && (
                                             <p className="text-xs text-red-500">{errors.email.message}</p>
@@ -72,7 +78,7 @@ const Signin = () => {
                                     }
                                 </div>
                                 <div className="w-full space-y-1">
-                                    <input { ...register("password") } className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="password" placeholder="password"></input>
+                                    <input {...register("password")} className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="password" placeholder="password"></input>
                                     {
                                         errors.password && (
                                             <p className="text-xs text-red-500">{errors.password.message}</p>
@@ -80,9 +86,22 @@ const Signin = () => {
                                     }
                                 </div>
                                 <div className="space-y-1">
-                                    <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer">
-                                        Signin
+                                    <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer grid place-content-center" disabled={isSubmitting}>
+                                        {
+                                            isSubmitting ?
+                                                <DotsLoader />
+                                                :
+                                                <div>
+                                                    Signin
+                                                </div>
+                                        }
                                     </button>
+                                    {
+                                        signInErrorMessage&&
+                                        <p className="text-sm text-red-500">
+                                            {signInErrorMessage}
+                                        </p>
+                                    }
                                     <Link className="text-sm underline hover:text-rose-500 duration-150" to={"#"}>
                                         Forgot password
                                     </Link>

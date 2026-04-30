@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosHeaders, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 import { store } from "../app/store";
 import { refreshAccessToken } from "../features/auth/auth.thunk";
-import { useAppSelector } from "../shared/hooks/useRedux";
 
 let refreshPromise : Promise<string> | null = null;
 
@@ -38,7 +37,7 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        if (error.response?.status == 401 && !originalConfig?._retry && originalConfig?.url?.includes("/auth/refresh")) {
+        if (error.response?.status == 401 && !originalConfig?._retry && !originalConfig?.url?.includes("/auth/refresh")) {
             try {
                 originalConfig._retry = true;
 

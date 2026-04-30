@@ -17,7 +17,7 @@ export const refreshAccessToken = createAsyncThunk("auth/refreshAccessToken", as
     }
 });
 
-export const logout = createAsyncThunk("auth/logout", async(_, thunkApi) => {
+export const logout = createAsyncThunk("auth/logout", async() => {
     await api.post("/auth/logout");
     return true;
 })

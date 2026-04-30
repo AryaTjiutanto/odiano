@@ -4,7 +4,7 @@ import Loading from "../components/ui/PageLoader";
 import { useEffect, useRef, useState } from "react";
 import { refreshAccessToken } from "../features/auth/auth.thunk";
 
-const RequireAuth = () => {
+const RequireGuest = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoaderVisible, setIsLoaderVisible] = useState<boolean>(true);
     const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ const RequireAuth = () => {
             const remaining = 700 - elapsed;
             const delay = remaining > 0 ? remaining : 0;
             
-            if(!isAuthenticated) {
+            if(isAuthenticated) {
                 setTimeout(() => {
                     setIsLoading(false);
 
@@ -43,8 +43,8 @@ const RequireAuth = () => {
         }
     }, [isAuthLoading]);
 
-    if(!isAuthenticated && !isLoading) {
-        return <Navigate to={"/signin"}/>
+    if(isAuthenticated && !isLoading) {
+        return <Navigate to={"/profile"}/>
     }
 
     if(isLoading) {
@@ -54,4 +54,4 @@ const RequireAuth = () => {
     return <Outlet/>
 }
 
-export default RequireAuth;
+export default RequireGuest;
