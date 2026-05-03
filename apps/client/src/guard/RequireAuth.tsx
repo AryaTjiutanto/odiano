@@ -7,7 +7,6 @@ import { refreshAccessToken } from "../features/auth/auth.thunk";
 const RequireAuth = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoaderVisible, setIsLoaderVisible] = useState<boolean>(true);
-    const dispatch = useAppDispatch();
 
     const isAuthLoading = useAppSelector(state => state.auth.isAuthLoading);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -16,7 +15,6 @@ const RequireAuth = () => {
 
     useEffect(() => {
         startRef.current = Date.now();
-        dispatch(refreshAccessToken());
     }, []);
 
     useEffect(() => {
@@ -44,7 +42,7 @@ const RequireAuth = () => {
     }, [isAuthLoading]);
 
     if(!isAuthenticated && !isLoading) {
-        return <Navigate to={"/signin"}/>
+        return <Navigate to={"/signin"} replace/>
     }
 
     if(isLoading) {

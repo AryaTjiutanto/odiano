@@ -10,7 +10,7 @@ type AuthState = {
 const initialState: AuthState = {
     isAuthLoading: true,
     accessToken: null,
-    isAuthenticated: false
+    isAuthenticated: false,
 }
 
 const authSlice = createSlice({

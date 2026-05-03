@@ -11,6 +11,8 @@ type UserSchema = {
     username : string | null,
     slug : string | null,
     bio : string |null,
+    isOnboarded : boolean,
+    emailVerifiedAt : Date | null,
     profileImage : ProfileImageSchema,
 }
 
@@ -65,6 +67,16 @@ const userSchema = new mongoose.Schema<UserSchema>({
         type : profileImageSchema,
         required : false,
         default : null,
+    },
+    isOnboarded : {
+        type : Boolean,
+        required : true,
+        default : false,
+    },
+    emailVerifiedAt : {
+        type : Date,
+        required : true,
+        default : null
     }
 }, {timestamps : true});
 

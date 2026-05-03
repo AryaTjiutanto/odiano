@@ -74,6 +74,7 @@ export const refresh = async (req : Request, res : Response, next : NextFunction
         const refreshToken = req.cookies?.["refresh_token"];
 
         if(!userId || !tokenId || !refreshToken) {
+            console.log("missing userId, tokenId, and refreshToken");
             throw new AppError(401,"UNAUTHORIZED", "Unauthorized")
         }
 

@@ -4,32 +4,32 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 type Payload = {
-    setDate: React.Dispatch<React.SetStateAction<string>>
+    setDate: React.Dispatch<React.SetStateAction<string>>,
 }
 
 const DateDropdown = (payload: Payload) => {
     const months = [
-        { name: "Januari", value: 0 },
-        { name: "Februari", value: 1 },
-        { name: "Maret", value: 2 },
+        { name: "January", value: 0 },
+        { name: "February", value: 1 },
+        { name: "March", value: 2 },
         { name: "April", value: 3 },
-        { name: "Mei", value: 4 },
-        { name: "Juni", value: 5 },
-        { name: "Juli", value: 6 },
-        { name: "Agustus", value: 7 },
+        { name: "May", value: 4 },
+        { name: "June", value: 5 },
+        { name: "July", value: 6 },
+        { name: "August", value: 7 },
         { name: "September", value: 8 },
-        { name: "Oktober", value: 9 },
+        { name: "October", value: 9 },
         { name: "November", value: 10 },
-        { name: "Desember", value: 11 },
+        { name: "December", value: 11 },
     ];
 
     const monthDropdownRef = useRef<HTMLDivElement | null>(null);
     const dayDropdownRef = useRef<HTMLDivElement | null>(null);
     const yearDropdownRef = useRef<HTMLDivElement | null>(null);
 
-    const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(1);
+    const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(0);
     const [selectedDay, setSelectedDay] = useState<number>(1);
-    const [selectedYear, setSelectedYear] = useState<number>(2000);
+    const [selectedYear, setSelectedYear] = useState<number>(2010);
 
     const [monthDropdownIsOpen, setMonthDropdownIsOpen] = useState<boolean>(false);
     const [dayDropdownIsOpen, setDayDropdownIsOpen] = useState<boolean>(false);
@@ -38,16 +38,31 @@ const DateDropdown = (payload: Payload) => {
     const selectMonthIndex = (month: number) => {
         setSelectedMonthIndex(month);
         setMonthDropdownIsOpen(false);
+        handleDateFormat({ month });
     }
 
     const selectDay = (day: number) => {
         setSelectedDay(day);
         setDayDropdownIsOpen(false);
+        handleDateFormat({ day });
     }
 
     const selectYear = (year: number) => {
         setSelectedYear(year);
         setYearDropdownIsOpen(false);
+        handleDateFormat({ year });
+    }
+
+    const handleDateFormat = (params?: { year?: number, month?: number, day?: number }) => {
+        const month = (params?.month ?? selectedMonthIndex) + 1;
+        const day = params?.day ?? selectedDay;
+        const year = params?.year ?? selectedYear;
+
+        const m = String(month).padStart(2, "0");
+        const d = String(day).padStart(2, "0");
+
+        const formattedDate = `${year}-${m}-${d}`;
+        payload.setDate(formattedDate);
     }
 
     useEffect(() => {
@@ -92,7 +107,7 @@ const DateDropdown = (payload: Payload) => {
                     {
                         months.map((month, index) => {
                             return (
-                                <button onClick={() => selectMonthIndex(index)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedMonthIndex == month.value ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                <button type="button" onClick={() => selectMonthIndex(index)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedMonthIndex == month.value ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
                                     {month.name}
                                 </button>
                             )
@@ -118,7 +133,7 @@ const DateDropdown = (payload: Payload) => {
                     {
                         Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
                             return (
-                                <button onClick={() => selectDay(day)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedDay == day ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                <button type="button" onClick={() => selectDay(day)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedDay == day ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
                                     {day}
                                 </button>
                             )
@@ -144,7 +159,7 @@ const DateDropdown = (payload: Payload) => {
                     {
                         Array.from({ length: 150 }, (_, i) => new Date().getFullYear() - i).map((year) => {
                             return (
-                                <button onClick={() => selectYear(year)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedYear == year ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                <button type="button" onClick={() => selectYear(year)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedYear == year ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
                                     {year}
                                 </button>
                             )
