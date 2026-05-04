@@ -24,3 +24,8 @@ export const onboarding = async (payload : OnboardingPayload) => {
 
     user.save();
 }
+
+export const checkUsernameAvailability = async (username : string) => {
+    const user = await User.exists({username});
+    return !user;
+}

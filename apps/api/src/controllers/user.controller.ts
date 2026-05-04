@@ -21,3 +21,19 @@ export const onboarding = async (req : ReqBody<CreateUserProfileSchema>, res : R
         next(err);
     }
 }
+
+export const checkUsernameAvailability = async (req : Request, res : Response, next : NextFunction) => {
+    try {
+        const username = req.query.username;
+
+        if(!username || typeof username != "string") {
+            throw new AppError(400, "BAD_REQUEST", "Username is missing");
+        }
+
+        const isAvailable = await userServices.checkUsernameAvailability(username);
+
+        res.status(200).json(successResponseData('OK', "success", {available : isAvailable}));
+    } catch (err){
+        next(err);
+    }
+}

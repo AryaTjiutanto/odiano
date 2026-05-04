@@ -24,7 +24,8 @@ export const createUserProfileSchema = z.object({
         .min(USERNAME_LENGTH.MIN, { message: `Username cannot be empty` })
         .max(USERNAME_LENGTH.MAX, { message: `Username maximum ${USERNAME_LENGTH.MAX} characters` })
         .regex(/^[A-Za-z0-9_]+$/, { message: `Username can only contain letters, number and underscore(_)` })
-        .trim(),
+        .trim()
+        .toLowerCase(),
     profileImagePublicId : z.string()
         .min(1, {message : `Profile image upload failed`})
         .max(100, {message : `An error occur when uploading profile image`})
