@@ -59,7 +59,7 @@ api.interceptors.response.use(
                 }
 
                 return api(originalConfig);
-            } catch (err) {
+            } catch {
                 store.dispatch({ type: "auth/logout/fulfilled" });
             }
         }

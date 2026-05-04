@@ -41,6 +41,7 @@ app.use((err : any, req : Request, res:Response, next : NextFunction) => {
         return res.status(400).json(errorResponseData<ValidationError[]>("BAD_REQUEST", "validation error", errors));
     }
     
+    console.log(err);
     res.status(500).json(errorResponseData("INTERNAL_SERVER_ERROR", "Something went wrong"));
 })
 

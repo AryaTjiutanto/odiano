@@ -107,7 +107,7 @@ const DateDropdown = (payload: Payload) => {
                     {
                         months.map((month, index) => {
                             return (
-                                <button type="button" onClick={() => selectMonthIndex(index)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedMonthIndex == month.value ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                <button key={`month-${index}`} type="button" onClick={() => selectMonthIndex(index)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedMonthIndex == month.value ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
                                     {month.name}
                                 </button>
                             )
@@ -133,7 +133,7 @@ const DateDropdown = (payload: Payload) => {
                     {
                         Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
                             return (
-                                <button type="button" onClick={() => selectDay(day)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedDay == day ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                <button type="button" key={`day-${day}`} onClick={() => selectDay(day)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedDay == day ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
                                     {day}
                                 </button>
                             )
@@ -159,7 +159,7 @@ const DateDropdown = (payload: Payload) => {
                     {
                         Array.from({ length: 150 }, (_, i) => new Date().getFullYear() - i).map((year) => {
                             return (
-                                <button type="button" onClick={() => selectYear(year)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedYear == year ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                <button key={`year-${year}`} type="button" onClick={() => selectYear(year)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${selectedYear == year ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
                                     {year}
                                 </button>
                             )

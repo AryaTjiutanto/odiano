@@ -75,8 +75,7 @@ const userSchema = new mongoose.Schema<UserSchema>({
     },
     emailVerifiedAt : {
         type : Date,
-        required : true,
-        default : null
+        default : null,
     }
 }, {timestamps : true});
 

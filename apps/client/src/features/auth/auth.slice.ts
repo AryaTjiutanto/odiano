@@ -24,7 +24,6 @@ const authSlice = createSlice({
     reducers: {
         setAccessToken(state, action: PayloadAction<string>) {
             state.accessToken = action.payload;
-            state.isAuthenticated = true;
             state.isAuthLoading = false;
         },
     },
@@ -36,7 +35,6 @@ const authSlice = createSlice({
             })
             .addCase(refreshAccessToken.fulfilled, (state, action: PayloadAction<string>) => {
                 state.accessToken = action.payload;
-                state.isAuthenticated = true;
                 state.isAuthLoading = false;
             })
             .addCase(refreshAccessToken.rejected, (state) => {
@@ -52,11 +50,13 @@ const authSlice = createSlice({
             .addCase(intitializeAuth.fulfilled, (state, action : PayloadAction<CurrentUserDTO | null>) => {
                 state.user = action.payload;
                 state.isAuthLoading = false;
+                state.isAuthenticated = !!action.payload;
                 state.isInitialized = true;
             })
             .addCase(intitializeAuth.rejected, (state) => {
                 state.isAuthLoading = false;
                 state.isInitialized = true;
+                state.isAuthenticated = false;
             })
 
             // logout
@@ -67,6 +67,7 @@ const authSlice = createSlice({
                 state.isAuthLoading = false;
                 state.accessToken = null;
                 state.isAuthenticated = false;
+                state.user = null;
                 state.isInitialized = false;
             })
     }

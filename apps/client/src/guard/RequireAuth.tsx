@@ -1,9 +1,11 @@
 import { useAppSelector } from "../shared/hooks/useRedux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Loading from "../components/ui/PageLoader";
 import { useEffect, useRef, useState } from "react";
 
 const RequireAuth = () => {
+    const location = useLocation();
+
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoaderVisible, setIsLoaderVisible] = useState<boolean>(true);
 
@@ -53,7 +55,7 @@ const RequireAuth = () => {
     }
 
     // if not boarded, redirect to onboarding page
-    if(userData && !userData.isOnboarded) {
+    if(userData && !userData.isOnboarded && location.pathname != "/onboarding") {
         return <Navigate to={"/onboarding"} replace/>
     }
 

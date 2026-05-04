@@ -38,7 +38,7 @@ const RequireGuest = () => {
                 }, 150)
             }, delay);
         }
-    }, [isAuthenticated]);
+    }, [isAuthLoading]);
     
     if(isLoading) {
         return <Loading visible={isLoaderVisible}></Loading>

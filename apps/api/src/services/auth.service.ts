@@ -40,6 +40,7 @@ export const signUp = async (dateOfBirth : string, email: string, password: stri
     }
 
     const currentUser = await User.create({
+        slug : nanoid(5),
         email,
         password,
         dateOfBirth

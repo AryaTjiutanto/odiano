@@ -9,6 +9,7 @@ import { useAppDispatch } from "../shared/hooks/useRedux";
 import { setAccessToken } from "../features/auth/auth.slice";
 import DotsLoader from "../components/ui/DotsLoader";
 import { useState } from "react";
+import { intitializeAuth } from "../features/auth/auth.thunk";
 
 
 const Signin = () => {
@@ -33,6 +34,7 @@ const Signin = () => {
 
             if (accessToken) {
                 dispatch(setAccessToken(accessToken));
+                dispatch(intitializeAuth());
             }
         } catch (err: any) {
             const error = err.response?.data as ErrorResponseData<ValidationError[]>;
