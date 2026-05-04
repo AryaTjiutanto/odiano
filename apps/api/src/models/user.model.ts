@@ -6,14 +6,14 @@ import slugify from "slugify";
 type UserSchema = {
     email : string,
     password : string,
-    dateOfBirth : string,
+    dateOfBirth : string | null,
     name : string | null,
     username : string | null,
     slug : string | null,
-    bio : string |null,
+    bio : string | null,
     isOnboarded : boolean,
     emailVerifiedAt : Date | null,
-    profileImage : ProfileImageSchema,
+    profileImage : ProfileImageSchema | null,
 }
 
 type ProfileImageSchema = {

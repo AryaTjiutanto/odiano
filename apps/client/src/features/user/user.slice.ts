@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 type UserState = {
-
+    isUserDataLoading : boolean,
 }
 
 const initialState : UserState = {
-
+    isUserDataLoading : true,
 }
 
 const userSlice = createSlice({

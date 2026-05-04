@@ -1,16 +1,21 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import { logout, refreshAccessToken } from "./auth.thunk";
+import { intitializeAuth, logout, refreshAccessToken } from "./auth.thunk";
+import type { CurrentUserDTO } from "@connect/shared";
 
 type AuthState = {
     isAuthLoading: boolean,
-    accessToken: string | null,
     isAuthenticated: boolean,
+    isInitialized : boolean,
+    accessToken: string | null,
+    user : CurrentUserDTO | null,
 }
 
 const initialState: AuthState = {
     isAuthLoading: true,
     accessToken: null,
     isAuthenticated: false,
+    isInitialized : false,
+    user : null,
 }
 
 const authSlice = createSlice({
@@ -25,6 +30,7 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // Refresh access token
             .addCase(refreshAccessToken.pending, (state) => {
                 state.isAuthLoading = true;
             })
@@ -38,6 +44,22 @@ const authSlice = createSlice({
                 state.isAuthenticated = false;
                 state.isAuthLoading = false;
             })
+
+            // initialize auth
+            .addCase(intitializeAuth.pending, (state) => {
+                state.isAuthLoading = true;
+            })
+            .addCase(intitializeAuth.fulfilled, (state, action : PayloadAction<CurrentUserDTO | null>) => {
+                state.user = action.payload;
+                state.isAuthLoading = false;
+                state.isInitialized = true;
+            })
+            .addCase(intitializeAuth.rejected, (state) => {
+                state.isAuthLoading = false;
+                state.isInitialized = true;
+            })
+
+            // logout
             .addCase(logout.pending, (state) => {
                 state.isAuthLoading = true;
             })
@@ -45,6 +67,7 @@ const authSlice = createSlice({
                 state.isAuthLoading = false;
                 state.accessToken = null;
                 state.isAuthenticated = false;
+                state.isInitialized = false;
             })
     }
 })

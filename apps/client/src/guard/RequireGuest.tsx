@@ -1,8 +1,7 @@
-import { useAppDispatch, useAppSelector } from "../shared/hooks/useRedux";
+import { useAppSelector } from "../shared/hooks/useRedux";
 import { Navigate, Outlet } from "react-router-dom";
 import Loading from "../components/ui/PageLoader";
 import { useEffect, useRef, useState } from "react";
-import { refreshAccessToken } from "../features/auth/auth.thunk";
 
 const RequireGuest = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -39,15 +38,16 @@ const RequireGuest = () => {
                 }, 150)
             }, delay);
         }
-    }, [isAuthLoading]);
+    }, [isAuthenticated]);
+    
+    if(isLoading) {
+        return <Loading visible={isLoaderVisible}></Loading>
+    }
 
     if(isAuthenticated && !isLoading) {
         return <Navigate to={"/profile"} replace/>
     }
 
-    if(isLoading) {
-        return <Loading visible={isLoaderVisible}></Loading>
-    }
 
     return <Outlet/>
 }

@@ -1,8 +1,7 @@
-import { useAppDispatch, useAppSelector } from "../shared/hooks/useRedux";
+import { useAppSelector } from "../shared/hooks/useRedux";
 import { Navigate, Outlet } from "react-router-dom";
 import Loading from "../components/ui/PageLoader";
 import { useEffect, useRef, useState } from "react";
-import { refreshAccessToken } from "../features/auth/auth.thunk";
 
 const RequireAuth = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -10,6 +9,8 @@ const RequireAuth = () => {
 
     const isAuthLoading = useAppSelector(state => state.auth.isAuthLoading);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+    const isInitialized = useAppSelector(state => state.auth.isInitialized);
+    const userData = useAppSelector(state => state.auth.user);
 
     const startRef = useRef(0);
 
@@ -39,16 +40,24 @@ const RequireAuth = () => {
                 }, 150)
             }, delay);
         }
-    }, [isAuthLoading]);
+    }, [isInitialized]);
 
-    if(!isAuthenticated && !isLoading) {
-        return <Navigate to={"/signin"} replace/>
-    }
-
+    // loading
     if(isLoading) {
         return <Loading visible={isLoaderVisible}></Loading>
     }
 
+    // if not authenticated, redirect to login
+    if(!isAuthenticated && !isLoading) {
+        return <Navigate to={"/signin"} replace/>
+    }
+
+    // if not boarded, redirect to onboarding page
+    if(userData && !userData.isOnboarded) {
+        return <Navigate to={"/onboarding"} replace/>
+    }
+
+    // success
     return <Outlet/>
 }
 

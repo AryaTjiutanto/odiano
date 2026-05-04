@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../libs/api";
-import type { SignInResponse, SuccessResponseData } from "@connect/shared";
+import type { CurrentUserDTO, SignInResponse, SuccessResponseData } from "@connect/shared";
 
 export const refreshAccessToken = createAsyncThunk("auth/refreshAccessToken", async (_, thunkApi) => {
     try {
@@ -12,12 +12,28 @@ export const refreshAccessToken = createAsyncThunk("auth/refreshAccessToken", as
         }
 
         return newAccessToken;
-    } catch (err) {
-        return thunkApi.rejectWithValue("Failed to refresh token");
+    } catch {
+        return thunkApi.rejectWithValue("Failed to get access token");
     }
 });
 
 export const logout = createAsyncThunk("auth/logout", async() => {
     await api.post("/auth/logout");
     return true;
+})
+
+export const intitializeAuth = createAsyncThunk("auth/initializeAuth", async (_, thunkAPi) => {
+    try {
+        const response = await api.get<SuccessResponseData<CurrentUserDTO>>("/auth/me");
+        
+        const user = response.data.data;
+
+        if(!user) {
+            return thunkAPi.rejectWithValue("No user data");
+        }
+        
+        return response.data.data;
+    } catch {
+        return thunkAPi.rejectWithValue("Failed to get user data");
+    }
 })
