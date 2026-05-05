@@ -1,15 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "../components/auth/Footer";
-import { faUpload, faUser } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { faCheckCircle, faRotate, faUpload, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type CreateUserProfileSchema } from "@connect/shared";
+import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "../libs/api";
 
 const OnBoarding = () => {
+    //  handle image
     const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
-
     const [isCropping, setIsCropping] = useState<boolean>(false);
 
     const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
@@ -38,9 +39,11 @@ const OnBoarding = () => {
         setIsCropping(true);
     }
 
+    // handle form
     const {
         register,
         setError,
+        watch,
         handleSubmit,
         formState: { errors, isSubmitting }
     } = useForm<CreateUserProfileSchema>({
@@ -51,6 +54,49 @@ const OnBoarding = () => {
     const onSubmit: SubmitHandler<CreateUserProfileSchema> = (data) => {
         console.log(data);
     }
+
+    // handle username
+    const [isUsernameLoading, setIsUsernameloading] = useState<boolean>(false);
+    const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean>(false);
+    const username = watch("username");
+
+    useEffect(() => {
+        if (!username) return;
+
+        setIsUsernameAvailable(false);
+
+        const timeout = setTimeout(async () => {
+            try {
+                setIsUsernameloading(true);
+
+                const response = await api.get<SuccessResponseData<{ available: boolean }>>("/users/check-username", {
+                    params: {
+                        username,
+                    }
+                });
+
+                const isAvaiable = response.data.data?.available;
+
+                if (!isAvaiable) {
+                    setError("username", {
+                        type: "manual",
+                        message: "Username already used",
+                    })
+                } else {
+                    setIsUsernameAvailable(true);
+                }
+
+                setIsUsernameloading(false);
+            } catch {
+                setError("username", {
+                    type: "manual",
+                    message: "Something went wrong, try again later"
+                })
+            }
+        }, 600);
+
+        return () => clearTimeout(timeout);
+    }, [username])
 
     return (
         <div className="bg-neutral-950 min-h-screen">
@@ -83,7 +129,7 @@ const OnBoarding = () => {
                                 {
                                     imageError &&
                                     <p className="text-center text-red-500 mt-5">
-                                        { imageError }
+                                        {imageError}
                                     </p>
                                 }
                             </div>
@@ -98,7 +144,20 @@ const OnBoarding = () => {
                                     }
                                 </div>
                                 <div>
-                                    <input className="w-full h-12 border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="Username" {...register("username")}></input>
+                                    <div className="relative h-12">
+                                        <input className="w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="Username" {...register("username")}></input>
+
+                                        <div className="absolute h-full top-0 flex items-center right-4">
+                                            {
+                                                isUsernameLoading &&
+                                                <FontAwesomeIcon icon={faRotate} className="text-xs animate-spin text-neutral-300" />
+                                            }
+                                            {
+                                                isUsernameAvailable &&
+                                                <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
+                                            }
+                                        </div>
+                                    </div>
                                     {
                                         errors.username &&
                                         <p className="text-xs text-red-500">
@@ -107,16 +166,20 @@ const OnBoarding = () => {
                                     }
                                 </div>
                             </div>
-                            <div className="mt-8 w-full h-fit relative">
-                                <textarea className={"w-full h-28 border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-6 py-4 text-sm"} placeholder="Bio" {...register("bio")}></textarea>
+                            <div className="mt-8 w-full h-28 relative">
+                                <textarea className={"w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-6 py-4 text-sm"} placeholder="Bio" {...register("bio")}></textarea>
                                 {
                                     errors.bio &&
                                     <p className="text-xs text-red-500">
                                         {errors.bio.message}
                                     </p>
                                 }
+
+                                <div className={`absolute bottom-5 right-5 text-xs ${watch("bio")?.length > 50 ? "text-red-500" : "text-neutral-400"}`}>
+                                    {watch("bio")?.length}/50
+                                </div>
                             </div>
-                            <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-5">
+                            <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-8">
                                 Done
                             </button>
                         </form>
