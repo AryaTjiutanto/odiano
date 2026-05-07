@@ -1,4 +1,4 @@
-import { AUTH_TOKEN, AuthToken, UserDTO } from "@connect/shared";
+import { AUTH_TOKEN, AuthToken, CurrentUserDTO } from "@connect/shared";
 import { AppError } from "../errors/appError.error";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
@@ -56,7 +56,7 @@ export const signUp = async (dateOfBirth : string, email: string, password: stri
     };
 }
 
-export const me = async (userId: string): Promise<UserDTO> => {
+export const me = async (userId: string): Promise<CurrentUserDTO> => {
     const user = await User.findById(userId).lean();
 
     if (!user) {
@@ -68,6 +68,9 @@ export const me = async (userId: string): Promise<UserDTO> => {
         email: user?.email,
         slug: user?.slug,
         username: user?.username,
+        isOnboarded : user?.isOnboarded,
+        name : user?.name,
+        profileImage : user?.profileImage
     }
 }
 

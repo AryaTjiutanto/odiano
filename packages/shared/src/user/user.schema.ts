@@ -29,11 +29,15 @@ export const createUserProfileSchema = z.object({
     profileImagePublicId : z.string()
         .min(1, {message : `Profile image upload failed`})
         .max(100, {message : `An error occur when uploading profile image`})
-        .regex(/^[A-Za-z0-9/-_]&/, { message : "Invalid cloudinary public id format" }),
+        .regex(/^[A-Za-z0-9/-_]$/, { message : "Invalid cloudinary public id format" })
+        .nullable()
+        .optional(),
     profileImageUrl : z.string()
         .url({message : "Invalid image URL"})
         .max(300, {message : `An error occur when uploading profile image`})
-        .refine((url) => !url.includes("res.cloudinary.com"), {message : "Invalid image source"}),
+        .refine((url) => !url.includes("res.cloudinary.com"), {message : "Invalid image source"})
+        .nullable()
+        .optional(),
     bio : z.string()
         .max(BIO_LENGTH.MAX, {message : `Bio maximum ${BIO_LENGTH.MAX} characters`})
         .trim(),

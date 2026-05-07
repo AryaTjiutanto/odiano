@@ -17,9 +17,13 @@ export const onboarding = async (payload : OnboardingPayload) => {
     user.name = payload.userData.name;
     user.username = payload.userData.username;
     user.bio = payload.userData.bio;
-    user.profileImage = {
-        publicId : payload.userData.profileImagePublicId,
-        url : payload.userData.profileImageUrl,
+    user.isOnboarded = true;
+
+    if(payload.userData.profileImagePublicId && payload.userData.profileImageUrl) {
+        user.profileImage = {
+            publicId : payload.userData.profileImagePublicId,
+            url : payload.userData.profileImageUrl,
+        }
     }
 
     user.save();

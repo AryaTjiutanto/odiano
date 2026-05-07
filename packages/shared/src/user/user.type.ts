@@ -9,6 +9,6 @@ export type CurrentUserDTO = {
     username: string | null,
     name: string | null,
     slug: string | null,
-    profileImage: string,
+    profileImage: UserProfileImageDTO | null,
     isOnboarded: boolean,
 }

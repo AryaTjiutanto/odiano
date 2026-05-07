@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCroppedImage } from "../../utils/cropImage";
+import { getCroppedImage } from "../../utils/cropImage.util";
 import Cropper from "react-easy-crop";
 import DotsLoader from "../ui/DotsLoader";
 
@@ -7,7 +7,7 @@ type Payload = {
     imageUrl: string,
     aspect : number,
     setIsCropping: React.Dispatch<React.SetStateAction<boolean>>,
-    setImageCroppedUrl: React.Dispatch<React.SetStateAction<string | null>>,
+    setImageCroppedBlob: React.Dispatch<React.SetStateAction<Blob | null>>,
 }
 
 export const ImageCropper = (payload: Payload) => {
@@ -31,8 +31,7 @@ export const ImageCropper = (payload: Payload) => {
             return;
         }
 
-        const url = URL.createObjectURL(blob);
-        payload.setImageCroppedUrl(url);
+        payload.setImageCroppedBlob(blob);
         payload.setIsCropping(false);
     }
 

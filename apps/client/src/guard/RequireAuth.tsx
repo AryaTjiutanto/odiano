@@ -58,7 +58,12 @@ const RequireAuth = () => {
     if(userData && !userData.isOnboarded && location.pathname != "/onboarding") {
         return <Navigate to={"/onboarding"} replace/>
     }
-
+    
+    // if boarded and access onboarding page
+    if(userData && userData.isOnboarded && location.pathname == "/onboarding") {
+        return <Navigate to={"/profile"} replace/>
+    }
+    
     // success
     return <Outlet/>
 }

@@ -25,7 +25,7 @@ const authSlice = createSlice({
         setAccessToken(state, action: PayloadAction<string>) {
             state.accessToken = action.payload;
             state.isAuthLoading = false;
-        },
+        }
     },
     extraReducers: (builder) => {
         builder
