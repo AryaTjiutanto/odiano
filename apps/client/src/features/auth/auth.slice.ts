@@ -68,7 +68,6 @@ const authSlice = createSlice({
                 state.accessToken = null;
                 state.isAuthenticated = false;
                 state.user = null;
-                state.isInitialized = false;
             })
     }
 })

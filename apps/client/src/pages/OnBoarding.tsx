@@ -7,7 +7,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema} from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
-import DotsLoader from "../components/ui/DotsLoader";
+import DotsLoader from "../components/loader/DotsLoader";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { uploadImageToCloudinary } from "../services/cloudinary.service";

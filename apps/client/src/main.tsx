@@ -11,8 +11,9 @@ import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
 import MainLayout from './layouts/MainLayout.tsx'
 import ProfileIndex from './pages/Profile/Index.tsx'
-import RequireAuth from './guard/RequireAuth.tsx'
-import RequireGuest from './guard/RequireGuest.tsx'
+import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
+import RequireGuestGuard from './components/guard/RequireGuestGuard.tsx'
+import RequireUnOnboarded from './components/guard/RequireUnOnboarded.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -23,17 +24,20 @@ createRoot(document.getElementById('root')!).render(
             <Route path='/' element={<App />}></Route>
 
             {/* auth process */}
-            <Route element={<RequireGuest />}>
+            <Route element={<RequireGuestGuard />}>
               <Route element={<AuthLayout />}>
                 <Route path='/signin' element={<Signin />}></Route>
                 <Route path='/signup' element={<Signup />}></Route>
               </Route>
             </Route>
 
-            {/* auth */}
-            <Route element={<RequireAuth />}>
-              {/* onboarding */}
+            {/* onboarding */}
+            <Route element={<RequireUnOnboarded />}>
               <Route path='/onboarding' element={<OnBoarding />}></Route>
+            </Route>
+            
+            {/* auth */}
+            <Route element={<RequireAuthGuard />}>
 
               {/* profile */}
               <Route path='/profile' element={<ProfileIndex />}></Route>

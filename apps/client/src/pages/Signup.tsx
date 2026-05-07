@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { createUserSchema, type AuthenticateUserSchema, type CreateUserSchema, type ErrorResponseData, type SignUpResponse, type SuccessResponseData, type ValidationError } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import DotsLoader from "../components/ui/DotsLoader";
+import DotsLoader from "../components/loader/DotsLoader";
 import { api } from "../libs/api";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { setAccessToken } from "../features/auth/auth.slice";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCroppedImage } from "../../utils/cropImage.util";
 import Cropper from "react-easy-crop";
-import DotsLoader from "../ui/DotsLoader";
+import DotsLoader from "../loader/DotsLoader";
 
 type Payload = {
     imageUrl: string,

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { setAccessToken } from "../features/auth/auth.slice";
-import DotsLoader from "../components/ui/DotsLoader";
+import DotsLoader from "../components/loader/DotsLoader";
 import { useState } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 
