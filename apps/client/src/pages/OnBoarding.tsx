@@ -1,23 +1,19 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "../components/auth/Footer";
 import { faCheckCircle, faRotate, faUpload, faUser, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState, type SubmitEventHandler } from "react";
+import { useEffect, useRef, useState} from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema, type CloudinarySignaturePayload } from "@connect/shared";
+import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema} from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
-import axios from "axios";
-import { getCloudinarySignedUrl } from "../utils/cloudinary.util";
 import DotsLoader from "../components/ui/DotsLoader";
-import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { uploadImageToCloudinary } from "../services/cloudinary.service";
 
 const OnBoarding = () => {
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
 
     // handle drag and onDrop
     const [isDrag, setIsDrag] = useState<boolean>(false);
@@ -136,7 +132,6 @@ const OnBoarding = () => {
             await dispatch(intitializeAuth());
 
             setFormError(null);
-            // navigate("/profile");
         } catch (err: any) {
             setFormError("Something went wrong, please try again later")
             return;
