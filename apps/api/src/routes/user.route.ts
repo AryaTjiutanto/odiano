@@ -3,10 +3,11 @@ import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import { createUserProfileSchema } from "@connect/shared";
 import { validateData } from "../middlewares/validateData.middleware";
 import { checkUsernameAvailability, onboarding } from "../controllers/user.controller";
+import { apiLimiter, consume, searchLimiter } from "../libs/limiter";
 
 const router = express.Router();
 
-router.post("/onboarding", requireAccessToken, validateData(createUserProfileSchema), onboarding);
-router.get("/check-username", checkUsernameAvailability);
+router.post("/onboarding", consume(apiLimiter), requireAccessToken, validateData(createUserProfileSchema), onboarding);
+router.get("/check-username", consume(searchLimiter), checkUsernameAvailability);
 
 export default router;
