@@ -59,13 +59,13 @@ const Signup = () => {
     }
 
     return (
-        <div className="w-full min-h-screen flex justify-center items-center pt-24 pb-12 2xl:pt-0 2xl:pb-0">
+        <div className="w-full min-h-screen flex justify-start md:justify-center items-center pt-32 pb-12 2xl:pt-0 2xl:pb-0 px-10 md:px-0">
             <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-[560px]">
                 {/* singin */}
-                <h1 className="text-3xl font-bold text-center 2xl:text-left">
+                <h1 className="text-3xl font-bold md:text-center 2xl:text-left">
                     Create your account
                 </h1>
-                <div className="w-full flex flex-col space-y-5 mt-10">
+                <div className="w-full flex flex-col space-y-5 mt-6 md:mt-10">
                     <div>
                         <input className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="youremail@email.com" {...register("email")}></input>
                         {
@@ -124,7 +124,7 @@ const Signup = () => {
                 </div>
 
                 {/* signin */}
-                <div className="w-full mt-16 2xl:mt-32">
+                <div className="w-full mt-8 md:mt-16 2xl:mt-32">
                     <h1 className="text-xl 2xl:text-2xl font-bold">Already have an account?</h1>
                     <Link to={"/signin"}>
                         <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-5">

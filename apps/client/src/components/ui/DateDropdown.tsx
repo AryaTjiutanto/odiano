@@ -89,9 +89,9 @@ const DateDropdown = (payload: Payload) => {
 
     return (
         <div className="grid grid-cols-10 gap-x-3">
-            <div className="relative col-span-5" ref={monthDropdownRef}>
+            <div className="relative col-span-4 md:col-span-5" ref={monthDropdownRef}>
                 <div className="w-full flex h-14 border border-neutral-200 rounded cursor-pointer" onClick={() => setMonthDropdownIsOpen(!monthDropdownIsOpen)}>
-                    <div className="w-[88%] h-full">
+                    <div className="w-[80%] md:w-[88%] h-full">
                         <div className="h-[40%] flex items-end pl-3 text-[11px] text-neutral-400">
                             Month
                         </div>
@@ -99,11 +99,11 @@ const DateDropdown = (payload: Payload) => {
                             <span>{selectedMonthIndex ? months[selectedMonthIndex].name : "January"}</span>
                         </div>
                     </div>
-                    <div className="w-[12%] h-full text-neutral-100 flex items-center">
+                    <div className="w-[10%] md:w-[12%] h-full text-neutral-100 flex items-center">
                         <FontAwesomeIcon icon={faAngleDown} className={`${monthDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
                     </div>
                 </div>
-                <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${monthDropdownIsOpen ? "h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
+                <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${monthDropdownIsOpen ? "h-42 md:h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
                     {
                         months.map((month, index) => {
                             return (
@@ -115,9 +115,9 @@ const DateDropdown = (payload: Payload) => {
                     }
                 </div>
             </div>
-            <div className="col-span-2 relative" ref={dayDropdownRef}>
+            <div className="col-span-3 md:col-span-2 relative" ref={dayDropdownRef}>
                 <div className="flex h-14 border border-neutral-200 rounded cursor-pointer w-full" onClick={() => setDayDropdownIsOpen(!dayDropdownIsOpen)}>
-                    <div className="w-[70%] h-full">
+                    <div className="w-[60%] md:w-[70%] h-full">
                         <div className="h-[40%] flex items-end pl-3 text-[11px] text-neutral-400">
                             Day
                         </div>
@@ -125,11 +125,11 @@ const DateDropdown = (payload: Payload) => {
                             <span>{selectedDay}</span>
                         </div>
                     </div>
-                    <div className="w-[30%] h-full text-neutral-100 flex items-center">
+                    <div className="w-[40%] md:w-[30%] h-full text-neutral-100 flex items-center">
                         <FontAwesomeIcon icon={faAngleDown} className={`${dayDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
                     </div>
                 </div>
-                <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${dayDropdownIsOpen ? "h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
+                <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${dayDropdownIsOpen ? "h-42 md:h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
                     {
                         Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
                             return (
@@ -143,7 +143,7 @@ const DateDropdown = (payload: Payload) => {
             </div>
             <div className="relative col-span-3" ref={yearDropdownRef}>
                 <div className="flex h-14 border border-neutral-200 rounded cursor-pointer w-full" onClick={() => setYearDropdownIsOpen(!yearDropdownIsOpen)}>
-                    <div className="w-[80%] h-full">
+                    <div className="w-[70%] md:w-[80%] h-full">
                         <div className="h-[40%] flex items-end pl-3 text-[11px] text-neutral-400">
                             Year
                         </div>
@@ -151,11 +151,11 @@ const DateDropdown = (payload: Payload) => {
                             <span>{selectedYear}</span>
                         </div>
                     </div>
-                    <div className="w-[20%] h-full text-neutral-100 flex items-center">
+                    <div className="w-[30%] md:w-[20%] h-full text-neutral-100 flex items-center">
                         <FontAwesomeIcon icon={faAngleDown} className={`${yearDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
                     </div>
                 </div>
-                <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${yearDropdownIsOpen ? "h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
+                <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${yearDropdownIsOpen ? "h-42 md:h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
                     {
                         Array.from({ length: 150 }, (_, i) => new Date().getFullYear() - i).map((year) => {
                             return (

@@ -192,12 +192,12 @@ const OnBoarding = () => {
             {
                 !isCropping &&
                 <div className="w-full text-neutral-100" onDrop={handleImageDrop} onDragOver={handleDragOver} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}>
-                    <div className="w-full min-h-screen grid place-content-center py-20 2xl:py-10">
-                        <form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))} className="w-full max-w-[550px] flex flex-col items-center">
-                            <h1 className="text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
+                    <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
+                        <form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))} className="w-full md:max-w-[480px] 2xl:max-w-[550px] flex flex-col items-center">
+                            <h1 className="text-center text-2xl md:text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
                             <div className="my-16 flex flex-col items-center">
                                 <label htmlFor="profile-input" className="">
-                                    <div className="w-40 h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
+                                    <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
                                         {
                                             imageCroppedBlob ?
                                                 <img src={URL.createObjectURL(imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-[1]"></img>

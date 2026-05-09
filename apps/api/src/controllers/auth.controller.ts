@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service";
 import { AppError } from "../errors/appError.error";
 import { successResponseData } from "../utils/response.util";
-import { AUTH_TOKEN, CreateUserSchema, SignInResponse, SignUpResponse, UserDTO } from "@connect/shared";
+import { AUTH_TOKEN, CreateUserSchema, SignInResponse, SignUpResponse, type CurrentUserDTO } from "@connect/shared";
 import { authCookieOptions } from "../libs/auth/auth.cookie";
 import { ReqBody } from "../types/request";
 import { type AuthenticateUserSchema } from "@connect/shared";
@@ -61,7 +61,7 @@ export const me = async (req: Request, res: Response, next : NextFunction) => {
 
         const data = await authServices.me(userId);
     
-        res.status(200).json(successResponseData<UserDTO>("SUCCESS", "Success", data));
+        res.status(200).json(successResponseData<CurrentUserDTO>("SUCCESS", "Success", data));
     } catch(err) {
         next(err);
     }

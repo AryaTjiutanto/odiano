@@ -55,13 +55,13 @@ export const ImageCropper = (payload: Payload) => {
     return (
         <div className="w-full h-screen grid place-content-center py-20">
             {/* shortcut key */}
-            <div className="flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-900 p-5 border border-neutral-700 rounded-lg">
+            <div className="hidden lg:flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-900 p-5 border border-neutral-700 rounded-lg">
                 <h1 className="font-bold">
                     Shortcut key
                 </h1>
                 <div className="flex flex-col space-y-3 mt-3">
-                    <div className="flex items-center space-x-2">
-                        <div className="w-52">
+                    <div className="flex items-center space-x-1 xl:space-x-2">
+                        <div className="w-48 xl:w-52">
                             <span className="text-sm text-neutral-300">
                                 Close the cropping process
                             </span>
@@ -70,8 +70,8 @@ export const ImageCropper = (payload: Payload) => {
                             Esc
                         </kbd>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <div className="w-52">
+                    <div className="flex items-center space-x-1 xl:space-x-2">
+                        <div className="w-48 xl:w-52">
                             <span className="text-sm text-neutral-300">
                                 Finish the cropping process
                             </span>
@@ -84,7 +84,7 @@ export const ImageCropper = (payload: Payload) => {
             </div>
 
             {/* cropper */}
-            <div className="lg:w-[350px] 2xl:w-[500px] max-h-[70%]">
+            <div className="w-[75vw] md:w-[60vw] lg:w-[350px] 2xl:w-[500px] max-h-[70%]">
                 <div className="w-full aspect-square relative overflow-hidden rounded-xl border border-neutral-600">
                     <Cropper
                         crop={crop}
