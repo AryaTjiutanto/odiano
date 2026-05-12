@@ -1,4 +1,6 @@
 export const ERROR_RESPONSE_CODE = {
+    validationError : "VALIDATION_ERROR",
+    failedAttempt : "FAILED_ATTEMPT",
     badRequest: "BAD_REQUEST",
     unauthorized: "UNAUTHORIZED",
     forbidden: "FORBIDDEN",

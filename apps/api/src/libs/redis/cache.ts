@@ -1,14 +1,23 @@
 import { redis } from "./client";
 
-export const setCache = async (key : string, payload : object | string) => {
-    let data = payload;
+type CacheOptions = {
+    NX? : boolean,
+    PX? : number,
+};
 
-    if(typeof data !== "string") {
-        data = JSON.stringify(data);
-    }
+export const setCache = async (key : string, payload : object | string | number, options : CacheOptions) => {
+    let data = typeof payload == "object" ? JSON.stringify(payload) : payload;
 
     try {
-        await redis.set(key, data);
+        if(options.NX && options.PX) {
+            await redis.set(key, data, "PX", options.PX, "NX");
+        } else if(options.NX) {
+            await redis.set(key, data, "NX");
+        } else if(options.PX) {
+            await redis.set(key, data, "PX", options.PX);
+        } else {
+            await redis.set(key, data);
+        }
 
         return true;
     } catch {
@@ -16,13 +25,21 @@ export const setCache = async (key : string, payload : object | string) => {
     }
 }
 
-export const getCache = async (key : string) => {
+export const getCache = async <T>(key : string) : Promise<T | null> => {
     try {
-        const data = await redis.get(key);
+        const cache = await redis.get(key);
 
-        return data;
+        if(!cache) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(cache);
+        } catch {
+            return cache as T
+        }
     } catch {
-        throw new Error("Error went getting the data");
+        throw new Error("Failed to get cache");
     }
 }
 
@@ -32,6 +49,24 @@ export const delCache = async (key : string) => {
 
         return true;
     } catch {
-        throw new Error("Error went deleting the data");
+        throw new Error("Failed to delete cache");
+    }
+}
+
+export const getCachePTTL = async (key : string) => {
+    try {
+        const ttl = await redis.pttl(key);
+
+        if(ttl === -2) {
+            return null;
+        }
+
+        if(ttl === -1) {
+            return Infinity;
+        }
+
+        return ttl;
+    } catch {
+        throw new Error("Failed to get Cache TTL");
     }
 }

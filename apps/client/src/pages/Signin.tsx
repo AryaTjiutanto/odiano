@@ -2,7 +2,7 @@ import loginImage from "../assets/img/login-img.webp";
 import googleLogo from "../assets/img/logo/google.svg";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type ErrorResponseData, type SignInResponse, type ValidationError } from "@connect/shared";
+import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type ErrorResponseData, type SignInResponse, type ValidationError, type TooManyRequestError, type FailedAttemptError, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
 import { useAppDispatch } from "../shared/hooks/useRedux";
@@ -10,11 +10,26 @@ import { setAccessToken } from "../features/auth/auth.slice";
 import DotsLoader from "../components/loader/DotsLoader";
 import { useState } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
+import TooManyRequestCountDown from "../components/counter/TooManyRequestCountDown";
 
+type ValidationErrorResponse = ErrorResponseData<ValidationError[]> & {
+    code : typeof ERROR_RESPONSE_CODE.validationError,
+}
+
+type FailedAttemptErrorResponse = ErrorResponseData<FailedAttemptError> & {
+    code : typeof ERROR_RESPONSE_CODE.failedAttempt,
+}
+
+type TooManyRequestErrorResponse = ErrorResponseData<TooManyRequestError> & {
+    code : typeof ERROR_RESPONSE_CODE.tooManyRequests,
+}
+
+type AuthErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse;
 
 const Signin = () => {
     const dispatch = useAppDispatch();
     const [signInErrorMessage, setSignInErrorMessage] = useState<string>("");
+    const [blockTimeLeftMs, setBlockTimeLeftMs] = useState<number | null>(null);
 
     const {
         register,
@@ -27,6 +42,8 @@ const Signin = () => {
     });
 
     const onSubmit: SubmitHandler<AuthenticateUserSchema> = async (data) => {
+        setBlockTimeLeftMs(null);
+
         try {
             const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/signin", data);
 
@@ -37,18 +54,24 @@ const Signin = () => {
                 dispatch(intitializeAuth());
             }
         } catch (err: any) {
-            const error = err.response?.data as ErrorResponseData<ValidationError[]>;
-
-            if (error.errors) {
+            const error = err.response?.data as AuthErrorResponse;
+            
+            if (error.code == "VALIDATION_ERROR" && error.errors) {
                 Object.entries(error.errors).forEach(([index, field]) => {
                     setError(field.path as keyof AuthenticateUserSchema, {
                         type: "server",
                         message: field.message
                     })
                 })
+
+                return;
             }
 
-            if(error.message && !error.errors) {
+            if(error.code == "TOO_MANY_REQUESTS") {
+                setBlockTimeLeftMs(error.errors?.timeLeftMs || null);
+            }
+
+            if(error.message) {
                 setSignInErrorMessage(error.message);
             }
         }
@@ -100,9 +123,9 @@ const Signin = () => {
                                             }
                                         </button>
                                         {
-                                            signInErrorMessage&&
-                                            <p className="text-sm text-red-500">
-                                                {signInErrorMessage}
+                                            signInErrorMessage &&
+                                            <p className="text-sm text-red-500 selection:bg-neutral-100">
+                                                {signInErrorMessage} {blockTimeLeftMs && <TooManyRequestCountDown timeLeftMs={blockTimeLeftMs} show="auto"/>}
                                             </p>
                                         }
                                         <Link className="text-sm underline hover:text-rose-500 duration-150" to={"#"}>

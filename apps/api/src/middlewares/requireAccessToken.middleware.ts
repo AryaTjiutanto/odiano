@@ -3,6 +3,7 @@ import { errorResponseData } from "../utils/response.util";
 import { verifyAccessToken } from "../libs/auth/auth.token";
 import { AppError } from "../errors/appError.error";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import { ERROR_RESPONSE_CODE } from "@connect/shared";
 
 export const requireAccessToken = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -15,7 +16,7 @@ export const requireAccessToken = (req: Request, res: Response, next: NextFuncti
         const [prefix, token] = authorization.split(" ");
 
         if (prefix !== "Bearer" || !token) {
-            throw new AppError(401, "UNAUTHORIZED", "Invalid Authorization");
+            throw new AppError(401, ERROR_RESPONSE_CODE.unauthorized, "Invalid Authorization");
         }
         const decoded = verifyAccessToken(token);
 

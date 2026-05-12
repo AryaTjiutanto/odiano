@@ -2,7 +2,7 @@ import { Request, Response, NextFunction} from "express";
 import { AppError } from "../errors/appError.error";
 import * as userServices from "../services/user.service";
 import { ReqBody } from "../types/request";
-import { CreateUserProfileSchema } from "@connect/shared";
+import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 
@@ -16,7 +16,7 @@ export const onboarding = async (req : ReqBody<CreateUserProfileSchema>, res : R
 
         await userServices.onboarding({userId, userData : req.body});
 
-        res.status(200).json(successResponseData("SUCCESS", "Success"));
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.success, "Success"));
     } catch (err) {
         next(err);
     }
@@ -32,7 +32,7 @@ export const checkUsernameAvailability = async (req : Request, res : Response, n
 
         const isAvailable = await userServices.checkUsernameAvailability(username);
 
-        res.status(200).json(successResponseData('OK', "success", {available : isAvailable}));
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.ok, "success", {available : isAvailable}));
     } catch (err){
         next(err);
     }

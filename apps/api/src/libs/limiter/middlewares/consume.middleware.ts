@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import { AppError } from "../../../errors/appError.error";
+import { TooManyRequestError } from "@connect/shared";
 
 const defaultKeyGenerator = (req : Request) => {
     const apiKey = req?.ip || "anonymous";
@@ -14,8 +15,8 @@ export const consume = (limiter : any, keyGenerator : (req : Request) => string 
             await limiter.consume(key);
 
             next();
-        } catch {
-            next(new AppError(429, "TOO_MANY_REQUESTS", "Too many request"));
+        } catch (error : any) {
+            next(new AppError(429, "TOO_MANY_REQUESTS", "Too many request", {timeLeftMs : error.msBeforeNext} as TooManyRequestError));
         }
     }
 }

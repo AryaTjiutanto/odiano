@@ -1,4 +1,4 @@
-import { CreateUserProfileSchema } from "@connect/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 
@@ -11,7 +11,7 @@ export const onboarding = async (payload : OnboardingPayload) => {
     const user = await User.findById(payload.userId);
 
     if(!user) {
-        throw new AppError(404, "NOT_FOUND", "User not found");
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
     }
 
     user.name = payload.userData.name;

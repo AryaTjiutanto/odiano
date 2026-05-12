@@ -8,7 +8,7 @@ import {Request, Response, NextFunction} from "express";
 import { AppError } from "./errors/appError.error";
 import { errorResponseData } from "./utils/response.util";
 import { ZodError } from "zod";
-import { ValidationError } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, ValidationError } from "@connect/shared";
 import helmet from "helmet";
 
 const PORT = process.env.PORT || "5050";
@@ -38,11 +38,10 @@ app.use((err : any, req : Request, res:Response, next : NextFunction) => {
             message : issue.message,
         }))
 
-        return res.status(400).json(errorResponseData<ValidationError[]>("BAD_REQUEST", "validation error", errors));
+        return res.status(400).json(errorResponseData<ValidationError[]>(ERROR_RESPONSE_CODE.validationError, "validation error", errors));
     }
     
-    console.log(err);
-    res.status(500).json(errorResponseData("INTERNAL_SERVER_ERROR", "Something went wrong"));
+    res.status(500).json(errorResponseData(ERROR_RESPONSE_CODE.internalServerError, "Something went wrong"));
 })
 
 app.listen(PORT, () => {

@@ -1,4 +1,4 @@
-import { AUTH_TOKEN, AuthToken, CurrentUserDTO } from "@connect/shared";
+import { AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { AppError } from "../errors/appError.error";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
@@ -6,25 +6,67 @@ import bcrypt from "bcrypt";
 import { RefreshToken } from "../models/refreshToken.mode";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import { delCache, getCache, setCache } from "../libs/redis";
+import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper";
+import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
-export const signIn = async (email: string, password: string): Promise<AuthToken> => {
+export const signIn = async (email: string, password: string, ip: string): Promise<AuthToken> => {
+    const MAX_EMAIL_SIGNIN_ATTEMPT = 3;
+    const MAX_SIGNIN_ATTEMPT = MAX_EMAIL_SIGNIN_ATTEMPT * 6;
+
+    // get, check and increase signin attempt
+    const signinAttemptsCacheKey = `auth:signin:attempts:ip:${ip}`;
+    let signinAttempts = Number(await getCache(signinAttemptsCacheKey)) | 0;
+
+    if (signinAttempts >= MAX_SIGNIN_ATTEMPT) {
+        return tooManyAttemptHandler({cacheKey : signinAttemptsCacheKey, message : "Too many sign-in requests detected."});
+    }
+
+    signinAttempts++;
+    await setCache(signinAttemptsCacheKey, signinAttempts, { PX: 6 * 60 * 60 * 1000 });
+
+
+    // get and check email signin attempt 
+    const emailSigninAttemptsCacheKey = `auth:signin:attempts:${email}:${ip}`
+    let attempt = Number(await getCache(emailSigninAttemptsCacheKey) || 0);
+
+    if (attempt >= MAX_EMAIL_SIGNIN_ATTEMPT) {
+        return tooManyAttemptHandler({cacheKey : emailSigninAttemptsCacheKey, message : "Too many sign-in attempts for this account."});
+    }
+
+    // check is user exist
     const currentUser = await User.findOne({ email }).select("+password").lean();
 
     if (!currentUser) {
-        throw new AppError(400, "BAD_REQUEST", "Email or Password is wrong");
+        return failedAttemptHandler({
+            cacheKey : emailSigninAttemptsCacheKey,
+            MAX_ATTEMPT : MAX_EMAIL_SIGNIN_ATTEMPT,
+            message : "Email or Password is wrong",
+            attempt
+        })
     }
 
+    // check password
     const isPasswordValid = await bcrypt.compare(password, currentUser.password);
 
     if (!isPasswordValid) {
-        throw new AppError(400, "BAD_REQUEST", "Email or Password is wrong");
+        return failedAttemptHandler({
+            cacheKey : emailSigninAttemptsCacheKey,
+            MAX_ATTEMPT : MAX_EMAIL_SIGNIN_ATTEMPT,
+            message : "Email or Password is wrong",
+            attempt
+        })
     }
 
+    // create auth token
     const userId = currentUser._id.toString();
     const accessToken = generateAccessToken({ userId });
     const refreshToken = await createRefreshToken(userId);
+
+    // delete attempt cache
+    await delCache(emailSigninAttemptsCacheKey);
 
     return {
         [AUTH_TOKEN.ACCESS]: accessToken,
@@ -32,15 +74,15 @@ export const signIn = async (email: string, password: string): Promise<AuthToken
     };
 }
 
-export const signUp = async (dateOfBirth : string, email: string, password: string): Promise<AuthToken> => {
+export const signUp = async (dateOfBirth: string, email: string, password: string): Promise<AuthToken> => {
     const user = await User.findOne({ email }).lean();
 
     if (user) {
-        throw new AppError(409, "CONFLICT", "Email already used");
+        throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "Email already used");
     }
 
     const currentUser = await User.create({
-        slug : nanoid(5),
+        slug: nanoid(5),
         email,
         password,
         dateOfBirth
@@ -60,7 +102,7 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
     const user = await User.findById(userId).lean();
 
     if (!user) {
-        throw new AppError(404, "NOT_FOUND", "User not found");
+        throw new AppError(404, ERROR_RESPONSE_CODE.conflict, "User not found");
     }
 
     return {
@@ -68,13 +110,13 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         email: user?.email,
         slug: user?.slug,
         username: user?.username,
-        isOnboarded : user?.isOnboarded,
-        name : user?.name,
-        profileImage : user?.profileImage
+        isOnboarded: user?.isOnboarded,
+        name: user?.name,
+        profileImage: user?.profileImage
     }
 }
 
-export const refresh = async (userId: string, tokenId: string, token: string) : Promise<AuthToken> => {
+export const refresh = async (userId: string, tokenId: string, token: string): Promise<AuthToken> => {
     const refreshToken = await RefreshToken.findOne({ tokenId });
 
     if (!refreshToken) {
@@ -88,28 +130,28 @@ export const refresh = async (userId: string, tokenId: string, token: string) : 
     }
 
     if (Date.now() > refreshToken.expiresAt.getTime()) {
-        throw new AppError(401, "UNAUTHORIZED", "Token expired");
+        throw new AppError(401, ERROR_RESPONSE_CODE.unauthorized, "Token expired");
     }
 
     if (refreshToken.userId.toString() !== userId) {
-        throw new AppError(401, "UNAUTHORIZED", "Invalid owner token");
+        throw new AppError(401, ERROR_RESPONSE_CODE.unauthorized, "Invalid owner token");
     }
 
-    const newAccessToken = generateAccessToken({userId});
+    const newAccessToken = generateAccessToken({ userId });
     const newRefreshToken = await createRefreshToken(userId);
 
     await refreshToken.deleteOne();
 
     return {
-        [AUTH_TOKEN.ACCESS] : newAccessToken,
-        [AUTH_TOKEN.REFRESH] : newRefreshToken,
+        [AUTH_TOKEN.ACCESS]: newAccessToken,
+        [AUTH_TOKEN.REFRESH]: newRefreshToken,
     }
 }
 
 export const createRefreshToken = async (userId: string) => {
     const tokenId = nanoid(12);
 
-    const refreshToken = generateRefreshToken({ userId, tokenId});
+    const refreshToken = generateRefreshToken({ userId, tokenId });
 
     await RefreshToken.create({
         tokenHash: refreshToken,
@@ -121,14 +163,14 @@ export const createRefreshToken = async (userId: string) => {
     return refreshToken;
 }
 
-export const logout = async (refreshToken : string) => {
+export const logout = async (refreshToken: string) => {
     try {
         const decoded = verifyRefreshToken(refreshToken);
-    
-        const result = await RefreshToken.deleteOne({tokenId : decoded.tokenId});
-    
+
+        const result = await RefreshToken.deleteOne({ tokenId: decoded.tokenId });
+
         return result;
     } catch {
-        
+
     }
 };
