@@ -16,6 +16,8 @@ import Homepage from './pages/Home.tsx'
 import AppLayout from './layouts/AppLayout.tsx'
 import SocialLayout from './layouts/SocialLayout.tsx'
 
+import Loading from "./components/loader/PageLoader.tsx"
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
@@ -41,10 +43,12 @@ createRoot(document.getElementById('root')!).render(
 
             {/* auth */}
             <Route element={<RequireAuthGuard />}>
-
               {/* profile */}
               <Route path='/profile' element={<ProfileIndex />}></Route>
             </Route>
+
+            {/* loading */}
+            <Route path='/loading' element={<Loading visible={true} />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
