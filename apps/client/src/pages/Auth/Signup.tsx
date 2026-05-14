@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-import DateDropdown from "../components/ui/DateDropdown";
+import DateDropdown from "../../components/ui/DateDropdown";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { createUserSchema, type AuthenticateUserSchema, type CreateUserSchema, type ErrorResponseData, type SignUpResponse, type SuccessResponseData, type ValidationError } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import DotsLoader from "../components/loader/DotsLoader";
-import { api } from "../libs/api";
-import { useAppDispatch } from "../shared/hooks/useRedux";
-import { setAccessToken } from "../features/auth/auth.slice";
-import { intitializeAuth } from "../features/auth/auth.thunk";
+import DotsLoader from "../../components/loader/DotsLoader";
+import { api } from "../../libs/api";
+import { useAppDispatch } from "../../shared/hooks/useRedux";
+import { setAccessToken } from "../../features/auth/auth.slice";
+import { intitializeAuth } from "../../features/auth/auth.thunk";
 
 const Signup = () => {
     const [signupErrorMessage, setSignupErrorMessage] = useState<string>("");

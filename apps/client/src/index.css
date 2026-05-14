@@ -24,3 +24,9 @@
     background-color: rgba(80, 79, 79, 0.6);
   }
 }
+
+@layer components {
+  .default-input-text-behaviour {
+    @apply focus:outline-none focus:ring-0 active:outline-none active:ring-0
+  }
+}

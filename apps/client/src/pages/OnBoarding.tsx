@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "../components/auth/Footer";
 import { faCheckCircle, faRotate, faUpload, faUser, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema} from "@connect/shared";
+import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
 import DotsLoader from "../components/loader/DotsLoader";
@@ -41,7 +41,7 @@ const OnBoarding = () => {
 
     const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        
+
         dragCounter.current = 0;
         setIsDrag(false);
 
@@ -50,14 +50,18 @@ const OnBoarding = () => {
 
 
     //  handle image
-    const MAX_SIZE = 5 * 1024 * 1024;
+    const MAX_SIZE = 15 * 1024 * 1024;
     const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
     const [isCropping, setIsCropping] = useState<boolean>(false);
 
     const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+    const [prevImageCroppedBlob, setPrevImageCroppedBlob] = useState<Blob | null>(null);
     const [imageCroppedBlob, setImageCroppedBlob] = useState<Blob | null>(null);
     const [imageError, setImageError] = useState<string | null>(null);
 
+    const [uploadedImagePublicId, setUploadedImagePublicId] = useState<string | null>(null);
+    const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+    
     const handleImageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
 
@@ -76,7 +80,7 @@ const OnBoarding = () => {
         }
 
         if (file.size > MAX_SIZE) {
-            setImageError("Max image size is 5mb");
+            setImageError("Max image size is 15mb");
             return;
         }
 
@@ -95,7 +99,6 @@ const OnBoarding = () => {
         setError,
         watch,
         handleSubmit,
-        setValue,
         formState: { errors, isSubmitting }
     } = useForm<CreateUserProfileSchema>({
         mode: "onTouched",
@@ -103,36 +106,52 @@ const OnBoarding = () => {
     })
 
     const onSubmit: SubmitHandler<CreateUserProfileSchema> = async (data) => {
+        if(isSubmitting) return;
+
         if (!isUsernameAvailable) {
             setFormError("Username not available")
             return;
         }
 
         try {
+            let dataToSubmit = { ...data };
+
             // handle image upload
-            if (imageCroppedBlob) {
+            let isImageNotChange = imageCroppedBlob == prevImageCroppedBlob;
+
+            if(isImageNotChange) {
+                dataToSubmit.profileImagePublicId = uploadedImagePublicId;
+                dataToSubmit.profileImageUrl = uploadedImageUrl;
+            }
+
+            if (imageCroppedBlob && !isImageNotChange) {
                 const result = await uploadImageToCloudinary({
                     generatorRoute: "/upload/profile-signature",
                     imageCroppedBlob,
                     imageName: "profile.webp"
                 })
 
-                setValue("profileImagePublicId", result.publicId);
-                setValue("profileImageUrl", result.url);
+                setPrevImageCroppedBlob(imageCroppedBlob);
+
+                setUploadedImagePublicId(result.publicId);
+                setUploadedImageUrl(result.url);
+                dataToSubmit.profileImagePublicId = result.publicId;
+                dataToSubmit.profileImageUrl = result.url;
             }
 
             //  post data to onboarding route
-            const response = await api.post<SuccessResponseData>("/users/onboarding", data);
+            const response = await api.post<SuccessResponseData>("/users/onboarding", dataToSubmit);
 
             if (!response.data.success) {
                 throw new Error("Error went create user profile");
             }
 
-            // onboarding success
+            // // onboarding success
             await dispatch(intitializeAuth());
 
             setFormError(null);
         } catch (err: any) {
+            console.log(err.response)
             setFormError("Something went wrong, please try again later")
             return;
         }

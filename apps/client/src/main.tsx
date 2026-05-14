@@ -1,27 +1,30 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Signup from './pages/Signup.tsx'
-import Signin from './pages/Signin.tsx'
+import Signup from './pages/Auth/Signup.tsx'
+import Signin from './pages/Auth/Signin.tsx'
 import AuthLayout from './layouts/AuthLayout.tsx'
 import OnBoarding from './pages/OnBoarding.tsx'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
-import MainLayout from './layouts/MainLayout.tsx'
 import ProfileIndex from './pages/Profile/Index.tsx'
 import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
 import RequireGuestGuard from './components/guard/RequireGuestGuard.tsx'
 import RequireUnOnboarded from './components/guard/RequireUnOnboarded.tsx'
+import Homepage from './pages/Home.tsx'
+import AppLayout from './layouts/AppLayout.tsx'
+import SocialLayout from './layouts/SocialLayout.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route element={<MainLayout />}>
-            <Route path='/' element={<App />}></Route>
+          <Route element={<AppLayout />}>
+            <Route element={<SocialLayout />}>
+              <Route path='/' element={<Homepage />}></Route>
+            </Route>
 
             {/* auth process */}
             <Route element={<RequireGuestGuard />}>
@@ -35,7 +38,7 @@ createRoot(document.getElementById('root')!).render(
             <Route element={<RequireUnOnboarded />}>
               <Route path='/onboarding' element={<OnBoarding />}></Route>
             </Route>
-            
+
             {/* auth */}
             <Route element={<RequireAuthGuard />}>
 

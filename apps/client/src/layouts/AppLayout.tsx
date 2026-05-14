@@ -3,7 +3,7 @@ import { useAppDispatch } from "../shared/hooks/useRedux";
 import { useEffect } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 
-const MainLayout = () => {
+const AppLayout = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -11,10 +11,10 @@ const MainLayout = () => {
     }, [])
 
     return (
-        <div className="w-full min-h-screen bg-neutral-950">
+        <div className="w-full max-w-480 min-h-screen bg-neutral-950 text-neutral-300">
             <Outlet/>
         </div>
     )
 }
 
-export default MainLayout;
+export default AppLayout;
