@@ -202,113 +202,123 @@ const OnBoarding = () => {
     }, [username])
 
     return (
-        <div className="bg-neutral-950 min-h-screen">
-            {
-                (isCropping && originalImageUrl) && (
-                    <ImageCropper aspect={1} imageUrl={originalImageUrl} setImageCroppedBlob={setImageCroppedBlob} setIsCropping={setIsCropping} />
-                )
-            }
-            {
-                !isCropping &&
-                <div className="w-full text-neutral-100" onDrop={handleImageDrop} onDragOver={handleDragOver} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}>
-                    <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
-                        <form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))} className="w-full md:max-w-[480px] 2xl:max-w-[550px] flex flex-col items-center">
-                            <h1 className="text-center text-2xl md:text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
-                            <div className="my-16 flex flex-col items-center">
-                                <label htmlFor="profile-input" className="">
-                                    <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
+        <>
+            {/* head */}
+            <title>Set Up Your Profile - Connect</title>
+            <meta
+                name="description"
+                content="Connect with friends, share posts, and explore communities."
+            />
+
+            {/* body */}
+            <div className="bg-neutral-950 min-h-screen">
+                {
+                    (isCropping && originalImageUrl) && (
+                        <ImageCropper aspect={1} imageUrl={originalImageUrl} setImageCroppedBlob={setImageCroppedBlob} setIsCropping={setIsCropping} />
+                    )
+                }
+                {
+                    !isCropping &&
+                    <div className="w-full text-neutral-100" onDrop={handleImageDrop} onDragOver={handleDragOver} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}>
+                        <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
+                            <form onSubmit={handleSubmit(onSubmit, (error) => console.log(error))} className="w-full md:max-w-[480px] 2xl:max-w-[550px] flex flex-col items-center">
+                                <h1 className="text-center text-2xl md:text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
+                                <div className="my-16 flex flex-col items-center">
+                                    <label htmlFor="profile-input" className="">
+                                        <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
+                                            {
+                                                imageCroppedBlob ?
+                                                    <img src={URL.createObjectURL(imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-[1]"></img>
+                                                    :
+                                                    <FontAwesomeIcon icon={faUser} className="text-[80px] text-neutral-700" />
+                                            }
+                                            <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-900/80 cursor-pointer opacity-0 duration-100 z-10 ${isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
+                                                <FontAwesomeIcon icon={faUpload} className="text-4xl text-neutral-400" />
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <input type="file" id="profile-input" className="hidden" accept="image/png, image/jpeg, image/webp" onChange={handleImageInput}></input>
+                                    {
+                                        imageError &&
+                                        <p className="text-center text-red-500 mt-5">
+                                            {imageError}
+                                        </p>
+                                    }
+                                </div>
+                                <div className="w-full space-y-4">
+                                    <div>
+                                        <input className="w-full h-12 border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="Name" {...register("name")}></input>
                                         {
-                                            imageCroppedBlob ?
-                                                <img src={URL.createObjectURL(imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-[1]"></img>
-                                                :
-                                                <FontAwesomeIcon icon={faUser} className="text-[80px] text-neutral-700" />
+                                            errors.name &&
+                                            <p className="text-xs text-red-500 mt-1">
+                                                {errors.name.message}
+                                            </p>
                                         }
-                                        <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-900/80 cursor-pointer opacity-0 duration-100 z-10 ${isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
-                                            <FontAwesomeIcon icon={faUpload} className="text-4xl text-neutral-400" />
-                                        </div>
                                     </div>
-                                </label>
-                                <input type="file" id="profile-input" className="hidden" accept="image/png, image/jpeg, image/webp" onChange={handleImageInput}></input>
-                                {
-                                    imageError &&
-                                    <p className="text-center text-red-500 mt-5">
-                                        {imageError}
-                                    </p>
-                                }
-                            </div>
-                            <div className="w-full space-y-4">
-                                <div>
-                                    <input className="w-full h-12 border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="Name" {...register("name")}></input>
+                                    <div>
+                                        <div className="relative h-12">
+                                            <input className="w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="Username" {...register("username")}></input>
+
+                                            <div className="absolute h-full top-0 flex items-center right-4">
+                                                {
+                                                    isUsernameLoading &&
+                                                    <FontAwesomeIcon icon={faRotate} className="text-xs animate-spin text-neutral-300" />
+                                                }
+                                                {
+                                                    isUsernameAvailable === true &&
+                                                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
+
+                                                }
+                                                {
+                                                    isUsernameAvailable === false &&
+                                                    <FontAwesomeIcon icon={faXmarkCircle} className="text-red-500" />
+                                                }
+                                            </div>
+                                        </div>
+                                        {
+                                            errors.username &&
+                                            <p className="text-xs text-red-500 mt-1">
+                                                {errors.username.message}
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="mt-8 w-full h-28 relative">
+                                    <textarea className={"w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-6 py-4 text-sm"} placeholder="Bio" {...register("bio")}></textarea>
                                     {
-                                        errors.name &&
+                                        errors.bio &&
                                         <p className="text-xs text-red-500 mt-1">
-                                            {errors.name.message}
+                                            {errors.bio.message}
                                         </p>
                                     }
-                                </div>
-                                <div>
-                                    <div className="relative h-12">
-                                        <input className="w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="Username" {...register("username")}></input>
 
-                                        <div className="absolute h-full top-0 flex items-center right-4">
-                                            {
-                                                isUsernameLoading &&
-                                                <FontAwesomeIcon icon={faRotate} className="text-xs animate-spin text-neutral-300" />
-                                            }
-                                            {
-                                                isUsernameAvailable === true &&
-                                                <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
-
-                                            }
-                                            {
-                                                isUsernameAvailable === false &&
-                                                <FontAwesomeIcon icon={faXmarkCircle} className="text-red-500" />
-                                            }
-                                        </div>
+                                    <div className={`absolute bottom-5 right-5 text-xs ${watch("bio")?.length > 50 ? "text-red-500" : "text-neutral-400"}`}>
+                                        {watch("bio")?.length}/50
                                     </div>
-                                    {
-                                        errors.username &&
-                                        <p className="text-xs text-red-500 mt-1">
-                                            {errors.username.message}
-                                        </p>
-                                    }
                                 </div>
-                            </div>
-                            <div className="mt-8 w-full h-28 relative">
-                                <textarea className={"w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-6 py-4 text-sm"} placeholder="Bio" {...register("bio")}></textarea>
+                                <button type="submit" className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-8 grid place-content-center">
+                                    {
+                                        isSubmitting ?
+                                            <DotsLoader />
+                                            :
+                                            <span>
+                                                Done
+                                            </span>
+                                    }
+                                </button>
                                 {
-                                    errors.bio &&
-                                    <p className="text-xs text-red-500 mt-1">
-                                        {errors.bio.message}
+                                    formError &&
+                                    <p className="text-red-500 text-sm mt-4">
+                                        {formError}
                                     </p>
                                 }
-
-                                <div className={`absolute bottom-5 right-5 text-xs ${watch("bio")?.length > 50 ? "text-red-500" : "text-neutral-400"}`}>
-                                    {watch("bio")?.length}/50
-                                </div>
-                            </div>
-                            <button type="submit" className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-8 grid place-content-center">
-                                {
-                                    isSubmitting ?
-                                        <DotsLoader />
-                                        :
-                                        <span>
-                                            Done
-                                        </span>
-                                }
-                            </button>
-                            {
-                                formError &&
-                                <p className="text-red-500 text-sm mt-4">
-                                    {formError}
-                                </p>
-                            }
-                        </form>
+                            </form>
+                        </div>
+                        <Footer />
                     </div>
-                    <Footer />
-                </div>
-            }
-        </div>
+                }
+            </div>
+        </>
     )
 }
 

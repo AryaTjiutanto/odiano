@@ -46,9 +46,6 @@ createRoot(document.getElementById('root')!).render(
               {/* profile */}
               <Route path='/profile' element={<ProfileIndex />}></Route>
             </Route>
-
-            {/* loading */}
-            <Route path='/loading' element={<Loading visible={true} />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
