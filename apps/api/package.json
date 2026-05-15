@@ -25,6 +25,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "nanoid": "^5.1.9",
+    "node-cron": "^4.2.1",
     "rate-limiter-flexible": "^11.1.0",
     "slugify": "^1.6.9",
     "tsx": "^4.21.0",

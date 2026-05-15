@@ -10,6 +10,7 @@ import { errorResponseData } from "./utils/response.util";
 import { ZodError } from "zod";
 import { ERROR_RESPONSE_CODE, ValidationError } from "@connect/shared";
 import helmet from "helmet";
+import { startDeleteExpiredTempAssets } from "./jobs/deleteTempAssets";
 
 const PORT = process.env.PORT || "5050";
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || "localhost:5050";
@@ -43,6 +44,9 @@ app.use((err : any, req : Request, res:Response, next : NextFunction) => {
     
     res.status(500).json(errorResponseData(ERROR_RESPONSE_CODE.internalServerError, "Something went wrong"));
 })
+
+// cron jobs
+startDeleteExpiredTempAssets();
 
 app.listen(PORT, () => {
     console.log(`App running on port ${PORT}`);
