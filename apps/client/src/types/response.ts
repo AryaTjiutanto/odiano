@@ -1,0 +1,13 @@
+import type { ERROR_RESPONSE_CODE, ErrorResponseData, FailedAttemptError, TooManyRequestError, ValidationError } from "@connect/shared"
+
+export type ValidationErrorResponse = ErrorResponseData<ValidationError[]> & {
+    code : typeof ERROR_RESPONSE_CODE.validationError,
+}
+
+export type FailedAttemptErrorResponse = ErrorResponseData<FailedAttemptError> & {
+    code : typeof ERROR_RESPONSE_CODE.failedAttempt,
+}
+
+export type TooManyRequestErrorResponse = ErrorResponseData<TooManyRequestError> & {
+    code : typeof ERROR_RESPONSE_CODE.tooManyRequests,
+}

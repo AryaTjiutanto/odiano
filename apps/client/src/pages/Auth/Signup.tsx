@@ -2,17 +2,22 @@ import { Link } from "react-router-dom";
 import DateDropdown from "../../components/ui/DateDropdown";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserSchema, type AuthenticateUserSchema, type CreateUserSchema, type ErrorResponseData, type SignUpResponse, type SuccessResponseData, type ValidationError } from "@connect/shared";
+import { createUserSchema, ERROR_RESPONSE_CODE, type AuthenticateUserSchema, type CreateUserSchema, type ErrorResponseCode, type ErrorResponseData, type SignUpResponse, type SuccessResponseData, type TooManyRequestError, type ValidationError } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../shared/hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
+import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
+
+type AuthErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse;
 
 const Signup = () => {
     const [signupErrorMessage, setSignupErrorMessage] = useState<string>("");
     const [dateOfBirth, setDateOfBirth] = useState<string>("2010-01-01");
+    const [blockTimeLeft, setBlockTimeLeft] = useState<number | null>(null);
     const dispatch = useAppDispatch();
 
     const {
@@ -41,18 +46,24 @@ const Signup = () => {
                 dispatch(intitializeAuth());
             }
         } catch (err : any) {
-            const error = err.response?.data as ErrorResponseData<ValidationError[]>;
+            const error = err.response?.data as AuthErrorResponse;
 
-            if (error.errors) {
+            if (error.code == ERROR_RESPONSE_CODE.validationError && error.errors) {
                 Object.entries(error.errors).forEach(([index, field]) => {
                     setError(field.path as keyof AuthenticateUserSchema, {
                         type: "server",
                         message: field.message
                     })
                 })
+
+                return;
             }
 
-            if (error.message && !error.errors) {
+            if(error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
+                setBlockTimeLeft(error.errors?.timeLeftMs || null);
+            }
+
+            if (error.message) {
                 setSignupErrorMessage(error.message);
             }
         }
@@ -121,8 +132,8 @@ const Signup = () => {
                             </button>
                             {
                                 signupErrorMessage &&
-                                <p className="text-sm text-red-500">
-                                    {signupErrorMessage}
+                                <p className="text-sm text-red-500 mt-2">
+                                    {signupErrorMessage} {blockTimeLeft && <TooManyRequestCountDown timeLeftMs={blockTimeLeft} show="auto"/>}
                                 </p>
                             }
                             <div className="mt-4 text-sm text-neutral-300">

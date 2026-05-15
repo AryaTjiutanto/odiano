@@ -74,13 +74,25 @@ export const signIn = async (email: string, password: string, ip: string): Promi
     };
 }
 
-export const signUp = async (dateOfBirth: string, email: string, password: string): Promise<AuthToken> => {
+export const signUp = async (dateOfBirth: string, email: string, password: string, ip : string): Promise<AuthToken> => {
+    const MAX_SIGNUP_COUNT = 2;
+
+    // get and check signup count
+    const cacheKey = `auth:signup:count:ip:${ip}`;
+    let count = Number(await getCache(cacheKey)) | 0;
+
+    if(count >= MAX_SIGNUP_COUNT) {
+        return tooManyAttemptHandler({cacheKey, message : "You have create too many account."});
+    }
+
+    // check is email already used
     const user = await User.findOne({ email }).lean();
 
     if (user) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "Email already used");
     }
 
+    // create user
     const currentUser = await User.create({
         slug: nanoid(5),
         email,
@@ -88,9 +100,14 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
         dateOfBirth
     });
 
+    // generate auth token
     const userId = currentUser._id.toString();
     const accessToken = generateAccessToken({ userId });
     const refreshToken = await createRefreshToken(userId);
+
+    // increate signup count
+    count++;
+    await setCache(cacheKey, count, {PX : oneDayAge});
 
     return {
         [AUTH_TOKEN.ACCESS]: accessToken,

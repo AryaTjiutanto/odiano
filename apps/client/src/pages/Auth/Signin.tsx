@@ -2,7 +2,7 @@ import loginImage from "../../assets/img/login-img.webp";
 import googleLogo from "../../assets/img/logo/google.svg";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type ErrorResponseData, type SignInResponse, type ValidationError, type TooManyRequestError, type FailedAttemptError, ERROR_RESPONSE_CODE } from "@connect/shared";
+import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type SignInResponse, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../shared/hooks/useRedux";
@@ -11,18 +11,7 @@ import DotsLoader from "../../components/loader/DotsLoader";
 import { useState } from "react";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
-
-type ValidationErrorResponse = ErrorResponseData<ValidationError[]> & {
-    code : typeof ERROR_RESPONSE_CODE.validationError,
-}
-
-type FailedAttemptErrorResponse = ErrorResponseData<FailedAttemptError> & {
-    code : typeof ERROR_RESPONSE_CODE.failedAttempt,
-}
-
-type TooManyRequestErrorResponse = ErrorResponseData<TooManyRequestError> & {
-    code : typeof ERROR_RESPONSE_CODE.tooManyRequests,
-}
+import type { FailedAttemptErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
 
 type AuthErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse;
 
@@ -56,7 +45,7 @@ const Signin = () => {
         } catch (err: any) {
             const error = err.response?.data as AuthErrorResponse;
             
-            if (error.code == "VALIDATION_ERROR" && error.errors) {
+            if (error.code == ERROR_RESPONSE_CODE.validationError && error.errors) {
                 Object.entries(error.errors).forEach(([index, field]) => {
                     setError(field.path as keyof AuthenticateUserSchema, {
                         type: "server",
@@ -67,7 +56,7 @@ const Signin = () => {
                 return;
             }
 
-            if(error.code == "TOO_MANY_REQUESTS") {
+            if(error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
                 setBlockTimeLeftMs(error.errors?.timeLeftMs || null);
             }
 

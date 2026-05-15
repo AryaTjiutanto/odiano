@@ -39,7 +39,8 @@ export const signup = async (req: ReqBody<CreateUserSchema>, res: Response, next
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
 
-        const authData = await authServices.signUp(dateOfBirth, email, password);
+        const ip = req?.ip || "anonymous";
+        const authData = await authServices.signUp(dateOfBirth, email, password, ip);
 
         res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
 
