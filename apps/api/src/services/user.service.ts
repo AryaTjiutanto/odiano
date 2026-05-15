@@ -18,17 +18,17 @@ export const onboarding = async (payload: OnboardingPayload) => {
 
     // moved image from temp folder
     if (payload.userData.profileImagePublicId && payload.userData.profileImageUrl) {
-        // const oldPublicId = payload.userData.profileImagePublicId;
-        // const newPublicId = removeTemp(payload.userData.profileImagePublicId);
+        const oldPublicId = payload.userData.profileImagePublicId;
+        const newPublicId = removeTemp(payload.userData.profileImagePublicId);
 
-        // const result = await cloudinary.uploader.rename(oldPublicId, newPublicId);
+        const result = await cloudinary.uploader.rename(oldPublicId, newPublicId);
         
-        // if(result) {
-        //     user.profileImage = {
-        //         publicId: result.public_id,
-        //         url: result.secure_url,
-        //     }
-        // }
+        if(result) {
+            user.profileImage = {
+                publicId: result.public_id,
+                url: result.secure_url,
+            }
+        }
     }
 
     // set and save user data
