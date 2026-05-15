@@ -5,11 +5,13 @@ import { CloudinarySignaturePayload, SUCCESS_RESPONSE_CODE } from "@connect/shar
 import { UPLOAD_PRESETS } from "../consts/cloudinary.const";
 
 export const generateProfileSignature = (req : Request, res : Response, next : NextFunction) => {
+    const userId = req.userId;
+
     try {
         const timestamp = Math.floor(Date.now() / 1000);
         const signatureParams = {
             upload_preset : UPLOAD_PRESETS.profile,
-            folder : "profile",
+            folder : `temp/user/${userId ?? "anonymous"}/profile`,
             timestamp,
         }
 

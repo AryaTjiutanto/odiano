@@ -2,16 +2,10 @@ import { Link } from "react-router-dom";
 import ConnectLogo from "../../assets/img/logo/connect-gradient.svg";
 import { Bell, Bookmark, EllipsisVertical, Home, MessageCircle, Search, Settings, User } from "lucide-react";
 import { useAppSelector } from "../../shared/hooks/useRedux";
-import { useEffect } from "react";
 
 const Sidebar = () => {
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const userData = useAppSelector((state) => state.auth.user);
-
-
-    useEffect(() => {
-        console.log(userData);
-    }, [userData])
 
     return (
         <div className="w-full h-full flex flex-col justify-between">
@@ -83,12 +77,21 @@ const Sidebar = () => {
             </div>
 
             {
-                isAuthenticated && userData?.profileImage?.url ?
+                isAuthenticated && userData?.isOnboarded ?
                     <button className="min-w-62 w-fit flex items-center justify-between space-x-10 cursor-pointer">
                         <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 rounded-full overflow-hidden">
-                                <img src={userData.profileImage.url} />
-                            </div>
+                            {
+                                userData?.profileImage?.url ?
+                                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                                        <img src={userData.profileImage.url} />
+                                    </div>
+                                    :
+                                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                                        <div className="w-full h-full bg-neutral-800 grid place-content-center">
+                                            <User />
+                                        </div>
+                                    </div>
+                            }
                             <div className="text-left">
                                 <h1 className="text-base font-semibold">{userData.name}</h1>
                                 <p className="text-sm text-neutral-700">
@@ -99,7 +102,7 @@ const Sidebar = () => {
                         <EllipsisVertical />
                     </button>
                     :
-                    <Link to={"/signin"}>
+                    <Link to={isAuthenticated ? "/onboarding" : "/signin"}>
                         <button className="min-w-62 w-fit flex items-center justify-between space-x-10 cursor-pointer">
                             <div className="flex items-center space-x-3">
                                 <div className="w-12 h-12 rounded-full overflow-hidden">
@@ -108,7 +111,12 @@ const Sidebar = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <h1 className="text-base font-semibold">Create an account or signin</h1>
+                                    {
+                                        isAuthenticated?
+                                        <h1 className="text-base font-semibold">Complete you data</h1>
+                                        :
+                                        <h1 className="text-base font-semibold">Create an account or signin</h1>
+                                    }
                                 </div>
                             </div>
                         </button>

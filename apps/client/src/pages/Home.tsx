@@ -1,4 +1,4 @@
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import StoryList from "../components/social/StoryList";
 
 const Homepage = () => {
