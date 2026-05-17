@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import DateDropdown from "../../components/ui/DateDropdown";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserSchema, ERROR_RESPONSE_CODE, type AuthenticateUserSchema, type CreateUserSchema, type ErrorResponseCode, type ErrorResponseData, type SignUpResponse, type SuccessResponseData, type TooManyRequestError, type ValidationError } from "@connect/shared";
+import { createUserSchema, ERROR_RESPONSE_CODE, type AuthenticateUserSchema, type CreateUserSchema, type SignUpResponse, type SuccessResponseData} from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
