@@ -1,19 +1,31 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/social/Sidebar";
+import { lazy, Suspense, useState } from "react";
 
+const CreatePostFormSection = lazy(() =>
+    import("../components/post/PostFormSection")
+)
 
 const SocialLayout = () => {
+    const [showCreatePostFormSection, setShowCreatePostFormSection] = useState<boolean>(false);
+
     return (
         <div className="w-full h-screen px-40">
+            {
+                showCreatePostFormSection &&
+                <Suspense fallback={<div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-20"></div>}>
+                    <CreatePostFormSection setShowCreatePostFormSection={setShowCreatePostFormSection}/>
+                </Suspense>
+            }
             <div className="w-full h-full grid grid-cols-11 gap-16">
                 <div className="h-full col-span-3 py-10">
-                    <Sidebar/>           
+                    <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection}/>
                 </div>
                 <main className="col-span-5 pt-10">
                     <Outlet />
                 </main>
                 <div className="col-span-3 pt-10">
-
+                    <div></div>
                 </div>
             </div>
         </div>

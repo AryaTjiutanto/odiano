@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import DateDropdown from "../../components/ui/DateDropdown";
+import DateDropdown from "../../components/input/DateDropdown";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { createUserSchema, ERROR_RESPONSE_CODE, type AuthenticateUserSchema, type CreateUserSchema, type SignUpResponse, type SuccessResponseData} from "@connect/shared";
