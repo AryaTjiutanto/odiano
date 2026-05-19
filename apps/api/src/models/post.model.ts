@@ -1,10 +1,25 @@
 import mongoose, { Types } from "mongoose"
 
+type Source = {
+    url : string,
+    publicId : string,
+}
+
+type PostMediaSchema = {
+    width : number,
+    height : number,
+    provider : "cloudinary" | "s3",
+    type : "video" | "image"
+    order : number,
+    source : Source,
+}
+
 type PostSchema = {
     authorId: Types.ObjectId,
 
     // content
     content: string,
+    media : PostMediaSchema | null,
 
     // setting
     visibility: "public" | "following",
@@ -12,6 +27,41 @@ type PostSchema = {
     turnOffCommenting: boolean,
     isArchive: boolean,
 }
+
+const postMediaSchema = new mongoose.Schema<PostMediaSchema>({
+    height : {
+        required : true,
+        type : Number,
+    },
+    width : {
+        required : true,
+        type : Number,
+    },
+    order : {
+        required : true,
+        type : Number,
+    },
+    provider : {
+        required : true,
+        type : String,
+        enum : ["cloudinary", "s3"]
+    },
+    source : {
+        url : {
+            type : String,
+            required : true,
+        },
+        publicId : {
+            type : String,
+            required : true,
+        }
+    },
+    type : {
+        required : true,
+        type : String,
+        enum : ["cloudinary", "s3"]
+    }
+}, {timestamps : true});
 
 const postSchema = new mongoose.Schema<PostSchema>({
     authorId: {
@@ -38,6 +88,11 @@ const postSchema = new mongoose.Schema<PostSchema>({
         type : String,
         enum : ["public", "following"],
         required : true,
+    },
+    media : {
+        type : postMediaSchema,
+        required : false,
+        default : null,
     }
 }, { timestamps: true })
 
