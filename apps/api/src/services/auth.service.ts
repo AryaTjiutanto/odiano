@@ -3,7 +3,7 @@ import { AppError } from "../errors/appError.error";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
 import bcrypt from "bcrypt";
-import { RefreshToken } from "../models/refreshToken.mode";
+import { RefreshToken } from "../models/refreshToken.model";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { delCache, getCache, setCache } from "../libs/redis";

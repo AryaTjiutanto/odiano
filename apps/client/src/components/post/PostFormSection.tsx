@@ -18,7 +18,7 @@ const PostFormSection = ({setShowCreatePostFormSection}: Props) => {
     }, [])
 
     return (
-        <div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-20 flex justify-center py-32">
+        <div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-20 flex justify-center items-center 2xl:items-start 2xl:py-32">
             {/* content */}
             <div className="w-[650px] rounded-3xl bg-neutral-900 p-10 h-fit relative z-22">
                 <div className="w-full h-24">

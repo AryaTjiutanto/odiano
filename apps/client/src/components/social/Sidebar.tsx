@@ -143,7 +143,7 @@ const Sidebar = (props : Props) => {
                                             <User />
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className="text-left">
                                         {
                                             isAuthenticated ?
                                                 <h1 className="text-base font-semibold">Complete you data</h1>
