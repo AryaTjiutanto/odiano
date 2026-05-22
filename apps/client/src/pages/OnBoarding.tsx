@@ -4,7 +4,7 @@ import { faCheckCircle, faRotate, faUpload, faUser, faXmarkCircle } from "@forta
 import { useEffect, useRef, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema } from "@connect/shared";
+import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfileSchema, BIO_LENGTH } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
 import DotsLoader from "../components/loader/DotsLoader";
@@ -292,8 +292,8 @@ const OnBoarding = () => {
                                         </p>
                                     }
 
-                                    <div className={`absolute bottom-5 right-5 text-xs ${watch("bio")?.length > 50 ? "text-red-500" : "text-neutral-400"}`}>
-                                        {watch("bio")?.length}/50
+                                    <div className={`absolute bottom-5 right-5 text-xs ${watch("bio")?.length > BIO_LENGTH.MAX ? "text-red-500" : "text-neutral-400"}`}>
+                                        {watch("bio")?.length}/{BIO_LENGTH.MAX}
                                     </div>
                                 </div>
                                 <button type="submit" className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-8 grid place-content-center">

@@ -12,6 +12,7 @@ import { useState } from "react";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
 import type { FailedAttemptErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
 
 type AuthErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse;
 
@@ -42,17 +43,11 @@ const Signin = () => {
                 dispatch(setAccessToken(accessToken));
                 dispatch(intitializeAuth());
             }
-        } catch (err: any) {
+        } catch (err : any) {
             const error = err.response?.data as AuthErrorResponse;
-            
-            if (error.code == ERROR_RESPONSE_CODE.validationError && error.errors) {
-                Object.entries(error.errors).forEach(([index, field]) => {
-                    setError(field.path as keyof AuthenticateUserSchema, {
-                        type: "server",
-                        message: field.message
-                    })
-                })
 
+            if(error.code === ERROR_RESPONSE_CODE.validationError) {
+                handleApiValidationError<AuthenticateUserSchema>(error.errors, setError);
                 return;
             }
 
@@ -94,7 +89,7 @@ const Signin = () => {
                                     <h2 className="">Sign in to your account</h2>
                                     <div className="mt-5 space-y-5">
                                         <div className="w-full space-y-1">
-                                            <input {...register("email")} className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="youremail@gmail.com"></input>
+                                            <input {...register("email")} className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="youremail@gmail.com"></input>
                                             {
                                                 errors.email && (
                                                     <p className="text-xs text-red-500">{errors.email.message}</p>

@@ -1,34 +1,14 @@
+import { type Post as PostType, type PostMedia, ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, POST_VISIBILITIES} from "@connect/shared"
 import mongoose, { Types } from "mongoose"
+import { nanoid } from "nanoid";
 
-type Source = {
-    url : string,
+
+type PostSchema = PostType & {
     publicId : string,
-}
-
-type PostMediaSchema = {
-    width : number,
-    height : number,
-    provider : "cloudinary" | "s3",
-    type : "video" | "image"
-    order : number,
-    source : Source,
-}
-
-type PostSchema = {
     authorId: Types.ObjectId,
-
-    // content
-    content: string,
-    media : PostMediaSchema | null,
-
-    // setting
-    visibility: "public" | "following",
-    hideLikeAndViewCount: boolean,
-    turnOffCommenting: boolean,
-    isArchive: boolean,
 }
 
-const postMediaSchema = new mongoose.Schema<PostMediaSchema>({
+const postMediaSchema = new mongoose.Schema<PostMedia>({
     height : {
         required : true,
         type : Number,
@@ -44,7 +24,7 @@ const postMediaSchema = new mongoose.Schema<PostMediaSchema>({
     provider : {
         required : true,
         type : String,
-        enum : ["cloudinary", "s3"]
+        enum : Object.values(ALLOWED_MEDIA_PROVIDERS)
     },
     source : {
         url : {
@@ -59,14 +39,19 @@ const postMediaSchema = new mongoose.Schema<PostMediaSchema>({
     type : {
         required : true,
         type : String,
-        enum : ["cloudinary", "s3"]
+        enum : Object.values(ALLOWED_MEDIA_TYPES)
     }
 }, {timestamps : true});
 
 const postSchema = new mongoose.Schema<PostSchema>({
     authorId: {
         type: Types.ObjectId,
+        ref: "User",
         required: true,
+    },
+    publicId : {
+        type : String,
+        unique : true,
     },
     content: {
         type: String,
@@ -86,14 +71,20 @@ const postSchema = new mongoose.Schema<PostSchema>({
     },
     visibility : {
         type : String,
-        enum : ["public", "following"],
+        enum : Object.values(POST_VISIBILITIES),
         required : true,
     },
     media : {
         type : postMediaSchema,
         required : false,
         default : null,
-    }
+    },
 }, { timestamps: true })
+
+postSchema.pre("save", async function() {
+    if(!this.publicId) {
+        this.publicId = nanoid(8);
+    }
+});
 
 export const Post = mongoose.model("Post", postSchema);

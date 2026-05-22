@@ -100,7 +100,7 @@ const Sidebar = (props : Props) => {
                     isAuthenticated && userData?.isOnboarded ?
                         <div className="relative min-w-62 w-fit">
                             {/* popover */}
-                            <div className={`w-full absolute -top-20 h-fit duration-100 font-bold ${isProfilePopoverHidden ? "opacity-0 h-0 overflow-hidden" : "opacity-100"}`}>
+                            <div className={`w-full absolute -top-20 duration-100 font-bold ${isProfilePopoverHidden ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-fit"}`}>
                                 <div className="w-full relative rounded-xl z-2 overflow-hidden bg-neutral-900">
                                     <button className="w-full px-5 py-4 text-left bg-neutral-900 hover:text-neutral-500 cursor-pointer duration-100" onClick={logoutHandler}>
                                         Log out @{userData.username}

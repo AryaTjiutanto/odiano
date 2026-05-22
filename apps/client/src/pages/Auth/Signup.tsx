@@ -11,6 +11,7 @@ import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
+import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
 
 type AuthErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse;
 
@@ -48,15 +49,9 @@ const Signup = () => {
         } catch (err : any) {
             const error = err.response?.data as AuthErrorResponse;
 
-            if (error.code == ERROR_RESPONSE_CODE.validationError && error.errors) {
-                Object.entries(error.errors).forEach(([index, field]) => {
-                    setError(field.path as keyof AuthenticateUserSchema, {
-                        type: "server",
-                        message: field.message
-                    })
-                })
-
-                return;
+            if(error.code == ERROR_RESPONSE_CODE.validationError) {
+                handleApiValidationError<AuthenticateUserSchema>(error.errors, setError);
+                return
             }
 
             if(error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
