@@ -16,6 +16,10 @@ export const onboarding = async (payload: OnboardingPayload) => {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
     }
 
+    if(user.isOnboarded) {
+        throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "User is already onboarded");
+    }
+
     // moved image from temp folder
     if (payload.userData.profileImagePublicId && payload.userData.profileImageUrl) {
         const oldPublicId = payload.userData.profileImagePublicId;
