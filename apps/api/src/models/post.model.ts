@@ -1,13 +1,14 @@
 import { type Post as PostType, type PostMedia, ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, POST_VISIBILITIES} from "@connect/shared"
-import mongoose, { Types } from "mongoose"
+import mongoose, { InferSchemaType, Types } from "mongoose"
 import { nanoid } from "nanoid";
 
-
+// type for schema 
 type PostSchema = PostType & {
     publicId : string,
-    authorId: Types.ObjectId,
+    author: Types.ObjectId,
 }
 
+// post media schema
 const postMediaSchema = new mongoose.Schema<PostMedia>({
     height : {
         required : true,
@@ -41,10 +42,12 @@ const postMediaSchema = new mongoose.Schema<PostMedia>({
         type : String,
         enum : Object.values(ALLOWED_MEDIA_TYPES)
     }
-}, {timestamps : true});
+});
+
+// post schema
 
 const postSchema = new mongoose.Schema<PostSchema>({
-    authorId: {
+    author: {
         type: Types.ObjectId,
         ref: "User",
         required: true,
@@ -79,7 +82,7 @@ const postSchema = new mongoose.Schema<PostSchema>({
         required : false,
         default : null,
     },
-}, { timestamps: true })
+}, { timestamps: true, toJSON : {versionKey : false} })
 
 postSchema.pre("save", async function() {
     if(!this.publicId) {
@@ -87,4 +90,5 @@ postSchema.pre("save", async function() {
     }
 });
 
+// create model
 export const Post = mongoose.model("Post", postSchema);

@@ -1,8 +1,18 @@
-import { Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as postServices from "../services/post.service";
 import { ReqBody } from "../types/request";
-import { CreatePostSchema, PostPublicId } from "@connect/shared";
+import { CreatePostSchema, PostDTO, PostPublicId, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import { successResponseData } from "../utils/response.util";
+
+export const index = async(req: Request, res: Response, next: NextFunction) => {
+    try{
+        const posts = await postServices.listPosts();
+
+        res.status(200).json(successResponseData<PostDTO[]>(SUCCESS_RESPONSE_CODE.success, "Success", posts))
+    } catch(err) {
+        next(err);
+    }
+}
 
 export const create = async (req: ReqBody<CreatePostSchema>, res: Response, next: NextFunction) => {
     const userId = req.userId;

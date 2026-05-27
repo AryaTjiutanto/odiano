@@ -1,99 +1,102 @@
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType, Types } from "mongoose";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
 import slugify from "slugify";
 
+// types for schema
 type UserSchema = {
-    email : string,
-    password : string,
-    dateOfBirth : string | null,
-    name : string | null,
-    username : string | null,
-    slug : string | null,
-    bio : string | null,
-    isOnboarded : boolean,
-    emailVerifiedAt : Date | null,
-    profileImage : ProfileImageSchema | null,
+    email: string,
+    password: string,
+    dateOfBirth: string | null,
+    name: string | null,
+    username: string | null,
+    slug: string | null,
+    bio: string | null,
+    isOnboarded: boolean,
+    emailVerifiedAt: Date | null,
+    profileImage: ProfileImageSchema | null,
 }
 
 type ProfileImageSchema = {
-    url : string,
-    publicId : string,
+    url: string,
+    publicId: string,
 }
 
+// profile image schema
 const profileImageSchema = new mongoose.Schema({
-    url : {
-        type : String,
-        required : true,
-    },
-    publicId : {
-        type : String,
-        required : true,
-    }
-}, {_id : false})
-
-const userSchema = new mongoose.Schema<UserSchema>({
-    email : {
-        required : true,
-        type : String,
-        unique : true
-    },
-    password : {
-        required : true,
-        type : String,
-    },
-    username : {
-        required : false,
+    url: {
         type: String,
-        default : null,
+        required: true,
     },
-    slug : {
-        required : false,
-        type : String,
-        unique : true,
-        default : null,
-    },
-    name : {
-        required : false,
-        type : String,
-        default : null,
-    },
-    bio : {
-        required : false,
-        type : String,
-        default : null,
-    },
-    profileImage : {
-        type : profileImageSchema,
-        required : false,
-        default : null,
-    },
-    isOnboarded : {
-        type : Boolean,
-        required : true,
-        default : false,
-    },
-    emailVerifiedAt : {
-        type : Date,
-        default : null,
+    publicId: {
+        type: String,
+        required: true,
     }
-}, {timestamps : true});
+}, { _id: false })
+
+// user schema
+const userSchema = new mongoose.Schema<UserSchema>({
+    email: {
+        required: true,
+        type: String,
+        unique: true
+    },
+    password: {
+        required: true,
+        type: String,
+    },
+    username: {
+        required: false,
+        type: String,
+        default: null,
+    },
+    slug: {
+        required: false,
+        type: String,
+        unique: true,
+    },
+    name: {
+        required: false,
+        type: String,
+        default: null,
+    },
+    bio: {
+        required: false,
+        type: String,
+        default: null,
+    },
+    profileImage: {
+        type: profileImageSchema,
+        required: false,
+        default: null,
+    },
+    isOnboarded: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    emailVerifiedAt: {
+        type: Date,
+        default: null,
+    }
+}, { timestamps: true, toJSON : {versionKey : false} });
 
 userSchema.pre("save", async function () {
-    if(this.isModified("password")) {   
+    if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 12);
     }
-    
-    if(this.isModified("username")) {
-        if(!this.username) {
+
+    if (this.isModified("username")) {
+        if (!this.username) {
             return;
         }
-        
+
         const uniqueId = nanoid(6);
-        const baseSlug = slugify(this.username, {lower:true, trim:true});
+        const baseSlug = slugify(this.username, { lower: true, trim: true });
 
         this.slug = `${baseSlug}-${uniqueId}`;
     }
 })
 
+// create model
 export const User = mongoose.model<UserSchema>("User", userSchema);

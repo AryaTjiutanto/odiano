@@ -1,7 +1,14 @@
 import { Search } from "lucide-react";
 import StoryList from "../components/social/StoryList";
+import Post from "../components/post/Post";
+import { useState } from "react";
+import type { PostDTO } from "@connect/shared";
+import PostSkeletonLoading from "../components/post/PostSkeletonLoading";
 
 const Homepage = () => {
+    const [posts, setPosts] = useState<PostDTO[] | null>();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
     return (
         <>
             {/* head */}
@@ -38,6 +45,12 @@ const Homepage = () => {
                 </div>
                 {/* story */}
                 <StoryList />
+
+                {/* posts */}
+                <div className="mt-8 space-y-6">
+                    <PostSkeletonLoading/>
+                    <Post />
+                </div>
             </div>
         </>
     )

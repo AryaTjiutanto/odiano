@@ -1,3 +1,4 @@
+import { PostUserDTO } from "../user"
 import { AllowedMediaProviders, AllowedMediaTypes, PostVisibilities } from "./post.const"
 
 export type MediaSource = {
@@ -28,4 +29,11 @@ export type Post = {
 
 export type PostPublicId = {
     publicId : string,
+}
+
+export type PostDTO = Post & {
+    id : string,
+    publicId : string,
+    author? : PostUserDTO,
+    createdAt : Date,
 }
