@@ -15,38 +15,55 @@ import RequireUnOnboarded from './components/guard/RequireUnOnboarded.tsx'
 import Homepage from './pages/Home.tsx'
 import AppLayout from './layouts/AppLayout.tsx'
 import SocialLayout from './layouts/SocialLayout.tsx'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { QueryClient } from "@tanstack/react-query"
+import { createIDBPersister } from './libs/persister.ts'
+
+const queryClient = new QueryClient();
+const IDBPersister = createIDBPersister();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route element={<SocialLayout />}>
-              <Route path='/' element={<Homepage />}></Route>
-            </Route>
+      <PersistQueryClientProvider client={queryClient} persistOptions={{ 
+        persister : IDBPersister,
+        maxAge : 5 * 24 * 60 * 60 * 1000,
+        dehydrateOptions : {
+          shouldDehydrateQuery : (query) => {
+            const key = query.queryKey[0];
+            return typeof key == "string" && ["post"].includes(key);
+          }
+        }
+       }}>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route element={<SocialLayout />}>
+                <Route path='/' element={<Homepage />}></Route>
+              </Route>
 
-            {/* auth process */}
-            <Route element={<RequireGuestGuard />}>
-              <Route element={<AuthLayout />}>
-                <Route path='/signin' element={<Signin />}></Route>
-                <Route path='/signup' element={<Signup />}></Route>
+              {/* auth process */}
+              <Route element={<RequireGuestGuard />}>
+                <Route element={<AuthLayout />}>
+                  <Route path='/signin' element={<Signin />}></Route>
+                  <Route path='/signup' element={<Signup />}></Route>
+                </Route>
+              </Route>
+
+              {/* onboarding */}
+              <Route element={<RequireUnOnboarded />}>
+                <Route path='/onboarding' element={<OnBoarding />}></Route>
+              </Route>
+
+              {/* auth */}
+              <Route element={<RequireAuthGuard />}>
+                {/* profile */}
+                <Route path='/profile' element={<ProfileIndex />}></Route>
               </Route>
             </Route>
-
-            {/* onboarding */}
-            <Route element={<RequireUnOnboarded />}>
-              <Route path='/onboarding' element={<OnBoarding />}></Route>
-            </Route>
-
-            {/* auth */}
-            <Route element={<RequireAuthGuard />}>
-              {/* profile */}
-              <Route path='/profile' element={<ProfileIndex />}></Route>
-            </Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </PersistQueryClientProvider>
     </Provider>
   </StrictMode>,
 )

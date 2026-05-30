@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import * as postServices from "../services/post.service";
 import { ReqBody } from "../types/request";
-import { CreatePostSchema, PostDTO, PostPublicId, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { CreatePostSchema, InfiniteQuery, PostDTO, PostPublicId, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import { successResponseData } from "../utils/response.util";
 
 export const index = async(req: Request, res: Response, next: NextFunction) => {
-    try{
-        const posts = await postServices.listPosts();
+    const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;
 
-        res.status(200).json(successResponseData<PostDTO[]>(SUCCESS_RESPONSE_CODE.success, "Success", posts))
+    try{
+        const data = await postServices.listPosts(cursor);
+
+        res.status(200).json(successResponseData<InfiniteQuery<PostDTO[]>>(SUCCESS_RESPONSE_CODE.success, "Success", data));
     } catch(err) {
         next(err);
     }

@@ -14,6 +14,12 @@ export type ErrorResponseData<T = null> = {
     errors : T | null,
 }
 
+export type InfiniteQuery<T> = {
+    nextCursor : string,
+    hasNextPage : boolean,
+    items : T,
+}
+
 export type ValidationError = {
     path : string,
     message : string,

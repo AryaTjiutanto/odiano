@@ -1,13 +1,37 @@
 import { Search } from "lucide-react";
 import StoryList from "../components/social/StoryList";
 import Post from "../components/post/Post";
-import { useState } from "react";
-import type { PostDTO } from "@connect/shared";
+import type { InfiniteQuery, PostDTO, SuccessResponseData } from "@connect/shared";
 import PostSkeletonLoading from "../components/post/PostSkeletonLoading";
+import { api } from "../libs/api";
+import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
+import InfiniteScrollSentinel from "../components/common/InfiniteScrollSentinel";
 
 const Homepage = () => {
-    const [posts, setPosts] = useState<PostDTO[] | null>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    async function getPosts({pageParam} : QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
+        const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
+            params : {
+                cursor : pageParam,
+            }
+        });
+
+        if (!response.data.data) {
+            throw new Error("Data is null");
+        }
+
+        return response.data.data;
+    }
+
+    const { data, isFetching, isFetchingNextPage, status, hasNextPage, fetchNextPage } = useInfiniteQuery({
+        queryFn: getPosts,
+        queryKey: ["post"],
+        staleTime: 30 * 1000,
+        gcTime: 1 * 60 * 60 * 1000,
+        initialPageParam: null,
+        getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
+            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+        }
+    })
 
     return (
         <>
@@ -48,8 +72,23 @@ const Homepage = () => {
 
                 {/* posts */}
                 <div className="mt-8 space-y-6">
-                    <PostSkeletonLoading/>
-                    <Post />
+                    {
+                        isFetching &&
+                        Array.from({ length: 3 }).map(() => <PostSkeletonLoading />)
+                    }
+                    {
+                        (status !== "error") &&
+                        <>
+                            {
+                                data?.pages.map((page) =>
+                                    page.items.map((item) => (
+                                        <Post data={item} />
+                                    ))
+                                )
+                            }
+                            <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage}/>
+                        </>
+                    }
                 </div>
             </div>
         </>
