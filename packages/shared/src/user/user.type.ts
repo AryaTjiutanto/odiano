@@ -7,16 +7,14 @@ export type PostUserDTO = {
     id : string,
     name : string | null,
     username : string | null,
-    slug : string | null,
     profileImage : UserProfileImageDTO | null
 }
 
 export type CurrentUserDTO = {
     id: string,
     email: string,
-    username: string,
-    name: string,
-    slug: string,
-    profileImage: UserProfileImageDTO,
+    username: string | null,
+    name: string | null,
+    profileImage: UserProfileImageDTO | null,
     isOnboarded: boolean,
 }

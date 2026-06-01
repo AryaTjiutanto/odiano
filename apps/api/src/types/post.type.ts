@@ -16,7 +16,6 @@ export type PostQuery = {
         _id : Types.ObjectId,
         name : string,
         username : string,
-        slug : string,
         profileImage : UserProfileImageDTO 
     } | null,
 }

@@ -94,7 +94,6 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
 
     // create user
     const currentUser = await User.create({
-        slug: nanoid(5),
         email,
         password,
         dateOfBirth
@@ -125,7 +124,6 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
     return {
         id: user?._id.toString(),
         email: user?.email,
-        slug: user?.slug,
         username: user?.username,
         isOnboarded: user?.isOnboarded,
         name: user?.name,

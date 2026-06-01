@@ -20,7 +20,6 @@ export const toPostDto = (posts: PostQuery[]): PostDTO[] => {
                         name: post.author.name,
                         username: post.author.username,
                         profileImage: post.author.profileImage,
-                        slug: post.author.slug
                     }
                 }
             )

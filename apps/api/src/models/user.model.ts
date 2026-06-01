@@ -1,8 +1,5 @@
-import mongoose, { InferSchemaType, Types } from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { nanoid } from "nanoid";
-import slugify from "slugify";
-
 // types for schema
 type UserSchema = {
     email: string,
@@ -10,7 +7,6 @@ type UserSchema = {
     dateOfBirth: string | null,
     name: string | null,
     username: string | null,
-    slug: string | null,
     bio: string | null,
     isOnboarded: boolean,
     emailVerifiedAt: Date | null,
@@ -50,11 +46,6 @@ const userSchema = new mongoose.Schema<UserSchema>({
         type: String,
         default: null,
     },
-    slug: {
-        required: false,
-        type: String,
-        unique: true,
-    },
     name: {
         required: false,
         type: String,
@@ -84,17 +75,6 @@ const userSchema = new mongoose.Schema<UserSchema>({
 userSchema.pre("save", async function () {
     if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 12);
-    }
-
-    if (this.isModified("username")) {
-        if (!this.username) {
-            return;
-        }
-
-        const uniqueId = nanoid(6);
-        const baseSlug = slugify(this.username, { lower: true, trim: true });
-
-        this.slug = `${baseSlug}-${uniqueId}`;
     }
 })
 

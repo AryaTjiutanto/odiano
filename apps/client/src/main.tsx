@@ -18,6 +18,7 @@ import SocialLayout from './layouts/SocialLayout.tsx'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { QueryClient } from "@tanstack/react-query"
 import { createIDBPersister } from './libs/persister.ts'
+import ShowPost from './pages/Post/ShowPost.tsx'
 
 const queryClient = new QueryClient();
 const IDBPersister = createIDBPersister();
@@ -38,27 +39,31 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
           <Routes>
             <Route element={<AppLayout />}>
+              {/* social */}
               <Route element={<SocialLayout />}>
-                <Route path='/' element={<Homepage />}></Route>
+                <Route path='/' element={<Homepage />}/>
+
+                {/* post */}
+                <Route path='/:username/post/:postPublicId' element={<ShowPost/>}/>
               </Route>
 
               {/* auth process */}
               <Route element={<RequireGuestGuard />}>
                 <Route element={<AuthLayout />}>
-                  <Route path='/signin' element={<Signin />}></Route>
-                  <Route path='/signup' element={<Signup />}></Route>
+                  <Route path='/signin' element={<Signin />}/>
+                  <Route path='/signup' element={<Signup />}/>
                 </Route>
               </Route>
 
               {/* onboarding */}
               <Route element={<RequireUnOnboarded />}>
-                <Route path='/onboarding' element={<OnBoarding />}></Route>
+                <Route path='/onboarding' element={<OnBoarding />}/>
               </Route>
 
               {/* auth */}
               <Route element={<RequireAuthGuard />}>
                 {/* profile */}
-                <Route path='/profile' element={<ProfileIndex />}></Route>
+                <Route path='/profile' element={<ProfileIndex />}/>
               </Route>
             </Route>
           </Routes>

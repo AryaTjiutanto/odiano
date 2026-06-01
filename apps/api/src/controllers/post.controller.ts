@@ -16,6 +16,22 @@ export const index = async(req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+export const show = async(req: Request, res : Response, next : NextFunction) => {
+    const postPublicId = String(req.params.postPublicId);
+
+    try {
+        if(!postPublicId) {
+            throw new Error("public id is missing or not valid");
+        }
+
+        const post = await postServices.getPost(postPublicId);
+
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.success, "success", post));
+    } catch (err) {
+        next(err);
+    }
+}
+
 export const create = async (req: ReqBody<CreatePostSchema>, res: Response, next: NextFunction) => {
     const userId = req.userId;
 

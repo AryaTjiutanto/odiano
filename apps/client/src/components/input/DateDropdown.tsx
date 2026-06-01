@@ -1,7 +1,6 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { ChevronDown } from "lucide-react";
 
 type Payload = {
     setDate: React.Dispatch<React.SetStateAction<string>>,
@@ -100,7 +99,7 @@ const DateDropdown = (payload: Payload) => {
                         </div>
                     </div>
                     <div className="w-[10%] md:w-[12%] h-full text-neutral-100 flex items-center">
-                        <FontAwesomeIcon icon={faAngleDown} className={`${monthDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
+                        <ChevronDown className={`${monthDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
                     </div>
                 </div>
                 <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${monthDropdownIsOpen ? "h-42 md:h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
@@ -126,7 +125,7 @@ const DateDropdown = (payload: Payload) => {
                         </div>
                     </div>
                     <div className="w-[40%] md:w-[30%] h-full text-neutral-100 flex items-center">
-                        <FontAwesomeIcon icon={faAngleDown} className={`${dayDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
+                        <ChevronDown className={`${monthDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
                     </div>
                 </div>
                 <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${dayDropdownIsOpen ? "h-42 md:h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>
@@ -152,7 +151,7 @@ const DateDropdown = (payload: Payload) => {
                         </div>
                     </div>
                     <div className="w-[30%] md:w-[20%] h-full text-neutral-100 flex items-center">
-                        <FontAwesomeIcon icon={faAngleDown} className={`${yearDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
+                        <ChevronDown className={`${monthDropdownIsOpen ? "-rotate-180" : "rotate-0"} duration-100`} />
                     </div>
                 </div>
                 <div className={`w-full overflow-y-auto border border-neutral-200 absolute bg-neutral-950 rounded-b-md top-14 duration-100 ${yearDropdownIsOpen ? "h-42 md:h-96 py-2 opacity-100" : "h-0 py-0 opacity-0"}`}>

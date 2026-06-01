@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "../components/auth/Footer";
-import { faCheckCircle, faRotate, faUpload, faUser, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -11,6 +9,7 @@ import DotsLoader from "../components/loader/DotsLoader";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { uploadImageToCloudinary } from "../services/cloudinary.service";
+import { Check, RotateCcw, Upload, User, X } from "lucide-react";
 
 const OnBoarding = () => {
     const dispatch = useAppDispatch();
@@ -230,10 +229,10 @@ const OnBoarding = () => {
                                                 imageCroppedBlob ?
                                                     <img src={URL.createObjectURL(imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-[1]"></img>
                                                     :
-                                                    <FontAwesomeIcon icon={faUser} className="text-[80px] text-neutral-700" />
+                                                    <User className="w-2 text-neutral-700"/>
                                             }
                                             <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-900/80 cursor-pointer opacity-0 duration-100 z-10 ${isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
-                                                <FontAwesomeIcon icon={faUpload} className="text-4xl text-neutral-400" />
+                                                <Upload className="w-10 text-neutral-400"/>
                                             </div>
                                         </div>
                                     </label>
@@ -262,16 +261,19 @@ const OnBoarding = () => {
                                             <div className="absolute h-full top-0 flex items-center right-4">
                                                 {
                                                     isUsernameLoading &&
-                                                    <FontAwesomeIcon icon={faRotate} className="text-xs animate-spin text-neutral-300" />
+                                                    <RotateCcw className="w-3 animate-spin text-neutral-300"/>
                                                 }
                                                 {
                                                     isUsernameAvailable === true &&
-                                                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
-
+                                                    <div className="w-5 h-5 rounded-full bg-green-500 grid place-content-center">
+                                                        <Check/>
+                                                    </div>
                                                 }
                                                 {
                                                     isUsernameAvailable === false &&
-                                                    <FontAwesomeIcon icon={faXmarkCircle} className="text-red-500" />
+                                                    <div className="w-5 h-5 rounded-full bg-red-500 grid place-content-center">
+                                                        <X/>
+                                                    </div>
                                                 }
                                             </div>
                                         </div>
