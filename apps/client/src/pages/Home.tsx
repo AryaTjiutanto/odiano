@@ -6,12 +6,13 @@ import PostSkeletonLoading from "../components/post/PostSkeletonLoading";
 import { api } from "../libs/api";
 import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../components/common/InfiniteScrollSentinel";
+import { useEffect } from "react";
 
 const Homepage = () => {
-    async function getPosts({pageParam} : QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
+    async function getPosts({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
         const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
-            params : {
-                cursor : pageParam,
+            params: {
+                cursor: pageParam,
             }
         });
 
@@ -22,11 +23,11 @@ const Homepage = () => {
         return response.data.data;
     }
 
-    const { data, isFetching, isFetchingNextPage, status, hasNextPage, fetchNextPage } = useInfiniteQuery({
+    const { data, isLoading, isFetchingNextPage, status, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryFn: getPosts,
         queryKey: ["post"],
         staleTime: 30 * 1000,
-        gcTime: 1 * 60 * 60 * 1000,
+        gcTime: 1 * 24 * 60 * 60 * 1000,
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
@@ -43,7 +44,7 @@ const Homepage = () => {
             />
 
             {/* body */}
-            <div className="w-full">
+            <div className="w-full flex flex-col">
                 {/* heading */}
                 <div className="w-full flex justify-between items-center">
                     {/* search bar */}
@@ -73,7 +74,7 @@ const Homepage = () => {
                 {/* posts */}
                 <div className="mt-8 space-y-6">
                     {
-                        isFetching &&
+                        (!data && isLoading) &&
                         Array.from({ length: 3 }).map(() => <PostSkeletonLoading />)
                     }
                     {
@@ -86,8 +87,21 @@ const Homepage = () => {
                                     ))
                                 )
                             }
-                            <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage}/>
+                            <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} />
                         </>
+                    }
+
+                    {
+                        (!data && !isLoading) &&
+                        <div className="w-full h-fit py-20 px-32 rounded-xl border border-neutral-700 border-dashed flex flex-col items-center justify-center">
+                            <h1 className="text-lg font-semibold text-neutral-200">
+                                No posts yet
+                            </h1>
+
+                            <p className="mt-2 text-sm text-neutral-400 text-center">
+                                There are no posts to display right now. Check back later or follow more people to see content in your feed.
+                            </p>
+                        </div>
                     }
                 </div>
             </div>

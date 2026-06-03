@@ -1,33 +1,42 @@
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send, SmileIcon, User } from "lucide-react";
 import GoBackButton from "../../components/common/GoBackButton";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { type SuccessResponseData, type PostDTO } from "@connect/shared";
 import { api } from "../../libs/api";
+import { useQuery } from "@tanstack/react-query";
+import PostDetailSkeletonLoading from "../../components/post/PostDetailSkeletonLoading";
 
 const ShowPost = () => {
     const navigate = useNavigate();
     const { postPublicId } = useParams();
-    const [postData, setPostData] = useState<PostDTO | null>(null);
 
-    const getPost = async (publicId: string) => {
+    // get post data
+    const getPost = async () => {
         try {
-            const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${publicId}`);
-            console.log(response.data);
-            setPostData(response.data.data);
-        } catch (err : any) {
+            const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${postPublicId}`);
+            
+            return response.data.data;
+        } catch (err: any) {
+            console.log(err.response);
         }
     }
+
+    const postQuery = useQuery({
+        queryKey: ["post", postPublicId],
+        queryFn: getPost,
+        enabled: !!postPublicId,
+        staleTime: 30 * 1000,
+        gcTime: 1 * 24 * 60 * 60 * 1000,
+    })
 
     useEffect(() => {
         if (!postPublicId) {
             navigate("/");
-            return;
         }
+    }, [postPublicId, navigate])
 
-        getPost(postPublicId);
-    }, [postPublicId])
-
+    // handle comment input
     const autoResizeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const textarea = e.target;
 
@@ -45,79 +54,88 @@ const ShowPost = () => {
                     </h1>
                 </div>
             </div>
-            {/* profile */}
-            <div className="w-full flex items-center justify-between mt-8">
-                <div className="flex items-center space-x-3">
-                    <div className="h-12 aspect-square rounded-full bg-neutral-800 grid place-content-center overflow-hidden">
-                        {
-                            postData?.author?.profileImage?.url ?
-                                <img src={postData.author.profileImage.url} className="w-full h-full" />
-                                :
-                            <User className="w-4" />
-                        }
-                    </div>
-                    <div>
-                        <div className="flex items-center space-x-2 text-base">
-                            <h1 className="text-neutral-100 font-semibold">{postData?.author?.name ?? ""}</h1>
-                        </div>
-                        <div className="text-sm text-neutral-500">
-                            <h2 className="text-neutral-500">@{postData?.author?.username ?? ""}</h2>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                    <button className="px-5 h-10 rounded-lg border border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700 text-sm cursor-pointer duration-100">
-                        Follow
-                    </button>
-                    <EllipsisVertical className="w-4 duration-100 cursor-pointer" />
-                </div>
-            </div>
-            {/* content */}
-            <div className="mt-6">
-                {
-                    postData?.content ?? ""
-                }
-            </div>
 
-            {/* Post information */}
-            <div className="flex items-center space-x-3 text-neutral-500 mt-4">
-                <div>
-                    7:56 PM
-                </div>
-                <div className="w-1 aspect-square rounded-full bg-neutral-700"></div>
-                <div>
-                    May 29, 2026
-                </div>
-                {/* <div className="w-1 aspect-square rounded-full bg-neutral-700"></div>
+            {/* post detail */}
+            {
+                (!postQuery.data && postQuery.isLoading) ?
+                    <PostDetailSkeletonLoading />
+                    :
+                    <div className="w-full">
+                        {/* profile */}
+                        <div className="w-full flex items-center justify-between mt-8">
+                            <div className="flex items-center space-x-3">
+                                <div className="h-12 aspect-square rounded-full bg-neutral-800 grid place-content-center overflow-hidden">
+                                    {
+                                        postQuery.data?.author?.profileImage?.url ?
+                                            <img src={postQuery.data.author.profileImage.url} className="w-full h-full" />
+                                            :
+                                            <User className="w-4" />
+                                    }
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 text-base">
+                                        <h1 className="text-neutral-100 font-semibold">{postQuery.data?.author?.name ?? ""}</h1>
+                                    </div>
+                                    <div className="text-sm text-neutral-500">
+                                        <h2 className="text-neutral-500">@{postQuery.data?.author?.username ?? ""}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                                <button className="w-20 h-10 rounded-lg border border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700 text-sm cursor-pointer duration-100">
+                                    Follow
+                                </button>
+                                <EllipsisVertical className="w-4 duration-100 cursor-pointer" />
+                            </div>
+                        </div>
+                        {/* content */}
+                        <div className="mt-6">
+                            {
+                                postQuery.data?.content ?? ""
+                            }
+                        </div>
+
+                        {/* Post information */}
+                        <div className="flex items-center space-x-3 text-neutral-500 mt-4">
+                            <div>
+                                7:56 PM
+                            </div>
+                            <div className="w-1 aspect-square rounded-full bg-neutral-700"></div>
+                            <div>
+                                May 29, 2026
+                            </div>
+
+                            {/* <div className="w-1 aspect-square rounded-full bg-neutral-700"></div>
                 <div>
                     <b className="text-neutral-300">40</b> Views
                 </div> */}
-            </div>
+                        </div>
 
-            <div className="flex items-center justify-between mt-10">
-                <div className="flex items-center space-x-10">
-                    <button className="flex items-center space-x-2 cursor-pointer">
-                        <Heart />
-                        <p>
-                            80
-                        </p>
-                    </button>
-                    <div className="flex items-center space-x-2">
-                        <MessageCircle />
-                        <p>
-                            7
-                        </p>
+                        <div className="flex items-center justify-between mt-10">
+                            <div className="flex items-center space-x-10">
+                                <button className="flex items-center space-x-2 cursor-pointer">
+                                    <Heart />
+                                    <p>
+                                        80
+                                    </p>
+                                </button>
+                                <div className="flex items-center space-x-2">
+                                    <MessageCircle />
+                                    <p>
+                                        7
+                                    </p>
+                                </div>
+                                <button className="cursor-pointer">
+                                    <Send />
+                                </button>
+                            </div>
+
+                            <button className="cursor-pointer">
+                                <Bookmark />
+                            </button>
+                        </div>
                     </div>
-                    <button className="cursor-pointer">
-                        <Send />
-                    </button>
-                </div>
-
-                <button className="cursor-pointer">
-                    <Bookmark />
-                </button>
-            </div>
-
+            }
 
             {/* create comment */}
             <div className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">

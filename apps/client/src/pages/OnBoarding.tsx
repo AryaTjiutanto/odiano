@@ -229,7 +229,7 @@ const OnBoarding = () => {
                                                 imageCroppedBlob ?
                                                     <img src={URL.createObjectURL(imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-[1]"></img>
                                                     :
-                                                    <User className="w-2 text-neutral-700"/>
+                                                    <User className="size-20 text-neutral-700"/>
                                             }
                                             <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-900/80 cursor-pointer opacity-0 duration-100 z-10 ${isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
                                                 <Upload className="w-10 text-neutral-400"/>
@@ -266,13 +266,13 @@ const OnBoarding = () => {
                                                 {
                                                     isUsernameAvailable === true &&
                                                     <div className="w-5 h-5 rounded-full bg-green-500 grid place-content-center">
-                                                        <Check/>
+                                                        <Check className="w-3"/>
                                                     </div>
                                                 }
                                                 {
                                                     isUsernameAvailable === false &&
                                                     <div className="w-5 h-5 rounded-full bg-red-500 grid place-content-center">
-                                                        <X/>
+                                                        <X className="w-3"/>
                                                     </div>
                                                 }
                                             </div>
