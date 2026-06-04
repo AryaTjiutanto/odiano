@@ -19,6 +19,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { QueryClient } from "@tanstack/react-query"
 import { createIDBPersister } from './libs/persister.ts'
 import ShowPost from './pages/Post/ShowPost.tsx'
+import NotFound from './pages/Error/NotFound.tsx'
 
 const queryClient = new QueryClient();
 const IDBPersister = createIDBPersister();
@@ -26,45 +27,48 @@ const IDBPersister = createIDBPersister();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <PersistQueryClientProvider client={queryClient} persistOptions={{ 
-        persister : IDBPersister,
-        maxAge : 5 * 24 * 60 * 60 * 1000,
-        dehydrateOptions : {
-          shouldDehydrateQuery : (query) => {
+      <PersistQueryClientProvider client={queryClient} persistOptions={{
+        persister: IDBPersister,
+        maxAge: 5 * 24 * 60 * 60 * 1000,
+        dehydrateOptions: {
+          shouldDehydrateQuery: (query) => {
             const key = query.queryKey[0];
             return typeof key == "string" && ["post"].includes(key);
           }
         }
-       }}>
+      }}>
         <BrowserRouter>
           <Routes>
             <Route element={<AppLayout />}>
               {/* social */}
               <Route element={<SocialLayout />}>
-                <Route path='/' element={<Homepage />}/>
+                <Route path='/' element={<Homepage />} />
 
                 {/* post */}
-                <Route path='/:username/post/:postPublicId' element={<ShowPost/>}/>
+                <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
               </Route>
 
               {/* auth process */}
               <Route element={<RequireGuestGuard />}>
                 <Route element={<AuthLayout />}>
-                  <Route path='/signin' element={<Signin />}/>
-                  <Route path='/signup' element={<Signup />}/>
+                  <Route path='/signin' element={<Signin />} />
+                  <Route path='/signup' element={<Signup />} />
                 </Route>
               </Route>
 
               {/* onboarding */}
               <Route element={<RequireUnOnboarded />}>
-                <Route path='/onboarding' element={<OnBoarding />}/>
+                <Route path='/onboarding' element={<OnBoarding />} />
               </Route>
 
               {/* auth */}
               <Route element={<RequireAuthGuard />}>
                 {/* profile */}
-                <Route path='/profile' element={<ProfileIndex />}/>
+                <Route path='/profile' element={<ProfileIndex />} />
               </Route>
+
+              {/* not fond */}
+              <Route path='*' element={<NotFound />} />
             </Route>
           </Routes>
         </BrowserRouter>
