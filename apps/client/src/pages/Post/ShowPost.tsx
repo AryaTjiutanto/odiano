@@ -56,7 +56,6 @@ const ShowPost = () => {
                     title="This post isn't available"
                     description="The post may have been deleted or the link is no longer valid."
                     fontSize="small"
-                    fallbackUrl="/"
                 />
             </div>
         )

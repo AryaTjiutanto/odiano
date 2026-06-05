@@ -1,6 +1,7 @@
 import type { PostDTO } from "@connect/shared";
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "react-router-dom";
 
 type Props = {
     data: PostDTO
@@ -8,7 +9,7 @@ type Props = {
 
 const Post = ({ data }: Props) => {
     return (
-        <a href={`/${data.author?.username}/post/${data.publicId}`} className="inline-block w-full">
+        <Link to={`/${data.author?.username}/post/${data.publicId}`} className="inline-block w-full">
             <article className="w-full p-7 rounded-lg bg-neutral-900">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -55,7 +56,7 @@ const Post = ({ data }: Props) => {
                     </button>
                 </div>
             </article>
-        </a>
+        </Link>
     )
 }
 

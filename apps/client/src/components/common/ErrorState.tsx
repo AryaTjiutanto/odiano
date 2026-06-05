@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
+import useGoBack from "../../hooks/useGoBack";
 
 type Props = {
     title: string;
     description: string;
     fallbackUrl?: string;
     code?: string;
-    fontSize : "large" | "small";
+    fontSize: "large" | "small";
 };
 
 const ErrorState = ({
@@ -15,6 +16,8 @@ const ErrorState = ({
     code,
     fontSize,
 }: Props) => {
+    const goBackHandler = useGoBack();
+
     return (
         <div className="flex flex-col items-center justify-center text-center">
             {
@@ -34,12 +37,23 @@ const ErrorState = ({
             </div>
 
             <div className="mt-6 flex items-center justify-center gap-3">
-                <Link
-                    to={fallbackUrl ?? "/"}
-                    className="cursor-pointer px-4 py-2 rounded-full bg-white border border-white hover:bg-transparent hover:text-white duration-100 text-black text-sm font-medium hover:opacity-90 transition"
-                >
-                    Go back
-                </Link>
+                {
+                    fallbackUrl ?
+                        <Link
+                            to={fallbackUrl ?? "/"}
+                            className="cursor-pointer px-4 py-2 rounded-full bg-white border border-white hover:bg-transparent hover:text-white duration-100 text-black text-sm font-medium hover:opacity-90 transition"
+                        >
+                            Go back
+                        </Link>
+                        :
+                        <button
+                            onClick={goBackHandler}
+                            className="cursor-pointer px-4 py-2 rounded-full bg-white border border-white hover:bg-transparent hover:text-white duration-100 text-black text-sm font-medium hover:opacity-90 transition"
+                        >
+                            Go back
+                        </button>
+
+                }
 
                 <button
                     onClick={() => window.location.reload()}

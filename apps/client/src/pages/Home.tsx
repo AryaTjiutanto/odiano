@@ -6,7 +6,6 @@ import PostSkeletonLoading from "../components/post/PostSkeletonLoading";
 import { api } from "../libs/api";
 import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../components/common/InfiniteScrollSentinel";
-import { useEffect } from "react";
 
 const Homepage = () => {
     async function getPosts({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
@@ -23,7 +22,7 @@ const Homepage = () => {
         return response.data.data;
     }
 
-    const { data, isLoading, isFetchingNextPage, status, hasNextPage, fetchNextPage } = useInfiniteQuery({
+    const { data, isPending, isFetchingNextPage, isError, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryFn: getPosts,
         queryKey: ["post"],
         staleTime: 30 * 1000,
@@ -33,6 +32,7 @@ const Homepage = () => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
     })
+
 
     return (
         <>
@@ -74,16 +74,16 @@ const Homepage = () => {
                 {/* posts */}
                 <div className="mt-8 space-y-6">
                     {
-                        (!data && isLoading) &&
-                        Array.from({ length: 3 }).map(() => <PostSkeletonLoading />)
+                        isPending &&
+                        Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`}/>)
                     }
                     {
-                        (status !== "error") &&
+                        data &&
                         <>
                             {
                                 data?.pages.map((page) =>
                                     page.items.map((item) => (
-                                        <Post data={item} />
+                                        <Post data={item} key={`post-${item.publicId}`}/>
                                     ))
                                 )
                             }
@@ -92,7 +92,7 @@ const Homepage = () => {
                     }
 
                     {
-                        (!data && !isLoading) &&
+                        (!data && !isPending) &&
                         <div className="w-full h-fit py-20 px-32 rounded-xl border border-neutral-700 border-dashed flex flex-col items-center justify-center">
                             <h1 className="text-lg font-semibold text-neutral-200">
                                 No posts yet

@@ -20,6 +20,7 @@ import { QueryClient } from "@tanstack/react-query"
 import { createIDBPersister } from './libs/persister.ts'
 import ShowPost from './pages/Post/ShowPost.tsx'
 import NotFound from './pages/Error/NotFound.tsx'
+import NavigationTracker from './components/common/NavigationTracker.tsx'
 
 const queryClient = new QueryClient();
 const IDBPersister = createIDBPersister();
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')!).render(
         }
       }}>
         <BrowserRouter>
+          <NavigationTracker/>
           <Routes>
             <Route element={<AppLayout />}>
               {/* social */}
