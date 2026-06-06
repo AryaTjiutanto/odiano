@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ConnectLogo from "../../assets/img/logo/connect-gradient.svg";
 import { Bell, Bookmark, EllipsisVertical, Home, MessageCircle, Search, Settings, User } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks/useRedux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { logout } from "../../features/auth/auth.thunk";
 
 type Props = {
@@ -12,6 +12,11 @@ type Props = {
 const Sidebar = (props: Props) => {
     const dispatch = useAppDispatch();
 
+    // location
+    const location = useLocation();
+    const pathName = location.pathname;
+
+    // user data
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const userData = useAppSelector((state) => state.auth.user);
 
@@ -23,6 +28,10 @@ const Sidebar = (props: Props) => {
         dispatch(logout());
     }
 
+    useEffect(() => { 
+        console.log(pathName)
+    }, [pathName])
+
     return (
         <>
             <div className="w-full h-full flex flex-col justify-between">
@@ -31,7 +40,7 @@ const Sidebar = (props: Props) => {
                     <nav className="mt-16">
                         <ul className="space-y-5">
                             <li>
-                                <Link to={""} className="flex items-center space-x-5 text-lg">
+                                <Link to={"/"} className={`flex items-center space-x-5 text-lg ${pathName == "" && "text-white"} `}>
                                     <Home />
                                     <span>
                                         Home
