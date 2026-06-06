@@ -1,11 +1,10 @@
-import useRequireGuest from "../../guard/requireGuest.guard";
-import LoadingGuard from "./LoadingGuard";
+import useRequireGuest from "../../guard/useRequireGuest.guard";
+import GuardExecuter from "./GuardExecuter";
 
 const RequireGuestGuard = () => {
     const result = useRequireGuest();
-    return (
-        <LoadingGuard result={result}/>
-    )
+
+    return <GuardExecuter result={result}/>
 }
 
 export default RequireGuestGuard;

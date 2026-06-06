@@ -1,12 +1,10 @@
-import useRequireAuth from "../../guard/requireAuth.guard";
-import LoadingGuard from "./LoadingGuard";
+import useRequireAuth from "../../guard/useRequireAuth.guard";
+import GuardExecuter from "./GuardExecuter";
 
 const RequireAuthGuard = () => {
     const result = useRequireAuth();
-
-    return (
-        <LoadingGuard result={result}/>
-    )
+   
+    return <GuardExecuter result={result}/>
 }
 
 export default RequireAuthGuard;

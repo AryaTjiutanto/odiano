@@ -1,11 +1,10 @@
-import useRequireUnOnboarded from "../../guard/requireUnOnboarded.guard";
-import LoadingGuard from "./LoadingGuard";
+import useRequireUnOnboarded from "../../guard/useRequireUnOnboarded.guard";
+import GuardExecuter from "./GuardExecuter";
 
 const RequireUnOnboarded = () => {
     const result = useRequireUnOnboarded();
-    return (
-        <LoadingGuard result={result} />
-    )
+
+    return <GuardExecuter result={result}/>
 }
 
 export default RequireUnOnboarded;

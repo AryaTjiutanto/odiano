@@ -18,7 +18,7 @@ const useRequireGuest = (): GuardResult => {
         return {
             isLoading: false,
             allowed: false,
-            redirectTo: "profile"
+            redirectTo: "/profile"
         }
     }
 
