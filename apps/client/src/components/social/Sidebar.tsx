@@ -6,10 +6,10 @@ import { useState } from "react";
 import { logout } from "../../features/auth/auth.thunk";
 
 type Props = {
-    setShowCreatePropsSection : React.Dispatch<React.SetStateAction<boolean>>
+    setShowCreatePropsSection: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Sidebar = (props : Props) => {
+const Sidebar = (props: Props) => {
     const dispatch = useAppDispatch();
 
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -86,6 +86,7 @@ const Sidebar = (props : Props) => {
                                     </span>
                                 </Link>
                             </li>
+
                         </ul>
                     </nav >
                     {

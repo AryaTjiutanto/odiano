@@ -39,7 +39,7 @@ createRoot(document.getElementById('root')!).render(
         }
       }}>
         <BrowserRouter>
-          <NavigationTracker/>
+          <NavigationTracker />
           <Routes>
             <Route element={<AppLayout />}>
               {/* social */}
@@ -48,6 +48,12 @@ createRoot(document.getElementById('root')!).render(
 
                 {/* post */}
                 <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+
+                {/* auth */}
+                <Route element={<RequireAuthGuard />}>
+                  {/* profile */}
+                  <Route path='/profile' element={<ProfileIndex />} />
+                </Route>
               </Route>
 
               {/* auth process */}
@@ -62,13 +68,6 @@ createRoot(document.getElementById('root')!).render(
               <Route element={<RequireUnOnboarded />}>
                 <Route path='/onboarding' element={<OnBoarding />} />
               </Route>
-
-              {/* auth */}
-              <Route element={<RequireAuthGuard />}>
-                {/* profile */}
-                <Route path='/profile' element={<ProfileIndex />} />
-              </Route>
-
               {/* not fond */}
               <Route path='*' element={<NotFound />} />
             </Route>
