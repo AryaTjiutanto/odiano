@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import useGoBack from "../../hooks/useGoBack";
 
-const GoBackButton = () => {
+const GoBackIconButton = () => {
     const handleGoBack = useGoBack();
 
     return (
@@ -11,4 +11,4 @@ const GoBackButton = () => {
     )
 }
 
-export default GoBackButton;
+export default GoBackIconButton;

@@ -8,11 +8,10 @@ import AuthLayout from './layouts/AuthLayout.tsx'
 import OnBoarding from './pages/OnBoarding.tsx'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
-import ProfileIndex from './pages/Profile/Index.tsx'
 import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
 import RequireGuestGuard from './components/guard/RequireGuestGuard.tsx'
 import RequireUnOnboarded from './components/guard/RequireUnOnboarded.tsx'
-import Homepage from './pages/Home.tsx'
+import Homepage from './pages/Social/Home.tsx'
 import AppLayout from './layouts/AppLayout.tsx'
 import SocialLayout from './layouts/SocialLayout.tsx'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
@@ -22,6 +21,7 @@ import ShowPost from './pages/Post/ShowPost.tsx'
 import NotFound from './pages/Error/NotFound.tsx'
 import NavigationTracker from './components/common/NavigationTracker.tsx'
 import PageLoader from './components/loader/PageLoader.tsx'
+import Profile from './pages/Social/Profile.tsx'
 
 const queryClient = new QueryClient();
 const IDBPersister = createIDBPersister();
@@ -54,7 +54,7 @@ createRoot(document.getElementById('root')!).render(
                   {/* auth */}
                   <Route element={<RequireAuthGuard />}>
                     {/* profile */}
-                    <Route path='/profile' element={<ProfileIndex />} />
+                    <Route path='/profile/:username' element={<Profile/>} />
                   </Route>
                 </Route>
 

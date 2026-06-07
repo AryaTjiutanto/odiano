@@ -29,4 +29,8 @@
   .default-input-text-behaviour {
     @apply focus:outline-none focus:ring-0 active:outline-none active:ring-0
   }
+
+  .banner-aspect {
+    @apply aspect-3/1
+  }
 }

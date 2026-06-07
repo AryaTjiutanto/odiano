@@ -28,10 +28,6 @@ const Sidebar = (props: Props) => {
         dispatch(logout());
     }
 
-    useEffect(() => { 
-        console.log(pathName)
-    }, [pathName])
-
     return (
         <>
             <div className="w-full h-full flex flex-col justify-between">
@@ -40,7 +36,7 @@ const Sidebar = (props: Props) => {
                     <nav className="mt-16">
                         <ul className="space-y-5">
                             <li>
-                                <Link to={"/"} className={`flex items-center space-x-5 text-lg ${pathName == "" && "text-white"} `}>
+                                <Link to={"/"} className={`flex items-center space-x-5 text-lg ${pathName == "/" && "text-white font-semibold"} duration-100`}>
                                     <Home />
                                     <span>
                                         Home
@@ -80,7 +76,7 @@ const Sidebar = (props: Props) => {
                                 </Link>
                             </li>
                             <li>
-                                <Link to={""} className="flex items-center space-x-5 text-lg">
+                                <Link to={"profile"} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
                                     <User />
                                     <span>
                                         Profile

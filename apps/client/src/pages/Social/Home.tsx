@@ -1,11 +1,11 @@
 import { Search } from "lucide-react";
-import StoryList from "../components/social/StoryList";
-import Post from "../components/post/Post";
+import StoryList from "../../components/social/StoryList";
+import Post from "../../components/post/Post";
 import type { InfiniteQuery, PostDTO, SuccessResponseData } from "@connect/shared";
-import PostSkeletonLoading from "../components/post/PostSkeletonLoading";
-import { api } from "../libs/api";
+import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
+import { api } from "../../libs/api";
 import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
-import InfiniteScrollSentinel from "../components/common/InfiniteScrollSentinel";
+import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 
 const Homepage = () => {
     async function getPosts({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {

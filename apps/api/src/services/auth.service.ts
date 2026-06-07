@@ -127,7 +127,7 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         username: user?.username,
         isOnboarded: user?.isOnboarded,
         name: user?.name,
-        profileImage: user?.profileImage
+        profileImage: user?.profileImage,
     }
 }
 

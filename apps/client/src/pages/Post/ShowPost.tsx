@@ -1,5 +1,4 @@
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send, SmileIcon, User } from "lucide-react";
-import GoBackButton from "../../components/common/GoBackButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { type SuccessResponseData, type PostDTO } from "@connect/shared";
@@ -7,6 +6,7 @@ import { api } from "../../libs/api";
 import { useQuery } from "@tanstack/react-query";
 import PostDetailSkeletonLoading from "../../components/post/PostDetailSkeletonLoading";
 import ErrorState from "../../components/common/ErrorState";
+import GoBackIconButton from "../../components/common/GoBackIconButton";
 
 const ShowPost = () => {
     const navigate = useNavigate();
@@ -66,7 +66,7 @@ const ShowPost = () => {
             <div className="w-full h-full relative">
                 <div>
                     <div className="flex items-center space-x-5">
-                        <GoBackButton />
+                        <GoBackIconButton />
                         <h1 className="text-xl font-bold">
                             Post
                         </h1>
