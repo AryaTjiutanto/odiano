@@ -37,3 +37,13 @@ export const checkUsernameAvailability = async (req : Request, res : Response, n
         next(err);
     }
 }
+
+export const getUserProfile = async (req : Request, res: Response, next : NextFunction) => {
+    try {
+        const username = String(req.params.username);
+
+        const user = await userServices.getUserProfile(username);
+    } catch(err) {
+        next(err);
+    }
+}

@@ -9,5 +9,6 @@ const router = express.Router();
 
 router.post("/onboarding", consume(apiLimiter), requireAccessToken, validateData(createUserProfileSchema), onboarding);
 router.get("/check-username", consume(searchLimiter), checkUsernameAvailability);
+router.get("/:username", consume(apiLimiter), requireAccessToken, checkUsernameAvailability);
 
 export default router;
