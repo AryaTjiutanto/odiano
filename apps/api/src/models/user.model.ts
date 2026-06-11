@@ -12,6 +12,8 @@ type UserSchema = {
     isOnboarded: boolean,
     emailVerifiedAt: Date | null,
     profileImage: UserProfileImageSchema | null,
+    followingCount : number,
+    followerCount : number
 }
 
 // profile image schema
@@ -41,6 +43,7 @@ const userSchema = new mongoose.Schema<UserSchema>({
         required: false,
         type: String,
         default: null,
+        index : true,
     },
     name: {
         required: false,
@@ -65,6 +68,14 @@ const userSchema = new mongoose.Schema<UserSchema>({
     emailVerifiedAt: {
         type: Date,
         default: null,
+    },
+    followerCount : {
+        type : Number,
+        default : 0,
+    },
+    followingCount : {
+        type : Number,
+        default : 0
     }
 }, { timestamps: true, toJSON : {versionKey : false} });
 
