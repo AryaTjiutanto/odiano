@@ -14,13 +14,13 @@ const ShowPost = () => {
 
     // get post data
     const getPost = async () => {
-        try {
-            const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${postPublicId}`);
+        const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${postPublicId}`);
 
-            return response.data.data;
-        } catch (err: any) {
-            console.log(err.response);
+        if(!response.data.data) {
+            throw new Error("Data is missing");
         }
+
+        return response.data.data;
     }
 
     const postQuery = useQuery({

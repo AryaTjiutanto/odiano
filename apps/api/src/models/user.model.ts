@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import { UserProfileImageSchema } from "../types/user.type";
 // types for schema
 type UserSchema = {
     email: string,
@@ -10,16 +11,11 @@ type UserSchema = {
     bio: string | null,
     isOnboarded: boolean,
     emailVerifiedAt: Date | null,
-    profileImage: ProfileImageSchema | null,
-}
-
-type ProfileImageSchema = {
-    url: string,
-    publicId: string,
+    profileImage: UserProfileImageSchema | null,
 }
 
 // profile image schema
-const profileImageSchema = new mongoose.Schema({
+const profileImageSchema = new mongoose.Schema<UserProfileImageSchema>({
     url: {
         type: String,
         required: true,

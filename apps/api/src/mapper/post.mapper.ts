@@ -1,5 +1,6 @@
 import { PostDTO } from "@connect/shared";
 import { type PostQuery } from "../types/post.type";
+import { PostUserQuery } from "../types/user.type";
 
 export const toPostDto = (post: PostQuery): PostDTO => {
     return {

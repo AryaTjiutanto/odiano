@@ -31,7 +31,7 @@ app.use(helmet());
 app.use("/", routes);
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error({
-        err,
+        err : err.message,
         method : req.method,
         url : req.originalUrl,
         ip : req.ip,

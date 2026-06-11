@@ -12,10 +12,10 @@ export type PostQuery = {
     isArchive : boolean,
     createdAt : Date,
     updatedAt : Date,
-    author : {
+    author? : {
         _id : Types.ObjectId,
         name : string,
         username : string,
         profileImage : UserProfileImageDTO 
-    } | null,
+    },
 }

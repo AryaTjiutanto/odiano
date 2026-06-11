@@ -76,7 +76,7 @@ const Sidebar = (props: Props) => {
                                 </Link>
                             </li>
                             <li>
-                                <Link to={"profile"} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
+                                <Link to={`profile/${userData && userData?.username}`} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
                                     <User />
                                     <span>
                                         Profile

@@ -8,6 +8,7 @@ import { authCookieOptions } from "../libs/auth/auth.cookie";
 import { ReqBody } from "../types/request";
 import { type AuthenticateUserSchema } from "@connect/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import logger from "../libs/log/logger";
 
 export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {

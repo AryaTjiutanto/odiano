@@ -2,9 +2,10 @@ import { Request, Response, NextFunction} from "express";
 import { AppError } from "../errors/appError.error";
 import * as userServices from "../services/user.service";
 import { ReqBody } from "../types/request";
-import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE, UserProfileDTO } from "@connect/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import logger from "../libs/log/logger";
 
 export const onboarding = async (req : ReqBody<CreateUserProfileSchema>, res : Response, next : NextFunction) => {
     try {
@@ -42,7 +43,9 @@ export const getUserProfile = async (req : Request, res: Response, next : NextFu
     try {
         const username = String(req.params.username);
 
-        const user = await userServices.getUserProfile(username);
+        const data = await userServices.getUserProfile(username);
+
+        res.status(200).json(successResponseData<UserProfileDTO>(SUCCESS_RESPONSE_CODE.success, "Success", data))
     } catch(err) {
         next(err);
     }

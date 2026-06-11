@@ -18,3 +18,12 @@ export type CurrentUserDTO = {
     profileImage: UserProfileImageDTO | null,
     isOnboarded: boolean,
 }
+
+export type UserProfileDTO = {
+    id : string,
+    username : string,
+    name : string,
+    profileImage : UserProfileImageDTO,
+    bio : string,
+    createdAt : Date,
+}

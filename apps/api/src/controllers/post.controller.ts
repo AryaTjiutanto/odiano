@@ -32,6 +32,20 @@ export const show = async(req: Request, res : Response, next : NextFunction) => 
     }
 }
 
+export const getUserPosts = async (req : Request, res : Response, next : NextFunction) => {
+    const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;
+
+    try {
+        const username = String(req.params.username);
+
+        const data = await postServices.getUserPosts(username, cursor);
+
+        res.status(200).json(successResponseData<InfiniteQuery<PostDTO[]>>(SUCCESS_RESPONSE_CODE.success, "Success", data));
+    } catch(err) {
+        next(err);
+    }
+}
+
 export const create = async (req: ReqBody<CreatePostSchema>, res: Response, next: NextFunction) => {
     const userId = req.userId;
 

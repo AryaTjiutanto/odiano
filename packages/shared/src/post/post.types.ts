@@ -2,23 +2,23 @@ import { PostUserDTO } from "../user"
 import { AllowedMediaProviders, AllowedMediaTypes, PostVisibilities } from "./post.const"
 
 export type MediaSource = {
-    url : string,
-    publicId : string,
+    url: string,
+    publicId: string,
 }
 
 export type PostMedia = {
-    width : number,
-    height : number,
-    provider : AllowedMediaProviders,
-    type : AllowedMediaTypes
-    order : number,
-    source : MediaSource,
+    width: number,
+    height: number,
+    provider: AllowedMediaProviders,
+    type: AllowedMediaTypes
+    order: number,
+    source: MediaSource,
 }
 
 export type Post = {
     // content
     content: string,
-    media : PostMedia[] | null,
+    media: PostMedia[] | null,
 
     // setting
     visibility: PostVisibilities,
@@ -28,12 +28,12 @@ export type Post = {
 }
 
 export type PostPublicId = {
-    publicId : string,
+    publicId: string,
 }
 
 export type PostDTO = Post & {
-    id : string,
-    publicId : string,
-    author? : PostUserDTO,
-    createdAt : Date,
+    id: string,
+    publicId: string,
+    author?: PostUserDTO,
+    createdAt: Date,
 }
