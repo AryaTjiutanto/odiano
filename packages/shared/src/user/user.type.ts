@@ -22,8 +22,8 @@ export type CurrentUserDTO = {
 export type UserProfileDTO = {
     id : string,
     username : string,
-    name : string,
-    profileImage : UserProfileImageDTO,
     bio : string,
+    name : string,
     createdAt : Date,
+    profileImage : UserProfileImageDTO | null,
 }

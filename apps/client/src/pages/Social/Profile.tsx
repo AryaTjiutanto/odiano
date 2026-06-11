@@ -3,10 +3,12 @@ import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays, EllipsisVertical, User } from "lucide-react";
 import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { api } from "../../libs/api";
-import type { InfiniteQuery, PostDTO, SuccessResponseData, UserProfileDTO } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type SuccessResponseData, type UserProfileDTO } from "@connect/shared";
 import ErrorState from "../../components/common/ErrorState";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
+import type { AxiosError } from "axios";
+import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 
 const Profile = () => {
     // get user data
@@ -15,7 +17,6 @@ const Profile = () => {
     async function getUserProfile() {
         const response = await api.get<SuccessResponseData<UserProfileDTO>>(`users/${username}`);
 
-        console.log(response);
         if (!response.data.data) {
             throw new Error("User not found");
         }
@@ -121,15 +122,20 @@ const Profile = () => {
     }
 
     if (profileQuery.isError) {
-        return (
-            <div className="w-full h-full grid place-content-center">
-                <ErrorState
-                    title="This User isn't available"
-                    description="User may have been deleted or change the username."
-                    fontSize="small"
-                />
-            </div>
-        )
+        const error = profileQuery.error as AxiosError<ErrorResponseData>;
+        const response = error.response;
+
+        if (response?.data.code == ERROR_RESPONSE_CODE.notFound) {
+            return (
+                <div className="w-full h-full grid place-content-center">
+                    <ErrorState
+                        title="This User isn't available"
+                        description="User may have been deleted or change the username."
+                        fontSize="small"
+                    />
+                </div>
+            )
+        }
     }
 
     return (
@@ -235,11 +241,17 @@ const Profile = () => {
                     }
                     {
                         postsQuery.data &&
-                        postsQuery.data.pages.map(page => page.items.map((item) => {
-                            return (
-                                <Post data={item} author={profileQuery.data} key={item.id}/>
-                            )
-                        }))
+                        <>
+                            {
+                                postsQuery.data.pages.map(page => page.items.map((item) => {
+                                    return (
+                                        <Post data={item} author={profileQuery.data} key={item.id} />
+                                    )
+                                }))
+                            }
+
+                            <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage}/>
+                        </>
                     }
                 </div>
             </div>

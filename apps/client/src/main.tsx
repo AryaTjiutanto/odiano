@@ -23,7 +23,13 @@ import NavigationTracker from './components/common/NavigationTracker.tsx'
 import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions : {
+    queries : {
+      refetchOnWindowFocus : false,
+    }
+  }
+});
 const IDBPersister = createIDBPersister();
 
 createRoot(document.getElementById('root')!).render(
@@ -37,7 +43,7 @@ createRoot(document.getElementById('root')!).render(
             const key = query.queryKey[0];
             return typeof key == "string" && ["post", "user"].includes(key);
           }
-        }
+        },
       }}>
         <BrowserRouter>
           <NavigationTracker />

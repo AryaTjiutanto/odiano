@@ -82,17 +82,32 @@ export const getUserPosts = async (username: string, cursor: string | null): Pro
         )
     }
 
+    // get posts
     const posts = await Post.find(query)
         .sort({ _id: -1 })
         .select("_id publicId content media visibility hideLikeAndViewCount turnOffCommenting isArchive createdAt updatedAt")
-        .limit(10)
+        .limit(POSTS_PAGE_SIZE + 1)
         .lean<PostQuery[]>();
 
-    const data = posts.map((post) => toPostDto(post));
+
+    let items = posts;
+
+    // handle hasNextPage
+    let hasNextPage = false;
+    if(posts.length > POSTS_PAGE_SIZE) {
+        hasNextPage = true;
+        items = posts.slice(0, POSTS_PAGE_SIZE);
+    }
+
+    // formatting the data
+    const data = items.map((item) => toPostDto(item));
+
+    // cursor
+    const nextCursor = data[data.length - 1].id;
 
     return {
-        hasNextPage: true,
-        nextCursor: "",
+        hasNextPage,
+        nextCursor,
         items: data,
     };
 }

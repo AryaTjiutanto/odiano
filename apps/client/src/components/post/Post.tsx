@@ -15,25 +15,27 @@ const Post = ({ data, author }: Props) => {
         <Link to={`/${dataAuthor?.username}/post/${data.publicId}`} className="inline-block w-full">
             <article className="w-full p-7 rounded-lg bg-neutral-900">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="h-10 aspect-square rounded-full bg-neutral-800 grid place-content-center overflow-hidden">
-                            {
-                                dataAuthor?.profileImage?.url ?
-                                    <img src={dataAuthor.profileImage.url} className="w-full h-full" />
-                                    :
-                                    <User className="w-4" />
-                            }
-                        </div>
-                        <div>
-                            <div className="flex items-center space-x-2 text-xs">
-                                <h1 className="text-neutral-100 font-semibold">{dataAuthor?.name ?? ""}</h1>
-                                <h2 className="text-neutral-500">@{dataAuthor?.username ?? ""}</h2>
+                    <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
+                        <div className="flex items-center space-x-3">
+                            <div className="h-10 aspect-square rounded-full bg-neutral-800 grid place-content-center overflow-hidden">
+                                {
+                                    dataAuthor?.profileImage?.url ?
+                                        <img src={dataAuthor.profileImage.url} className="w-full h-full" />
+                                        :
+                                        <User className="w-4" />
+                                }
                             </div>
-                            <h3 className="text-[11px] text-neutral-500">
-                                {data.createdAt ? formatDistanceToNow(data.createdAt) : '-'}
-                            </h3>
+                            <div>
+                                <div className="flex items-center space-x-2 text-xs">
+                                    <h1 className="text-neutral-100 font-semibold">{dataAuthor?.name ?? ""}</h1>
+                                    <h2 className="text-neutral-500">@{dataAuthor?.username ?? ""}</h2>
+                                </div>
+                                <h3 className="text-[11px] text-neutral-500">
+                                    {data.createdAt ? formatDistanceToNow(data.createdAt) : '-'}
+                                </h3>
+                            </div>
                         </div>
-                    </div>
+                    </Link>
                     <EllipsisVertical className="w-4" />
                 </div>
                 <p className="text-sm mt-8">
