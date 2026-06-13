@@ -3,6 +3,7 @@ import authRoutes from "./auth.route";
 import userRoutes from "./user.route";
 import uploadRoutes from "./upload.route";
 import postRoutes from "./post.route";
+import followingRoutes from "./following.route";
 
 const router = express.Router();
 
@@ -10,5 +11,6 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/post", postRoutes);
+router.use("/following", followingRoutes);
 
 export default router;
