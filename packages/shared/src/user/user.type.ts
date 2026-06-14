@@ -26,4 +26,7 @@ export type UserProfileDTO = {
     name : string,
     createdAt : Date,
     profileImage : UserProfileImageDTO | null,
+    followerCount : number,
+    followingCount : number,
+    isFollowing? : boolean,
 }

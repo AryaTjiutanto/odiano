@@ -7,7 +7,7 @@ import { SUCCESS_RESPONSE_CODE } from "@connect/shared";
 export const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const currentUserId = req.userId;
-        const { userId, followUserId } = req.body;
+        const { userId, followUserId } = req.body.data;
 
         if (!currentUserId) {
             throw new UnauthorizedError();

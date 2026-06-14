@@ -3,6 +3,7 @@ import { AppError } from "../errors/appError.error"
 import { Following } from "../models/following.model";
 import { User } from "../models/user.model";
 import mongoose from "mongoose";
+import logger from "../libs/log/logger";
 
 export const createFollowing = async (currentUserId: string, userId: string, followUserId: string) => {
     // checl is userId is current user id
@@ -19,7 +20,7 @@ export const createFollowing = async (currentUserId: string, userId: string, fol
     // check is following exist
     const followingExist = await Following.exists({ userId, followUserId });
 
-    if (!followingExist) {
+    if (followingExist) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "Already following");
     }
 
@@ -51,7 +52,7 @@ export const deleteFollowing = async (currentUserId: string, userId: string, fol
     // check is following exist
     const followingExist = await Following.exists({ userId, followUserId });
 
-    if (followingExist) {
+    if (!followingExist) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "You haven't followed this account yet");
     }
 

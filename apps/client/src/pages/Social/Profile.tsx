@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { data, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays, EllipsisVertical, User } from "lucide-react";
 import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
@@ -9,8 +9,13 @@ import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
 import type { AxiosError } from "axios";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "../../shared/hooks/useRedux";
+import { current } from "@reduxjs/toolkit";
 
 const Profile = () => {
+    const currentUserId = useAppSelector((state) => state.auth.user?.id);
+
     // get user data
     const { username } = useParams();
 
@@ -58,6 +63,33 @@ const Profile = () => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
     });
+
+    // following handler
+    const followHandler = async () => {
+        try {
+            const response = await api.post<SuccessResponseData>('following/create', {
+                data: {
+                    userId: currentUserId,
+                    followUserId: profileQuery.data?.id,
+                }
+            });
+        } catch (err) {
+
+        }
+    }
+
+    const unfollowHandler = async () => {
+        try {
+            const response = await api.delete<SuccessResponseData>('following/delete', {
+                data: {
+                    userId: currentUserId,
+                    followUserId: profileQuery.data?.id,
+                }
+            });
+        } catch (err) {
+
+        }
+    }
 
     // handler
     if (profileQuery.isPending) {
@@ -170,9 +202,23 @@ const Profile = () => {
 
             {/* action button */}
             <div className="w-full mt-8 flex justify-end space-x-3">
-                <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
-                    Follow
-                </button>
+                {
+                    profileQuery.data?.id == currentUserId &&
+                    <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
+                        Edit profile
+                    </button>
+                }
+                {
+                    profileQuery.data?.id !== currentUserId &&
+                        profileQuery.data?.isFollowing ?
+                        <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={unfollowHandler}>
+                            Unfollow
+                        </button>
+                        :
+                        <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={followHandler}>
+                            Follow
+                        </button>
+                }
                 <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
                     <EllipsisVertical />
                 </button>
@@ -210,7 +256,7 @@ const Profile = () => {
             <div className="flex items-center space-x-3 mt-5">
                 <div className="flex items-center space-x-2 text-sm`">
                     <h1 className="font-bold">
-                        0
+                        {profileQuery?.data?.followerCount || 0}
                     </h1>
                     <span className="text-neutral-400">
                         Followers
@@ -218,7 +264,7 @@ const Profile = () => {
                 </div>
                 <div className="flex items-center space-x-2 text-sm`">
                     <h1 className="font-bold">
-                        0
+                        {profileQuery?.data?.followingCount || 0}
                     </h1>
                     <span className="text-neutral-400">
                         Following
@@ -245,12 +291,12 @@ const Profile = () => {
                             {
                                 postsQuery.data.pages.map(page => page.items.map((item) => {
                                     return (
-                                        <Post data={item} author={profileQuery.data} key={item.id} />
+                                        <Post data={item} author={profileQuery.data} key={`post-${item.id}`} />
                                     )
                                 }))
                             }
 
-                            <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage}/>
+                            <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage} />
                         </>
                     }
                 </div>

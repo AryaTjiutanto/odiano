@@ -5,6 +5,7 @@ import { removeTemp } from "../utils/path";
 import cloudinary from "../config/cloudinary.config";
 import { UserProfileQuery } from "../types/user.type";
 import { toUserProfileDTO } from "../mapper/user.mapper";
+import { Following } from "../models/following.model";
 
 type OnboardingPayload = {
     userId: string,
@@ -47,16 +48,21 @@ export const onboarding = async (payload: OnboardingPayload) => {
     user.save();
 }
 
-export const getUserProfile = async (username : string) : Promise<UserProfileDTO> => {
+export const getUserProfile = async (currentUserId : string, username : string) : Promise<UserProfileDTO> => {
     const user = await User.findOne({username})
-    .select("_id username name bio profileImage createdAt")
+    .select("_id username name bio profileImage createdAt followerCount followingCount")
     .lean<UserProfileQuery>();
 
     if(!user) {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "user not found");
     }
 
-    return toUserProfileDTO(user);
+    let isFollowing;
+    if(currentUserId != user._id.toString()) {
+        isFollowing = !!(await Following.exists({userId : currentUserId, followUserId : user._id}));
+    }
+    
+    return toUserProfileDTO(user, isFollowing);
 }
 
 export const checkUsernameAvailability = async (username: string) => {
