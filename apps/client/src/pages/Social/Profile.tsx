@@ -1,7 +1,7 @@
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays, EllipsisVertical, User } from "lucide-react";
-import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryFunctionContext } from "@tanstack/react-query";
 import { api } from "../../libs/api";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type SuccessResponseData, type UserProfileDTO } from "@connect/shared";
 import ErrorState from "../../components/common/ErrorState";
@@ -9,16 +9,18 @@ import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
 import type { AxiosError } from "axios";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
-import { useEffect, useState } from "react";
 import { useAppSelector } from "../../shared/hooks/useRedux";
-import { current } from "@reduxjs/toolkit";
+import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 
 const Profile = () => {
+    const queryClient = useQueryClient();
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
-
-    // get user data
+    const setQueryDataHandler = useSetQueryDataHandler();
+    
     const { username } = useParams();
-
+    const profileQueryKey = ['user', username];
+    
+    // get user data
     async function getUserProfile() {
         const response = await api.get<SuccessResponseData<UserProfileDTO>>(`users/${username}`);
 
@@ -32,7 +34,7 @@ const Profile = () => {
     const profileQuery = useQuery({
         queryFn: getUserProfile,
         enabled: !!username,
-        queryKey: ['user', username],
+        queryKey: profileQueryKey,
         staleTime: 30 * 1000,
         gcTime: 1 * 24 * 60 * 60 * 1000,
     })
@@ -64,13 +66,15 @@ const Profile = () => {
         }
     });
 
-    // following handler
-    const followHandler = async () => {
+    // create following handler
+    const createFollowing = async (followUserId: string | undefined) => {
+        if(!followUserId) return;
+
         try {
             const response = await api.post<SuccessResponseData>('following/create', {
                 data: {
                     userId: currentUserId,
-                    followUserId: profileQuery.data?.id,
+                    followUserId,
                 }
             });
         } catch (err) {
@@ -78,14 +82,69 @@ const Profile = () => {
         }
     }
 
-    const unfollowHandler = async () => {
+    const followMutation = useMutation({
+        mutationFn: createFollowing,
+
+        onMutate: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
+            return {
+                ...oldData,
+                followerCount : oldData.followerCount + 1,
+                isFollowing : true,
+            }
+        }),
+
+        onError : () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
+            return {
+                ...oldData,
+                followerCount : oldData.followerCount - 1,
+                isFollowing : false,
+            }
+        })
+    })
+
+    const handleFollow = async () => {
+        try {
+            await followMutation.mutateAsync(profileQuery.data?.id);
+        } catch (err) {
+
+        }
+    }
+
+    // delete following handler
+    const deleteFollowing = async (followUserId : string | undefined) => {
+        if(!followUserId) return;
+
         try {
             const response = await api.delete<SuccessResponseData>('following/delete', {
                 data: {
                     userId: currentUserId,
-                    followUserId: profileQuery.data?.id,
+                    followUserId,
                 }
             });
+        } catch (err) {
+
+        }
+    }
+
+    const unfollowMutation = useMutation({
+        mutationFn : deleteFollowing,
+        
+        onMutate : () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
+            ...oldData,
+            followerCount : oldData.followerCount - 1,
+            isFollowing : false,
+        })),
+
+        onError : () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
+            ...oldData,
+            followerCount : oldData.followerCount + 1,
+            isFollowing : true,
+        }))
+    })
+
+    const handleUnfollow = async () => {
+        try {
+            await unfollowMutation.mutateAsync(profileQuery.data?.id);
         } catch (err) {
 
         }
@@ -210,14 +269,18 @@ const Profile = () => {
                 }
                 {
                     profileQuery.data?.id !== currentUserId &&
-                        profileQuery.data?.isFollowing ?
-                        <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={unfollowHandler}>
-                            Unfollow
-                        </button>
-                        :
-                        <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={followHandler}>
-                            Follow
-                        </button>
+                    <>
+                        {
+                            profileQuery.data?.isFollowing ?
+                                <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={handleUnfollow}>
+                                    Unfollow
+                                </button>
+                                :
+                                <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={handleFollow}>
+                                    Follow
+                                </button>
+                        }
+                    </>
                 }
                 <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
                     <EllipsisVertical />
