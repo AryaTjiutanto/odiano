@@ -11,8 +11,7 @@ type Story = {
 
 const StoryList = () => {
     const [stories, setStories] = useState<Story[] | null>();
-    const maxStories = window.innerWidth >= 1980 ? 7 :
-        window.innerWidth >= 1980 ? 6 : 3;
+    const maxStories = window.innerWidth >= 1980 ? 7 : window.innerWidth >= 1980 ? 6 : 3;
 
     const gradientColors = [
         "bg-linear-to-r from-yellow-400 via-pink-500 to-purple-600",

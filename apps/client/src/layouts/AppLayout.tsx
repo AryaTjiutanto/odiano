@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useAppDispatch } from "../shared/hooks/useRedux";
 import { useEffect } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
+import { Toaster } from "react-hot-toast";
 
 const AppLayout = () => {
     const dispatch = useAppDispatch();
@@ -27,6 +28,10 @@ const AppLayout = () => {
             />
 
             {/* body */}
+            <Toaster
+                position="top-right"
+                reverseOrder={false}
+            />
             <div className="w-full max-w-480 min-h-screen bg-neutral-950 text-neutral-300">
                 <Outlet />
             </div>
