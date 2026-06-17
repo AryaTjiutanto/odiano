@@ -11,6 +11,8 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
+import type { AxiosErrorResponseData } from "../../types/response";
+import { notify } from "../../helpers/notify.helper";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -56,7 +58,9 @@ const ShowPost = () => {
 
             return response.data.data;
         } catch (err) {
+            const error = err as AxiosErrorResponseData;
 
+            notify.error("Follow Status Unavailable", error.response?.data.message || "Something went wrong");
         }
     }
 
@@ -88,20 +92,22 @@ const ShowPost = () => {
         try {
             await followMutation.mutateAsync(postQuery.data?.author?.id);
         } catch (err) {
+            const error = err as AxiosErrorResponseData;
 
+            notify.error("Follow failed", error.response?.data.message || "Something went wrong");
         }
     }
 
     // handle unfollow mutation
     const unfollowMutation = useMutation({
-        mutationFn : deleteFollowing,
+        mutationFn: deleteFollowing,
 
-        onMutate : () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => ({
-            isFollowing : false,
+        onMutate: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => ({
+            isFollowing: false,
         })),
 
-        onError : () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => ({
-            isFollowing : true,
+        onError: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => ({
+            isFollowing: true,
         }))
     })
 
@@ -109,7 +115,9 @@ const ShowPost = () => {
         try {
             await unfollowMutation.mutateAsync(postQuery.data?.author?.id);
         } catch (err) {
+            const error = err as AxiosErrorResponseData;
 
+            notify.error("Unfollow failed", error.response?.data.message || "Something went wrong");
         }
     }
 

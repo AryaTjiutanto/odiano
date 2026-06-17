@@ -13,6 +13,8 @@ import { useAppSelector } from "../../shared/hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
+import { notify } from "../../helpers/notify.helper";
+import type { AxiosErrorResponseData } from "../../types/response";
 
 const Profile = () => {
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
@@ -92,7 +94,9 @@ const Profile = () => {
         try {
             await followMutation.mutateAsync(profileQuery.data?.id);
         } catch (err) {
+            const error = err as AxiosErrorResponseData;
 
+            notify.error("Follow failed", error.response?.data.message || "Something went wrong");
         }
     }
 
@@ -117,7 +121,9 @@ const Profile = () => {
         try {
             await unfollowMutation.mutateAsync(profileQuery.data?.id);
         } catch (err) {
+            const error = err as AxiosErrorResponseData;
 
+            notify.error("Unfollow failed", error.response?.data.message || "Something went wrong");
         }
     }
 

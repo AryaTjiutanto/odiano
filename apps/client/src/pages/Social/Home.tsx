@@ -23,7 +23,7 @@ const Homepage = () => {
         return response.data.data;
     }
 
-    const { data, isPending, isFetchingNextPage, isError, hasNextPage, fetchNextPage } = useInfiniteQuery({
+    const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryFn: getPosts,
         queryKey: ["post"],
         staleTime: 30 * 1000,

@@ -1,4 +1,5 @@
 import type { ERROR_RESPONSE_CODE, ErrorResponseData, FailedAttemptError, TooManyRequestError, ValidationError } from "@connect/shared"
+import type { AxiosError } from "axios"
 
 export type ValidationErrorResponse = ErrorResponseData<ValidationError[]> & {
     code : typeof ERROR_RESPONSE_CODE.validationError,
@@ -11,3 +12,5 @@ export type FailedAttemptErrorResponse = ErrorResponseData<FailedAttemptError> &
 export type TooManyRequestErrorResponse = ErrorResponseData<TooManyRequestError> & {
     code : typeof ERROR_RESPONSE_CODE.tooManyRequests,
 }
+
+export type AxiosErrorResponseData = AxiosError<ErrorResponseData>
