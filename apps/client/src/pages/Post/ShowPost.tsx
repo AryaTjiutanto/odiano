@@ -78,12 +78,12 @@ const ShowPost = () => {
 
         onMutate: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => {
             return {
-                isFollowing: false,
+                isFollowing: true,
             }
         }),
         onError: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => {
             return {
-                isFollowing: true,
+                isFollowing: false,
             }
         }),
     })
@@ -189,16 +189,18 @@ const ShowPost = () => {
                                     </div>
                                     :
                                     <>
-                                        {
-                                            isFollowingQuery.data?.isFollowing ?
-                                                <button className="w-20 h-10 rounded-lg border border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700 text-sm cursor-pointer duration-100" onClick={handleUnfollow}>
-                                                    Unfollow
-                                                </button>
-                                                :
-                                                <button className="w-20 h-10 rounded-lg border border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700 text-sm cursor-pointer duration-100" onClick={handleFollow}>
-                                                    Follow
-                                                </button>
-                                        }
+                                        <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${ isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
+                                            {
+                                                isFollowingQuery.data?.isFollowing ?
+                                                    <button className="w-28 h-full cursor-pointer" onClick={handleUnfollow}>
+                                                        Unfollow
+                                                    </button>
+                                                    :
+                                                    <button className="w-20 h-full cursor-pointer" onClick={handleFollow}>
+                                                        Follow
+                                                    </button>
+                                            }
+                                        </div>
                                     </>
                             }
                             <EllipsisVertical className="w-4 duration-100 cursor-pointer" />

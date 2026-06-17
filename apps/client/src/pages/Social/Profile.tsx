@@ -19,10 +19,10 @@ import type { AxiosErrorResponseData } from "../../types/response";
 const Profile = () => {
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
     const setQueryDataHandler = useSetQueryDataHandler();
-    
+
     const { username } = useParams();
     const profileQueryKey = ['user', username];
-    
+
     // get user data
     async function getUserProfile() {
         const response = await api.get<SuccessResponseData<UserProfileDTO>>(`users/${username}`);
@@ -76,16 +76,16 @@ const Profile = () => {
         onMutate: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
             return {
                 ...oldData,
-                followerCount : oldData.followerCount + 1,
-                isFollowing : true,
+                followerCount: oldData.followerCount + 1,
+                isFollowing: true,
             }
         }),
 
-        onError : () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
+        onError: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
             return {
                 ...oldData,
-                followerCount : oldData.followerCount - 1,
-                isFollowing : false,
+                followerCount: oldData.followerCount - 1,
+                isFollowing: false,
             }
         })
     })
@@ -102,18 +102,18 @@ const Profile = () => {
 
     // delete following handler
     const unfollowMutation = useMutation({
-        mutationFn : deleteFollowing,
-        
-        onMutate : () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
+        mutationFn: deleteFollowing,
+
+        onMutate: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
             ...oldData,
-            followerCount : oldData.followerCount - 1,
-            isFollowing : false,
+            followerCount: oldData.followerCount - 1,
+            isFollowing: false,
         })),
 
-        onError : () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
+        onError: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
             ...oldData,
-            followerCount : oldData.followerCount + 1,
-            isFollowing : true,
+            followerCount: oldData.followerCount + 1,
+            isFollowing: true,
         }))
     })
 
@@ -247,17 +247,20 @@ const Profile = () => {
                 {
                     profileQuery.data?.id !== currentUserId &&
                     <>
-                        {
-                            profileQuery.data?.isFollowing ?
-                                <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={handleUnfollow}>
-                                    Unfollow
-                                </button>
-                                :
-                                <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100" onClick={handleFollow}>
-                                    Follow
-                                </button>
-                        }
+                        <div className={`max-w-32 h-11 duration-100 rounded-lg border text-sm ${profileQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
+                            {
+                                profileQuery.data?.isFollowing ?
+                                    <button className="w-32 h-full cursor-pointer" onClick={handleUnfollow}>
+                                        Unfollow
+                                    </button>
+                                    :
+                                    <button className="w-24 h-full cursor-pointer" onClick={handleFollow}>
+                                        Follow
+                                    </button>
+                            }
+                        </div>
                     </>
+
                 }
                 <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
                     <EllipsisVertical />
