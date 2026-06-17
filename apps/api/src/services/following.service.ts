@@ -69,3 +69,9 @@ export const deleteFollowing = async (currentUserId: string, userId: string, fol
         await session.endSession();
     }
 }
+
+export const isFollowing = async (currentUserId : string, followUserId : string) => {
+    const result = await Following.exists({userId : currentUserId, followUserId});
+
+    return !!result;
+}

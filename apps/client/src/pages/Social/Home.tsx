@@ -6,6 +6,7 @@ import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import { api } from "../../libs/api";
 import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
+import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 
 const Homepage = () => {
     async function getPosts({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
@@ -26,7 +27,7 @@ const Homepage = () => {
         queryFn: getPosts,
         queryKey: ["post"],
         staleTime: 30 * 1000,
-        gcTime: 1 * 24 * 60 * 60 * 1000,
+        gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;

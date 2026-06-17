@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays, EllipsisVertical, User } from "lucide-react";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryFunctionContext } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { api } from "../../libs/api";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type SuccessResponseData, type UserProfileDTO } from "@connect/shared";
 import ErrorState from "../../components/common/ErrorState";
@@ -11,9 +11,10 @@ import type { AxiosError } from "axios";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { useAppSelector } from "../../shared/hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
+import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
+import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
 
 const Profile = () => {
-    const queryClient = useQueryClient();
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
     const setQueryDataHandler = useSetQueryDataHandler();
     
@@ -36,7 +37,7 @@ const Profile = () => {
         enabled: !!username,
         queryKey: profileQueryKey,
         staleTime: 30 * 1000,
-        gcTime: 1 * 24 * 60 * 60 * 1000,
+        gcTime: DEFAULT_GC_TIME,
     })
 
     // get user posts
@@ -59,7 +60,7 @@ const Profile = () => {
         queryKey: ['post', username],
         enabled: !!profileQuery.data,
         staleTime: 30 * 1000,
-        gcTime: 1 * 24 * 60 * 60 * 1000,
+        gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
@@ -67,21 +68,6 @@ const Profile = () => {
     });
 
     // create following handler
-    const createFollowing = async (followUserId: string | undefined) => {
-        if(!followUserId) return;
-
-        try {
-            const response = await api.post<SuccessResponseData>('following/create', {
-                data: {
-                    userId: currentUserId,
-                    followUserId,
-                }
-            });
-        } catch (err) {
-
-        }
-    }
-
     const followMutation = useMutation({
         mutationFn: createFollowing,
 
@@ -111,21 +97,6 @@ const Profile = () => {
     }
 
     // delete following handler
-    const deleteFollowing = async (followUserId : string | undefined) => {
-        if(!followUserId) return;
-
-        try {
-            const response = await api.delete<SuccessResponseData>('following/delete', {
-                data: {
-                    userId: currentUserId,
-                    followUserId,
-                }
-            });
-        } catch (err) {
-
-        }
-    }
-
     const unfollowMutation = useMutation({
         mutationFn : deleteFollowing,
         

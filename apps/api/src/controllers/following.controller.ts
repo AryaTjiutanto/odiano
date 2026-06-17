@@ -36,3 +36,20 @@ export const deleteFollowing = async(req : Request, res: Response, next : NextFu
         next(err);
     }
 }
+
+export const checkFollowing = async (req : Request, res : Response, next : NextFunction) => {
+    try {
+        const currentUserId = req.userId;
+        const followUserId = String(req.params.userId);
+
+        if(!currentUserId) {
+            throw new UnauthorizedError();
+        }
+
+        const isFollowing = await followingServices.isFollowing(currentUserId, followUserId);
+
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.ok,"ok", {isFollowing}));
+    } catch (err) {
+        next(err);
+    }
+}

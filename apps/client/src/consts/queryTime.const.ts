@@ -1,0 +1,1 @@
+export const DEFAULT_GC_TIME = 1 * 24 * 60 * 60 * 1000;
