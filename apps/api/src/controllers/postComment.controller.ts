@@ -1,11 +1,12 @@
 import {Request, Response, NextFunction} from "express";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { CreatePostCommentSchema, ERROR_RESPONSE_CODE, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import * as postCommentService from "../services/postComment.service";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import { ReqBody } from "../types/request";
 
-export const create = async (req : Request, res : Response, next : NextFunction) => {
+export const create = async (req : ReqBody<CreatePostCommentSchema>, res : Response, next : NextFunction) => {
     const currentUserId = req.userId;
     const {content, postId, parentId, depth} = req.body;
     

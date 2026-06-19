@@ -1,4 +1,4 @@
-import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send, SmileIcon, User } from "lucide-react";
+import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send, User } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { type SuccessResponseData, type PostDTO } from "@connect/shared";
@@ -13,6 +13,7 @@ import { createFollowing, deleteFollowing } from "../../helpers/following.helper
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import type { AxiosErrorResponseData } from "../../types/response";
 import { notify } from "../../helpers/notify.helper";
+import CreateCommentSection from "../../components/post/CreateCommentSection";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -119,14 +120,6 @@ const ShowPost = () => {
 
             notify.error("Unfollow failed", error.response?.data.message || "Something went wrong");
         }
-    }
-
-    // handle comment input
-    const autoResizeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const textarea = e.target;
-
-        textarea.style.height = "auto";
-        textarea.style.height = textarea.scrollHeight + "px";
     }
 
     if (postQuery.isPending) {
@@ -255,35 +248,7 @@ const ShowPost = () => {
                 </div>
 
                 {/* create comment */}
-                <div className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
-                    <div className="flex gap-4">
-                        <div className="w-12 h-12 rounded-full bg-neutral-800 shrink-0" />
-
-                        <div className="flex-1">
-                            <textarea
-                                onChange={autoResizeTextArea}
-                                placeholder="Write a comment..."
-                                className="w-full resize-none text-lg bg-transparent text-white placeholder:text-neutral-500 focus:outline-none"
-                            />
-
-                            <div className="flex justify-between mt-1">
-                                <div className="flex items-center space-x-3">
-                                    <button className="cursor-pointer">
-                                        <SmileIcon className="w-5" />
-                                    </button>
-                                    <button className="w-6 h-5 border border-neutral-2 grid place-content-center font-semibold text-[8px] rounded cursor-pointer">
-                                        GIF
-                                    </button>
-                                </div>
-                                <button
-                                    className="px-4 py-2 rounded-full text-neutral-600 text-sm bg-neutral-100 hover:bg-transparent hover:text-neutral-100 border border-neutral-100 duration-100 transition-colors cursor-pointer disabled:opacity-50"
-                                >
-                                    Comment
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <CreateCommentSection/>
 
                 {/* comments */}
                 <div className="w-full space-y-8 mt-10">
