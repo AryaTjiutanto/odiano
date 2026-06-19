@@ -1,44 +1,45 @@
 import { AlertCircle, Check, CircleX, Info, X } from "lucide-react";
+import type { ReactNode } from "react";
 import toast from "react-hot-toast";
 import { type Toast as ToastType } from "react-hot-toast";
 
 type ToastProps = {
     t: ToastType,
     title: string,
-    description: string,
-
+    description?: string,
+    element?: ReactNode,
     type: "info" | "warning" | "error" | "success"
 };
 
-const Toast = ({ t, title, description, type }: ToastProps) => {
+const Toast = ({ t, title, description, element, type }: ToastProps) => {
     const metadata = {
         info: {
-            icon: <Info className="size-5"/>,
+            icon: <Info className="size-5" />,
             iconColor: "text-sky-500",
-            iconBackground : "bg-sky-500/20",
+            iconBackground: "bg-sky-500/20",
             borderColor: "border-neutral-200",
-            glowColor : "bg-sky-500/20",
+            glowColor: "bg-sky-500/20",
         },
         success: {
-            icon: <Check className="size-5"/>,
+            icon: <Check className="size-5" />,
             iconColor: "text-emerald-500",
-            iconBackground : "bg-emerald-500/20",
+            iconBackground: "bg-emerald-500/20",
             borderColor: "border-emerald-400",
-            glowColor : "bg-emerald-500/20",
+            glowColor: "bg-emerald-500/20",
         },
         error: {
-            icon: <CircleX className="size-5"/>,
+            icon: <CircleX className="size-5" />,
             iconColor: "text-red-500",
-            iconBackground : "bg-red-500/20",
+            iconBackground: "bg-red-500/20",
             borderColor: "border-red-500",
-            glowColor : "bg-red-500/20",
+            glowColor: "bg-red-500/20",
         },
         warning: {
-            icon: <AlertCircle className="size-5"/>,
+            icon: <AlertCircle className="size-5" />,
             iconColor: "text-yellow-400",
-            iconBackground : "bg-yellow-500/20",
+            iconBackground: "bg-yellow-500/20",
             borderColor: "border-yellow-400",
-            glowColor : "bg-yellow-500/20",
+            glowColor: "bg-yellow-500/20",
         }
     }
 
@@ -60,9 +61,13 @@ const Toast = ({ t, title, description, type }: ToastProps) => {
                         <p className="text-sm font-medium text-white">
                             {title || ""}
                         </p>
-                        <p className="mt-1 text-sm text-gray-400">
-                            {description || ""}
-                        </p>
+                        {
+                            description &&
+                            <p className="mt-1 text-sm text-gray-400">
+                                {description || ""}
+                            </p>
+                        }
+                        {element && element}
                     </div>
                 </div>
             </div>

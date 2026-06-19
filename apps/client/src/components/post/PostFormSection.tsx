@@ -70,7 +70,6 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
             }
 
             if (error.code === ERROR_RESPONSE_CODE.tooManyRequests) {
-                console.log(error.errors?.timeLeftMs);
                 setBlockTimeLeft(error.errors?.timeLeftMs);
             }
 

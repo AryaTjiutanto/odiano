@@ -1,25 +1,32 @@
 import { toast } from "react-hot-toast";
 import Toast from "../components/toast/Toast";
+import type { ReactNode } from "react";
+
+type NotifyProps = {
+    title : string,
+    description? : string,
+    element? : ReactNode,
+}
 
 export const notify = {
-    success(title : string, description : string) {
+    success(props : NotifyProps) {
         return toast.custom((t) => (
-            <Toast t={t} title={title} description={description} type="success"/>
+            <Toast t={t} title={props.title} description={props.description} element={props.element} type="success"/>
         ))
     },
-    info(title : string, description : string) {
+    info(props : NotifyProps) {
         return toast.custom(t => (
-            <Toast t={t} title={title} description={description} type="info"/>
+            <Toast t={t} title={props.title} description={props.description} element={props.element} type="info"/>
         ))
     },
-    error(title : string, description : string) {
+    error(props : NotifyProps) {
         return toast.custom(t => (
-            <Toast t={t} title={title} description={description} type="error"/>
+            <Toast t={t} title={props.title} description={props.description} element={props.element} type="error"/>
         ))
     },
-    warning(title : string, description : string) {
+    warning(props : NotifyProps) {
         return toast.custom(t => (
-            <Toast t={t} title={title} description={description} type="warning"/>
+            <Toast t={t} title={props.title} description={props.description} element={props.element} type="warning"/>
         ))
     }
 }

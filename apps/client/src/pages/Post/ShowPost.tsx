@@ -61,7 +61,7 @@ const ShowPost = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error("Follow Status Unavailable", error.response?.data.message || "Something went wrong");
+            notify.error({"title" : "Follow Status Unavailable", "description" : error.response?.data.message || "Something went wrong"});
         }
     }
 
@@ -95,7 +95,7 @@ const ShowPost = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error("Follow failed", error.response?.data.message || "Something went wrong");
+            notify.error({"title" : "Follow failed", "description" : error.response?.data.message || "Something went wrong"});
         }
     }
 
@@ -118,7 +118,7 @@ const ShowPost = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error("Unfollow failed", error.response?.data.message || "Something went wrong");
+            notify.error({"title" : "Unfollow failed", "description" : error.response?.data.message || "Something went wrong"});
         }
     }
 
@@ -248,7 +248,7 @@ const ShowPost = () => {
                 </div>
 
                 {/* create comment */}
-                <CreateCommentSection/>
+                <CreateCommentSection postId={postQuery.data.id}/>
 
                 {/* comments */}
                 <div className="w-full space-y-8 mt-10">

@@ -96,7 +96,7 @@ const Profile = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error("Follow failed", error.response?.data.message || "Something went wrong");
+            notify.error({"title" : "Follow failed", "description" : error.response?.data.message || "Something went wrong"});
         }
     }
 
@@ -123,7 +123,7 @@ const Profile = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error("Unfollow failed", error.response?.data.message || "Something went wrong");
+            notify.error({"title" : "Unfollow failed", "description" : error.response?.data.message || "Something went wrong"});
         }
     }
 

@@ -4,7 +4,7 @@ type createPostCommentParams = {
     content : string,
     ownerId : string,
     postId : string,
-    parentId : string,
+    parentId : string | null | undefined,
     depth : number
 }
 

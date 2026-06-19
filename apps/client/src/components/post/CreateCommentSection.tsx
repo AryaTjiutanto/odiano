@@ -1,19 +1,34 @@
-import { createPostCommentSchema, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema } from "@connect/shared";
+import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
+import { api } from "../../libs/api";
+import { notify } from "../../helpers/notify.helper";
+import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
 
-const CreateCommentSection = () => {
+type CreateCommentProps = {
+    postId: string,
+}
+
+type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse;
+
+const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     const {
         handleSubmit,
         register,
         control,
-        watch,
         formState: { errors }
     } = useForm<CreatePostCommentSchema>({
         mode: "onTouched",
-        resolver: zodResolver(createPostCommentSchema)
+        resolver: zodResolver(createPostCommentSchema),
+
+        defaultValues: {
+            depth: 0,
+            parentId: null,
+            postId,
+        }
     });
 
     // handle comment input
@@ -37,8 +52,35 @@ const CreateCommentSection = () => {
         textarea.style.height = textarea.scrollHeight + "px";
     }, [content])
 
+    const onSubmit: SubmitHandler<CreatePostCommentSchema> = async (data) => {
+        try {
+            await api.post("/post/comment/create", data);
+
+            notify.success({ title: "Comment posted", "description": "Your comment has been posted successfully." });
+        } catch (err : any) {
+            const error = err.response?.data as ErrorResponse;
+
+            if (error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
+                if (!error.errors) return;
+
+                notify.error({ title: "Too many request", "element": <TooManyRequestCountDown show="auto" timeLeftMs={error.errors?.timeLeftMs} /> })
+                return;
+            }
+
+            if (error.code == ERROR_RESPONSE_CODE.validationError) {
+                notify.error({
+                    title: "Invalid comment",
+                    description: "Please check your input and try again."
+                });
+                return;
+            }
+
+            notify.error({ title: "An Error occured", "description": "Something went wrong" });
+        }
+    }
+
     return (
-        <form className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
+        <form onSubmit={handleSubmit(onSubmit, (err) => console.log(err))} className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
             <div className="flex gap-4">
                 <div className="w-12 h-12 rounded-full bg-neutral-800 shrink-0" />
 
@@ -66,7 +108,7 @@ const CreateCommentSection = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                             {
-                                (content.length > 1) &&
+                                content && (content.length > 1) &&
                                 <span className={`${content.length > POST_COMMENT_CONTENT_LENGTH.MAX ? 'text-red-500' : 'text-neutral-200'} text-sm`}>
                                     {content.length}/{POST_COMMENT_CONTENT_LENGTH.MAX}
                                 </span>

@@ -24,7 +24,7 @@ const postCommentSchema = new Schema<PostCommentSchema>({
     },
     parentId : {
         type : Types.ObjectId,
-        required : true,
+        required : false,
     },
     depth : {
         type : Number,
