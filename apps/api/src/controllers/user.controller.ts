@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/appError.error";
 import * as userServices from "../services/user.service";
-import { ReqBody } from "../types/request";
+import { ReqBody } from "../types/request.type";
 import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE, UserProfileDTO } from "@connect/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";

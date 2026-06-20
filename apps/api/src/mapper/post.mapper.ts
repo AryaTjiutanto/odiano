@@ -1,8 +1,10 @@
 import { PostDTO } from "@connect/shared";
 import { type PostQuery } from "../types/post.type";
-import { PostUserQuery } from "../types/user.type";
+import { toUserSummaryDTO } from "./user.mapper";
 
 export const toPostDto = (post: PostQuery): PostDTO => {
+    const userSummaryDTO = post.author?._id ? {author : toUserSummaryDTO(post.author)} : {};
+
     return {
         content: post.content,
         hideLikeAndViewCount: post.hideLikeAndViewCount,
@@ -13,15 +15,6 @@ export const toPostDto = (post: PostQuery): PostDTO => {
         turnOffCommenting: post.turnOffCommenting,
         visibility: post.visibility,
         createdAt: post.createdAt,
-        ...(
-            post.author?._id && {
-                author: {
-                    id: post.author._id.toString(),
-                    name: post.author.name,
-                    username: post.author.username,
-                    profileImage: post.author.profileImage,
-                }
-            }
-        )
+        ...userSummaryDTO,
     }
 }

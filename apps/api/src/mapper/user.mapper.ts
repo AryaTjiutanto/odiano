@@ -1,5 +1,5 @@
-import { UserProfileDTO } from "@connect/shared";
-import { UserProfileQuery } from "../types/user.type";
+import { UserProfileDTO, UserSummaryDTO } from "@connect/shared";
+import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
 
 export const toUserProfileDTO = (data : UserProfileQuery, isFollowing? : boolean | null | undefined) : UserProfileDTO => {
     return {
@@ -12,5 +12,14 @@ export const toUserProfileDTO = (data : UserProfileQuery, isFollowing? : boolean
         followerCount : data.followerCount,
         followingCount : data.followingCount,
         ...(isFollowing ? {isFollowing} : {}),
+    }
+}
+
+export const toUserSummaryDTO = (data : UserSummaryQuery) : UserSummaryDTO => {
+    return {
+        id : data._id.toString(),
+        name : data.name,
+        username : data.username,
+        profileImage : data.profileImage
     }
 }

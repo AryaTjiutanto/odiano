@@ -1,0 +1,1 @@
+export const POSTCOMMENT_PAGE_SIZE = 12;

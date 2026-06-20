@@ -1,5 +1,6 @@
-import { PostMedia, PostVisibilities, UserProfileImageDTO } from "@connect/shared"
+import { PostMedia, PostVisibilities } from "@connect/shared"
 import { Types } from "mongoose"
+import { UserSummaryQuery } from "./user.type"
 
 export type PostQuery = {
     _id : Types.ObjectId,
@@ -12,10 +13,5 @@ export type PostQuery = {
     isArchive : boolean,
     createdAt : Date,
     updatedAt : Date,
-    author? : {
-        _id : Types.ObjectId,
-        name : string,
-        username : string,
-        profileImage : UserProfileImageDTO 
-    },
+    author? : UserSummaryQuery,
 }

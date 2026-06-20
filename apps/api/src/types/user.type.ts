@@ -1,4 +1,4 @@
-import { UserProfileDTO } from "@connect/shared"
+import { UserProfileDTO, UserProfileImageDTO } from "@connect/shared"
 import { Types } from "mongoose"
 
 export type UserProfileImageSchema = {
@@ -7,12 +7,19 @@ export type UserProfileImageSchema = {
 }
 
 export type UserProfileQuery = {
-    _id : Types.ObjectId,
+    _id: Types.ObjectId,
 } & Omit<UserProfileDTO, "isFollowing">
 
 export type PostUserQuery = {
-    _id : Types.ObjectId,
-    name : string,
-    username : string,
-    profileImage : UserProfileImageSchema,
+    _id: Types.ObjectId,
+    name: string,
+    username: string,
+    profileImage: UserProfileImageSchema,
+}
+
+export type UserSummaryQuery = {
+    _id: Types.ObjectId,
+    name: string,
+    username: string,
+    profileImage: UserProfileImageDTO
 }

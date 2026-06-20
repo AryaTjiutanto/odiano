@@ -3,7 +3,7 @@ export type UserProfileImageDTO = {
     publicId: string,
 }
 
-export type PostUserDTO = {
+export type UserSummaryDTO = {
     id : string,
     name : string | null,
     username : string | null,

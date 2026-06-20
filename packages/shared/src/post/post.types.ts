@@ -1,4 +1,4 @@
-import { PostUserDTO } from "../user"
+import { UserSummaryDTO } from "../user"
 import { AllowedMediaProviders, AllowedMediaTypes, PostVisibilities } from "./post.const"
 
 export type MediaSource = {
@@ -34,6 +34,6 @@ export type PostPublicId = {
 export type PostDTO = Post & {
     id: string,
     publicId: string,
-    author?: PostUserDTO,
+    author?: UserSummaryDTO,
     createdAt: Date,
 }

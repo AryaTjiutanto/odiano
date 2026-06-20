@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 
 type PostCommentSchema = {
-    ownerId : Types.ObjectId,
+    author : Types.ObjectId,
     postId : Types.ObjectId,
     parentId : Types.ObjectId | null,
     depth : number,
@@ -14,16 +14,19 @@ const postCommentSchema = new Schema<PostCommentSchema>({
         type : String,
         required : true,
     },
-    ownerId : {
+    author : {
         type : Types.ObjectId,
+        ref : "User",
         required : true,
     },
     postId: {
         type : Types.ObjectId,
+        ref : "Post",
         required : true,
     },
     parentId : {
         type : Types.ObjectId,
+        ref : "PostComment",
         required : false,
     },
     depth : {

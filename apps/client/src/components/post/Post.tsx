@@ -1,11 +1,11 @@
-import type { PostDTO, PostUserDTO } from "@connect/shared";
+import type { PostDTO, UserSummaryDTO } from "@connect/shared";
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
 
 type Props = {
     data: PostDTO,
-    author? : PostUserDTO
+    author? : UserSummaryDTO
 }
 
 const Post = ({ data, author }: Props) => {
