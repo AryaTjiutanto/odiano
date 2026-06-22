@@ -1,5 +1,4 @@
 import "./bootstraps/env.bootstrap";
-import { connectDB } from "./bootstraps/db.bootstrap";
 import express from "express";
 import cors from "cors";
 import routes from "./routes/index";
@@ -10,13 +9,9 @@ import { errorResponseData } from "./utils/response.util";
 import { ZodError } from "zod";
 import { ERROR_RESPONSE_CODE, ValidationError } from "@connect/shared";
 import helmet from "helmet";
-import { startDeleteExpiredTempAssets } from "./jobs/deleteTempAssets";
 import logger from "./libs/log/logger";
 
-const PORT = process.env.PORT || "5050";
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || "localhost:5050";
-
-connectDB();
 
 const app = express();
 app.use(express.json());
@@ -53,9 +48,4 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     res.status(500).json(errorResponseData(ERROR_RESPONSE_CODE.internalServerError, "Something went wrong"));
 })
 
-// cron jobs
-startDeleteExpiredTempAssets();
-
-app.listen(PORT, () => {
-    logger.info(`App running on port ${PORT}`);
-});
+export default app;
