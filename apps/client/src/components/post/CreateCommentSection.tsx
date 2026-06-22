@@ -5,14 +5,14 @@ import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { api } from "../../libs/api";
 import { notify } from "../../helpers/notify.helper";
-import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import type { ForbiddenErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
 import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
 
 type CreateCommentProps = {
     postId: string,
 }
 
-type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse;
+type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse;
 
 const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     const {
@@ -72,6 +72,15 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
                     title: "Invalid comment",
                     description: "Please check your input and try again."
                 });
+                return;
+            }
+
+            if (error.code == ERROR_RESPONSE_CODE.forbidden) {
+                notify.error({
+                    title : "Comment limit reached",
+                    description : error.message
+                })
+
                 return;
             }
 

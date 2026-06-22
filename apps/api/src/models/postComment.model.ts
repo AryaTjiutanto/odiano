@@ -18,11 +18,13 @@ const postCommentSchema = new Schema<PostCommentSchema>({
         type : Types.ObjectId,
         ref : "User",
         required : true,
+        index : true
     },
     postId: {
         type : Types.ObjectId,
         ref : "Post",
         required : true,
+        index : true,
     },
     parentId : {
         type : Types.ObjectId,
@@ -32,6 +34,7 @@ const postCommentSchema = new Schema<PostCommentSchema>({
     depth : {
         type : Number,
         default : 0,
+        index: true,
     },
     replyCount : {
         type : Number,

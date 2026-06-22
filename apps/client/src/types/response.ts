@@ -13,4 +13,8 @@ export type TooManyRequestErrorResponse = ErrorResponseData<TooManyRequestError>
     code : typeof ERROR_RESPONSE_CODE.tooManyRequests,
 }
 
+export type ForbiddenErrorResponse = ErrorResponseData & {
+    code : typeof ERROR_RESPONSE_CODE.forbidden,
+}
+
 export type AxiosErrorResponseData = AxiosError<ErrorResponseData>

@@ -1,1 +1,2 @@
 export const POSTCOMMENT_PAGE_SIZE = 12;
+export const MAX_TOP_LEVEL_POSTCOMMENT = 6;

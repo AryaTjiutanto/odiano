@@ -1,9 +1,9 @@
-import { InfiniteQuery, PostCommentDTO } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, InfiniteQuery, PostCommentDTO } from "@connect/shared"
 import { toPostCommentDTO } from "../mapper/postComment.mapper"
 import PostComment from "../models/postComment.model"
 import { PostCommentQuery } from "../types/postComment.type"
-import { POSTCOMMENT_PAGE_SIZE } from "../consts/postComment.const"
-import logger from "../libs/log/logger"
+import { MAX_TOP_LEVEL_POSTCOMMENT, POSTCOMMENT_PAGE_SIZE } from "../consts/postComment.const"
+import { AppError } from "../errors/appError.error"
 
 type createPostCommentParams = {
     content: string,
@@ -14,6 +14,14 @@ type createPostCommentParams = {
 }
 
 export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) => {
+    if(depth == 0) {
+        const totalComment = await PostComment.countDocuments({postId, author : authorId, depth : 0});
+
+        if(totalComment > MAX_TOP_LEVEL_POSTCOMMENT) {
+            throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, `You have reached the maximum number of comments allowed for this post.`);
+        }
+    }
+
     await PostComment.create({
         content,
         author: authorId,
