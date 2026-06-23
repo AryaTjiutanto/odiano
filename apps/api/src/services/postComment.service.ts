@@ -61,7 +61,7 @@ export const get = async (postId: string, cursor: string | undefined | null, use
     // format the comments
     const formattedComments = items.map(item => toPostCommentDTO(item));
 
-    let nextCursor = formattedComments[formattedComments.length - 1].id;
+    let nextCursor = formattedComments[formattedComments.length - 1]?.id;
 
     return {
         hasNextPage,
