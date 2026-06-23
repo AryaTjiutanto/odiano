@@ -4,3 +4,4 @@ export * from "./user/index";
 export * from "./cloudinary/index";
 export * from "./post/index";
 export * from "./postComment";
+export * from  "./notification";

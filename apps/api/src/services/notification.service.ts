@@ -1,6 +1,6 @@
-import { NotificationTargetType, NotificationType } from "../consts/notification.const"
+import { NotificationDTO, NotificationTargetType, NotificationType } from "@connect/shared";
 import { Notification } from "../models/notification.model"
-import { emitToUser, NotificationDTO } from "../socket/emitters/notification.emitter";
+import { emitToUser } from "../socket/emitters/notification.emitter";
 import { getUserSummary } from "./user.service";
 
 type createNotificationParams = {
