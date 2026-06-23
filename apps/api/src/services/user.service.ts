@@ -1,10 +1,10 @@
-import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UserProfileDTO } from "@connect/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UserProfileDTO, UserSummaryDTO } from "@connect/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";
 import cloudinary from "../config/cloudinary.config";
-import { UserProfileQuery } from "../types/user.type";
-import { toUserProfileDTO } from "../mapper/user.mapper";
+import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
+import { toUserProfileDTO, toUserSummaryDTO } from "../mapper/user.mapper";
 import { Following } from "../models/following.model";
 
 type OnboardingPayload = {
@@ -68,4 +68,14 @@ export const getUserProfile = async (currentUserId : string, username : string) 
 export const checkUsernameAvailability = async (username: string) => {
     const user = await User.exists({ username });
     return !user;
+}
+
+export const getUserSummary = async (userId : string) : Promise<UserSummaryDTO> => {
+    const userSummary = await User.findById(userId).select("_id username name profileImage").lean<UserSummaryQuery>();
+
+    if(!userSummary) {
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User is not found");
+    }
+
+    return toUserSummaryDTO(userSummary);
 }

@@ -62,7 +62,7 @@ export const me = async (req: Request, res: Response, next : NextFunction) => {
         }
 
         const data = await authServices.me(userId);
-    
+        
         res.status(200).json(successResponseData<CurrentUserDTO>(SUCCESS_RESPONSE_CODE.success, "Success", data));
     } catch(err) {
         next(err);
@@ -103,7 +103,6 @@ export const logout = async (req : Request, res : Response, next : NextFunction)
         await authServices.logout(refreshToken);
 
         res.clearCookie(AUTH_TOKEN.REFRESH, authCookieOptions());
-
         res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.ok, "Logged out successfully"));
     } catch(err) {
         next(err);

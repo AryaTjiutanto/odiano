@@ -1,3 +1,5 @@
+import { UserSummaryDTO } from "@connect/shared";
+
 export {};
 
 declare global {

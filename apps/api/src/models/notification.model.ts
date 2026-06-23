@@ -1,37 +1,38 @@
 import { model, Schema, Types } from "mongoose";
 import { boolean } from "zod";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType } from "../consts/notification.const";
 
 type NotificationSchema = {
-    recepientId : Types.ObjectId,
-    ownerId : Types.ObjectId,
+    recepient : Types.ObjectId,
+    actor : Types.ObjectId,
 
-    type : "comment" | "post" | "follow",
+    type : NotificationType,
 
-    targetType : "post" | "follow",
+    targetType : NotificationTargetType,
     targetId : Types.ObjectId,
 
     isRead : boolean
 }
 
 const notificationSchema = new Schema<NotificationSchema>({
-    recepientId : {
+    recepient : {
         type : Types.ObjectId,
         ref : "User",
         required : true
     },
-    ownerId : {
+    actor : {
         type : Types.ObjectId,
         ref : "User",
         required : true,
     },
     type : {
         type : String,
-        enum : ["comment", "post", "follow"],
+        enum : Object.values(NOTIFICATION_TYPE),
         required : true
     },
     targetType : {
         type : String,
-        enum : ["post", "follow"],
+        enum : Object.values(NOTIFICATION_TARGET_TYPE),
         required : true
     },
     targetId : {
