@@ -22,11 +22,12 @@ import NotFound from './pages/Error/NotFound.tsx'
 import NavigationTracker from './components/common/NavigationTracker.tsx'
 import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
+import SocketProvider from './providers/SocketProvider.tsx'
 
 const queryClient = new QueryClient({
-  defaultOptions : {
-    queries : {
-      refetchOnWindowFocus : false,
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
     }
   }
 });
@@ -45,43 +46,45 @@ createRoot(document.getElementById('root')!).render(
           }
         },
       }}>
-        <BrowserRouter>
-          <NavigationTracker />
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route element={<PageLoader />}>
-                {/* social */}
-                <Route element={<SocialLayout />}>
-                  <Route path='/' element={<Homepage />} />
+        <SocketProvider>
+          <BrowserRouter>
+            <NavigationTracker />
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route element={<PageLoader />}>
+                  {/* social */}
+                  <Route element={<SocialLayout />}>
+                    <Route path='/' element={<Homepage />} />
 
-                  {/* post */}
-                  <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+                    {/* post */}
+                    <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
 
-                  {/* auth */}
-                  <Route element={<RequireAuthGuard />}>
-                    {/* profile */}
-                    <Route path='/profile/:username' element={<Profile/>} />
+                    {/* auth */}
+                    <Route element={<RequireAuthGuard />}>
+                      {/* profile */}
+                      <Route path='/profile/:username' element={<Profile />} />
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* auth process */}
-                <Route element={<RequireGuestGuard />}>
-                  <Route element={<AuthLayout />}>
-                    <Route path='/signin' element={<Signin />} />
-                    <Route path='/signup' element={<Signup />} />
+                  {/* auth process */}
+                  <Route element={<RequireGuestGuard />}>
+                    <Route element={<AuthLayout />}>
+                      <Route path='/signin' element={<Signin />} />
+                      <Route path='/signup' element={<Signup />} />
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* onboarding */}
-                <Route element={<RequireUnOnboarded />}>
-                  <Route path='/onboarding' element={<OnBoarding />} />
+                  {/* onboarding */}
+                  <Route element={<RequireUnOnboarded />}>
+                    <Route path='/onboarding' element={<OnBoarding />} />
+                  </Route>
+                  {/* not fond */}
+                  <Route path='*' element={<NotFound />} />
                 </Route>
-                {/* not fond */}
-                <Route path='*' element={<NotFound />} />
               </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+          </BrowserRouter>
+        </SocketProvider>
       </PersistQueryClientProvider>
     </Provider>
   </StrictMode>,
