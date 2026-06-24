@@ -8,6 +8,8 @@ export const socketAuth = (socket : Socket, next : Function) => {
 
         socket.data.userId = decoded.userId;
 
+        socket.join(`user:${socket.data.userId}`);
+
         next();
     } catch (err) {
         next(new Error("Unauthorized"));

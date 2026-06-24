@@ -2,14 +2,15 @@ import { Link, useLocation } from "react-router-dom";
 import ConnectLogo from "../../assets/img/logo/connect-gradient.svg";
 import { Bell, Bookmark, EllipsisVertical, Home, MessageCircle, Search, Settings, User } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../shared/hooks/useRedux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { logout } from "../../features/auth/auth.thunk";
 
 type Props = {
-    setShowCreatePropsSection: React.Dispatch<React.SetStateAction<boolean>>
+    setShowCreatePropsSection: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsNotificationIsSidebarVisible : React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Sidebar = (props: Props) => {
+const Sidebar = ({setIsNotificationIsSidebarVisible, setShowCreatePropsSection}: Props) => {
     const dispatch = useAppDispatch();
 
     // location
@@ -52,12 +53,12 @@ const Sidebar = (props: Props) => {
                                 </Link>
                             </li>
                             <li>
-                                <Link to={""} className="flex items-center space-x-5 text-lg">
+                                <button onClick={() => setIsNotificationIsSidebarVisible(true)} className="flex items-center space-x-5 text-lg cursor-pointer">
                                     <Bell />
                                     <span>
                                         Notification
                                     </span>
-                                </Link>
+                                </button>
                             </li>
                             <li>
                                 <Link to={""} className="flex items-center space-x-5 text-lg">
@@ -96,7 +97,7 @@ const Sidebar = (props: Props) => {
                     </nav >
                     {
                         isAuthenticated &&
-                        <button onClick={() => props.setShowCreatePropsSection(true)} className="w-40 h-14 bg-white rounded-xl mt-10 text-lg text-neutral-900 font-bold cursor-pointer hover:bg-white/0 hover:text-neutral-100 border border-white duration-100">
+                        <button onClick={() => setShowCreatePropsSection(true)} className="w-40 h-14 bg-white rounded-xl mt-10 text-lg text-neutral-900 font-bold cursor-pointer hover:bg-white/0 hover:text-neutral-100 border border-white duration-100">
                             Post
                         </button>
                     }
