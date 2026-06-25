@@ -15,7 +15,7 @@ export type ErrorResponseData<T = null> = {
 }
 
 export type InfiniteQuery<T> = {
-    nextCursor : string,
+    nextCursor : string | null,
     hasNextPage : boolean,
     items : T,
 }

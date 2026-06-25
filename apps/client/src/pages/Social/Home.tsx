@@ -17,7 +17,7 @@ const Homepage = () => {
         });
 
         if (!response.data.data) {
-            throw new Error("Data is null");
+            throw new Error("No post available");
         }
 
         return response.data.data;

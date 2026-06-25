@@ -1,7 +1,6 @@
 import { PostCommentDTO } from "@connect/shared";
 import { PostCommentQuery } from "../types/postComment.type";
 import { toUserSummaryDTO } from "./user.mapper";
-import logger from "../libs/log/logger";
 
 export const toPostCommentDTO = (data : PostCommentQuery) : PostCommentDTO => {
     const userSummaryDTO = {author : toUserSummaryDTO(data.author)};

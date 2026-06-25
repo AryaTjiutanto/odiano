@@ -1,11 +1,40 @@
+import type { InfiniteQuery, SuccessResponseData } from "@connect/shared";
+import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import type React from "react";
+import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
+import { api } from "../../libs/api";
 
 type Props = {
     setIsNotificatoinSidebarVisible : React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const NotificationSidebar = ({setIsNotificatoinSidebarVisible} : Props) => {
+    const getNotifications = async ({pageParam} : QueryFunctionContext) : Promise<InfiniteQuery<string>> => {
+        const response = await api.get<SuccessResponseData<InfiniteQuery<string>>>(`/notification`, {
+            params : {
+                cursor : pageParam
+            }
+        });
+
+        if(!response.data.data) {
+            throw new Error("Notification is empty");
+        }
+
+        return response.data.data;
+    }
+
+    const notificationQuery = useInfiniteQuery({
+        queryFn : getNotifications,
+        queryKey : ['notification'],
+        staleTime : 30 * 1000,
+        gcTime : DEFAULT_GC_TIME,
+        initialPageParam : null,
+        getNextPageParam : (lastPage : InfiniteQuery<string>) => {
+            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+        },
+    })
+
     return (
         <div className="w-full h-full bg-neutral-950 z-20">
             <div className="flex items-center space-x-6">
@@ -28,7 +57,6 @@ const NotificationSidebar = ({setIsNotificatoinSidebarVisible} : Props) => {
                                 @Test01_
                             </b>
                             Liked your post
-
                         </p>
                     </div>
                 </article>

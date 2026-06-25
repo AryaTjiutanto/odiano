@@ -1,38 +1,76 @@
-import { NotificationDTO, NotificationTargetType, NotificationType } from "@connect/shared";
+import { InfiniteQuery, NotificationDTO, NotificationTargetType, NotificationType } from "@connect/shared";
 import { Notification } from "../models/notification.model"
 import { emitToUser } from "../socket/emitters/notification.emitter";
 import { getUserSummary } from "./user.service";
+import { NOTIFICATION_PAGE_SIZE, notificationQuery } from "../consts/notification.const";
+import { toNotificationDTO } from "../mapper/notification.mapper";
+import { nanoid } from "nanoid";
 
 type createNotificationParams = {
-    recepient : string,
-    targetId : string,
-    targetType : NotificationTargetType,
-    type : NotificationType,
+    recepientId: string,
+    targetId: string,
+    targetType: NotificationTargetType,
+    type: NotificationType,
 }
 
-export const create = async (currentUserId : string, params : createNotificationParams) => {
+export const get = async (currentUserId: string, cursor: string | undefined | null): Promise<InfiniteQuery<NotificationDTO[] | null>> => {
+    // get notifications
+    let notifications = await Notification.find({
+        recepient: currentUserId,
+        ...(cursor && {
+            _id: {
+                $lt: cursor
+            }
+        })
+    })
+        .sort({ _id: -1 })
+        .select("_id recepient type targetType targetId isRead createdAt")
+        .populate("actor", "_id name username profileImage")
+        .limit(NOTIFICATION_PAGE_SIZE + 1)
+        .lean<notificationQuery[]>();
+
+    // organize the data
+    let hasNextPage = notifications.length > NOTIFICATION_PAGE_SIZE;
+
+    if (hasNextPage) {
+        notifications = notifications.splice(0, NOTIFICATION_PAGE_SIZE);
+    }
+
+    const items = notifications.map(toNotificationDTO);
+
+    return {
+        hasNextPage,
+        items : items,
+        nextCursor : hasNextPage ? items[items.length - 1].id : null,
+    };
+}
+
+export const create = async (authorId: string, params: createNotificationParams) => {
     const notification = await Notification.create({
-        actor : currentUserId,
-        recepient : params.recepient,
-        targetId : params.targetId,
-        targetType : params.targetType,
-        type : params.type,
+        actor: authorId,
+        recepient: params.recepientId,
+        targetId: params.targetId,
+        targetType: params.targetType,
+        type: params.type,
     });
 
     // get user summary
     let userSummary;
-    userSummary = await getUserSummary(currentUserId).catch(() => null);
+    userSummary = await getUserSummary(authorId).catch(() => null);
 
-    if(!userSummary) return;
+    if (!userSummary) return;
 
     // emit to user
-    const notificationDTO : NotificationDTO = {
-        actor : userSummary,
-        recepient : params.recepient,
-        targetId : params.targetId,
-        targetType : params.targetType,
-        type : params.type,
+    const notificationDTO: NotificationDTO = {
+        id : String(nanoid(6)),
+        actor: userSummary,
+        recepient: params.recepientId,
+        targetId: params.targetId,
+        targetType: params.targetType,
+        type: params.type,
+        isRead: false,
+        createdAt: new Date,
     };
 
-    emitToUser(notificationDTO, currentUserId);
+    emitToUser(notificationDTO, params.recepientId);
 }

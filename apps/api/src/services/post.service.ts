@@ -29,7 +29,7 @@ export const listPosts = async (cursor: string | null): Promise<InfiniteQuery<Po
         hasNextPage = true;
     }
 
-    let nextCursor = items[items.length - 1].id
+    let nextCursor = items[items.length - 1]?.id
 
     return {
         nextCursor,

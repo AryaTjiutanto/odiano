@@ -5,6 +5,9 @@ import uploadRoutes from "./upload.route";
 import postRoutes from "./post.route";
 import followingRoutes from "./following.route";
 import postCommentRoutes from "./postComment.route";
+import notificationRoutes from "./notification.route";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware";
+import { apiLimiter, consume } from "../libs/limiter";
 
 const router = express.Router();
 
@@ -14,5 +17,6 @@ router.use("/upload", uploadRoutes);
 router.use("/post", postRoutes);
 router.use("/following", followingRoutes);
 router.use('/post/comment', postCommentRoutes);
+router.use('/notification', consume(apiLimiter), requireAccessToken, notificationRoutes);
 
 export default router;

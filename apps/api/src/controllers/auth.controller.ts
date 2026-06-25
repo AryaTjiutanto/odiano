@@ -8,7 +8,6 @@ import { authCookieOptions } from "../libs/auth/auth.cookie";
 import { ReqBody } from "../types/request.type";
 import { type AuthenticateUserSchema } from "@connect/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
-import logger from "../libs/log/logger";
 
 export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {
@@ -34,17 +33,19 @@ export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response
 
 export const signup = async (req: ReqBody<CreateUserSchema>, res: Response, next: NextFunction) => {
     try {
+        // get and check the data
         const { dateOfBirth, email, password } = req.body;
     
         if (!dateOfBirth || !email || !password) {
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
 
+        // signup process
         const ip = req?.ip || "anonymous";
         const authData = await authServices.signUp(dateOfBirth, email, password, ip);
-
+        
+        // response
         res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
-
         res.status(201).json(successResponseData<SignUpResponse>(SUCCESS_RESPONSE_CODE.created, "Register successfully", {
             [AUTH_TOKEN.ACCESS] : authData.access_token,
         }))

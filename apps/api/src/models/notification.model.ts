@@ -1,6 +1,5 @@
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType } from "@connect/shared";
 import { model, Schema, Types } from "mongoose";
-import { boolean } from "zod";
-import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType } from "../consts/notification.const";
 
 type NotificationSchema = {
     recepient : Types.ObjectId,

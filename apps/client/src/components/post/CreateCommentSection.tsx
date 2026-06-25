@@ -7,6 +7,7 @@ import { api } from "../../libs/api";
 import { notify } from "../../helpers/notify.helper";
 import type { ForbiddenErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
 import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
+import DotsLoader from "../loader/DotsLoader";
 
 type CreateCommentProps = {
     postId: string,
@@ -19,7 +20,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
         handleSubmit,
         register,
         control,
-        formState: { errors }
+        formState: { errors, isSubmitting }
     } = useForm<CreatePostCommentSchema>({
         mode: "onTouched",
         resolver: zodResolver(createPostCommentSchema),
@@ -57,7 +58,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
             await api.post("/post/comment/create", data);
 
             notify.success({ title: "Comment posted", "description": "Your comment has been posted successfully." });
-        } catch (err : any) {
+        } catch (err: any) {
             const error = err.response?.data as ErrorResponse;
 
             if (error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
@@ -77,8 +78,8 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
 
             if (error.code == ERROR_RESPONSE_CODE.forbidden) {
                 notify.error({
-                    title : "Comment limit reached",
-                    description : error.message
+                    title: "Comment limit reached",
+                    description: error.message
                 })
 
                 return;
@@ -89,7 +90,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit, (err) => console.log(err))} className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
+        <form onSubmit={handleSubmit(onSubmit)} className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
             <div className="flex gap-4">
                 <div className="w-12 h-12 rounded-full bg-neutral-800 shrink-0" />
 
@@ -123,9 +124,15 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
                                 </span>
                             }
                             <button
-                                className="px-4 py-2 rounded-full text-neutral-600 text-sm bg-neutral-100 hover:bg-transparent hover:text-neutral-100 border border-neutral-100 duration-100 transition-colors cursor-pointer disabled:opacity-50"
+                                className={`w-27 h-10 rounded-full text-neutral-600 text-sm bg-neutral-100 border border-neutral-100 duration-100 transition-colors cursor-pointer grid place-content-center ${isSubmitting ? '' : 'hover:bg-transparent hover:text-neutral-100'}`}
+                                disabled={isSubmitting}
                             >
-                                Comment
+                                <span className={`${isSubmitting && "hidden"}`}>
+                                    Comment
+                                </span>
+                                <div className={`text-neutral-900 ${isSubmitting ? '' : 'hidden'}`}>
+                                    <DotsLoader />
+                                </div>
                             </button>
                         </div>
                     </div>

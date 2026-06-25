@@ -42,7 +42,7 @@ createRoot(document.getElementById('root')!).render(
         dehydrateOptions: {
           shouldDehydrateQuery: (query) => {
             const key = query.queryKey[0];
-            return typeof key == "string" && ["post", "user"].includes(key);
+            return typeof key == "string" && ["post", "user", "notification"].includes(key);
           }
         },
       }}>
