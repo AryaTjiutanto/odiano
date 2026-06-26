@@ -1,4 +1,4 @@
-import { ERROR_RESPONSE_CODE, InfiniteQuery, PostCommentDTO } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PostCommentDTO } from "@connect/shared"
 import { toPostCommentDTO } from "../mapper/postComment.mapper"
 import PostComment from "../models/postComment.model"
 import { PostCommentQuery } from "../types/postComment.type"
@@ -68,8 +68,8 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
     await createNotification(authorId, {
         recepientId : post.author._id.toString(),
         targetId : postId,
-        targetType : "post",
-        type : "post"
+        targetType : NOTIFICATION_TARGET_TYPE.POST,
+        type : NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
     });
 }
 

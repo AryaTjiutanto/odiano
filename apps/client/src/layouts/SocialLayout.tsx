@@ -10,9 +10,9 @@ const CreatePostFormSection = lazy(() =>
 
 const SocialLayout = () => {
     const [showCreatePostFormSection, setShowCreatePostFormSection] = useState<boolean>(false);
-
     const [isNotificationSidebarVisible, setIsNotificationSidebarVisible] = useState<boolean>(false);
 
+    // register socket listener
     useEffect(() => {
         registerNotificationListeners();
 
@@ -35,7 +35,7 @@ const SocialLayout = () => {
                     <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationIsSidebarVisible={setIsNotificationSidebarVisible} />
 
                     <div className={`h-full py-10 absolute top-0 left-0 overflow-hidden duration-100 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
-                        <NotificationSidebar setIsNotificatoinSidebarVisible={setIsNotificationSidebarVisible}/>
+                        <NotificationSidebar setIsNotificatoinSidebarVisible={setIsNotificationSidebarVisible} />
                     </div>
                 </aside>
                 <main className="col-span-6 2xl:col-span-5 pt-10">

@@ -7,10 +7,10 @@ import { logout } from "../../features/auth/auth.thunk";
 
 type Props = {
     setShowCreatePropsSection: React.Dispatch<React.SetStateAction<boolean>>,
-    setIsNotificationIsSidebarVisible : React.Dispatch<React.SetStateAction<boolean>>
+    setIsNotificationIsSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Sidebar = ({setIsNotificationIsSidebarVisible, setShowCreatePropsSection}: Props) => {
+const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection }: Props) => {
     const dispatch = useAppDispatch();
 
     // location
@@ -19,10 +19,20 @@ const Sidebar = ({setIsNotificationIsSidebarVisible, setShowCreatePropsSection}:
 
     // user data
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const userData = useAppSelector((state) => state.auth.user);
 
     // profile
     const [isProfilePopoverHidden, setIsProfilePopoverHidden] = useState<boolean>(true);
+
+    // openSidebar
+    const handleOpenNotificationSidebar = () => {
+        if (!isInitialized) {
+            return;
+        }
+
+        setIsNotificationIsSidebarVisible(true)
+    }
 
     // logout
     const logoutHandler = () => {
@@ -52,47 +62,51 @@ const Sidebar = ({setIsNotificationIsSidebarVisible, setShowCreatePropsSection}:
                                     </span>
                                 </Link>
                             </li>
-                            <li>
-                                <button onClick={() => setIsNotificationIsSidebarVisible(true)} className="flex items-center space-x-5 text-lg cursor-pointer">
-                                    <Bell />
-                                    <span>
-                                        Notification
-                                    </span>
-                                </button>
-                            </li>
-                            <li>
-                                <Link to={""} className="flex items-center space-x-5 text-lg">
-                                    <MessageCircle />
-                                    <span>
-                                        Chat
-                                    </span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={""} className="flex items-center space-x-5 text-lg">
-                                    <Bookmark />
-                                    <span>
-                                        Bookmark
-                                    </span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={`profile/${userData && userData?.username}`} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
-                                    <User />
-                                    <span>
-                                        Profile
-                                    </span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to={""} className="flex items-center space-x-5 text-lg">
-                                    <Settings />
-                                    <span>
-                                        Setting and privacy
-                                    </span>
-                                </Link>
-                            </li>
-
+                            {
+                                isAuthenticated &&
+                                <>
+                                    <li>
+                                        <button onClick={handleOpenNotificationSidebar} className="flex items-center space-x-5 text-lg cursor-pointer">
+                                            <Bell />
+                                            <span>
+                                                Notification
+                                            </span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <Link to={""} className="flex items-center space-x-5 text-lg">
+                                            <MessageCircle />
+                                            <span>
+                                                Chat
+                                            </span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to={""} className="flex items-center space-x-5 text-lg">
+                                            <Bookmark />
+                                            <span>
+                                                Bookmark
+                                            </span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to={`profile/${userData && userData?.username}`} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
+                                            <User />
+                                            <span>
+                                                Profile
+                                            </span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to={""} className="flex items-center space-x-5 text-lg">
+                                            <Settings />
+                                            <span>
+                                                Setting and privacy
+                                            </span>
+                                        </Link>
+                                    </li>
+                                </>
+                            }
                         </ul>
                     </nav >
                     {

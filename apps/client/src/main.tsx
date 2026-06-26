@@ -15,7 +15,6 @@ import Homepage from './pages/Social/Home.tsx'
 import AppLayout from './layouts/AppLayout.tsx'
 import SocialLayout from './layouts/SocialLayout.tsx'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { QueryClient } from "@tanstack/react-query"
 import { createIDBPersister } from './libs/persister.ts'
 import ShowPost from './pages/Post/ShowPost.tsx'
 import NotFound from './pages/Error/NotFound.tsx'
@@ -23,14 +22,8 @@ import NavigationTracker from './components/common/NavigationTracker.tsx'
 import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
 import SocketProvider from './providers/SocketProvider.tsx'
+import { queryClient } from './libs/react-query/queryClient.ts'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    }
-  }
-});
 const IDBPersister = createIDBPersister();
 
 createRoot(document.getElementById('root')!).render(

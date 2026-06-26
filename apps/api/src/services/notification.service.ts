@@ -13,7 +13,7 @@ type createNotificationParams = {
     type: NotificationType,
 }
 
-export const get = async (currentUserId: string, cursor: string | undefined | null): Promise<InfiniteQuery<NotificationDTO[] | null>> => {
+export const get = async (currentUserId: string, cursor: string | undefined | null): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications
     let notifications = await Notification.find({
         recepient: currentUserId,
