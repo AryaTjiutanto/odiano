@@ -41,6 +41,7 @@ const notificationSchema = new Schema<NotificationSchema>({
     isRead : {
         type : Boolean,
         default : false,
+        index : true,
     }
 }, {timestamps : true});
 

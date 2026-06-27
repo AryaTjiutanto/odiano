@@ -2,19 +2,22 @@ import { Request, Response, NextFunction } from "express";
 import * as notificationService from "../services/notification.service";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { successResponseData } from "../utils/response.util";
-import { ERROR_RESPONSE_CODE, InfiniteQuery, NotificationDTO, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_READ_STATUS, NotificationDTO, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import { AppError } from "../errors/appError.error";
 
 export const get = async (req : Request, res : Response, next : NextFunction) => {
     const currentUserId = req.userId;
     const cursor = req.query.cursor;
+    const readStatus = req.query.readStatus ?? NOTIFICATION_READ_STATUS.READ;
 
     try {
         if(!currentUserId) {
             throw new UnauthorizedError();
         }
 
-        const notifications = await notificationService.get(currentUserId, cursor && String(cursor));
+        const isRead = readStatus == NOTIFICATION_READ_STATUS.READ;
+
+        const notifications = await notificationService.get(currentUserId, cursor && String(cursor), isRead);
 
         res.status(200).json(successResponseData<InfiniteQuery<NotificationDTO[]>>(SUCCESS_RESPONSE_CODE.success, "success", notifications))
     } catch (err) {
@@ -37,7 +40,7 @@ export const updateReadStatus = async (req : Request, res : Response, next : Nex
 
         await notificationService.updateReadStatus(currentUserId, String(notificationId));
 
-        res.status(207).json(successResponseData(SUCCESS_RESPONSE_CODE.updated, "Update successfully"));
+        res.status(207).json(successResponseData(SUCCESS_RESPONSE_CODE.updated, "Update successfully"))
     } catch(err) {
         next(err);
     }

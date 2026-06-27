@@ -8,7 +8,7 @@ type Props = {
 
 const FollowYouNotification = ({item} : Props) => {
     return (
-        <div className={`w-full flex items-center py-3 space-x-3`} key={`notification-${item.id}`}>
+        <div className={`w-full flex items-center space-x-3`} key={`notification-${item.id}`}>
             <div className="h-12 aspect-square rounded-full bg-neutral-800 overflow-hidden grid place-content-center">
                 {
                     item.actor.profileImage ?

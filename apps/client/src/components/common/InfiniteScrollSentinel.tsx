@@ -34,7 +34,7 @@ const InfiniteScrollSentinel = ({fetchNextPage, hasNextPage, isFetchingNextPage}
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     return (
-        <div className="w-full h-20" ref={sentinel}>
+        <div className="w-full h-0" ref={sentinel}>
             <div className="w-full h-full flex items-center justify-center">
                 {
                     isFetchingNextPage &&

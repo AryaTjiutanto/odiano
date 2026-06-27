@@ -2,10 +2,11 @@ import type { InfiniteQuery, NotificationDTO } from "@connect/shared";
 import { socket } from "../../libs/socket"
 import { queryClient } from "../../libs/react-query/queryClient";
 import type { InfiniteData } from "@tanstack/react-query";
+import { NOTIFICATION_KEY } from "../../consts/notification.const";
 
 export const registerNotificationListeners = () => {
     socket.on("notification:new", (notification: NotificationDTO) => {
-        queryClient.setQueryData(['notification'], (oldData : InfiniteData<InfiniteQuery<NotificationDTO[]>>) => {
+        queryClient.setQueryData(NOTIFICATION_KEY.UNREAD, (oldData : InfiniteData<InfiniteQuery<NotificationDTO[]>>) => {
             if(!oldData) return oldData;
 
             return {

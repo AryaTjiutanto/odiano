@@ -6,6 +6,7 @@ import { NOTIFICATION_PAGE_SIZE, notificationQuery } from "../consts/notificatio
 import { toNotificationDTO } from "../mapper/notification.mapper";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import logger from "../libs/log/logger";
 
 type createNotificationParams = {
     recepientId: string,
@@ -14,10 +15,11 @@ type createNotificationParams = {
     type: NotificationType,
 }
 
-export const get = async (currentUserId: string, cursor: string | undefined | null): Promise<InfiniteQuery<NotificationDTO[]>> => {
+export const get = async (currentUserId: string, cursor: string | undefined | null, isRead : boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications
     let notifications = await Notification.find({
         recepient: currentUserId,
+        isRead,
         ...(cursor && {
             _id: {
                 $lt: cursor
