@@ -1,9 +1,9 @@
-import { ERROR_RESPONSE_CODE } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationDTO } from "@connect/shared"
 import { AppError } from "../errors/appError.error"
 import { Following } from "../models/following.model";
 import { User } from "../models/user.model";
 import mongoose from "mongoose";
-import logger from "../libs/log/logger";
+import { create as createNotification, deleteNotificationWithRecepient } from "./notification.service";
 
 export const createFollowing = async (currentUserId: string, userId: string, followUserId: string) => {
     // checl is userId is current user id
@@ -37,6 +37,14 @@ export const createFollowing = async (currentUserId: string, userId: string, fol
 
             await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: 1 } });
             await User.updateOne({ _id: followUserId }, { $inc: { followerCount: 1 } });
+
+            // create notification
+            await createNotification(currentUserId, {
+                recepientId : followUserId,
+                targetId : followUserId,
+                targetType : NOTIFICATION_TARGET_TYPE.USER,
+                type : NOTIFICATION_TYPE.FOLLOW_YOU,
+            })
         })
     } finally {
         await session.endSession();
@@ -64,6 +72,8 @@ export const deleteFollowing = async (currentUserId: string, userId: string, fol
             await Following.deleteOne({userId, followUserId});
             await User.updateOne({_id : currentUserId}, {$inc : {followingCount : -1}});
             await User.updateOne({_id : followUserId}, {$inc : {followerCount : -1}});
+
+            await deleteNotificationWithRecepient(followUserId, NOTIFICATION_TYPE.FOLLOW_YOU);
         });
     } finally {
         await session.endSession();

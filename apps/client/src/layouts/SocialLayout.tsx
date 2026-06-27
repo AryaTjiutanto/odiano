@@ -32,9 +32,11 @@ const SocialLayout = () => {
             <div className="w-full h-full grid grid-cols-12 2xl:grid-cols-11 gap-16 relative">
                 {/* content */}
                 <aside className="h-screen col-span-3 2xl:col-span-3 py-10 sticky top-0">
-                    <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationIsSidebarVisible={setIsNotificationSidebarVisible} />
+                    <div className="w-full h-full px-3">
+                        <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationIsSidebarVisible={setIsNotificationSidebarVisible} />
+                    </div>
 
-                    <div className={`h-full py-10 absolute top-0 left-0 overflow-hidden duration-100 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
+                    <div className={`h-screen bg-neutral-950 py-10 absolute top-0 left-0 overflow-hidden duration-100 z-20 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
                         <NotificationSidebar setIsNotificatoinSidebarVisible={setIsNotificationSidebarVisible} />
                     </div>
                 </aside>

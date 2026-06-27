@@ -27,7 +27,8 @@ const notificationSchema = new Schema<NotificationSchema>({
     type : {
         type : String,
         enum : Object.values(NOTIFICATION_TYPE),
-        required : true
+        required : true,
+        index : true,
     },
     targetType : {
         type : String,

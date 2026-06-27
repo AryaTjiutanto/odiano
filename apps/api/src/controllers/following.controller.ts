@@ -31,6 +31,7 @@ export const deleteFollowing = async(req : Request, res: Response, next : NextFu
         }
 
         await followingServices.deleteFollowing(currentUserId, userId, followUserId);
+        
         res.status(204).json(successResponseData(SUCCESS_RESPONSE_CODE.deleted, "Deleted"));
     } catch(err) {
         next(err);

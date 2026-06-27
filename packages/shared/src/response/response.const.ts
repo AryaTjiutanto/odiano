@@ -19,6 +19,7 @@ export const SUCCESS_RESPONSE_CODE = {
     success: "SUCCESS",
     created: "CREATED",
     deleted : "DELETED",
+    updated : "UPDATED",
 } as const;
 
 export type SuccessResponseCode = typeof SUCCESS_RESPONSE_CODE[keyof typeof SUCCESS_RESPONSE_CODE];

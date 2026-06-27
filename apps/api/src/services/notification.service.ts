@@ -5,6 +5,7 @@ import { getUserSummary } from "./user.service";
 import { NOTIFICATION_PAGE_SIZE, notificationQuery } from "../consts/notification.const";
 import { toNotificationDTO } from "../mapper/notification.mapper";
 import { nanoid } from "nanoid";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 type createNotificationParams = {
     recepientId: string,
@@ -45,6 +46,19 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
     };
 }
 
+export const updateReadStatus = async (currentUserId : string, notificationId : string) => {
+    // get and check notification
+    const notification = await Notification.findOne({recepient : currentUserId, _id : notificationId});
+
+    if(!notification) {
+        throw new UnauthorizedError();
+    }
+
+    // update
+    notification.isRead = true;
+    notification.save();
+}
+
 export const create = async (authorId: string, params: createNotificationParams) => {
     const notification = await Notification.create({
         actor: authorId,
@@ -73,4 +87,11 @@ export const create = async (authorId: string, params: createNotificationParams)
     };
 
     emitToUser(notificationDTO, params.recepientId);
+}
+
+export const deleteNotificationWithRecepient = async (recepient : string, type? : NotificationType) => {
+    await Notification.deleteMany({
+        recepient, 
+        ...(type && {type})
+    });
 }

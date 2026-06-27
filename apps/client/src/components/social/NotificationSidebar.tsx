@@ -8,8 +8,8 @@ type Props = {
 
 const NotificationSidebar = ({ setIsNotificatoinSidebarVisible }: Props) => {
     return (
-        <div className="w-full h-full bg-neutral-950 z-20">
-            <div className="flex items-center space-x-6">
+        <aside className="w-full h-full">
+            <div className="flex items-center space-x-6 px-3">
                 <button className="w-8 aspect-square rounded-full grid place-content-center cursor-pointer hover:bg-sky-500/20 hover:text-sky-500 duration-100" onClick={() => setIsNotificatoinSidebarVisible(false)}>
                     <ArrowLeft className="w-5" />
                 </button>
@@ -20,7 +20,7 @@ const NotificationSidebar = ({ setIsNotificatoinSidebarVisible }: Props) => {
             <div className="mt-8">
                 <Notifications/>
             </div>
-        </div>
+        </aside>
     )
 }
 
