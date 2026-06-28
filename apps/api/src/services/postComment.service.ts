@@ -15,6 +15,12 @@ type createPostCommentParams = {
     depth: number
 }
 
+type GetCommentParams = {
+    postId: string,
+    cursor: string | undefined,
+    userId: string | undefined,
+}
+
 export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
@@ -66,19 +72,19 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
 
     // create notification
     await createNotification(authorId, {
-        recepientId : post.author._id.toString(),
-        targetId : postId,
-        targetType : NOTIFICATION_TARGET_TYPE.POST,
-        type : NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
+        recepientId: post.author._id.toString(),
+        targetId: postId,
+        targetType: NOTIFICATION_TARGET_TYPE.POST,
+        type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
     });
 }
 
-export const get = async (postId: string, cursor: string | undefined | null, userId?: string): Promise<InfiniteQuery<PostCommentDTO[]>> => {
-    // get comments
+export const get = async ({ cursor, postId, userId }: GetCommentParams): Promise<InfiniteQuery<PostCommentDTO[]>> => {
+    // get comment
     const comments = await PostComment.find({
         postId,
+        ...(userId ? { author: { $ne: userId } } : {}),
         depth: 0,
-        ...(userId && { owner: userId }),
         ...(cursor ? {
             _id: {
                 $lt: cursor
@@ -91,6 +97,7 @@ export const get = async (postId: string, cursor: string | undefined | null, use
         .limit(POSTCOMMENT_PAGE_SIZE + 1)
         .lean<PostCommentQuery[]>();
 
+
     // handle infinite query data
     let hasNextPage = false;
     let items = comments;
@@ -100,14 +107,32 @@ export const get = async (postId: string, cursor: string | undefined | null, use
         items = comments.slice(0, POSTCOMMENT_PAGE_SIZE);
     }
 
+
     // format the comments
     const formattedComments = items.map(item => toPostCommentDTO(item));
 
     let nextCursor = formattedComments[formattedComments.length - 1]?.id;
+
 
     return {
         hasNextPage,
         nextCursor,
         items: formattedComments
     };
+}
+
+export const getCurrentUserComments = async (userId: string, postId: string): Promise<PostCommentDTO[]> => {
+    const comments = await PostComment.find({
+        postId,
+        author : userId ,
+        depth: 0,        
+    })
+        .sort({ _id: -1 })
+        .select("_id parentId content depth replyCount createdAt")
+        .populate("author", "_id name username profileImage")
+        .lean<PostCommentQuery[]>();
+
+    const formattedComments = comments.map(toPostCommentDTO);
+
+    return formattedComments;
 }

@@ -13,7 +13,7 @@ import { createFollowing, deleteFollowing } from "../../helpers/following.helper
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import type { AxiosErrorResponseData } from "../../types/response";
 import { notify } from "../../helpers/notify.helper";
-import CommentSection from "../../components/post/CommentSection";
+import CommentSection from "../../components/post/comment/CommentSection";
 
 type IsFollowingQueryData = {
     isFollowing: boolean

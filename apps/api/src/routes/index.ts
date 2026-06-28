@@ -4,7 +4,6 @@ import userRoutes from "./user.route";
 import uploadRoutes from "./upload.route";
 import postRoutes from "./post.route";
 import followingRoutes from "./following.route";
-import postCommentRoutes from "./postComment.route";
 import notificationRoutes from "./notification.route";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import { apiLimiter, consume, followingLimiter } from "../libs/limiter";
@@ -15,7 +14,6 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/post", postRoutes);
-router.use('/post/comment', postCommentRoutes);
 router.use("/following", consume(followingLimiter), requireAccessToken, followingRoutes);
 router.use('/notification', consume(apiLimiter), requireAccessToken, notificationRoutes);
 

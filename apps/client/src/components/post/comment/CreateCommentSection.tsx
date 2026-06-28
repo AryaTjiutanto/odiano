@@ -3,12 +3,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon, User } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
-import { api } from "../../libs/api";
-import { notify } from "../../helpers/notify.helper";
-import type { ForbiddenErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
-import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
-import DotsLoader from "../loader/DotsLoader";
-import { useAppSelector } from "../../shared/hooks/useRedux";
+import { api } from "../../../libs/api";
+import { notify } from "../../../helpers/notify.helper";
+import type { ForbiddenErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../../types/response";
+import TooManyRequestCountDown from "../../counter/TooManyRequestCountDown";
+import DotsLoader from "../../loader/DotsLoader";
+import { useAppSelector } from "../../../shared/hooks/useRedux";
 
 type CreateCommentProps = {
     postId: string,
@@ -59,7 +59,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
 
     const onSubmit: SubmitHandler<CreatePostCommentSchema> = async (data) => {
         try {
-            await api.post("/post/comment/create", data);
+            await api.post("/post/comments/create", data);
 
             notify.success({ title: "Comment posted", "description": "Your comment has been posted successfully." });
         } catch (err: any) {
