@@ -4,6 +4,7 @@ import { Bell, Bookmark, EllipsisVertical, Home, MessageCircle, Search, Settings
 import { useAppDispatch, useAppSelector } from "../../shared/hooks/useRedux";
 import { useState } from "react";
 import { logout } from "../../features/auth/auth.thunk";
+import Profile from "./Profile";
 
 type Props = {
     setShowCreatePropsSection: React.Dispatch<React.SetStateAction<boolean>>,
@@ -133,18 +134,9 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                             {/* button */}
                             <button className="w-full flex items-center justify-between space-x-10 cursor-pointer" onClick={() => setIsProfilePopoverHidden(!isProfilePopoverHidden)}>
                                 <div className="flex items-center space-x-3">
-                                    {
-                                        userData?.profileImage?.url ?
-                                            <div className="w-12 h-12 rounded-full overflow-hidden">
-                                                <img src={userData.profileImage.url} />
-                                            </div>
-                                            :
-                                            <div className="w-12 h-12 rounded-full overflow-hidden">
-                                                <div className="w-full h-full bg-neutral-800 grid place-content-center">
-                                                    <User />
-                                                </div>
-                                            </div>
-                                    }
+                                    <div className="w-12 h-12">
+                                        <Profile data={userData.profileImage} />
+                                    </div>
                                     <div className="text-left">
                                         <h1 className="text-base font-semibold">{userData.name}</h1>
                                         <p className="text-sm text-neutral-700">
@@ -159,10 +151,8 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                         <Link to={isAuthenticated ? "/onboarding" : "/signin"}>
                             <button className="min-w-62 w-fit flex items-center justify-between space-x-10 cursor-pointer">
                                 <div className="flex items-center space-x-3">
-                                    <div className="w-12 h-12 rounded-full overflow-hidden">
-                                        <div className="w-full h-full bg-neutral-800 grid place-content-center">
-                                            <User />
-                                        </div>
+                                    <div className="w-12 h-12">
+                                        <Profile data={null} />
                                     </div>
                                     <div className="text-left">
                                         {

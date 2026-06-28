@@ -1,4 +1,4 @@
-import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send, User } from "lucide-react";
+import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { type SuccessResponseData, type PostDTO } from "@connect/shared";
@@ -14,6 +14,7 @@ import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import type { AxiosErrorResponseData } from "../../types/response";
 import { notify } from "../../helpers/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
+import Profile from "../../components/social/Profile";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -61,7 +62,7 @@ const ShowPost = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error({"title" : "Follow Status Unavailable", "description" : error.response?.data.message || "Something went wrong"});
+            notify.error({ "title": "Follow Status Unavailable", "description": error.response?.data.message || "Something went wrong" });
         }
     }
 
@@ -95,7 +96,7 @@ const ShowPost = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error({"title" : "Follow failed", "description" : error.response?.data.message || "Something went wrong"});
+            notify.error({ "title": "Follow failed", "description": error.response?.data.message || "Something went wrong" });
         }
     }
 
@@ -118,7 +119,7 @@ const ShowPost = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error({"title" : "Unfollow failed", "description" : error.response?.data.message || "Something went wrong"});
+            notify.error({ "title": "Unfollow failed", "description": error.response?.data.message || "Something went wrong" });
         }
     }
 
@@ -156,13 +157,8 @@ const ShowPost = () => {
                     <div className="w-full flex items-center justify-between mt-8">
                         <Link to={`/profile/${username}`}>
                             <div className="flex items-center space-x-3">
-                                <div className="h-12 aspect-square rounded-full bg-neutral-800 grid place-content-center overflow-hidden">
-                                    {
-                                        postQuery.data?.author?.profileImage?.url ?
-                                            <img src={postQuery.data.author.profileImage.url} className="w-full h-full" />
-                                            :
-                                            <User className="w-4" />
-                                    }
+                                <div className="w-12 aspect-square">
+                                    <Profile data={postQuery?.data.author?.profileImage} />
                                 </div>
                                 <div>
                                     <div className="flex items-center space-x-2 text-base">
@@ -182,7 +178,7 @@ const ShowPost = () => {
                                     </div>
                                     :
                                     <>
-                                        <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${ isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
+                                        <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
                                             {
                                                 isFollowingQuery.data?.isFollowing ?
                                                     <button className="w-28 h-full cursor-pointer" onClick={handleUnfollow}>
@@ -248,7 +244,7 @@ const ShowPost = () => {
                 </div>
 
                 {/* comment */}
-                <CommentSection postId={postQuery.data.id}/>
+                <CommentSection postId={postQuery.data.id} />
             </div>
         </>
     )

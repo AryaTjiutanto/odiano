@@ -1,6 +1,6 @@
 import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SmileIcon, User } from "lucide-react";
+import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { api } from "../../../libs/api";
@@ -9,6 +9,7 @@ import type { ForbiddenErrorResponse, TooManyRequestErrorResponse, ValidationErr
 import TooManyRequestCountDown from "../../counter/TooManyRequestCountDown";
 import DotsLoader from "../../loader/DotsLoader";
 import { useAppSelector } from "../../../shared/hooks/useRedux";
+import Profile from "../../social/Profile";
 
 type CreateCommentProps = {
     postId: string,
@@ -96,13 +97,8 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
             <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-full bg-neutral-800 shrink-0 overflow-hidden grid place-content-center">
-                    {
-                        currentUser?.profileImage ?
-                        <img src={currentUser.profileImage.url} className="w-full h-full"/>
-                        :
-                        <User/>
-                    }
+                <div className="w-12 h-12">
+                    <Profile data={currentUser?.profileImage} />
                 </div>
 
                 <div className="flex-1">

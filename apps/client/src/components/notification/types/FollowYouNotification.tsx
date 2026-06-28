@@ -1,21 +1,16 @@
 import type { NotificationDTO } from "@connect/shared";
-import { User } from "lucide-react";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
+import Profile from "../../social/Profile";
 
 type Props = {
-    item : NotificationDTO
+    item: NotificationDTO
 }
 
-const FollowYouNotification = ({item} : Props) => {
+const FollowYouNotification = ({ item }: Props) => {
     return (
         <div className={`w-full flex items-center space-x-3`} key={`notification-${item.id}`}>
-            <div className="h-12 aspect-square rounded-full bg-neutral-800 overflow-hidden grid place-content-center">
-                {
-                    item.actor.profileImage ?
-                        <img src={item.actor.profileImage.url} className="w-full h-full"></img>
-                        :
-                        <User />
-                }
+            <div className="w-12 aspect-square">
+                <Profile data={item.actor.profileImage} />
             </div>
 
             <div className="flex-1 w-full flex space-x-2 space-y-2 flex-wrap">

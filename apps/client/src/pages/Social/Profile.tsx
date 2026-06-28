@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
-import { CalendarDays, EllipsisVertical, User } from "lucide-react";
+import { CalendarDays, EllipsisVertical } from "lucide-react";
+import ProfileComponent from "../../components/social/Profile";
 import { useInfiniteQuery, useMutation, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { api } from "../../libs/api";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type SuccessResponseData, type UserProfileDTO } from "@connect/shared";
@@ -224,15 +225,8 @@ const Profile = () => {
             {/* banner and profile picture */}
             <div className="w-full banner-aspect bg-neutral-200 rounded-xl mt-5 relative">
                 {/* profile */}
-                <div className={`absolute rounded-full w-28 aspect-square left-6 -bottom-[25%] bg-neutral-300 flex items-center justify-center`}>
-                    <div className="w-[97%] aspect-square rounded-full bg-neutral-700 grid place-content-center text-neutral-600 overflow-hidden">
-                        {
-                            profileQuery.data?.profileImage ?
-                                <img src={profileQuery.data.profileImage.url} className="w-full h-full" />
-                                :
-                                <User className="size-10 text-neutral-300" />
-                        }
-                    </div>
+                <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center`}>
+                    <ProfileComponent data={profileQuery?.data?.profileImage} />
                 </div>
             </div>
 

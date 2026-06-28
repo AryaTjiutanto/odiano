@@ -2,6 +2,7 @@ import type { PostDTO, UserSummaryDTO } from "@connect/shared";
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
+import Profile from "../social/Profile";
 
 type Props = {
     data: PostDTO,
@@ -17,13 +18,8 @@ const Post = ({ data, author }: Props) => {
             <div className="flex items-center justify-between">
                 <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
                     <div className="flex items-center space-x-3">
-                        <div className="h-10 aspect-square rounded-full bg-neutral-800 grid place-content-center overflow-hidden">
-                            {
-                                dataAuthor?.profileImage?.url ?
-                                    <img src={dataAuthor.profileImage.url} className="w-full h-full" />
-                                    :
-                                    <User className="w-4" />
-                            }
+                        <div className="w-10 aspect-square">
+                            <Profile data={dataAuthor?.profileImage} />
                         </div>
                         <div>
                             <div className="flex items-center space-x-2 text-xs">

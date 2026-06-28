@@ -1,18 +1,17 @@
 import { EllipsisVertical, Heart } from "lucide-react";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import type { PostCommentDTO } from "@connect/shared";
+import Profile from "../../social/Profile";
 
 type Props = {
-    data : PostCommentDTO,
+    data: PostCommentDTO,
 }
 
-const Comment = ({data} : Props) => {
+const Comment = ({ data }: Props) => {
     return (
         <div className="w-full flex space-x-3">
-            <div className="">
-                <div className="w-12 aspect-square rounded-full bg-neutral-800">
-
-                </div>
+            <div className="w-12 h-12">
+                <Profile data={data?.author.profileImage} />
             </div>
             <div className="w-full">
                 <div className="flex items-center justify-between w-full">
