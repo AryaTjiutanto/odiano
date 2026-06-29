@@ -122,7 +122,6 @@ const Notifications = () => {
     }
 
     if(!(unreadNotificationQuery.data && unreadNotificationQuery.data.pages[0].items.length > 0) && !(readNotificationQuery.data && readNotificationQuery.data.pages[0].items.length > 0)) {
-        console.log(unreadNotificationQuery.data, readNotificationQuery.data);
         return (
             <div className="w-full text-left px-3">
                 <h1 className="text-2xl font-bold">

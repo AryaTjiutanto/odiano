@@ -1,4 +1,4 @@
-import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type NotificationDTO, type PostCommentDTO, type SuccessResponseData } from "@connect/shared";
+import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type PostCommentDTO, type SuccessResponseData } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -12,6 +12,7 @@ import { useAppSelector } from "../../../shared/hooks/useRedux";
 import Profile from "../../social/Profile";
 import { useMutation } from "@tanstack/react-query";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
+import { Link } from "react-router-dom";
 
 type CreateCommentProps = {
     postId: string,
@@ -27,6 +28,7 @@ type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse | For
 
 const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
     const currentUser = useAppSelector((state) => state.auth.user);
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
     //  handle form
     const {
@@ -127,7 +129,7 @@ const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
     const handleMutation = async (data: CreatePostCommentSchema) => {
         try {
             reset();
-            
+
             const commentId = `temp:${Date.now()}`;
             await mutation.mutateAsync({ commentId, data });
         } catch (err: any) {
@@ -159,6 +161,23 @@ const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
 
             notify.error({ title: "An Error occured", "description": "Something went wrong" });
         }
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="w-full sticky top-0 left-0 bg-neutral-950 border-y border-neutral-800 py-8 grid place-content-center mt-10">
+                <h1>
+                    <Link to="/signin" className="text-sky-500 underline hover:text-sky-400 duration-100">
+                        Sign in
+                    </Link>{" "}
+                    or{" "}
+                    <Link to="/signup" className="text-sky-500 underline hover:text-sky-400 duration-100">
+                        create an account
+                    </Link>{" "}
+                    to join the conversation.
+                </h1>
+            </div>
+        )
     }
 
     return (

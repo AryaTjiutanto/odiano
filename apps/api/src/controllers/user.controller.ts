@@ -42,13 +42,9 @@ export const getUserProfile = async (req: Request, res: Response, next: NextFunc
     try {
         const currentUserId = req.userId;
 
-        if (!currentUserId) {
-            throw new UnauthorizedError();
-        }
-
         const username = String(req.params.username);
 
-        const data = await userServices.getUserProfile(currentUserId, username);
+        const data = await userServices.getUserProfile(username, currentUserId);
 
         res.status(200).json(successResponseData<UserProfileDTO>(SUCCESS_RESPONSE_CODE.success, "Success", data))
     } catch (err) {

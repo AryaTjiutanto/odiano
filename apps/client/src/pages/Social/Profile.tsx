@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays, EllipsisVertical } from "lucide-react";
 import ProfileComponent from "../../components/social/Profile";
@@ -18,6 +18,9 @@ import { notify } from "../../helpers/notify.helper";
 import type { AxiosErrorResponseData } from "../../types/response";
 
 const Profile = () => {
+    const navigate = useNavigate();
+
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
     const setQueryDataHandler = useSetQueryDataHandler();
 
@@ -92,12 +95,16 @@ const Profile = () => {
     })
 
     const handleFollow = async () => {
+        if (!isAuthenticated) {
+            return navigate("/signin");
+        }
+
         try {
             await followMutation.mutateAsync(profileQuery.data?.id);
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error({"title" : "Follow failed", "description" : error.response?.data.message || "Something went wrong"});
+            notify.error({ "title": "Follow failed", "description": error.response?.data.message || "Something went wrong" });
         }
     }
 
@@ -124,7 +131,7 @@ const Profile = () => {
         } catch (err) {
             const error = err as AxiosErrorResponseData;
 
-            notify.error({"title" : "Unfollow failed", "description" : error.response?.data.message || "Something went wrong"});
+            notify.error({ "title": "Unfollow failed", "description": error.response?.data.message || "Something went wrong" });
         }
     }
 
@@ -233,13 +240,13 @@ const Profile = () => {
             {/* action button */}
             <div className="w-full mt-8 flex justify-end space-x-3">
                 {
-                    profileQuery.data?.id == currentUserId &&
+                    (isAuthenticated && profileQuery.data?.id == currentUserId) &&
                     <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
                         Edit profile
                     </button>
                 }
                 {
-                    profileQuery.data?.id !== currentUserId &&
+                    (!isAuthenticated || profileQuery.data?.id !== currentUserId) &&
                     <>
                         <div className={`max-w-32 h-11 duration-100 rounded-lg border text-sm ${profileQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
                             {
@@ -256,9 +263,12 @@ const Profile = () => {
                     </>
 
                 }
-                <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
-                    <EllipsisVertical />
-                </button>
+                {
+                    isAuthenticated &&
+                    <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
+                        <EllipsisVertical />
+                    </button>
+                }
             </div>
 
             {/* user information */}

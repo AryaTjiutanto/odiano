@@ -150,7 +150,6 @@ const OnBoarding = () => {
 
             setFormError(null);
         } catch (err: any) {
-            console.log(err.response)
             setFormError("Something went wrong, please try again later")
             return;
         }

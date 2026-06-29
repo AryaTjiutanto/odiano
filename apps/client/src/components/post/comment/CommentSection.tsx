@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { type SuccessResponseData, type InfiniteQuery, type PostCommentDTO } from "@connect/shared";
 import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
 import { api } from "../../../libs/api";
@@ -6,12 +6,15 @@ import CommentSkeletonLoading from "./CommentSkeletonLoading";
 import InfiniteScrollSentinel from "../../common/InfiniteScrollSentinel";
 import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
+import { useAppSelector } from "../../../shared/hooks/useRedux";
 
 type Props = {
     postId: string,
 }
 
 const CommentSection = ({ postId }: Props) => {
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+
     // current user comment
     const currentUserQueryKey = ["comment", postId, "currentUser"];
 
@@ -22,10 +25,11 @@ const CommentSection = ({ postId }: Props) => {
     }
 
     const currentUserCommentQuery = useQuery({
-        queryKey : currentUserQueryKey,
-        queryFn : getCurrentUserComments,
-        staleTime : 30 * 1000,
-        gcTime : DEFAULT_GC_TIME,
+        queryKey: currentUserQueryKey,
+        queryFn: getCurrentUserComments,
+        staleTime: 30 * 1000,
+        enabled : isAuthenticated,
+        gcTime: DEFAULT_GC_TIME,
     })
 
     // comments
@@ -38,7 +42,7 @@ const CommentSection = ({ postId }: Props) => {
             }
         })
 
-        if(!response.data.data?.items) throw new Error("Data is empty")
+        if (!response.data.data?.items) throw new Error("Data is empty")
 
         return response.data.data;
     }
@@ -57,31 +61,37 @@ const CommentSection = ({ postId }: Props) => {
     return (
         <>
             {/* create comment */}
-            <CreateCommentSection postId={postId} queryKey={currentUserQueryKey}/>
+            <CreateCommentSection postId={postId} queryKey={currentUserQueryKey} />
 
             {/* comments */}
-            <div className="w-full space-y-8 mt-10">
+            <div className="w-full space-y-8 mt-10 pb-6">
                 {
-                    (commentQuery.isPending || currentUserCommentQuery.isPending) ?
+                    (commentQuery.isPending || (isAuthenticated && currentUserCommentQuery.isPending)) ?
                         <>
                             {
-                                Array.from({length : 3}).map((item, index) => (
-                                    <CommentSkeletonLoading key={`skeleton-comment-${index}`}/>
+                                Array.from({ length: 3 }).map((item, index) => (
+                                    <CommentSkeletonLoading key={`skeleton-comment-${index}`} />
                                 ))
                             }
                         </>
                         :
                         <>
+                            {/* current user comments */}
                             {
-                                currentUserCommentQuery.data?.map(data => <Comment data={data}/>)
+                                currentUserCommentQuery.data?.map(data => <Comment data={data} />)
                             }
+
+                            {/* comments */}
                             {
-                                commentQuery.data?.pages.map((page) => 
+                                commentQuery.data?.pages.map((page) =>
                                     page.items.map((item) => (
-                                    <Comment data={item}/>
-                                )))
+                                        <Comment data={item} />
+                                    )))
                             }
-                            <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage}/>
+
+                            {/* sentinel */}
+
+                            <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage} />
                         </>
                 }
             </div>

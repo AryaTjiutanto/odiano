@@ -52,11 +52,8 @@ createRoot(document.getElementById('root')!).render(
                     {/* post */}
                     <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
 
-                    {/* auth */}
-                    <Route element={<RequireAuthGuard />}>
-                      {/* profile */}
-                      <Route path='/profile/:username' element={<Profile />} />
-                    </Route>
+                    {/* profile */}
+                    <Route path='/profile/:username' element={<Profile />} />
                   </Route>
 
                   {/* auth process */}

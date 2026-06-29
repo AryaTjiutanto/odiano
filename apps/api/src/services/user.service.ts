@@ -48,7 +48,7 @@ export const onboarding = async (payload: OnboardingPayload) => {
     user.save();
 }
 
-export const getUserProfile = async (currentUserId : string, username : string) : Promise<UserProfileDTO> => {
+export const getUserProfile = async (username : string, currentUserId : string | undefined) : Promise<UserProfileDTO> => {
     const user = await User.findOne({username})
     .select("_id username name bio profileImage createdAt followerCount followingCount")
     .lean<UserProfileQuery>();
@@ -57,8 +57,8 @@ export const getUserProfile = async (currentUserId : string, username : string) 
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "user not found");
     }
 
-    let isFollowing;
-    if(currentUserId != user._id.toString()) {
+    let isFollowing = false;
+    if(currentUserId && currentUserId != user._id.toString()) {
         isFollowing = !!(await Following.exists({userId : currentUserId, followUserId : user._id}));
     }
     

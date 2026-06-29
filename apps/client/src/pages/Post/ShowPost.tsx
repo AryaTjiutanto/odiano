@@ -15,6 +15,7 @@ import type { AxiosErrorResponseData } from "../../types/response";
 import { notify } from "../../helpers/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/social/Profile";
+import { useAppSelector } from "../../shared/hooks/useRedux";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -22,7 +23,9 @@ type IsFollowingQueryData = {
 
 const ShowPost = () => {
     const navigate = useNavigate();
+
     const { username, postPublicId } = useParams();
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
     const setQueryDataHandler = useSetQueryDataHandler();
 
@@ -69,7 +72,7 @@ const ShowPost = () => {
     const isFollowingQuery = useQuery({
         queryFn: getIsFollowingInformation,
         queryKey: isFollowingQueryKey,
-        enabled: !!postQuery?.data,
+        enabled: (!!postQuery?.data && isAuthenticated),
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
     });
@@ -91,6 +94,10 @@ const ShowPost = () => {
     })
 
     const handleFollow = async () => {
+        if(!isAuthenticated) {
+            return navigate("/signin");
+        }
+
         try {
             await followMutation.mutateAsync(postQuery.data?.author?.id);
         } catch (err) {
@@ -114,6 +121,10 @@ const ShowPost = () => {
     })
 
     const handleUnfollow = async () => {
+        if(!isAuthenticated) {
+
+        }
+
         try {
             await unfollowMutation.mutateAsync(postQuery.data?.author?.id);
         } catch (err) {
@@ -172,7 +183,7 @@ const ShowPost = () => {
                         </Link>
                         <div className="flex items-center space-x-3">
                             {
-                                isFollowingQuery.isPending ?
+                                (isFollowingQuery.isPending && isAuthenticated) ?
                                     <div className="w-20 h-10 rounded-lg bg-neutral-100 grid place-content-center text-neutral-900">
                                         <DotsLoader />
                                     </div>

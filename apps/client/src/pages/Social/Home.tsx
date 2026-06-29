@@ -73,7 +73,7 @@ const Homepage = () => {
                 <StoryList />
 
                 {/* posts */}
-                <div className="mt-8 space-y-6">
+                <div className="mt-8 space-y-6 pb-6">
                     {
                         isPending &&
                         Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`}/>)

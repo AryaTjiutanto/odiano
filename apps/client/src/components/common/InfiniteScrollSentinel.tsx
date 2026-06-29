@@ -1,48 +1,69 @@
 import { useEffect, useRef } from "react";
 import DotsLoader from "../loader/DotsLoader";
+import { useAppSelector } from "../../shared/hooks/useRedux";
+import { Link } from "react-router-dom";
 
 type Props = {
-    fetchNextPage : () => void,
-    hasNextPage : boolean,
-    isFetchingNextPage : boolean,
+    fetchNextPage: () => void,
+    hasNextPage: boolean,
+    isFetchingNextPage: boolean,
 }
 
-const InfiniteScrollSentinel = ({fetchNextPage, hasNextPage, isFetchingNextPage} : Props) => {
+const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage }: Props) => {
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const sentinel = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
+        if (!isAuthenticated) return;
+
         const observer = new IntersectionObserver(async (entries) => {
             const entry = entries[0];
 
-            if(!isFetchingNextPage && hasNextPage && entry.isIntersecting) {
+            if (!isFetchingNextPage && hasNextPage && entry.isIntersecting) {
                 await fetchNextPage();
             }
         }, {
-            rootMargin : "20px",
-            threshold : 0,
+            rootMargin: "20px",
+            threshold: 0,
         })
 
-        if(sentinel.current) {
+        if (sentinel.current) {
             observer.observe(sentinel.current);
         }
 
         return () => {
-            if(sentinel.current) {
+            if (sentinel.current) {
                 observer.unobserve(sentinel.current);
             }
         }
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    return (
-        <div className="w-full h-0" ref={sentinel}>
-            <div className="w-full h-full flex items-center justify-center">
-                {
-                    isFetchingNextPage &&
-                    <DotsLoader/>
-                }
+
+    if(!hasNextPage) return <></>;
+
+    if (!isAuthenticated) {
+        return (
+            <div className="w-full py-4 border-y border-neutral-800 text-center">
+                <h1>
+                    <Link to="/signin" className="text-sky-500 underline hover:text-sky-400 duration-100">
+                        Sign in
+                    </Link>{" "}
+                    to view more comments.
+                </h1>
             </div>
-        </div>    
-    )
+        )
+    } else {
+        return (
+            <div className="w-full h-0" ref={sentinel}>
+                <div className="w-full h-full flex items-center justify-center">
+                    {
+                        isFetchingNextPage &&
+                        <DotsLoader />
+                    }
+                </div>
+            </div>
+        )
+    }
 }
 
 export default InfiniteScrollSentinel;
