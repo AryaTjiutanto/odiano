@@ -1,10 +1,8 @@
-import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { type SuccessResponseData, type InfiniteQuery, type PostCommentDTO } from "@connect/shared";
 import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
 import { api } from "../../../libs/api";
 import CommentSkeletonLoading from "./CommentSkeletonLoading";
-import { EllipsisVertical, Heart } from "lucide-react";
-import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import InfiniteScrollSentinel from "../../common/InfiniteScrollSentinel";
 import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
@@ -59,7 +57,7 @@ const CommentSection = ({ postId }: Props) => {
     return (
         <>
             {/* create comment */}
-            <CreateCommentSection postId={postId} />
+            <CreateCommentSection postId={postId} queryKey={currentUserQueryKey}/>
 
             {/* comments */}
             <div className="w-full space-y-8 mt-10">

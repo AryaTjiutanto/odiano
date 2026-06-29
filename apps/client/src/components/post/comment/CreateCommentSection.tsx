@@ -1,4 +1,4 @@
-import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema } from "@connect/shared";
+import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type NotificationDTO, type PostCommentDTO, type SuccessResponseData } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -10,14 +10,22 @@ import TooManyRequestCountDown from "../../counter/TooManyRequestCountDown";
 import DotsLoader from "../../loader/DotsLoader";
 import { useAppSelector } from "../../../shared/hooks/useRedux";
 import Profile from "../../social/Profile";
+import { useMutation } from "@tanstack/react-query";
+import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 
 type CreateCommentProps = {
     postId: string,
+    queryKey: string[],
+}
+
+type MutationParams = {
+    data: CreatePostCommentSchema,
+    commentId: string,
 }
 
 type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse;
 
-const CreateCommentSection = ({ postId }: CreateCommentProps) => {
+const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
     const currentUser = useAppSelector((state) => state.auth.user);
 
     //  handle form
@@ -25,6 +33,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
         handleSubmit,
         register,
         control,
+        reset,
         formState: { errors, isSubmitting }
     } = useForm<CreatePostCommentSchema>({
         mode: "onTouched",
@@ -59,10 +68,68 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     }, [content])
 
     const onSubmit: SubmitHandler<CreatePostCommentSchema> = async (data) => {
-        try {
-            await api.post("/post/comments/create", data);
+        handleMutation(data);
+    }
 
-            notify.success({ title: "Comment posted", "description": "Your comment has been posted successfully." });
+    // mutation
+    const setQueryDataHandler = useSetQueryDataHandler();
+
+    const createComment = async ({ commentId, data }: MutationParams) => {
+        const response = await api.post<SuccessResponseData>("/post/comments/create", data)
+    };
+
+    const mutation = useMutation({
+        mutationKey: queryKey,
+        mutationFn: createComment,
+
+        onMutate: ({ commentId, data }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(queryKey, (oldData) => {
+            if (!currentUser) return;
+
+            return [
+                {
+                    author: {
+                        id: currentUser.id,
+                        name: currentUser.name,
+                        profileImage: currentUser.profileImage,
+                        username: currentUser.username,
+                    },
+                    content: data.content,
+                    createdAt: new Date(),
+                    depth: 0,
+                    id: commentId,
+                    parentId: null,
+                    replyCount: 0,
+                    isPosted: false,
+                },
+                ...oldData,
+            ]
+        }),
+
+        onSuccess: (_response, { commentId }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(queryKey, (oldData) => {
+            return oldData.map((comment) => {
+                return {
+                    ...(comment.id == commentId ? {
+                        ...comment,
+                        isPosted: true
+                    } : comment)
+                }
+            })
+        }),
+
+        onError: (_err, { commentId }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(queryKey, (oldData) => {
+            if (!currentUser) return
+
+            return oldData.filter((comment) => comment.id !== commentId);
+        }),
+    })
+
+
+    const handleMutation = async (data: CreatePostCommentSchema) => {
+        try {
+            reset();
+            
+            const commentId = `temp:${Date.now()}`;
+            await mutation.mutateAsync({ commentId, data });
         } catch (err: any) {
             const error = err.response?.data as ErrorResponse;
 

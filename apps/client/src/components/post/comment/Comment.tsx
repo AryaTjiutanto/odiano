@@ -26,20 +26,27 @@ const Comment = ({ data }: Props) => {
                 <p className="mt-1">
                     {data.content || ""}
                 </p>
-                <div className="mt-2 flex items-center space-x-5 text-neutral-500">
-                    <span>
-                        {formatRelativeShort(data.createdAt)}
-                    </span>
-                    <button className="text-sm flex items-center space-x-1 cursor-pointer">
-                        <Heart className="w-4" />
-                        <span>
-                            5
-                        </span>
-                    </button>
-                    <button className="cursor-pointer">
-                        Replay
-                    </button>
-                </div>
+                {
+                    ("isPosted" in data && data.isPosted == false) ?
+                        <div className="text-sm">
+                            Loading...
+                        </div>
+                        :
+                        <div className="mt-2 flex items-center space-x-5 text-neutral-500">
+                            <span>
+                                {formatRelativeShort(data.createdAt)}
+                            </span>
+                            <button className="text-sm flex items-center space-x-1 cursor-pointer">
+                                <Heart className="w-4" />
+                                <span>
+                                    5
+                                </span>
+                            </button>
+                            <button className="cursor-pointer">
+                                Replay
+                            </button>
+                        </div>
+                }
             </div>
         </div>
     )
