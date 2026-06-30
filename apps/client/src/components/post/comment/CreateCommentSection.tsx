@@ -1,7 +1,7 @@
-import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type PostCommentDTO, type SuccessResponseData } from "@connect/shared";
+import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type PostCommentDTO, type PostDTO, type SuccessResponseData } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { api } from "../../../libs/api";
 import { notify } from "../../../helpers/notify.helper";
@@ -12,11 +12,11 @@ import { useAppSelector } from "../../../shared/hooks/useRedux";
 import Profile from "../../social/Profile";
 import { useMutation } from "@tanstack/react-query";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { postKeys } from "../../../queries/postKeys";
 
 type CreateCommentProps = {
     postId: string,
-    queryKey: string[],
 }
 
 type MutationParams = {
@@ -26,9 +26,10 @@ type MutationParams = {
 
 type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse;
 
-const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
+const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     const currentUser = useAppSelector((state) => state.auth.user);
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const { postPublicId } = useParams();
 
     //  handle form
     const {
@@ -73,41 +74,57 @@ const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
         handleMutation(data);
     }
 
-    // mutation
+    // comment mutation
     const setQueryDataHandler = useSetQueryDataHandler();
 
+    const currentUserCommentQueryKey = postKeys.currentUserComments(postId);
+    const postQueryKey = postPublicId && postKeys.detail(postPublicId);
+
     const createComment = async ({ commentId, data }: MutationParams) => {
-        const response = await api.post<SuccessResponseData>("/post/comments/create", data)
+        await api.post<SuccessResponseData>("/post/comments/create", data)
     };
 
-    const mutation = useMutation({
-        mutationKey: queryKey,
+    const commentMutation = useMutation({
+        mutationKey: currentUserCommentQueryKey,
         mutationFn: createComment,
 
-        onMutate: ({ commentId, data }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(queryKey, (oldData) => {
-            if (!currentUser) return;
+        onMutate: ({ commentId, data }: MutationParams) => {
+            // increase post comment count
+            if (postQueryKey) {
+                setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => {
+                    return {
+                        ...oldData,
+                        commentCount: oldData.commentCount + 1
+                    }
+                })
+            }
 
-            return [
-                {
-                    author: {
-                        id: currentUser.id,
-                        name: currentUser.name,
-                        profileImage: currentUser.profileImage,
-                        username: currentUser.username,
+            // add new comment to the list
+            setQueryDataHandler<PostCommentDTO[]>(currentUserCommentQueryKey, (oldData) => {
+                if (!currentUser) return;
+
+                return [
+                    {
+                        author: {
+                            id: currentUser.id,
+                            name: currentUser.name,
+                            profileImage: currentUser.profileImage,
+                            username: currentUser.username,
+                        },
+                        content: data.content,
+                        createdAt: new Date(),
+                        depth: 0,
+                        id: commentId,
+                        parentId: null,
+                        replyCount: 0,
+                        isPosted: false,
                     },
-                    content: data.content,
-                    createdAt: new Date(),
-                    depth: 0,
-                    id: commentId,
-                    parentId: null,
-                    replyCount: 0,
-                    isPosted: false,
-                },
-                ...oldData,
-            ]
-        }),
+                    ...oldData,
+                ]
+            })
+        },
 
-        onSuccess: (_response, { commentId }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(queryKey, (oldData) => {
+        onSuccess: (_response, { commentId }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(currentUserCommentQueryKey, (oldData) => {
             return oldData.map((comment) => {
                 return {
                     ...(comment.id == commentId ? {
@@ -118,11 +135,24 @@ const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
             })
         }),
 
-        onError: (_err, { commentId }: MutationParams) => setQueryDataHandler<PostCommentDTO[]>(queryKey, (oldData) => {
-            if (!currentUser) return
+        onError: (_err, { commentId }: MutationParams) => {
+            // increase post comment count
+            if(postQueryKey) {
+                setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => {
+                    return {
+                        ...oldData,
+                        commentCount : oldData.commentCount - 1,
+                    }
+                })
+            }
 
-            return oldData.filter((comment) => comment.id !== commentId);
-        }),
+            // remove new comment from the list 
+            setQueryDataHandler<PostCommentDTO[]>(currentUserCommentQueryKey, (oldData) => {
+                if (!currentUser) return
+
+                return oldData.filter((comment) => comment.id !== commentId);
+            })
+        },
     })
 
 
@@ -131,7 +161,7 @@ const CreateCommentSection = ({ postId, queryKey }: CreateCommentProps) => {
             reset();
 
             const commentId = `temp:${Date.now()}`;
-            await mutation.mutateAsync({ commentId, data });
+            await commentMutation.mutateAsync({ commentId, data });
         } catch (err: any) {
             const error = err.response?.data as ErrorResponse;
 

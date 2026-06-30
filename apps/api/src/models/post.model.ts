@@ -41,7 +41,7 @@ const postMediaSchema = new mongoose.Schema<PostMedia>({
         required : true,
         type : String,
         enum : Object.values(ALLOWED_MEDIA_TYPES)
-    }
+    },
 });
 
 // post schema
@@ -82,6 +82,14 @@ const postSchema = new mongoose.Schema<PostSchema>({
         required : false,
         default : null,
     },
+    commentCount : {
+        type : Number,
+        default : 0,
+    },
+    likeCount : {
+        type : Number,
+        default : 0
+    }
 }, { timestamps: true, toJSON : {versionKey : false} })
 
 postSchema.pre("save", async function() {

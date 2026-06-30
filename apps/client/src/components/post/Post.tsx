@@ -1,5 +1,5 @@
 import type { PostDTO, UserSummaryDTO } from "@connect/shared";
-import { Bookmark, EllipsisVertical, Heart, MessageCircle, User } from "lucide-react";
+import { Bookmark, EllipsisVertical, Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "../social/Profile";
@@ -42,7 +42,7 @@ const Post = ({ data, author }: Props) => {
                     <div className="flex items-center space-x-1 z-20 hover:text-sky-500 duration-100" onClick={(e) => e.preventDefault()}>
                         <MessageCircle className="w-4" />
                         <span>
-                            0
+                            {data.commentCount ?? 0}
                         </span>
                     </div>
                     <div className="flex items-center space-x-1 z-20 hover:text-rose-500 duration-100" onClick={(e) => e.preventDefault()}>

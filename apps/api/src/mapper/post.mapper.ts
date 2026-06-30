@@ -15,6 +15,8 @@ export const toPostDto = (post: PostQuery): PostDTO => {
         turnOffCommenting: post.turnOffCommenting,
         visibility: post.visibility,
         createdAt: post.createdAt,
+        commentCount : post.commentCount,
+        likeCount : post.likeCount,
         ...userSummaryDTO,
     }
 }

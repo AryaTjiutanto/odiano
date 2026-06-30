@@ -7,6 +7,7 @@ import InfiniteScrollSentinel from "../../common/InfiniteScrollSentinel";
 import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
 import { useAppSelector } from "../../../shared/hooks/useRedux";
+import { postKeys } from "../../../queries/postKeys";
 
 type Props = {
     postId: string,
@@ -16,7 +17,7 @@ const CommentSection = ({ postId }: Props) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 
     // current user comment
-    const currentUserQueryKey = ["comment", postId, "currentUser"];
+    const currentUserQueryKey = postKeys.currentUserComments(postId);
 
     const getCurrentUserComments = async () => {
         const response = await api.get<SuccessResponseData<PostCommentDTO[]>>(`post/${postId}/comments/me`);
@@ -33,7 +34,7 @@ const CommentSection = ({ postId }: Props) => {
     })
 
     // comments
-    const commentQueryKey = ["comment", postId];
+    const commentQueryKey = postKeys.comments(postId);
 
     const getComments = async ({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostCommentDTO[]>> => {
         const response = await api.get<SuccessResponseData<InfiniteQuery<PostCommentDTO[]>>>(`post/${postId}/comments`, {
@@ -61,7 +62,7 @@ const CommentSection = ({ postId }: Props) => {
     return (
         <>
             {/* create comment */}
-            <CreateCommentSection postId={postId} queryKey={currentUserQueryKey} />
+            <CreateCommentSection postId={postId}/>
 
             {/* comments */}
             <div className="w-full space-y-8 mt-10 pb-6">

@@ -5,7 +5,6 @@ import * as postCommentService from "../services/postComment.service";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { ReqBody } from "../types/request.type";
-import logger from "../libs/log/logger";
 
 export const createComment = async (req: ReqBody<CreatePostCommentSchema>, res: Response, next: NextFunction) => {
     const currentUserId = req.userId;

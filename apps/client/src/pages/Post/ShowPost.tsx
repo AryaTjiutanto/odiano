@@ -16,6 +16,9 @@ import { notify } from "../../helpers/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/social/Profile";
 import { useAppSelector } from "../../shared/hooks/useRedux";
+import { postKeys } from "../../queries/postKeys";
+import NotFound from "../Error/NotFound";
+import { userKeys } from "../../queries/userKeys";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -29,7 +32,14 @@ const ShowPost = () => {
 
     const setQueryDataHandler = useSetQueryDataHandler();
 
+    // check postPublicId
+    if(!postPublicId) {
+        return <NotFound/>
+    }
+
     // get post data
+    const postQueryKey = postKeys.detail(postPublicId);
+
     const getPost = async () => {
         const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${postPublicId}`);
 
@@ -41,7 +51,7 @@ const ShowPost = () => {
     }
 
     const postQuery = useQuery({
-        queryKey: ["post", postPublicId],
+        queryKey: postQueryKey,
         queryFn: getPost,
         enabled: !!postPublicId,
         staleTime: 30 * 1000,
@@ -55,7 +65,7 @@ const ShowPost = () => {
     }, [postPublicId, navigate])
 
     // get is following handler
-    const isFollowingQueryKey = ['is-following', postQuery.data?.author?.id];
+    const isFollowingQueryKey = userKeys.isFollowing(postQuery.data?.author?.id || "");
 
     const getIsFollowingInformation = async () => {
         try {
@@ -240,7 +250,7 @@ const ShowPost = () => {
                             <div className="flex items-center space-x-2">
                                 <MessageCircle />
                                 <p>
-                                    7
+                                    { postQuery.data?.commentCount ?? 0 }
                                 </p>
                             </div>
                             <button className="cursor-pointer">
@@ -255,7 +265,7 @@ const ShowPost = () => {
                 </div>
 
                 {/* comment */}
-                <CommentSection postId={postQuery.data.id} />
+                <CommentSection postId={postQuery.data.id}/>
             </div>
         </>
     )

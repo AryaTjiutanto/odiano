@@ -15,7 +15,7 @@ export const listPosts = async (cursor: string | null): Promise<InfiniteQuery<Po
     // get posts data
     const posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt")
+        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt commentCount likeCount")
         .populate("author", "name username profileImage")
         .limit(POSTS_PAGE_SIZE + 1).lean<PostQuery[]>();
 
@@ -40,7 +40,7 @@ export const listPosts = async (cursor: string | null): Promise<InfiniteQuery<Po
 
 export const getPost = async (publicId: string): Promise<PostDTO | null> => {
     const post = await Post.findOne({ publicId })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt")
+        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt commentCount likeCount")
         .populate("author", "name username profileImage")
         .lean<PostQuery>();
 
@@ -85,7 +85,7 @@ export const getUserPosts = async (username: string, cursor: string | null): Pro
     // get posts
     const posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("_id publicId content media visibility hideLikeAndViewCount turnOffCommenting isArchive createdAt updatedAt")
+        .select("_id publicId content media visibility hideLikeAndViewCount turnOffCommenting isArchive createdAt updatedAt commentCount likeCount")
         .limit(POSTS_PAGE_SIZE + 1)
         .lean<PostQuery[]>();
 

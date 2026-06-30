@@ -13,5 +13,7 @@ export type PostQuery = {
     isArchive : boolean,
     createdAt : Date,
     updatedAt : Date,
+    commentCount : number,
+    likeCount : number,
     author? : UserSummaryQuery,
 }

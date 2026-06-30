@@ -6,6 +6,7 @@ import { MAX_TOP_LEVEL_POSTCOMMENT, POSTCOMMENT_PAGE_SIZE } from "../consts/post
 import { AppError } from "../errors/appError.error"
 import { Post } from "../models/post.model"
 import { create as createNotification } from "./notification.service";
+import mongoose from "mongoose"
 
 type createPostCommentParams = {
     content: string,
@@ -22,11 +23,12 @@ type GetCommentParams = {
 }
 
 export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) => {
+    const session = await mongoose.startSession();
+
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
-        .select("visibility isArchive turnOffCommenting")
-        .populate("author", "_id")
-        .lean();
+        .select("visibility isArchive turnOffCommenting commentCount")
+        .populate("author", "_id");
 
     if (!post) {
         throw new AppError(
@@ -61,22 +63,37 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
         }
     }
 
-    // create postComment
-    await PostComment.create({
-        content,
-        author: authorId,
-        postId,
-        parentId,
-        depth,
-    })
+    try {
+        session.withTransaction(async () => {
+        
+            // create postComment
+            await PostComment.create({
+                content,
+                author: authorId,
+                postId,
+                parentId,
+                depth,
+            })
+        
+            // increate post comment count
+            post.commentCount++;
+            post.save();
+        
+            // create notification
+            const postAuthorId = post.author._id.toString();
 
-    // create notification
-    await createNotification(authorId, {
-        recepientId: post.author._id.toString(),
-        targetId: postId,
-        targetType: NOTIFICATION_TARGET_TYPE.POST,
-        type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
-    });
+            if(authorId !== postAuthorId) {
+                await createNotification(authorId, {
+                    recepientId: postAuthorId,
+                    targetId: postId,
+                    targetType: NOTIFICATION_TARGET_TYPE.POST,
+                    type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
+                });
+            }
+        })
+    } finally {
+        session.endSession();
+    }
 }
 
 export const get = async ({ cursor, postId, userId }: GetCommentParams): Promise<InfiniteQuery<PostCommentDTO[]>> => {

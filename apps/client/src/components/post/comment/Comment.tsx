@@ -28,7 +28,7 @@ const Comment = ({ data }: Props) => {
                 </p>
                 {
                     ("isPosted" in data && data.isPosted == false) ?
-                        <div className="text-sm">
+                        <div className="text-xs text-neutral-500 mt-2">
                             Loading...
                         </div>
                         :
