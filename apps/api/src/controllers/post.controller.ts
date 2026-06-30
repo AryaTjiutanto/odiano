@@ -6,9 +6,10 @@ import { successResponseData } from "../utils/response.util";
 
 export const index = async(req: Request, res: Response, next: NextFunction) => {
     const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;
+    const currentUserId = req.userId;
 
     try{
-        const data = await postServices.listPosts(cursor);
+        const data = await postServices.listPosts(currentUserId, cursor);
 
         res.status(200).json(successResponseData<InfiniteQuery<PostDTO[]>>(SUCCESS_RESPONSE_CODE.success, "Success", data));
     } catch(err) {
@@ -18,13 +19,14 @@ export const index = async(req: Request, res: Response, next: NextFunction) => {
 
 export const show = async(req: Request, res : Response, next : NextFunction) => {
     const postPublicId = String(req.params.postPublicId);
+    const currentUserId = req.userId;
 
     try {
         if(!postPublicId) {
             throw new Error("public id is missing or not valid");
         }
 
-        const post = await postServices.getPost(postPublicId);
+        const post = await postServices.getPost(currentUserId, postPublicId);
 
         res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.success, "success", post));
     } catch (err) {
@@ -34,11 +36,12 @@ export const show = async(req: Request, res : Response, next : NextFunction) => 
 
 export const getUserPosts = async (req : Request, res : Response, next : NextFunction) => {
     const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;
+    const currentUserId = req.userId;
 
     try {
         const username = String(req.params.username);
 
-        const data = await postServices.getUserPosts(username, cursor);
+        const data = await postServices.getUserPosts(currentUserId, username, cursor);
 
         res.status(200).json(successResponseData<InfiniteQuery<PostDTO[]>>(SUCCESS_RESPONSE_CODE.success, "Success", data));
     } catch(err) {

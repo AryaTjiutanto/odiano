@@ -23,8 +23,6 @@ type GetCommentParams = {
 }
 
 export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) => {
-    const session = await mongoose.startSession();
-
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
         .select("visibility isArchive turnOffCommenting commentCount")
@@ -54,6 +52,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
         );
     }
 
+
     // increase totalComment when the depth is 0
     if (depth == 0) {
         const totalComment = await PostComment.countDocuments({ postId, author: authorId, depth: 0 });
@@ -63,36 +62,39 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
         }
     }
 
+    // handle create postcomment
+    const session = await mongoose.startSession();
     try {
-        session.withTransaction(async () => {
-        
+        await session.withTransaction(async () => {
             // create postComment
-            await PostComment.create({
-                content,
-                author: authorId,
-                postId,
-                parentId,
-                depth,
-            })
-        
+            await PostComment.create([
+                {
+                    content,
+                    author: authorId,
+                    postId,
+                    parentId,
+                    depth,
+                }
+            ], { session })
+
             // increate post comment count
             post.commentCount++;
-            post.save();
-        
+            await post.save({ session });
+
             // create notification
             const postAuthorId = post.author._id.toString();
 
-            if(authorId !== postAuthorId) {
+            if (authorId !== postAuthorId) {
                 await createNotification(authorId, {
                     recepientId: postAuthorId,
                     targetId: postId,
                     targetType: NOTIFICATION_TARGET_TYPE.POST,
                     type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
-                });
+                }, session);
             }
         })
     } finally {
-        session.endSession();
+        await session.endSession();
     }
 }
 
@@ -141,8 +143,8 @@ export const get = async ({ cursor, postId, userId }: GetCommentParams): Promise
 export const getCurrentUserComments = async (userId: string, postId: string): Promise<PostCommentDTO[]> => {
     const comments = await PostComment.find({
         postId,
-        author : userId ,
-        depth: 0,        
+        author: userId,
+        depth: 0,
     })
         .sort({ _id: -1 })
         .select("_id parentId content depth replyCount createdAt")

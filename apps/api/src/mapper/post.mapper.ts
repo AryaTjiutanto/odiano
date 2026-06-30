@@ -2,7 +2,11 @@ import { PostDTO } from "@connect/shared";
 import { type PostQuery } from "../types/post.type";
 import { toUserSummaryDTO } from "./user.mapper";
 
-export const toPostDto = (post: PostQuery): PostDTO => {
+type AdditionalData = {
+    isLiked : boolean,
+}
+
+export const toPostDto = (post: PostQuery, {isLiked} : AdditionalData): PostDTO => {
     const userSummaryDTO = post.author?._id ? {author : toUserSummaryDTO(post.author)} : {};
 
     return {
@@ -17,6 +21,7 @@ export const toPostDto = (post: PostQuery): PostDTO => {
         createdAt: post.createdAt,
         commentCount : post.commentCount,
         likeCount : post.likeCount,
+        isLiked : isLiked,
         ...userSummaryDTO,
     }
 }

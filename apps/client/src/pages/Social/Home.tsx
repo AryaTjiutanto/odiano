@@ -7,8 +7,11 @@ import { api } from "../../libs/api";
 import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
+import { postKeys } from "../../queries/postKeys";
 
 const Homepage = () => {
+    const postsQueryKey = postKeys.all;
+
     async function getPosts({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
         const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
             params: {
@@ -25,7 +28,7 @@ const Homepage = () => {
 
     const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryFn: getPosts,
-        queryKey: ["post"],
+        queryKey: postsQueryKey,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
@@ -33,7 +36,6 @@ const Homepage = () => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
     })
-
 
     return (
         <>

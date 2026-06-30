@@ -3,7 +3,7 @@ import { AppError } from "../../../errors/appError.error";
 import { TooManyRequestError } from "@connect/shared";
 
 const defaultKeyGenerator = (req : Request) => {
-    const apiKey = req?.userId || req?.ip || "anonymous";
+    const apiKey = req?.ip || "anonymous";
 
     return apiKey;
 }

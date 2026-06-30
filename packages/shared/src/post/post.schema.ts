@@ -38,7 +38,7 @@ export const createPostSchema = z.object({
     isArchive : z.boolean("Invalid format"),
     hideLikeAndViewCount: z.boolean("Invalid format"),
     turnOffCommenting : z.boolean("Invalid format"),
-    visibility : z.nativeEnum(POST_VISIBILITIES, "Invalid visibilities")
-}) satisfies z.ZodType<Post>;
+    visibility : z.nativeEnum(POST_VISIBILITIES, "Invalid visibilities"),
+}) satisfies z.ZodType<Omit<Post, "commentCount" | "likeCount">>;
 
 export type CreatePostSchema = z.infer<typeof createPostSchema>;

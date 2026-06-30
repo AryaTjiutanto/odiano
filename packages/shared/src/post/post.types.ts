@@ -19,6 +19,8 @@ export type Post = {
     // content
     content: string,
     media: PostMedia[] | null,
+    commentCount : number,
+    likeCount : number,
 
     // setting
     visibility: PostVisibilities,
@@ -36,4 +38,5 @@ export type PostDTO = Post & {
     publicId: string,
     author?: UserSummaryDTO,
     createdAt: Date,
+    isLiked : boolean,
 }

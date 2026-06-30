@@ -7,6 +7,7 @@ import { toNotificationDTO } from "../mapper/notification.mapper";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import logger from "../libs/log/logger";
+import { ClientSession } from "mongoose";
 
 type createNotificationParams = {
     recepientId: string,
@@ -15,7 +16,7 @@ type createNotificationParams = {
     type: NotificationType,
 }
 
-export const get = async (currentUserId: string, cursor: string | undefined | null, isRead : boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
+export const get = async (currentUserId: string, cursor: string | undefined | null, isRead: boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications
     let notifications = await Notification.find({
         recepient: currentUserId,
@@ -43,16 +44,16 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
 
     return {
         hasNextPage,
-        items : items,
-        nextCursor : hasNextPage ? items[items.length - 1].id : null,
+        items: items,
+        nextCursor: hasNextPage ? items[items.length - 1].id : null,
     };
 }
 
-export const updateReadStatus = async (currentUserId : string, notificationId : string) => {
+export const updateReadStatus = async (currentUserId: string, notificationId: string) => {
     // get and check notification
-    const notification = await Notification.findOne({recepient : currentUserId, _id : notificationId});
+    const notification = await Notification.findOne({ recepient: currentUserId, _id: notificationId });
 
-    if(!notification) {
+    if (!notification) {
         throw new UnauthorizedError();
     }
 
@@ -61,14 +62,16 @@ export const updateReadStatus = async (currentUserId : string, notificationId : 
     notification.save();
 }
 
-export const create = async (authorId: string, params: createNotificationParams) => {
-    const notification = await Notification.create({
-        actor: authorId,
-        recepient: params.recepientId,
-        targetId: params.targetId,
-        targetType: params.targetType,
-        type: params.type,
-    });
+export const create = async (authorId: string, params: createNotificationParams, session?: ClientSession) => {
+    await Notification.create([
+        {
+            actor: authorId,
+            recepient: params.recepientId,
+            targetId: params.targetId,
+            targetType: params.targetType,
+            type: params.type,
+        }
+    ], { session });
 
     // get user summary
     let userSummary;
@@ -78,7 +81,7 @@ export const create = async (authorId: string, params: createNotificationParams)
 
     // emit to user
     const notificationDTO: NotificationDTO = {
-        id : String(nanoid(6)),
+        id: String(nanoid(6)),
         actor: userSummary,
         recepient: params.recepientId,
         targetId: params.targetId,
@@ -91,9 +94,9 @@ export const create = async (authorId: string, params: createNotificationParams)
     emitToUser(notificationDTO, params.recepientId);
 }
 
-export const deleteNotificationWithRecepient = async (recepient : string, type? : NotificationType) => {
+export const deleteNotificationWithRecepient = async (recepient: string, type?: NotificationType, session? : ClientSession) => {
     await Notification.deleteMany({
-        recepient, 
-        ...(type && {type})
-    });
+        recepient,
+        ...(type && { type })
+    }, {session});
 }
