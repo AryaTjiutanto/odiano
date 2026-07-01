@@ -1,6 +1,6 @@
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, type MouseEvent } from "react";
+import { useEffect } from "react";
 import { type SuccessResponseData, type PostDTO, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { api } from "../../libs/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import ErrorState from "../../components/common/ErrorState";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import DotsLoader from "../../components/loader/DotsLoader";
-import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
+import { createFollowing, deleteFollowing } from "../../services/following.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import type { AxiosErrorResponseData } from "../../types/response.type";
 import { notify } from "../../helpers/notify.helper";
@@ -20,6 +20,7 @@ import { postKeys } from "../../queries/postKeys";
 import NotFound from "../Error/NotFound";
 import { userKeys } from "../../queries/userKeys";
 import { applyLikeToPostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
+import { createLike, deleteLike } from "../../services/post.service";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -55,7 +56,7 @@ const ShowPost = () => {
         queryKey: postQueryKey,
         queryFn: getPost,
         enabled: !!postPublicId,
-        staleTime: 30 * 1000,
+        staleTime: 10 * 1000,
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -133,7 +134,7 @@ const ShowPost = () => {
 
     const handleUnfollow = async () => {
         if (!isAuthenticated) {
-
+            return navigate("/signin");
         }
 
         try {
@@ -146,10 +147,6 @@ const ShowPost = () => {
     }
 
     // like mutation
-    const createLike = async () => {
-        await api.post(`/post/${postQuery.data?.id}/like`);
-    }
-
     const likeMutation = useMutation({
         mutationKey: postQueryKey,
         mutationFn: createLike,
@@ -159,10 +156,6 @@ const ShowPost = () => {
     })
 
     // delete like mutation
-    const deleteLike = async () => {
-        await api.delete(`/post/${postQuery.data?.id}/like/delete`);
-    }
-
     const unlikeMutation = useMutation({
         mutationKey: postQueryKey,
         mutationFn: deleteLike,
@@ -173,11 +166,13 @@ const ShowPost = () => {
 
     // handle like 
     const handleLike = async () => {
+        if(!postQuery.data) return;
+
         try {
             if (postQuery.data?.isLiked) {
-                await unlikeMutation.mutateAsync();
+                await unlikeMutation.mutateAsync(postQuery.data?.id);
             } else {
-                await likeMutation.mutateAsync();
+                await likeMutation.mutateAsync(postQuery.data?.id);
             }
         } catch (err: any) {
             const error = err as AxiosErrorResponseData;

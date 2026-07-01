@@ -13,7 +13,7 @@ import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentin
 import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
-import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
+import { createFollowing, deleteFollowing } from "../../services/following.service";
 import { notify } from "../../helpers/notify.helper";
 import type { AxiosErrorResponseData } from "../../types/response.type";
 

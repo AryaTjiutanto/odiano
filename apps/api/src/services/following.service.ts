@@ -5,12 +5,7 @@ import { User } from "../models/user.model";
 import mongoose from "mongoose";
 import { create as createNotification, deleteNotificationWithRecepient } from "./notification.service";
 
-export const createFollowing = async (currentUserId: string, userId: string, followUserId: string) => {
-    // checl is userId is current user id
-    if (userId !== currentUserId) {
-        throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "Invalid data");
-    }
-
+export const createFollowing = async (currentUserId: string, followUserId: string) => {
     // check is follow user exist
     const isFollowUserExist = await User.exists({ _id: followUserId });
     if (!isFollowUserExist) {
@@ -18,7 +13,7 @@ export const createFollowing = async (currentUserId: string, userId: string, fol
     }
 
     // check is following exist
-    const followingExist = await Following.exists({ userId, followUserId });
+    const followingExist = await Following.exists({ currentUserId, followUserId });
 
     if (followingExist) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "Already following");
@@ -32,7 +27,7 @@ export const createFollowing = async (currentUserId: string, userId: string, fol
             // create following and increase follow count
             await Following.create([
                 {
-                    userId,
+                    userId : currentUserId,
                     followUserId,
                 }
             ], { session })
@@ -53,14 +48,14 @@ export const createFollowing = async (currentUserId: string, userId: string, fol
     }
 }
 
-export const deleteFollowing = async (currentUserId: string, userId: string, followUserId: string) => {
+export const deleteFollowing = async (currentUserId: string, followUserId: string) => {
     // checl is userId is current user id
-    if (userId !== currentUserId) {
+    if (currentUserId !== currentUserId) {
         throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "Invalid data");
     }
 
     // check is following exist
-    const followingExist = await Following.exists({ userId, followUserId });
+    const followingExist = await Following.exists({ userId : currentUserId, followUserId });
 
     if (!followingExist) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "You haven't followed this account yet");
@@ -71,7 +66,7 @@ export const deleteFollowing = async (currentUserId: string, userId: string, fol
 
     try {
         await session.withTransaction(async () => {
-            await Following.deleteOne({ userId, followUserId }, {session});
+            await Following.deleteOne({ userId : currentUserId, followUserId }, {session});
             await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: -1 } }, {session});
             await User.updateOne({ _id: followUserId }, { $inc: { followerCount: -1 } }, {session});
 

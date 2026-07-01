@@ -2,18 +2,23 @@ import { Request, Response, NextFunction } from "express";
 import * as followingServices from "../services/following.service";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { successResponseData } from "../utils/response.util";
-import { SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { AppError } from "../errors/appError.error";
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const currentUserId = req.userId;
-        const { userId, followUserId } = req.body.data;
+        const { followUserId } = req.body.data;
 
         if (!currentUserId) {
             throw new UnauthorizedError();
         }
 
-        await followingServices.createFollowing(currentUserId, userId, followUserId);
+        if(!followUserId) {
+            throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
+        }
+
+        await followingServices.createFollowing(currentUserId, followUserId);
 
         res.status(201).json(successResponseData(SUCCESS_RESPONSE_CODE.created, "Created"));
     } catch (err) {
@@ -24,13 +29,17 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 export const deleteFollowing = async(req : Request, res: Response, next : NextFunction) => {
     try {
         const currentUserId = req.userId;
-        const {userId, followUserId} = req.body;
+        const {followUserId} = req.body;
 
         if(!currentUserId) {
             throw new UnauthorizedError();
         }
 
-        await followingServices.deleteFollowing(currentUserId, userId, followUserId);
+        if(!followUserId) {
+            throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
+        }
+
+        await followingServices.deleteFollowing(currentUserId, followUserId);
         
         res.status(204).json(successResponseData(SUCCESS_RESPONSE_CODE.deleted, "Deleted"));
     } catch(err) {

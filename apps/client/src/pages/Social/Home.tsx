@@ -29,7 +29,7 @@ const Homepage = () => {
     const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryFn: getPosts,
         queryKey: postsQueryKey,
-        staleTime: 30 * 1000,
+        staleTime: 10 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {

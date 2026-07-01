@@ -12,6 +12,7 @@ import { type MouseEvent } from "react";
 import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import type { AxiosErrorResponseData } from "../../types/response.type";
+import { createLike, deleteLike } from "../../services/post.service";
 
 type Props = {
     data: PostDTO,
@@ -26,10 +27,6 @@ const Post = ({ data, author }: Props) => {
     const postQueryKey = postKeys.all;
 
     // like post mutation
-    const createLike = async () => {
-        await api.post(`/post/${data.id}/like`);
-    }
-
     const applylikeMutation = useMutation({
         mutationFn: createLike,
         mutationKey: postQueryKey,
@@ -40,10 +37,6 @@ const Post = ({ data, author }: Props) => {
     })
 
     // unlike postMutation
-    const deleteLike = async () => {
-        await api.delete(`/post/${data.id}/like/delete`);
-    }
-
     const removeLikeMutation = useMutation({
         mutationFn : deleteLike,
         mutationKey : postQueryKey,
@@ -58,9 +51,9 @@ const Post = ({ data, author }: Props) => {
 
         try {
             if (data.isLiked) {
-                await removeLikeMutation.mutateAsync();
+                await removeLikeMutation.mutateAsync(data.id);
             } else {
-                await applylikeMutation.mutateAsync();
+                await applylikeMutation.mutateAsync(data.id);
             }
         } catch (err: any) {
             const error = err as AxiosErrorResponseData;
