@@ -19,8 +19,9 @@ import { useAppSelector } from "../../hooks/useRedux";
 import { postKeys } from "../../queries/postKeys";
 import NotFound from "../Error/NotFound";
 import { userKeys } from "../../queries/userKeys";
-import { applyLikeToPostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
+import { applyLikeToInfinitePostCache, applyLikeToPostCache, removeLikeFromInfinitePostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
 import { createLike, deleteLike } from "../../services/post.service";
+import type { InfiniteQueryPostDTO } from "../../types/post.type";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -148,25 +149,39 @@ const ShowPost = () => {
 
     // like mutation
     const likeMutation = useMutation({
-        mutationKey: postQueryKey,
         mutationFn: createLike,
 
-        onMutate: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData)),
-        onError: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData))
+        onMutate: (postId: string) => {
+            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData))
+
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => applyLikeToInfinitePostCache(oldData, postId))
+        },
+        onError: (postId: string) => {
+            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData))
+
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => removeLikeFromInfinitePostCache(oldData, postId))
+        },
     })
 
     // delete like mutation
     const unlikeMutation = useMutation({
-        mutationKey: postQueryKey,
         mutationFn: deleteLike,
 
-        onMutate: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData)),
-        onError: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData)),
+        onMutate: (postId: string) => {
+            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData))
+
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => removeLikeFromInfinitePostCache(oldData, postId))
+        },
+        onError: (postId: string) => {
+            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData))
+
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => applyLikeToInfinitePostCache(oldData, postId))
+        },
     })
 
     // handle like 
     const handleLike = async () => {
-        if(!postQuery.data) return;
+        if (!postQuery.data) return;
 
         try {
             if (postQuery.data?.isLiked) {
