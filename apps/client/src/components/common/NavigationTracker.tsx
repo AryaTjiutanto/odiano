@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { addRoute } from "../../features/navigationHistory/navigationHistory.slice";
-import { useAppDispatch } from "../../shared/hooks/useRedux";
+import { useAppDispatch } from "../../hooks/useRedux";
 import { useLocation } from "react-router-dom";
 
 const NavigationTracker = () => {

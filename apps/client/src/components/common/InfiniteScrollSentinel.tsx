@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import DotsLoader from "../loader/DotsLoader";
-import { useAppSelector } from "../../shared/hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
 
 type Props = {

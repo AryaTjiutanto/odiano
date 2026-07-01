@@ -6,7 +6,7 @@ import { createUserProfileSchema, type SuccessResponseData, type CreateUserProfi
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../libs/api";
 import DotsLoader from "../components/loader/DotsLoader";
-import { useAppDispatch } from "../shared/hooks/useRedux";
+import { useAppDispatch } from "../hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { uploadImageToCloudinary } from "../services/cloudinary.service";
 import { Check, RotateCcw, Upload, User, X } from "lucide-react";

@@ -6,4 +6,4 @@ export const postKeys = {
 
     comments: (postId: string) => [mainKey, postId, "comments"],
     currentUserComments: (postId: string) => [mainKey, postId, "comments", "me"]
-}
+};

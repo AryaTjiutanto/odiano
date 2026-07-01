@@ -1,4 +1,4 @@
-import { useAppSelector } from "../shared/hooks/useRedux";
+import { useAppSelector } from "../hooks/useRedux";
 import type { GuardResult } from "../types/guard.type";
 
 const useRequireGuest = (): GuardResult => {

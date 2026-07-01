@@ -10,12 +10,12 @@ import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
 import type { AxiosError } from "axios";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
-import { useAppSelector } from "../../shared/hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
 import { notify } from "../../helpers/notify.helper";
-import type { AxiosErrorResponseData } from "../../types/response";
+import type { AxiosErrorResponseData } from "../../types/response.type";
 
 const Profile = () => {
     const navigate = useNavigate();

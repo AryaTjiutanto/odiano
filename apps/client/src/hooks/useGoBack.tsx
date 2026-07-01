@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../shared/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "./useRedux";
 import { removeRouteFromBack } from "../features/navigationHistory/navigationHistory.slice";
 
 const useGoBack = () => {

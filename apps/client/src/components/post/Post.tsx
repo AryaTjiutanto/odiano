@@ -1,14 +1,17 @@
-import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserSummaryDTO } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, type PostDTO, type UserSummaryDTO } from "@connect/shared";
 import { Bookmark, EllipsisVertical, Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "../social/Profile";
-import { useMutation, type InfiniteData } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import { api } from "../../libs/api";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { notify } from "../../helpers/notify.helper";
-import type { MouseEvent } from "react";
+import { type MouseEvent } from "react";
+import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from "../../helpers/cache/postCache.helper";
+import type { InfiniteQueryPostDTO } from "../../types/post.type";
+import type { AxiosErrorResponseData } from "../../types/response.type";
 
 type Props = {
     data: PostDTO,
@@ -22,83 +25,66 @@ const Post = ({ data, author }: Props) => {
     const dataAuthor = data.author ?? author;
     const postQueryKey = postKeys.all;
 
-    // postMutation
+    // like post mutation
     const createLike = async () => {
         await api.post(`/post/${data.id}/like`);
     }
 
-    const createlikeMutation = useMutation({
+    const applylikeMutation = useMutation({
         mutationFn: createLike,
         mutationKey: postQueryKey,
 
-        onSuccess: () => setQueryDataHandler<InfiniteData<InfiniteQuery<PostDTO[]>>>(postQueryKey, (oldData) => {
-            return {
-                ...oldData,
-                pages: oldData.pages.map((page) => ({
-                    ...page,
-                    items: page.items.map((item) => {
-                        return {
+        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old)=> applyLikeToInfinitePostCache(old, data.id)),
 
-                            ...item,
-                            ...(item.id == data.id && {
-                                isLiked: true,
-                                likeCount: data.likeCount + 1,
-                            })
-                        }
-                    })
-                }))
-            }
-        }),
-
-        onError: () => setQueryDataHandler<InfiniteData<InfiniteQuery<PostDTO[]>>>(postQueryKey, (oldData) => {
-            return {
-                ...oldData,
-                pages: oldData.pages.map((page) => ({
-                    ...page,
-                    items: page.items.map((item) => {
-                        return {
-
-                            ...item,
-                            ...(item.id == data.id && {
-                                isLiked: false,
-                                ...(data.isLiked && {likeCount : data.likeCount - 1}),
-                            })
-                        }
-                    })
-
-                }))
-            }
-        }),
+        onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => removeLikeFromInfinitePostCache(old, data.id)),
     })
 
-    const handleLike = async (e : MouseEvent<HTMLButtonElement>) => {
+    // unlike postMutation
+    const deleteLike = async () => {
+        await api.delete(`/post/${data.id}/like/delete`);
+    }
+
+    const removeLikeMutation = useMutation({
+        mutationFn : deleteLike,
+        mutationKey : postQueryKey,
+
+        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => removeLikeFromInfinitePostCache(old, data.id)),
+        onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => applyLikeToInfinitePostCache(old, data.id)),
+    })
+
+    // handle like
+    const handleLike = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
 
         try {
-            if(!data.isLiked) {
-                await createlikeMutation.mutateAsync();
+            if (data.isLiked) {
+                await removeLikeMutation.mutateAsync();
+            } else {
+                await applylikeMutation.mutateAsync();
             }
         } catch (err: any) {
-            const error = err.response as ErrorResponseData;
+            const error = err as AxiosErrorResponseData;
+            const errorCode = error.response?.data.code;
+            const errorMessage = error.response?.data.message;
 
-            if (error.code === ERROR_RESPONSE_CODE.tooManyRequests) {
+            if (errorCode === ERROR_RESPONSE_CODE.tooManyRequests) {
                 return notify.error({
                     title: "Too Many Requests",
-                    description: error.message,
+                    description: errorMessage,
                 });
             }
 
-            if (error.code === ERROR_RESPONSE_CODE.badRequest) {
+            if (errorCode === ERROR_RESPONSE_CODE.badRequest) {
                 return notify.error({
                     title: "Invalid Request",
-                    description: error.message,
+                    description: errorMessage,
                 });
             }
 
-            if (error.code === ERROR_RESPONSE_CODE.conflict) {
+            if (errorCode === ERROR_RESPONSE_CODE.conflict) {
                 return notify.error({
                     title: "Action Not Allowed",
-                    description: error.message,
+                    description: errorMessage,
                 });
             }
 
@@ -108,6 +94,7 @@ const Post = ({ data, author }: Props) => {
             });
         }
     }
+
 
     return (
         <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full p-7 rounded-lg bg-neutral-900 cursor-pointer">
@@ -141,7 +128,7 @@ const Post = ({ data, author }: Props) => {
                             {data.commentCount ?? 0}
                         </span>
                     </div>
-                    <button className={`flex items-center space-x-1 z-20 ${data.isLiked ? 'text-rose-500' :  'hover:text-rose-500'} duration-100 cursor-pointer`} onClick={handleLike}>
+                    <button className={`flex items-center space-x-1 z-20 ${data.isLiked ? 'text-rose-500' : 'hover:text-rose-500'} duration-100 cursor-pointer`} onClick={handleLike}>
                         <Heart className={`w-4 ${data.isLiked && 'fill-rose-500'}`} />
                         <span>
                             {data.likeCount ?? 0}

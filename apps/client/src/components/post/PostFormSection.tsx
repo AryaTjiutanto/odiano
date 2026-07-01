@@ -5,12 +5,12 @@ import { createPostSchema, ERROR_RESPONSE_CODE, POST_CONTENT_LENGTH, type Create
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
-import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response.type";
 import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
 import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../../shared/hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 
 type Props = {
     setShowCreatePostFormSection: React.Dispatch<React.SetStateAction<boolean>>

@@ -1,4 +1,4 @@
-import { useAppSelector } from "../shared/hooks/useRedux";
+import { useAppSelector } from "../hooks/useRedux";
 import { useLocation } from "react-router-dom";
 import type { GuardResult } from "../types/guard.type";
 

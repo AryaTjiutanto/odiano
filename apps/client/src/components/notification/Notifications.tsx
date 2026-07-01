@@ -3,7 +3,7 @@ import { useInfiniteQuery, useMutation, type InfiniteData, type QueryFunctionCon
 import { api } from "../../libs/api";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import NotificationSkeletonLoading from "./NotificationSkeletonLoading";
-import { useAppSelector } from "../../shared/hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { useNavigate } from "react-router-dom";
 import { NOTIFICATION_KEY, type NotificationKey } from "../../consts/notification.const";

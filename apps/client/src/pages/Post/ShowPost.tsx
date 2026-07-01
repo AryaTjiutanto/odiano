@@ -1,7 +1,7 @@
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { type SuccessResponseData, type PostDTO } from "@connect/shared";
+import { useEffect, type MouseEvent } from "react";
+import { type SuccessResponseData, type PostDTO, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { api } from "../../libs/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import PostDetailSkeletonLoading from "../../components/post/PostDetailSkeletonLoading";
@@ -11,14 +11,15 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { createFollowing, deleteFollowing } from "../../helpers/following.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import type { AxiosErrorResponseData } from "../../types/response";
+import type { AxiosErrorResponseData } from "../../types/response.type";
 import { notify } from "../../helpers/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/social/Profile";
-import { useAppSelector } from "../../shared/hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 import { postKeys } from "../../queries/postKeys";
 import NotFound from "../Error/NotFound";
 import { userKeys } from "../../queries/userKeys";
+import { applyLikeToPostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -33,8 +34,8 @@ const ShowPost = () => {
     const setQueryDataHandler = useSetQueryDataHandler();
 
     // check postPublicId
-    if(!postPublicId) {
-        return <NotFound/>
+    if (!postPublicId) {
+        return <NotFound />
     }
 
     // get post data
@@ -104,7 +105,7 @@ const ShowPost = () => {
     })
 
     const handleFollow = async () => {
-        if(!isAuthenticated) {
+        if (!isAuthenticated) {
             return navigate("/signin");
         }
 
@@ -131,7 +132,7 @@ const ShowPost = () => {
     })
 
     const handleUnfollow = async () => {
-        if(!isAuthenticated) {
+        if (!isAuthenticated) {
 
         }
 
@@ -144,6 +145,74 @@ const ShowPost = () => {
         }
     }
 
+    // like mutation
+    const createLike = async () => {
+        await api.post(`/post/${postQuery.data?.id}/like`);
+    }
+
+    const likeMutation = useMutation({
+        mutationKey: postQueryKey,
+        mutationFn: createLike,
+
+        onMutate: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData)),
+        onError: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData))
+    })
+
+    // delete like mutation
+    const deleteLike = async () => {
+        await api.delete(`/post/${postQuery.data?.id}/like/delete`);
+    }
+
+    const unlikeMutation = useMutation({
+        mutationKey: postQueryKey,
+        mutationFn: deleteLike,
+
+        onMutate: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData)),
+        onError: () => setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData)),
+    })
+
+    // handle like 
+    const handleLike = async () => {
+        try {
+            if (postQuery.data?.isLiked) {
+                await unlikeMutation.mutateAsync();
+            } else {
+                await likeMutation.mutateAsync();
+            }
+        } catch (err: any) {
+            const error = err as AxiosErrorResponseData;
+            const errorCode = error.response?.data.code;
+            const errorMessage = error.response?.data.message;
+
+            if (errorCode === ERROR_RESPONSE_CODE.tooManyRequests) {
+                return notify.error({
+                    title: "Too Many Requests",
+                    description: errorMessage,
+                });
+            }
+
+            if (errorCode === ERROR_RESPONSE_CODE.badRequest) {
+                return notify.error({
+                    title: "Invalid Request",
+                    description: errorMessage,
+                });
+            }
+
+            if (errorCode === ERROR_RESPONSE_CODE.conflict) {
+                return notify.error({
+                    title: "Action Not Allowed",
+                    description: errorMessage,
+                });
+            }
+
+            return notify.error({
+                title: "Something Went Wrong",
+                description: "Please try again in a moment.",
+            });
+        }
+    }
+
+    // display
     if (postQuery.isPending) {
         return <PostDetailSkeletonLoading />
     }
@@ -241,16 +310,16 @@ const ShowPost = () => {
 
                     <div className="flex items-center justify-between mt-10">
                         <div className="flex items-center space-x-10">
-                            <button className="flex items-center space-x-2 cursor-pointer">
-                                <Heart />
+                            <button className={`flex items-center space-x-2 cursor-pointer ${postQuery.data.isLiked && "text-rose-500"}`} onClick={handleLike}>
+                                <Heart className={`${postQuery.data.isLiked && "fill-rose-500"}`} />
                                 <p>
-                                    80
+                                    {postQuery.data?.likeCount ?? 0}
                                 </p>
                             </button>
                             <div className="flex items-center space-x-2">
                                 <MessageCircle />
                                 <p>
-                                    { postQuery.data?.commentCount ?? 0 }
+                                    {postQuery.data?.commentCount ?? 0}
                                 </p>
                             </div>
                             <button className="cursor-pointer">
@@ -265,7 +334,7 @@ const ShowPost = () => {
                 </div>
 
                 {/* comment */}
-                <CommentSection postId={postQuery.data.id}/>
+                <CommentSection postId={postQuery.data.id} />
             </div>
         </>
     )

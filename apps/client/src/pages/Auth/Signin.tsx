@@ -5,13 +5,13 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type SignInResponse, ERROR_RESPONSE_CODE } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../libs/api";
-import { useAppDispatch } from "../../shared/hooks/useRedux";
+import { useAppDispatch } from "../../hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { useState } from "react";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
-import type { FailedAttemptErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import type { FailedAttemptErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response.type";
 import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
 
 type AuthErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse;

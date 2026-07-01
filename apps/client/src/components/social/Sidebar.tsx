@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import ConnectLogo from "../../assets/img/logo/connect-gradient.svg";
 import { Bell, Bookmark, EllipsisVertical, Home, MessageCircle, Search, Settings, User } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "../../shared/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { useState } from "react";
 import { logout } from "../../features/auth/auth.thunk";
 import Profile from "./Profile";

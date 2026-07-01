@@ -6,7 +6,7 @@ import CommentSkeletonLoading from "./CommentSkeletonLoading";
 import InfiniteScrollSentinel from "../../common/InfiniteScrollSentinel";
 import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
-import { useAppSelector } from "../../../shared/hooks/useRedux";
+import { useAppSelector } from "../../../hooks/useRedux";
 import { postKeys } from "../../../queries/postKeys";
 
 type Props = {

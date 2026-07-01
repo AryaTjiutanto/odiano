@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useAppDispatch } from "../shared/hooks/useRedux";
+import { useAppDispatch } from "../hooks/useRedux";
 import { useEffect } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Toaster } from "react-hot-toast";

@@ -6,10 +6,10 @@ import { createUserSchema, ERROR_RESPONSE_CODE, type AuthenticateUserSchema, typ
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
-import { useAppDispatch } from "../../shared/hooks/useRedux";
+import { useAppDispatch } from "../../hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
-import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response";
+import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response.type";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
 import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
 
