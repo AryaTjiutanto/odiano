@@ -3,6 +3,7 @@ import CommentOnYourPostNotification from "./types/CommentOnYourPostNotification
 import { NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@connect/shared"
 import FollowYouNotification from "./types/FollowYouNotification"
 import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel"
+import LikeYourPost from "./types/LikeYourPost"
 
 type Props = {
     data: InfiniteData<InfiniteQuery<NotificationDTO[]>> | null | undefined,
@@ -27,6 +28,10 @@ const Notification = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, ha
                                 {
                                     item.type == NOTIFICATION_TYPE.FOLLOW_YOU &&
                                     <FollowYouNotification item={item} />
+                                }
+                                {
+                                    item.type == NOTIFICATION_TYPE.LIKE_YOUR_POST &&
+                                    <LikeYourPost item={item} />
                                 }
                             </article>
                         )
