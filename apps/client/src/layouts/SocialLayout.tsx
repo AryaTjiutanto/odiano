@@ -36,7 +36,7 @@ const SocialLayout = () => {
                         <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationIsSidebarVisible={setIsNotificationSidebarVisible} />
                     </div>
 
-                    <div className={`h-screen bg-neutral-950 py-10 absolute top-0 left-0 overflow-hidden duration-100 z-20 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
+                    <div className={`h-screen bg-neutral-950 py-10 absolute top-0 left-0 overflow-hidden z-20 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
                         <NotificationSidebar setIsNotificatoinSidebarVisible={setIsNotificationSidebarVisible} />
                     </div>
                 </aside>
