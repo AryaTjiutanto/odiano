@@ -3,8 +3,8 @@ import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
 import Like from "../models/like.model";
 import { Post } from "../models/post.model";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE } from "@connect/shared";
-import logger from "../libs/log/logger";
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@connect/shared";
+import { create as createNotification } from "./notification.service";
 
 export const getLikedIds = async (currentUserId: string, type: LikeTypes, targetIds: string[] | Types.ObjectId[]) => {
     const likes = await Like.find({
@@ -59,6 +59,14 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
                 },
                 {session}
             )
+
+            // create notification
+            await createNotification(currentUserId, {
+                recepientId : post.author.toString(),
+                targetId : post._id.toString(),
+                targetType : NOTIFICATION_TARGET_TYPE.POST,
+                type : NOTIFICATION_TYPE.LIKE_YOUR_POST
+            })
         })
     } finally {
         await session.endSession();
