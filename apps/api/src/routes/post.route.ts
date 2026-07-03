@@ -4,9 +4,9 @@ import { create as createPost, getUserPosts, index as indexPost, show as showPos
 import { apiLimiter, consume } from "../libs/limiter";
 import { createPostLimiter } from "../libs/limiter/limiters/createPost.limiter";
 import { postIndexLimiter } from "../libs/limiter/limiters/postIndex.limiter";
-import { createComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
+import { createComment, deleteComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
 import { createPostCommentSchema } from "@connect/shared";
-import createCommentLimiter from "../libs/limiter/limiters/createComment.limiter";
+import commentLimiter from "../libs/limiter/limiters/createComment.limiter";
 import { validateData } from "../middlewares/validateData.middleware";
 import optionalAuth from "../middlewares/optionalAuth.middleware";
 import { createPostLike, deletePostLike } from "../controllers/like.controller";
@@ -25,7 +25,8 @@ router.post("/:postId/like", consume(likeLimiter), requireAccessToken, createPos
 router.delete("/:postId/like/delete", consume(likeLimiter), requireAccessToken, deletePostLike)
 
 // comments
-router.post("/comments/create", consume(createCommentLimiter), requireAccessToken, validateData(createPostCommentSchema), createComment)
+router.post("/comment/create", consume(commentLimiter), requireAccessToken, validateData(createPostCommentSchema), createComment)
+router.delete("/comment/:commentId", consume(commentLimiter), requireAccessToken, deleteComment)
 router.get("/:postId/comments/me", consume(apiLimiter), requireAccessToken, getCurrentUserComments)
 router.get("/:postId/comments", consume(apiLimiter), optionalAuth, getComments)
 

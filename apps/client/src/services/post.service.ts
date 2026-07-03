@@ -1,9 +1,29 @@
+import type { CreatedDocumentId, SuccessResponseData } from "@connect/shared";
 import { api } from "../libs/api";
+import type { CreateCommentMutationParams } from "../types/post.type";
 
-export const createLike = async (postId : string) => {
-    await api.post(`/post/${postId}/like`);
+const baseRoute = "/post";
+
+// like
+export const createLike = async (postId: string) => {
+    await api.post(`${baseRoute}/${postId}/like`);
 }
 
-export const deleteLike = async (postId : string) => {
-    await api.delete(`/post/${postId}/like/delete`);
+export const deleteLike = async (postId: string) => {
+    await api.delete(`${baseRoute}/${postId}/like/delete`);
+}
+
+// comment
+export const createComment = async ({ commentId, data }: CreateCommentMutationParams) => {
+    const response = await api.post<SuccessResponseData<CreatedDocumentId>>(`${baseRoute}/comment/create`, data)
+
+    if(!response.data.data) {
+        throw new Error("Something is missing");
+    }
+
+    return response.data.data?.id;
+};
+
+export const deleteComment = async (commentId: string) => {
+    await api.delete(`${baseRoute}/comment/${commentId}`);
 }

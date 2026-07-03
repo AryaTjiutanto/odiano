@@ -79,19 +79,18 @@ const CommentSection = ({ postId }: Props) => {
                         <>
                             {/* current user comments */}
                             {
-                                currentUserCommentQuery.data?.map(data => <Comment data={data} />)
+                                currentUserCommentQuery.data?.map(data => <Comment data={data} postId={postId}/>)
                             }
 
                             {/* comments */}
                             {
                                 commentQuery.data?.pages.map((page) =>
                                     page.items.map((item) => (
-                                        <Comment data={item} />
+                                        <Comment data={item} postId={postId}/>
                                     )))
                             }
 
                             {/* sentinel */}
-
                             <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage} />
                         </>
                 }

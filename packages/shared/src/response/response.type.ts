@@ -32,3 +32,7 @@ export type TooManyRequestError = {
 export type FailedAttemptError = {
     attemptLeft : number
 }
+
+export type CreatedDocumentId = {
+    id : string,
+}

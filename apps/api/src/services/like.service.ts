@@ -37,7 +37,7 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
             }
         
             if (post?.isArchive) {
-                throw new AppError(403, ERROR_RESPONSE_CODE.conflict, "This post is archived and can no longer receive likes.");
+                throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "This post is archived and can no longer receive likes.");
             }
 
             // create like

@@ -7,6 +7,7 @@ import { AppError } from "../errors/appError.error"
 import { Post } from "../models/post.model"
 import { create as createNotification } from "./notification.service";
 import mongoose from "mongoose"
+import logger from "../libs/log/logger"
 
 type createPostCommentParams = {
     content: string,
@@ -16,13 +17,7 @@ type createPostCommentParams = {
     depth: number
 }
 
-type GetCommentParams = {
-    postId: string,
-    cursor: string | undefined,
-    userId: string | undefined,
-}
-
-export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) => {
+export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) : Promise<string> => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
         .select("visibility isArchive turnOffCommenting commentCount")
@@ -38,7 +33,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
 
     if (post?.isArchive) {
         throw new AppError(
-            403,
+            409,
             ERROR_RESPONSE_CODE.conflict,
             "Comments cannot be added to an archived post."
         );
@@ -46,7 +41,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
 
     if (post?.turnOffCommenting) {
         throw new AppError(
-            403,
+            409,
             ERROR_RESPONSE_CODE.conflict,
             "Comments are disabled for this post."
         );
@@ -65,9 +60,9 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
     // handle create postcomment
     const session = await mongoose.startSession();
     try {
-        await session.withTransaction(async () => {
+        const result = await session.withTransaction(async () => {
             // create postComment
-            await PostComment.create([
+            const [postComment] = await PostComment.create([
                 {
                     content,
                     author: authorId,
@@ -92,13 +87,49 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
                     type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
                 }, session);
             }
+
+            return postComment._id.toString();
+        })
+
+        return result;
+    } finally {
+        await session.endSession();
+    }
+}
+
+export const deleteComment = async (currentUserId : string, commentId : string) => {
+    const session = await mongoose.startSession();
+
+    try {
+        await session.withTransaction(async () => {
+            // check authorization
+            const deletedComment = await PostComment.findOneAndDelete({
+                _id : commentId,
+                author : currentUserId
+            }, {
+                session,
+                projection : {
+                    postId : 1,
+                }
+            })
+
+            if(!deletedComment) {
+                throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Comment not found");
+            }
+    
+            // decrese post commentCount
+            await Post.updateOne({_id : deletedComment?.postId}, {
+                $inc : {
+                    commentCount : -1
+                }
+            }, {session});
         })
     } finally {
         await session.endSession();
     }
 }
 
-export const get = async ({ cursor, postId, userId }: GetCommentParams): Promise<InfiniteQuery<PostCommentDTO[]>> => {
+export const get = async (cursor : string | undefined, postId : string, userId : string | undefined): Promise<InfiniteQuery<PostCommentDTO[]>> => {
     // get comment
     const comments = await PostComment.find({
         postId,
@@ -116,7 +147,6 @@ export const get = async ({ cursor, postId, userId }: GetCommentParams): Promise
         .limit(POSTCOMMENT_PAGE_SIZE + 1)
         .lean<PostCommentQuery[]>();
 
-
     // handle infinite query data
     let hasNextPage = false;
     let items = comments;
@@ -126,12 +156,10 @@ export const get = async ({ cursor, postId, userId }: GetCommentParams): Promise
         items = comments.slice(0, POSTCOMMENT_PAGE_SIZE);
     }
 
-
     // format the comments
     const formattedComments = items.map(item => toPostCommentDTO(item));
 
     let nextCursor = formattedComments[formattedComments.length - 1]?.id;
-
 
     return {
         hasNextPage,
