@@ -53,7 +53,7 @@ const StoryList = () => {
     }, [])
 
     return (
-        <div className="mt-8">
+        <div className="">
             <div className="flex justify-between items-center">
                 <h1 className="text-xl font-semibold">Story</h1>
                 <button className="text-xs text-neutral-300">

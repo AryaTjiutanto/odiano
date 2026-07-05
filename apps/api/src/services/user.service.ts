@@ -79,3 +79,88 @@ export const getUserSummary = async (userId : string) : Promise<UserSummaryDTO> 
 
     return toUserSummaryDTO(userSummary);
 }
+
+export const searchUsers = async (query: string) : Promise<UserSummaryDTO[]> => {
+    const users = await User.aggregate<UserSummaryQuery>([
+        {
+            $match : {
+                $or : [
+                    {username : {$regex : query, $options : 'i'}},
+                    {username : {$regex : query, $options : 'i'}}
+                ]
+            }
+        },
+        {
+            $addFields : {
+                score : {
+                    $switch : {
+                        branches : [
+                            {
+                                case : {
+                                    $regexMatch : {
+                                        input : "$username",
+                                        regex : `^${query}$`,
+                                        options : "i",
+                                    }
+                                },
+                                then : 100,
+                            },
+                            {
+                                case : {
+                                    $regexMatch : {
+                                        input : "$username",
+                                        regex : `^${query}`,
+                                        options : "i",
+                                    }
+                                },
+                                then : 80,
+                            },
+                            {
+                                case : {
+                                    $regexMatch : {
+                                        input : "$name",
+                                        regex : `^${query}`,
+                                        options : 'i'
+                                    }
+                                },
+                                then : 60
+                            },
+                            {
+                                case : {
+                                    $regexMatch : {
+                                        input : "$name",
+                                        regex : query,
+                                        options : "i",
+                                    }
+                                },
+                                then : 60
+                            }
+                        ],
+                        default : 0,
+                    }
+                }
+            }
+        },
+        {
+            $sort : {
+                score : -1,
+                followerCount : -1,
+            }
+        },
+        {
+            $limit : 5,
+        },
+        {
+            $project : {
+                _id : 1,
+                name : 1,
+                username : 1,
+                profileImage : 1,
+            }
+        },
+    ]);
+
+    const formattedUsers = users.map(toUserSummaryDTO);
+
+    return formattedUsers;
+}

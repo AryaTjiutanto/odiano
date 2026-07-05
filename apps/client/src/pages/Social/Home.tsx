@@ -1,4 +1,3 @@
-import { Search } from "lucide-react";
 import StoryList from "../../components/social/StoryList";
 import Post from "../../components/post/Post";
 import type { InfiniteQuery, PostDTO, SuccessResponseData } from "@connect/shared";
@@ -8,6 +7,7 @@ import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-que
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { postKeys } from "../../queries/postKeys";
+import SearchBar from "../../components/social/Search";
 
 const Homepage = () => {
     const postsQueryKey = postKeys.all;
@@ -49,14 +49,9 @@ const Homepage = () => {
             {/* body */}
             <div className="w-full flex flex-col">
                 {/* heading */}
-                <div className="w-full flex justify-between items-center">
+                <section className="w-full sticky top-0 py-10 flex justify-between items-center bg-neutral-950/10 backdrop-blur-2xl z-23">
                     {/* search bar */}
-                    <div className="w-64 h-11 rounded-lg bg-neutral-900 border border-neutral-700 grid grid-cols-12 pr-2">
-                        <div className="col-span-2 h-full grid place-content-center text-neutral-300">
-                            <Search className="w-4" />
-                        </div>
-                        <input className="col-span-10 h-full default-input-text-behaviour" placeholder="Search..." />
-                    </div>
+                    <SearchBar/>
 
                     {/* filter */}
                     <div className="w-fit flex items-center space-x-4">
@@ -70,7 +65,7 @@ const Homepage = () => {
                             Popular
                         </button>
                     </div>
-                </div>
+                </section>
                 {/* story */}
                 <StoryList />
 
