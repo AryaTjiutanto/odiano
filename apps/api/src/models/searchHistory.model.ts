@@ -1,5 +1,5 @@
+import { SEARCH_HISTORY_TYPES, SearchHistoryTypes } from "@connect/shared";
 import { model, Schema, Types } from "mongoose";
-import { SEARCH_HISTORY_TYPES, SearchHistoryTypes } from "../consts/searchHistory.const";
 
 type SearchHistory = {
     targetId : Types.ObjectId,
