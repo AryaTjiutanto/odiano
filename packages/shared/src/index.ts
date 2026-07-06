@@ -6,3 +6,4 @@ export * from "./post/index";
 export * from "./postComment";
 export * from  "./notification";
 export * from "./search";
+export * from "./searchHistory";

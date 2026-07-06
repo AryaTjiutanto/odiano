@@ -1,12 +1,6 @@
-import { SEARCH_HISTORY_TYPES, SearchHistoryTypes } from "@connect/shared";
+import { SEARCH_HISTORY_TYPES } from "@connect/shared";
 import { model, Schema, Types } from "mongoose";
-
-type SearchHistory = {
-    targetId : Types.ObjectId,
-    type : SearchHistoryTypes,
-    user : Types.ObjectId,
-    keyword : String, 
-}
+import { SearchHistory } from "../types/searchHistory.type";
 
 const searchHistorySchema = new Schema<SearchHistory>({
     targetId : {
@@ -21,11 +15,12 @@ const searchHistorySchema = new Schema<SearchHistory>({
     user : {
         type : Types.ObjectId,
         required : true,
+        ref : "User",
     },
     keyword : {
         type : String,
     }
-})
+}, {timestamps : true})
 
 searchHistorySchema.index({
     user : 1
