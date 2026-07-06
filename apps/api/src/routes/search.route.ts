@@ -1,6 +1,6 @@
 import express from "express";
 import { get as getSearchResult } from "../controllers/search.controller";
-import { get as getSearchHistory } from "../controllers/searchHistory.controller"
+import { get as getSearchHistory } from "../controllers/searchHistory.controller";
 import { apiLimiter, consume, searchLimiter } from "../libs/limiter";
 
 const router = express.Router();
