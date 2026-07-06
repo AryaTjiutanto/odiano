@@ -7,7 +7,7 @@ import followingRoutes from "./following.route";
 import notificationRoutes from "./notification.route";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import searchRoutes from "./search.route";
-import { apiLimiter, consume, followingLimiter, searchLimiter } from "../libs/limiter";
+import { apiLimiter, consume, followingLimiter } from "../libs/limiter";
 
 const router = express.Router();
 
@@ -17,6 +17,6 @@ router.use("/upload", uploadRoutes);
 router.use("/post", postRoutes);
 router.use("/following", consume(followingLimiter), requireAccessToken, followingRoutes);
 router.use('/notification', consume(apiLimiter), requireAccessToken, notificationRoutes);
-router.use('/search', consume(searchLimiter), searchRoutes);
+router.use('/search', searchRoutes);
 
 export default router;

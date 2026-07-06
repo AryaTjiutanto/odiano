@@ -5,14 +5,28 @@ import useDebounce from "../../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
+import type { SearchDTO, SuccessResponseData } from "@connect/shared";
+import { api } from "../../libs/api";
+import SearchSkeletonLoading from "../search/SearchSkeletonLoading";
+import { Link } from "react-router-dom";
 
 const SearchBar = () => {
     const [query, setQuery] = useState<string>("");
     const debounceValue = useDebounce<string>(query);
 
     // query
-    const getSearchResult = () => {
-        console.log("helo");
+    const getSearchResult = async () : Promise<SearchDTO> => {
+        const response = await api.get<SuccessResponseData<SearchDTO>>("search/", {
+            params : {
+                q : debounceValue,
+            }
+        })
+
+        if(!response.data.data) {
+            throw new Error("Data is empty");
+        }
+
+        return response.data.data;
     }
 
     const searchQuery = useQuery({
@@ -44,7 +58,38 @@ const SearchBar = () => {
         <>
 
             <div className={`absolute top-14 w-full ${isSearchPanelOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0 touch-none'} bg-neutral-950 border border-neutral-700 rounded-lg transition-[max-height,opacity] duration-100 overflow-hidden`} ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
-                <div className="h-40"></div>
+                {
+                    searchQuery.isPending ?
+                    <div>
+                        {
+                            Array.from({length : 3}).map(i => (
+                                <SearchSkeletonLoading key={`search-${i}`}/>
+                            ))
+                        }
+                    </div>
+                    :
+                    <div>
+                        {
+                            searchQuery.data?.users.map((user) => (
+                                <Link to={`/profile/${user.username}`}>
+                                    <article className="w-full flex items-center">
+                                        <div className="w-10 h-10 rounded-full bg-neutral-800 overflow-hidden">
+                                            <img src={user.profileImage?.url} className="w-full h-full"/>
+                                        </div>
+                                        <div className="flex-1 w-full flex flex-col">
+                                            <h1 className="font-semibold">
+                                                {user.username ?? ""}
+                                            </h1>
+                                            <h2 className="text-neutral-400">
+                                                {user.name ?? ""}
+                                            </h2>
+                                        </div>
+                                    </article>
+                                </Link>
+                            ))
+                        }
+                    </div>
+                }
             </div>
 
             {/* search input */}
