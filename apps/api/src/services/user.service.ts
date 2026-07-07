@@ -4,7 +4,7 @@ import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";
 import cloudinary from "../config/cloudinary.config";
 import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
-import { toUserProfileDTO, toUserSummaryDTO } from "../mapper/user.mapper";
+import { toUserProfileDTO, toUserSummaryDTO } from "../mappers/user.mapper";
 import { Following } from "../models/following.model";
 
 type OnboardingPayload = {

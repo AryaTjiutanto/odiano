@@ -6,8 +6,7 @@ export const toSearchHistoryDTO = (data : searchHistoryQuery, usersMap? : Map<St
         keyword : data.keyword,
         type : data.type,
         user : data.user.toString(),
-        targetId : data.type == SEARCH_HISTORY_TYPES.USER ?
-            usersMap?.get(data.targetId.toString())
-            : data.targetId.toString(),
+        targetId : data.targetId.toString(),
+        ...(data.type == SEARCH_HISTORY_TYPES.USER && {targetData : usersMap?.get(data.targetId.toString())})
     }
 }

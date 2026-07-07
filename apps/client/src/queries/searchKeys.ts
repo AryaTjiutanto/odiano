@@ -7,5 +7,6 @@ export const searchKeys = {
         if(value) returnKey.push(value);
 
         return returnKey;
-    } 
+    },
+    history : [mainKey, "history"]
 }

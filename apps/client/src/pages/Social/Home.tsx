@@ -7,7 +7,7 @@ import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-que
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { postKeys } from "../../queries/postKeys";
-import SearchBar from "../../components/social/Search";
+import SearchBar from "../../components/search/Search";
 
 const Homepage = () => {
     const postsQueryKey = postKeys.all;

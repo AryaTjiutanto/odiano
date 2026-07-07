@@ -3,7 +3,7 @@ import { Notification } from "../models/notification.model"
 import { emitToUser } from "../socket/emitters/notification.emitter";
 import { getUserSummary } from "./user.service";
 import { NOTIFICATION_PAGE_SIZE, notificationQuery } from "../consts/notification.const";
-import { toNotificationDTO } from "../mapper/notification.mapper";
+import { toNotificationDTO } from "../mappers/notification.mapper";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import logger from "../libs/log/logger";

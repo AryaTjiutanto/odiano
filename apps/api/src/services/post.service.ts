@@ -1,6 +1,6 @@
 import { CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, type PostDTO as PostFeedItem } from "@connect/shared";
 import { Post } from "../models/post.model";
-import { toPostDto } from "../mapper/post.mapper";
+import { toPostDto } from "../mappers/post.mapper";
 import { PostQuery } from "../types/post.type";
 import { POSTS_PAGE_SIZE } from "../consts/post.const";
 import { AppError } from "../errors/appError.error";
