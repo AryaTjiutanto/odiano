@@ -1,4 +1,4 @@
-import type { SearchDTO, searchHistoryDTO, SuccessResponseData } from "@connect/shared";
+import type { SearchDTO, SearchHistoryDTO, SuccessResponseData } from "@connect/shared";
 import SearchHistory from "./SearchHistory";
 import UserSearchResult from "./searchResult/UserSearchResult";
 import SearchSkeletonLoading from "./SearchSkeletonLoading";
@@ -7,6 +7,7 @@ import { searchKeys } from "../../queries/searchKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { api } from "../../libs/api";
 import React, { forwardRef } from "react";
+import SearchResult from "./searchResult/SearchResult";
 
 type Props = {
     searchQueryData: SearchDTO | null | undefined,
@@ -19,8 +20,8 @@ type Props = {
 
 const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, floatingStyles, floatingProps, isSearchQueryPending, query, searchQueryData }, ref) => {
 
-    const getSearchHistories = async (): Promise<searchHistoryDTO[]> => {
-        const response = await api.get<SuccessResponseData<searchHistoryDTO[]>>("/search/history");
+    const getSearchHistories = async (): Promise<SearchHistoryDTO[]> => {
+        const response = await api.get<SuccessResponseData<SearchHistoryDTO[]>>("/search/history");
 
         if (!response.data.data) {
             throw Error('Data is missing');
@@ -71,7 +72,7 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
                         {
                             (query.length > 0 && !isSearchResultEmpty) &&
                             searchQueryData?.users.map((user) => (
-                                <UserSearchResult user={user} key={`search-user-${user.username}`} />
+                                <SearchResult data={{ type : "user", data : user }}/>
                             ))
                         }
                         {

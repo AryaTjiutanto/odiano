@@ -1,15 +1,15 @@
-import { SEARCH_HISTORY_TYPES } from "@connect/shared";
+import { SEARCH_TYPES } from "@connect/shared";
 import { model, Schema, Types } from "mongoose";
-import { SearchHistory } from "../types/searchHistory.type";
+import { SearchHistory as SearchHistorySchema } from "../types/searchHistory.type";
 
-const searchHistorySchema = new Schema<SearchHistory>({
+const searchHistorySchema = new Schema<SearchHistorySchema>({
     targetId : {
         type : Types.ObjectId,
         required : true,
     },
     type : {
         type : String,
-        enum : Object.values(SEARCH_HISTORY_TYPES),
+        enum : Object.values(SEARCH_TYPES),
         required : true,
     },
     user : {
@@ -26,6 +26,4 @@ searchHistorySchema.index({
     user : 1
 })
 
-const SearchHistory = model("SearchHistorySchema", searchHistorySchema);
-
-export default SearchHistory;
+export const SearchHistory = model("SearchHistory", searchHistorySchema);

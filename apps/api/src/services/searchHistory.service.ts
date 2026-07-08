@@ -1,22 +1,22 @@
-import { SEARCH_HISTORY_TYPES, searchHistoryDTO, SearchHistoryTypes } from "@connect/shared";
+import { SEARCH_TYPES, SearchHistoryDTO, SearchTypes } from "@connect/shared";
 import { SEARCH_HISTORY_LIMIT } from "../consts/searchHistory.const"
-import SearchHistory from "../models/searchHistory.model"
 import { User } from "../models/user.model";
 import { UserSummaryQuery } from "../types/user.type";
 import { searchHistoryQuery } from "../types/searchHistory.type";
 import { toUserSummaryDTO } from "../mappers/user.mapper";
 import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper";
+import { SearchHistory } from "../models/searchHistory.model";
 
-export const getSearchHistory = async () : Promise<searchHistoryDTO[]> => {
-    const searchHistories = await SearchHistory.find()
+export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
+    const searchHistories = await SearchHistory.find({user : currentUserId})
     .limit(SEARCH_HISTORY_LIMIT)
     .lean<searchHistoryQuery[]>();
 
     // get user summary
-    const userHistories = searchHistories.filter((search) => search.type == SEARCH_HISTORY_TYPES.USER);
+    const userHistories = searchHistories.filter((search) => search.type == SEARCH_TYPES.USER);
     const userIds = userHistories.map(h => h.targetId);
     const userSummaries = await User.find({ _id : {$in : userIds} })
-    .select("_id name username profileImage")
+    .select("_id name username profileImage updatedAt")
     .lean<UserSummaryQuery[]>();
     
     const usersMap = new Map(userSummaries.map((user) => [user._id.toString(), toUserSummaryDTO(user)]));
@@ -27,7 +27,7 @@ export const getSearchHistory = async () : Promise<searchHistoryDTO[]> => {
     return searchHistoriesDTO
 }
 
-export const recordHistory = async (currentUserId : string, type : SearchHistoryTypes, targetId : string, keyword? : String | undefined | null) => {
+export const recordHistory = async (currentUserId : string, type : SearchTypes, targetId : string, keyword? : String | undefined | null) => {
     const record = await SearchHistory.findOne({
         user : currentUserId,
         $or : [
@@ -36,6 +36,7 @@ export const recordHistory = async (currentUserId : string, type : SearchHistory
         ]
     }).select("_id updatedAt");
 
+    
     // create searchHistory
     if(!record) {
         await SearchHistory.create({
@@ -46,20 +47,23 @@ export const recordHistory = async (currentUserId : string, type : SearchHistory
         })
 
         // delete old searchHistory
-        const idsToDelete = await SearchHistory.find({user : currentUserId})
-            .sort({updatedAt : -1})
-            .skip(SEARCH_HISTORY_LIMIT)
-            .distinct("_id");
-    
+        const historiesToDelete = await SearchHistory.find({user : currentUserId})
+        .sort({updatedAt : -1})
+        .skip(SEARCH_HISTORY_LIMIT)
+        .select("_id")
+        .lean();
+
+        const idsToDelete = historiesToDelete.map((h) => h._id.toString());
+
         if(idsToDelete.length > 0) {
             await SearchHistory.deleteMany({
                 _id : {$in : idsToDelete}
             })
         }
-
+        
         return;
     }
-
+    
     // update 
     record.save();
 }

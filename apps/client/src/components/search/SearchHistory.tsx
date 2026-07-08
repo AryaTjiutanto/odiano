@@ -1,14 +1,14 @@
-import { SEARCH_HISTORY_TYPES, type searchHistoryDTO } from "@connect/shared"
-import UserSearchResult from "./searchResult/UserSearchResult"
+import { SEARCH_TYPES, type SearchHistoryDTO } from "@connect/shared"
+import SearchResult from "./searchResult/SearchResult"
 
 type Props = {
-    data : searchHistoryDTO,
+    data : SearchHistoryDTO,
 }
 
 const SearchHistory = ({data} : Props) => {
-    if(data.type == SEARCH_HISTORY_TYPES.USER && data.targetData) {
+    if(data.type == SEARCH_TYPES.USER && data.targetData) {
         return (
-            <UserSearchResult user={data.targetData}/>
+            <SearchResult data={{ type : "user", data : data.targetData }}/>
         )
     }
 }
