@@ -6,10 +6,10 @@ import { searchHistoryQuery } from "../types/searchHistory.type";
 import { toUserSummaryDTO } from "../mappers/user.mapper";
 import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper";
 import { SearchHistory } from "../models/searchHistory.model";
-import logger from "../libs/log/logger";
 
 export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
     const searchHistories = await SearchHistory.find({user : currentUserId})
+    .sort({updatedAt : -1})
     .limit(SEARCH_HISTORY_LIMIT)
     .lean<searchHistoryQuery[]>();
 

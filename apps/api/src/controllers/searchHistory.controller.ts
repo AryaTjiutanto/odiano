@@ -41,8 +41,6 @@ export const deleteHistory = async (req: Request, res: Response, next: NextFunct
     const currentUserId = req.userId;
     const { id } = req.params;
 
-    logger.info({"delete history" : id});
-
     try {
         if (!currentUserId) {
             throw new UnauthorizedError();
