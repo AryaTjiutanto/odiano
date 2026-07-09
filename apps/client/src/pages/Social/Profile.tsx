@@ -282,11 +282,11 @@ const Profile = () => {
                     </h2>
                 </div>
 
-                {/* {(user && user.bio) &&
+                {(profileQuery.data) &&
                     <p className="mt-5 text-neutral-400">
-                        {user.bio || ""}
+                        {profileQuery.data.bio || ""}
                     </p>
-                } */}
+                }
             </div>
 
             {/* join information */}

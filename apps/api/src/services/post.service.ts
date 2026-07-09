@@ -7,6 +7,7 @@ import { AppError } from "../errors/appError.error";
 import { User } from "../models/user.model";
 import { LIKE_TYPES } from "../consts/like.const";
 import { getIsLiked, getLikedIds } from "./like.service";
+import logger from "../libs/log/logger";
 
 export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     const query = cursor ? {
@@ -28,7 +29,7 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
 
     // get likes
     let likedPostIds = new Set<String>();
-    
+
     if (currentUserId) {
         const postIds = posts.map(post => post._id);
 
@@ -113,29 +114,34 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
         .limit(POSTS_PAGE_SIZE + 1)
         .lean<PostQuery[]>();
 
+    let nextCursor = null;
+    let items : PostDTO[] = [];
+
     // handle hasNextPage
     let hasNextPage = posts.length > POSTS_PAGE_SIZE;
     if (hasNextPage) {
         posts = posts.slice(0, POSTS_PAGE_SIZE);
     }
 
-    // handle like
-    let likedPostIds = new Set<string>();
-    
-    if(currentUserId) {
-        const postIds = posts.map(post => post._id);
-        const likedIds = await getLikedIds(currentUserId, LIKE_TYPES.POST, postIds);
+    if (posts.length > 0) {
+        // handle like
+        let likedPostIds = new Set<string>();
 
-        likedIds.forEach((id) => likedPostIds.add(id));
+        if (currentUserId) {
+            const postIds = posts.map(post => post._id);
+            const likedIds = await getLikedIds(currentUserId, LIKE_TYPES.POST, postIds);
+
+            likedIds.forEach((id) => likedPostIds.add(id));
+        }
+
+        // formatting the data
+        items = posts.map((post) => toPostDto(post, {
+            isLiked: currentUserId ? likedPostIds.has(post._id.toString()) : false,
+        }));
+
+        // cursor
+        nextCursor = items[items.length - 1].id;
     }
-
-    // formatting the data
-    const items = posts.map((post) => toPostDto(post, {
-        isLiked : currentUserId ? likedPostIds.has(post._id.toString()) : false,
-    }));
-
-    // cursor
-    const nextCursor = items[items.length - 1].id;
 
     return {
         hasNextPage,
