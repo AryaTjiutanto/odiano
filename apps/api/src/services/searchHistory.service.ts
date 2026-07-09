@@ -39,7 +39,7 @@ export const recordHistory = async (currentUserId : string, type : SearchTypes, 
     
     // create searchHistory
     if(!record) {
-        await SearchHistory.create({
+        const searchHistory = await SearchHistory.create({
             targetId,
             type,
             user : currentUserId,
@@ -61,9 +61,19 @@ export const recordHistory = async (currentUserId : string, type : SearchTypes, 
             })
         }
         
-        return;
+        return searchHistory._id.toString();
     }
     
     // update 
     record.save();
+
+    return record._id.toString();
+}
+
+export const deleteHistory = async (currentUserId : string, historyId : string) => {
+    await SearchHistory.deleteOne({_id : historyId, user : currentUserId});
+}
+
+export const deleteAllHistory = async (currentUserId : string) => {
+    await SearchHistory.deleteMany({user : currentUserId});
 }

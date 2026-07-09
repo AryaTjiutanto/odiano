@@ -3,7 +3,6 @@ import { AppError } from "../errors/appError.error";
 import { ERROR_RESPONSE_CODE, SearchDTO, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import * as searchService from "../services/search.service";
 import { successResponseData } from "../utils/response.util";
-import { searchQuerySchema } from "../validations/search.validation";
 
 export const get = async (req : Request, res : Response, next : NextFunction) => {
     const {q} = req.query;
