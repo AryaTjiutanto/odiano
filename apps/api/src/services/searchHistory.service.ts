@@ -6,6 +6,7 @@ import { searchHistoryQuery } from "../types/searchHistory.type";
 import { toUserSummaryDTO } from "../mappers/user.mapper";
 import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper";
 import { SearchHistory } from "../models/searchHistory.model";
+import logger from "../libs/log/logger";
 
 export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
     const searchHistories = await SearchHistory.find({user : currentUserId})
@@ -32,7 +33,7 @@ export const recordHistory = async (currentUserId : string, type : SearchTypes, 
         user : currentUserId,
         $or : [
             {targetId},
-            {keyword},
+            ...(keyword ? [{keyword}] : []),
         ]
     }).select("_id updatedAt");
 
@@ -63,7 +64,7 @@ export const recordHistory = async (currentUserId : string, type : SearchTypes, 
         
         return searchHistory._id.toString();
     }
-    
+
     // update 
     record.save();
 
