@@ -96,7 +96,7 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
     }, [])
 
     return (
-        <div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-21 flex justify-center items-center 2xl:items-start 2xl:py-32">
+        <div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32">
             {/* content */}
             <div className="w-[650px] h-fit bg-neutral-900 rounded-3xl overflow-hidden duration-100 z-22">
                 {/* form */}
