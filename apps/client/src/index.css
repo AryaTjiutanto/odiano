@@ -30,7 +30,7 @@
     @apply focus:outline-none focus:ring-0 active:outline-none active:ring-0
   }
 
-  .banner-aspect {
+  .cover-image-aspect {
     @apply aspect-3/1
   }
 }

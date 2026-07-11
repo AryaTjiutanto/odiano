@@ -1,4 +1,4 @@
-import type { CreatedDocumentId, SuccessResponseData } from "@connect/shared";
+import type { CreatedDocumentId, InfiniteQuery, PostDTO, SuccessResponseData } from "@connect/shared";
 import { api } from "../libs/api";
 import type { CreateCommentMutationParams } from "../types/post.type";
 
@@ -17,13 +17,29 @@ export const deleteLike = async (postId: string) => {
 export const createComment = async ({ commentId, data }: CreateCommentMutationParams) => {
     const response = await api.post<SuccessResponseData<CreatedDocumentId>>(`${baseRoute}/comment/create`, data)
 
-    if(!response.data.data) {
+    if (!response.data.data) {
         throw new Error("Something is missing");
     }
 
     return response.data.data?.id;
 };
 
+// get user posts
+export const getUserPosts = async (cursor: string | undefined | null, username : string): Promise<InfiniteQuery<PostDTO[]>> => {
+    const response = await api<SuccessResponseData<InfiniteQuery<PostDTO[]>>>(`/post/user/${username}`, {
+        params: {
+            cursor,
+        }
+    });
+
+    if (!response.data.data) {
+        throw new Error("Data is empty");
+    }
+
+    return response.data.data;
+}
+
+// delete
 export const deleteComment = async (commentId: string) => {
     await api.delete(`${baseRoute}/comment/${commentId}`);
 }

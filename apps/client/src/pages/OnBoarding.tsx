@@ -47,7 +47,6 @@ const OnBoarding = () => {
         handleImageUpload(e.dataTransfer.files[0]);
     }
 
-
     //  handle image
     const MAX_SIZE = 15 * 1024 * 1024;
     const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
@@ -149,7 +148,7 @@ const OnBoarding = () => {
             await dispatch(intitializeAuth());
 
             setFormError(null);
-        } catch (err: any) {
+        } catch {
             setFormError("Something went wrong, please try again later")
             return;
         }
@@ -197,7 +196,7 @@ const OnBoarding = () => {
         }, 600);
 
         return () => clearTimeout(timeout);
-    }, [username])
+    }, [username, setError])
 
     return (
         <>

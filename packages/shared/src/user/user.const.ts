@@ -15,5 +15,5 @@ export const NAME_LENGTH = {
 
 export const BIO_LENGTH = {
     MIN : 0,
-    MAX : 50,
+    MAX : 150,
 }

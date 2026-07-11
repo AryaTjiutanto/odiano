@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { UserProfileImageSchema } from "../types/user.type";
+import { ImageAsset } from "../types/user.type";
 // types for schema
 type UserSchema = {
     email: string,
@@ -11,13 +11,14 @@ type UserSchema = {
     bio: string | null,
     isOnboarded: boolean,
     emailVerifiedAt: Date | null,
-    profileImage: UserProfileImageSchema | null,
+    profileImage: ImageAsset | null,
+    coverImage: ImageAsset | null,
     followingCount : number,
     followerCount : number
 }
 
 // profile image schema
-const profileImageSchema = new mongoose.Schema<UserProfileImageSchema>({
+const profileImageSchema = new mongoose.Schema<ImageAsset>({
     url: {
         type: String,
         required: true,
@@ -27,6 +28,18 @@ const profileImageSchema = new mongoose.Schema<UserProfileImageSchema>({
         required: true,
     }
 }, { _id: false })
+
+// cover image schema
+const coverImageSchema = new mongoose.Schema<ImageAsset>({
+    url : {
+        type : String,
+        required : true,
+    },
+    publicId : {
+        type : String,
+        required : true,
+    }
+}, {_id : false});
 
 // user schema
 const userSchema = new mongoose.Schema<UserSchema>({
@@ -59,6 +72,11 @@ const userSchema = new mongoose.Schema<UserSchema>({
         type: profileImageSchema,
         required: false,
         default: null,
+    },
+    coverImage : {
+        type : coverImageSchema,
+        required : false,
+        default : null
     },
     isOnboarded: {
         type: Boolean,

@@ -1,7 +1,7 @@
 import { UserProfileDTO, UserProfileImageDTO } from "@connect/shared"
 import { Types } from "mongoose"
 
-export type UserProfileImageSchema = {
+export type ImageAsset = {
     url: string,
     publicId: string,
 }
@@ -14,7 +14,7 @@ export type PostUserQuery = {
     _id: Types.ObjectId,
     name: string,
     username: string,
-    profileImage: UserProfileImageSchema,
+    profileImage: ImageAsset,
 }
 
 export type UserSummaryQuery = {

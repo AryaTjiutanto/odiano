@@ -120,7 +120,7 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
 
                 {
                     isAuthenticated && userData?.isOnboarded ?
-                        <div className="relative min-w-62 w-fit">
+                        <div className="relative w-full">
                             {/* popover */}
                             <div className={`w-full absolute -top-20 duration-100 font-bold ${isProfilePopoverHidden ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-fit"}`}>
                                 <div className="w-full relative rounded-xl z-2 overflow-hidden bg-neutral-900">
@@ -132,7 +132,7 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                             </div>
 
                             {/* button */}
-                            <button className="w-full flex items-center justify-between space-x-10 cursor-pointer" onClick={() => setIsProfilePopoverHidden(!isProfilePopoverHidden)}>
+                            <button className="w-full flex items-center justify-between space-x-10 cursor-pointer z-1" onClick={() => setIsProfilePopoverHidden(!isProfilePopoverHidden)}>
                                 <div className="flex items-center space-x-3">
                                     <div className="w-12 h-12">
                                         <Profile data={userData.profileImage} />
@@ -144,12 +144,12 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                         </p>
                                     </div>
                                 </div>
-                                <EllipsisVertical />
+                                <EllipsisVertical className=""/>
                             </button>
                         </div>
                         :
                         <Link to={isAuthenticated ? "/onboarding" : "/signin"}>
-                            <button className="min-w-62 w-fit flex items-center justify-between space-x-10 cursor-pointer">
+                            <button className="w-full flex items-center justify-between space-x-10 cursor-pointer">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-12 h-12">
                                         <Profile data={null} />

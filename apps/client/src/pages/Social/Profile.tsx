@@ -1,10 +1,9 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays, EllipsisVertical } from "lucide-react";
 import ProfileComponent from "../../components/social/Profile";
-import { useInfiniteQuery, useMutation, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
-import { api } from "../../libs/api";
-import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type SuccessResponseData, type UserProfileDTO } from "@connect/shared";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@connect/shared";
 import ErrorState from "../../components/common/ErrorState";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
@@ -16,7 +15,10 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
 import { notify } from "../../helpers/notify.helper";
 import type { AxiosErrorResponseData } from "../../types/response.type";
-import EditProfileForm from "../../components/profile/EditProfileForm";
+import { getUserProfile } from "../../services/user.service";
+import { userKeys } from "../../queries/userKeys";
+import { getUserPosts } from "../../services/post.service";
+import { postKeys } from "../../queries/postKeys";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -26,21 +28,12 @@ const Profile = () => {
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const { username } = useParams();
-    const profileQueryKey = ['user', username];
 
     // get user data
-    async function getUserProfile() {
-        const response = await api.get<SuccessResponseData<UserProfileDTO>>(`users/${username}`);
-
-        if (!response.data.data) {
-            throw new Error("User not found");
-        }
-
-        return response.data.data;
-    }
+    const profileQueryKey = userKeys.profile(username);
 
     const profileQuery = useQuery({
-        queryFn: getUserProfile,
+        queryFn: async (): Promise<UserProfileDTO> => await getUserProfile(username!),
         enabled: !!username,
         queryKey: profileQueryKey,
         staleTime: 30 * 1000,
@@ -48,23 +41,9 @@ const Profile = () => {
     })
 
     // get user posts
-    const getUserPosts = async ({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> => {
-        const response = await api<SuccessResponseData<InfiniteQuery<PostDTO[]>>>(`/post/user/${username}`, {
-            params: {
-                cursor: pageParam,
-            }
-        });
-
-        if (!response.data.data) {
-            throw new Error("Data is empty");
-        }
-
-        return response.data.data;
-    }
-
     const postsQuery = useInfiniteQuery({
-        queryFn: getUserPosts,
-        queryKey: ['post', username],
+        queryFn: ({ pageParam }) => getUserPosts(pageParam, username!),
+        queryKey: postKeys.userPosts(username!),
         enabled: !!profileQuery.data,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
@@ -150,7 +129,7 @@ const Profile = () => {
                 </div>
 
                 {/* banner and profile picture */}
-                <div className="w-full banner-aspect bg-neutral-700 rounded-xl mt-5 relative animate-pulse">
+                <div className="w-full cover-image-aspect bg-neutral-700 rounded-xl mt-5 relative animate-pulse">
                     {/* profile */}
                     <div className={`absolute rounded-full w-28 aspect-square left-6 -bottom-[25%] bg-neutral-700`}></div>
                 </div>
@@ -216,8 +195,7 @@ const Profile = () => {
 
     return (
         <>
-            <EditProfileForm/>
-            <div className="w-full min-h-screen bg-neutral-950 text-neutral-200 hidden">
+            <div className="w-full min-h-screen bg-neutral-950 text-neutral-200">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
@@ -232,9 +210,9 @@ const Profile = () => {
                 </div>
 
                 {/* banner and profile picture */}
-                <div className="w-full banner-aspect bg-neutral-200 rounded-xl mt-5 relative">
+                <div className="w-full cover-image-aspect bg-neutral-200 rounded-xl mt-5 relative">
                     {/* profile */}
-                    <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center`}>
+                    <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-neutral-950 duration-100 rounded-full`}>
                         <ProfileComponent data={profileQuery?.data?.profileImage} />
                     </div>
                 </div>
@@ -243,9 +221,11 @@ const Profile = () => {
                 <div className="w-full mt-8 flex justify-end space-x-3">
                     {
                         (isAuthenticated && profileQuery.data?.id == currentUserId) &&
-                        <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
-                            Edit profile
-                        </button>
+                        <Link to={`edit`}>
+                            <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
+                                Edit profile
+                            </button>
+                        </Link>
                     }
                     {
                         (!isAuthenticated || profileQuery.data?.id !== currentUserId) &&

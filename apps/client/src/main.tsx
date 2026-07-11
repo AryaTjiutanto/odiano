@@ -22,6 +22,8 @@ import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
 import SocketProvider from './providers/SocketProvider.tsx'
 import { queryClient } from './libs/react-query/queryClient.ts'
+import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
+import EditProfile from './pages/Social/EditProfile.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -53,6 +55,9 @@ createRoot(document.getElementById('root')!).render(
 
                     {/* profile */}
                     <Route path='/profile/:username' element={<Profile />} />
+                    <Route element={<RequireAuthGuard/>}>
+                      <Route path='/profile/:username/edit' element={<EditProfile />} />
+                    </Route>
                   </Route>
 
                   {/* auth process */}
