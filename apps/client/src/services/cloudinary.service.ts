@@ -15,12 +15,14 @@ type UploadedImagePayload = {
 }
 
 export const uploadImageToCloudinary = async (payload : UploadImagePayload) : Promise<UploadedImagePayload> => {
+    // get signature
     const response = await api.get<SuccessResponseData<CloudinarySignaturePayload>>(payload.generatorRoute);
     const signaturePayload = response.data.data;
     if (!signaturePayload) {
         throw new Error("Missing signature payload");
     }
 
+    // upload to cloudinary
     const file = new File([payload.imageCroppedBlob], `${payload.imageName}.webp`, { type: payload.imageCroppedBlob.type });
 
     const formData = new FormData();
@@ -33,6 +35,7 @@ export const uploadImageToCloudinary = async (payload : UploadImagePayload) : Pr
 
     const cloudinaryResponse = await axios.post(getCloudinarySignedUrl(signaturePayload.cloudName), formData);
 
+    // return url and publicId
     const publicId = cloudinaryResponse.data.public_id;
     const url = cloudinaryResponse.data.secure_url;
 

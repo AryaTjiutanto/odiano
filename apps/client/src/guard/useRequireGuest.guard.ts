@@ -15,6 +15,14 @@ const useRequireGuest = (): GuardResult => {
         }
     }
 
+    if (isAuthenticated && !userData?.isOnboarded) {
+        return {
+            isLoading: false,
+            allowed: false,
+            redirectTo: "/onboarding"
+        }
+    }
+
     if (isAuthenticated) {
         return {
             isLoading: false,

@@ -90,14 +90,17 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                             </span>
                                         </Link>
                                     </li>
-                                    <li>
-                                        <Link to={`profile/${userData && userData?.username}`} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
-                                            <User />
-                                            <span>
-                                                Profile
-                                            </span>
-                                        </Link>
-                                    </li>
+                                    {
+                                        userData?.isOnboarded &&
+                                        <li>
+                                            <Link to={`profile/${userData && userData?.username}`} className={`flex items-center space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
+                                                <User />
+                                                <span>
+                                                    Profile
+                                                </span>
+                                            </Link>
+                                        </li>
+                                    }
                                     <li>
                                         <Link to={""} className="flex items-center space-x-5 text-lg">
                                             <Settings />
@@ -111,7 +114,7 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                         </ul>
                     </nav >
                     {
-                        isAuthenticated &&
+                        (isAuthenticated && userData?.isOnboarded) &&
                         <button onClick={() => setShowCreatePropsSection(true)} className="w-40 h-14 bg-white rounded-xl mt-10 text-lg text-neutral-900 font-bold cursor-pointer hover:bg-white/0 hover:text-neutral-100 border border-white duration-100">
                             Post
                         </button>
@@ -144,7 +147,7 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                         </p>
                                     </div>
                                 </div>
-                                <EllipsisVertical className=""/>
+                                <EllipsisVertical className="" />
                             </button>
                         </div>
                         :
