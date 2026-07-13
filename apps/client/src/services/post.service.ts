@@ -25,7 +25,7 @@ export const createComment = async ({ commentId, data }: CreateCommentMutationPa
 };
 
 // get user posts
-export const getUserPosts = async (cursor: string | undefined | null, username : string): Promise<InfiniteQuery<PostDTO[]>> => {
+export const getUserPosts = async (cursor: string | undefined | null, username: string): Promise<InfiniteQuery<PostDTO[]>> => {
     const response = await api<SuccessResponseData<InfiniteQuery<PostDTO[]>>>(`/post/user/${username}`, {
         params: {
             cursor,
@@ -34,6 +34,21 @@ export const getUserPosts = async (cursor: string | undefined | null, username :
 
     if (!response.data.data) {
         throw new Error("Data is empty");
+    }
+
+    return response.data.data;
+}
+
+// get posts
+export const getPosts = async (cursor: string | undefined | null): Promise<InfiniteQuery<PostDTO[]>> => {
+    const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
+        params: {
+            cursor,
+        }
+    });
+
+    if (!response.data.data) {
+        throw new Error("No post available");
     }
 
     return response.data.data;

@@ -1,33 +1,19 @@
 import StoryList from "../../components/social/StoryList";
 import Post from "../../components/post/Post";
-import type { InfiniteQuery, PostDTO, SuccessResponseData } from "@connect/shared";
+import type { InfiniteQuery, PostDTO } from "@connect/shared";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
-import { api } from "../../libs/api";
-import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { postKeys } from "../../queries/postKeys";
 import SearchBar from "../../components/search/Search";
+import { getPosts } from "../../services/post.service";
 
 const Homepage = () => {
     const postsQueryKey = postKeys.all;
 
-    async function getPosts({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostDTO[]>> {
-        const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
-            params: {
-                cursor: pageParam,
-            }
-        });
-
-        if (!response.data.data) {
-            throw new Error("No post available");
-        }
-
-        return response.data.data;
-    }
-
     const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryFn: getPosts,
+        queryFn: ({pageParam}) => getPosts(pageParam),
         queryKey: postsQueryKey,
         staleTime: 10 * 1000,
         gcTime: DEFAULT_GC_TIME,
@@ -36,6 +22,8 @@ const Homepage = () => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
     })
+
+    const isDataEmpty = (data?.pages[0].items.length == 0 && data?.pages.length <= 1);
 
     return (
         <>
@@ -90,7 +78,7 @@ const Homepage = () => {
                     }
 
                     {
-                        (!data && !isPending) &&
+                        (isDataEmpty && !isPending) &&
                         <div className="w-full h-fit py-20 px-32 rounded-xl border border-neutral-700 border-dashed flex flex-col items-center justify-center">
                             <h1 className="text-lg font-semibold text-neutral-200">
                                 No posts yet

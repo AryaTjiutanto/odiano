@@ -24,7 +24,7 @@ const Profile = () => {
     const navigate = useNavigate();
 
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const currentUserId = useAppSelector((state) => state.auth.user?.id);
+    const currentUserData = useAppSelector((state) => state.auth.user);
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const { username } = useParams();
@@ -52,6 +52,8 @@ const Profile = () => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
     });
+
+    const isPostsEmpty = (postsQuery.data?.pages[0].items.length == 0 && postsQuery.data?.pages.length <= 1);
 
     // create following handler
     const followMutation = useMutation({
@@ -115,7 +117,7 @@ const Profile = () => {
         }
     }
 
-    // handler
+    // display the data
     if (profileQuery.isPending) {
         return (
             <div className="w-full min-h-screen bg-neutral-950 text-neutral-200">
@@ -220,7 +222,7 @@ const Profile = () => {
                 {/* action button */}
                 <div className="w-full mt-8 flex justify-end space-x-3">
                     {
-                        (isAuthenticated && profileQuery.data?.id == currentUserId) &&
+                        (isAuthenticated && username == currentUserData?.username) &&
                         <Link to={`edit`}>
                             <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
                                 Edit profile
@@ -228,7 +230,7 @@ const Profile = () => {
                         </Link>
                     }
                     {
-                        (!isAuthenticated || profileQuery.data?.id !== currentUserId) &&
+                        (!isAuthenticated || username != currentUserData?.username) &&
                         <>
                             <div className={`max-w-32 h-11 duration-100 rounded-lg border text-sm ${profileQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
                                 {
@@ -327,6 +329,26 @@ const Profile = () => {
 
                                 <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage} />
                             </>
+                        }
+                        {
+                            (isPostsEmpty && !postsQuery.isPending) &&
+                            <div className="w-full h-fit py-20 px-32 rounded-xl border border-neutral-700 border-dashed flex flex-col items-center justify-center">
+                                <h1 className="text-lg font-semibold text-neutral-200">
+                                    No posts yet
+                                </h1>
+
+                                {
+                                    username === currentUserData?.username ? (
+                                        <p className="mt-2 text-sm text-neutral-400 text-center">
+                                            You haven't posted anything yet. Share your first post to let others know what's on your mind.
+                                        </p>
+                                    ) : (
+                                        <p className="mt-2 text-sm text-neutral-400 text-center">
+                                            This user hasn't posted anything yet.
+                                        </p>
+                                    )
+                                }
+                            </div>
                         }
                     </div>
                 </div>
