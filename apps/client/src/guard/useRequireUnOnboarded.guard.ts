@@ -26,7 +26,7 @@ const useRequireUnOnboarded = (): GuardResult => {
         return {
             isLoading :false,
             allowed : false,
-            redirectTo : "profile"
+            redirectTo : `profile/${user.username}`
         }
     }
 

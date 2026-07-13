@@ -53,7 +53,7 @@ export const ImageCropper = (payload: Payload) => {
     })
 
     return (
-        <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-neutral-950">
+        <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-neutral-950 z-22">
             {/* shortcut key */}
             <div className="hidden lg:flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-900 p-5 border border-neutral-700 rounded-lg">
                 <h1 className="font-bold">

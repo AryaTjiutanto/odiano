@@ -125,7 +125,7 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                     isAuthenticated && userData?.isOnboarded ?
                         <div className="relative w-full">
                             {/* popover */}
-                            <div className={`w-full absolute -top-20 duration-100 font-bold ${isProfilePopoverHidden ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-fit"}`}>
+                            <div className={`w-[120%] 2xl:w-full absolute -top-20 duration-100 font-bold ${isProfilePopoverHidden ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-fit"}`}>
                                 <div className="w-full relative rounded-xl z-2 overflow-hidden bg-neutral-900">
                                     <button className="w-full px-5 py-4 text-left bg-neutral-900 hover:text-neutral-500 cursor-pointer duration-100" onClick={logoutHandler}>
                                         Log out @{userData.username}
@@ -135,8 +135,8 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                             </div>
 
                             {/* button */}
-                            <button className="w-full flex items-center justify-between space-x-10 cursor-pointer z-1" onClick={() => setIsProfilePopoverHidden(!isProfilePopoverHidden)}>
-                                <div className="flex items-center space-x-3">
+                            <button className="w-full flex items-center justify-between space-x-2 2xl:space-x-10 cursor-pointer z-1" onClick={() => setIsProfilePopoverHidden(!isProfilePopoverHidden)}>
+                                <div className="flex flex-1 items-center space-x-3">
                                     <div className="w-12 h-12">
                                         <Profile data={userData.profileImage} />
                                     </div>
@@ -147,7 +147,7 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                         </p>
                                     </div>
                                 </div>
-                                <EllipsisVertical className="" />
+                                <EllipsisVertical className=""/>
                             </button>
                         </div>
                         :

@@ -29,7 +29,7 @@ const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: nu
         }
 
         if (file.size > MAX_IMAGE_SIZE) {
-            setImageError(`Max image size is ${MAX_IMAGE_SIZE / (1024 * 2)}mb`);
+            setImageError(`Max image size is ${MAX_IMAGE_SIZE / (1024 * 1024)}mb`);
             return;
         }
 

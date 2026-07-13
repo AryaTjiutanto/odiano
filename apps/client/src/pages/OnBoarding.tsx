@@ -1,5 +1,5 @@
 import Footer from "../components/auth/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH, ALLOWED_PROFILE_IMAGE_TYPES, MAX_PROFILE_IMAGE_SIZE } from "@connect/shared";
@@ -41,11 +41,29 @@ const OnBoarding = () => {
 
     const usernameQuery = useQuery({
         queryKey: userKeys.checkUsername(usernameDebounceValue!),
-        queryFn: () => checkUsername(usernameDebounceValue!),
+        queryFn: async () => await checkUsername(usernameDebounceValue!),
         enabled: !!usernameDebounceValue,
         staleTime: 10 * 1000,
         gcTime: 1 * 24 * 60 * 60 * 1000,
     });
+
+    useEffect(() => {
+        if (!usernameQuery.data && usernameQuery.isSuccess) {
+            setError("username", {
+                type: "server",
+                message: "Username already used",
+            })
+        }
+    }, [usernameQuery.data, setError, usernameQuery.isSuccess]);
+
+    useEffect(() => {
+        if(usernameQuery.error) {
+            setError("username", {
+                type: "server",
+                message: "Something went wrong, try again later"
+            })
+        }
+    }, [usernameQuery.error, setError]);
 
     // handle form
     const onSubmit: SubmitHandler<CreateUserProfileSchema> = async (data) => {
@@ -146,7 +164,7 @@ const OnBoarding = () => {
 
                                         <div className="absolute h-full top-0 flex items-center right-4">
                                             {
-                                                usernameQuery.isPending &&
+                                                (usernameQuery.isPending && usernameDebounceValue) &&
                                                 <RotateCcw className="w-3 animate-spin text-neutral-300" />
                                             }
                                             {
@@ -156,7 +174,7 @@ const OnBoarding = () => {
                                                 </div>
                                             }
                                             {
-                                                !usernameQuery.data &&
+                                                (!usernameQuery.data && usernameQuery.isSuccess) &&
                                                 <div className="w-5 h-5 rounded-full bg-red-500 grid place-content-center">
                                                     <X className="w-3" />
                                                 </div>
