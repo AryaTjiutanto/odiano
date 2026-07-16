@@ -5,14 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import Profile from "../social/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
-import { api } from "../../libs/api";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import { notify } from "../../helpers/notification/notify.helper";
 import { type MouseEvent } from "react";
 import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
-import type { AxiosErrorResponseData } from "../../types/response.type";
 import { createLike, deleteLike } from "../../services/post.service";
+import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 
 type Props = {
     data: PostDTO,
@@ -55,35 +53,13 @@ const Post = ({ data, author }: Props) => {
             } else {
                 await applylikeMutation.mutateAsync(data.id);
             }
-        } catch (err: any) {
-            const error = err as AxiosErrorResponseData;
-            const errorCode = error.response?.data.code;
-            const errorMessage = error.response?.data.message;
-
-            if (errorCode === ERROR_RESPONSE_CODE.tooManyRequests) {
-                return notify.error({
-                    title: "Too Many Requests",
-                    description: errorMessage,
-                });
-            }
-
-            if (errorCode === ERROR_RESPONSE_CODE.badRequest) {
-                return notify.error({
-                    title: "Invalid Request",
-                    description: errorMessage,
-                });
-            }
-
-            if (errorCode === ERROR_RESPONSE_CODE.conflict) {
-                return notify.error({
-                    title: "Action Not Allowed",
-                    description: errorMessage,
-                });
-            }
-
-            return notify.error({
-                title: "Something Went Wrong",
-                description: "Please try again in a moment.",
+        } catch (err: unknown) {
+            handleApiErrorNotification(err, {
+                notifications : {
+                    [ERROR_RESPONSE_CODE.conflict] : {
+                        title : "Action not allowed",
+                    }
+                }
             });
         }
     }

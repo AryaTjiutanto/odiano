@@ -1,4 +1,4 @@
-import { BIO_LENGTH, ERROR_RESPONSE_CODE, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@connect/shared";
+import { BIO_LENGTH, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@connect/shared";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import ProfileComponent from "../../components/social/Profile";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
@@ -18,11 +18,10 @@ import { createPortal } from "react-dom";
 import { ImageCropper } from "../../components/cropper/ImageCropper";
 import { notify } from "../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import type { AllErrorResponse } from "../../types/response.type";
-import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { useAppDispatch } from "../../hooks/useRedux";
 import { setCurrentUserProfile } from "../../features/auth/auth.slice";
+import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 
 const EditProfile = () => {
     const { username } = useParams();
@@ -154,16 +153,10 @@ const EditProfile = () => {
 
                 navigate(`/profile/${username}`);
             }
-        } catch (err: any) {
-            const error = err.response?.data as AllErrorResponse;;
-
-            if (error.code == ERROR_RESPONSE_CODE.validationError) {
-                handleApiValidationError<UpdateUserProfile>(error.errors, setError);
-
-                return;
-            }
-
-            notify.error({ "title": "Error", "description": "Something went wrong" });
+        } catch (err: unknown) {
+            handleApiErrorNotification<UpdateUserProfile>(err, {
+                setValidationError : setError
+            })
         }
     }
 

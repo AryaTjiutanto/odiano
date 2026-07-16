@@ -2,22 +2,17 @@ import loginImage from "../../assets/img/login-img.webp";
 import googleLogo from "../../assets/img/logo/google.svg";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type SignInResponse, ERROR_RESPONSE_CODE } from "@connect/shared";
+import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type SignInResponse } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import DotsLoader from "../../components/loader/DotsLoader";
-import { useState } from "react";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
-import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
-import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
-import type { AllErrorResponse } from "../../types/response.type";
+import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 
 const Signin = () => {
     const dispatch = useAppDispatch();
-    const [signInErrorMessage, setSignInErrorMessage] = useState<string>("");
-    const [blockTimeLeftMs, setBlockTimeLeftMs] = useState<number | null>(null);
 
     const {
         register,
@@ -30,8 +25,6 @@ const Signin = () => {
     });
 
     const onSubmit: SubmitHandler<AuthenticateUserSchema> = async (data) => {
-        setBlockTimeLeftMs(null);
-
         try {
             const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/signin", data);
 
@@ -41,21 +34,10 @@ const Signin = () => {
                 dispatch(setAccessToken(accessToken));
                 dispatch(intitializeAuth());
             }
-        } catch (err : any) {
-            const error = err.response?.data as AllErrorResponse;
-
-            if(error.code === ERROR_RESPONSE_CODE.validationError) {
-                handleApiValidationError<AuthenticateUserSchema>(error.errors, setError);
-                return;
-            }
-
-            if(error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
-                setBlockTimeLeftMs(error.errors?.timeLeftMs || null);
-            }
-
-            if(error.message) {
-                setSignInErrorMessage(error.message);
-            }
+        } catch (err: unknown) {
+            handleApiErrorNotification<AuthenticateUserSchema>(err, {
+                setValidationError: setError
+            });
         }
     }
 
@@ -113,12 +95,6 @@ const Signin = () => {
                                                         </div>
                                                 }
                                             </button>
-                                            {
-                                                signInErrorMessage &&
-                                                <p className="text-sm text-red-500 selection:bg-neutral-100">
-                                                    {signInErrorMessage} {blockTimeLeftMs && <TooManyRequestCountDown timeLeftMs={blockTimeLeftMs} show="auto"/>}
-                                                </p>
-                                            }
                                             <Link className="text-sm underline hover:text-rose-500 duration-150" to={"#"}>
                                                 Forgot password
                                             </Link>

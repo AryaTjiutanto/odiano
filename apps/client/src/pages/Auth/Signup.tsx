@@ -2,21 +2,17 @@ import { Link } from "react-router-dom";
 import DateDropdown from "../../components/input/DateDropdown";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserSchema, ERROR_RESPONSE_CODE, type AuthenticateUserSchema, type CreateUserSchema, type SignUpResponse, type SuccessResponseData} from "@connect/shared";
+import { createUserSchema, type CreateUserSchema, type SignUpResponse, type SuccessResponseData} from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
-import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
-import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
-import type { AllErrorResponse } from "../../types/response.type";
+import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 
 const Signup = () => {
-    const [signupErrorMessage, setSignupErrorMessage] = useState<string>("");
     const [dateOfBirth, setDateOfBirth] = useState<string>("2010-01-01");
-    const [blockTimeLeft, setBlockTimeLeft] = useState<number | null>(null);
     const dispatch = useAppDispatch();
 
     const {
@@ -33,32 +29,16 @@ const Signup = () => {
         try {
             const response = await api.post<SuccessResponseData<SignUpResponse>>("/auth/signup", data);
 
-            if(!response.data.success) {
-                setSignupErrorMessage("Something went wrong");
-                return;
-            }
-
             const accessToken = response.data.data?.access_token;
                
             if(accessToken) {
                 dispatch(setAccessToken(accessToken));
                 dispatch(intitializeAuth());
             }
-        } catch (err : any) {
-            const error = err.response?.data as AllErrorResponse;
-
-            if(error.code == ERROR_RESPONSE_CODE.validationError) {
-                handleApiValidationError<AuthenticateUserSchema>(error.errors, setError);
-                return
-            }
-
-            if(error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
-                setBlockTimeLeft(error.errors?.timeLeftMs || null);
-            }
-
-            if (error.message) {
-                setSignupErrorMessage(error.message);
-            }
+        } catch (err : unknown) {
+            handleApiErrorNotification<CreateUserSchema>(err, {
+                setValidationError : setError
+            });
         }
     }
 
@@ -123,12 +103,6 @@ const Signup = () => {
                                         </span>
                                 }
                             </button>
-                            {
-                                signupErrorMessage &&
-                                <p className="text-sm text-red-500 mt-2">
-                                    {signupErrorMessage} {blockTimeLeft && <TooManyRequestCountDown timeLeftMs={blockTimeLeft} show="auto"/>}
-                                </p>
-                            }
                             <div className="mt-4 text-sm text-neutral-300">
                                 By signing up, you agree to the <Link to={"#"} className="underline hover:text-rose-500 duration-100">Terms of Service</Link> and <Link to={"#"} className="underline hover:text-rose-500 duration-100">Privacy Policy</Link>, including <Link to={"#"} className="underline hover:text-rose-500 duration-100">Cookie Use</Link>.
                             </div>

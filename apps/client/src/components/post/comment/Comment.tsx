@@ -1,11 +1,9 @@
 import { EllipsisVertical, Heart } from "lucide-react";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
-import { ERROR_RESPONSE_CODE, type PostCommentDTO, type PostDTO } from "@connect/shared";
+import { type PostCommentDTO, type PostDTO } from "@connect/shared";
 import Profile from "../../social/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { deleteComment } from "../../../services/post.service";
-import type { AxiosErrorResponseData } from "../../../types/response.type";
-import { notify } from "../../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 import { postKeys } from "../../../queries/postKeys";
 import { useParams } from "react-router-dom";
@@ -14,6 +12,7 @@ import {flip, offset, shift, useClick, useDismiss, useFloating, useInteractions}
 import { useState } from "react";
 import CommentMenu from "./CommentMenu";
 import { useAppSelector } from "../../../hooks/useRedux";
+import { handleApiErrorNotification } from "../../../helpers/errors/apiError.helper";
 
 type Props = {
     data: PostCommentDTO,
@@ -72,36 +71,8 @@ const Comment = ({ data, postId }: Props) => {
     const handleDeleteComment = async () => {
         try {
             await deleteCommentMutation.mutateAsync(data.id)
-        } catch (err: any) {
-            const error = err as AxiosErrorResponseData;
-            const errorCode = error.response?.data.code;
-            const errorMessage = error.response?.data.message;
-
-            if (errorCode === ERROR_RESPONSE_CODE.tooManyRequests) {
-                return notify.error({
-                    title: "Too Many Requests",
-                    description: errorMessage,
-                });
-            }
-
-            if (errorCode === ERROR_RESPONSE_CODE.badRequest) {
-                return notify.error({
-                    title: "Invalid Request",
-                    description: errorMessage,
-                });
-            }
-
-            if (errorCode === ERROR_RESPONSE_CODE.conflict) {
-                return notify.error({
-                    title: "Action Not Allowed",
-                    description: errorMessage,
-                });
-            }
-
-            return notify.error({
-                title: "Something Went Wrong",
-                description: "Please try again in a moment.",
-            });
+        } catch (err: unknown) {
+            handleApiErrorNotification(err)
         }
     }
 

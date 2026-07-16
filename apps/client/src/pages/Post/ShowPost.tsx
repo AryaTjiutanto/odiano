@@ -1,7 +1,7 @@
 import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { type SuccessResponseData, type PostDTO, ERROR_RESPONSE_CODE } from "@connect/shared";
+import { type SuccessResponseData, type PostDTO } from "@connect/shared";
 import { api } from "../../libs/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import PostDetailSkeletonLoading from "../../components/post/PostDetailSkeletonLoading";
@@ -22,6 +22,7 @@ import { userKeys } from "../../queries/userKeys";
 import { applyLikeToInfinitePostCache, applyLikeToPostCache, removeLikeFromInfinitePostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
 import { createLike, deleteLike } from "../../services/post.service";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
+import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -67,15 +68,9 @@ const ShowPost = () => {
     const isFollowingQueryKey = userKeys.isFollowing(postQuery.data?.author?.id || "");
 
     const getIsFollowingInformation = async () => {
-        try {
-            const response = await api.get<SuccessResponseData<IsFollowingQueryData>>(`/following/check/${postQuery.data?.author?.id}`);
+        const response = await api.get<SuccessResponseData<IsFollowingQueryData>>(`/following/check/${postQuery.data?.author?.id}`);
 
-            return response.data.data;
-        } catch (err) {
-            const error = err as AxiosErrorResponseData;
-
-            notify.error({ "title": "Follow Status Unavailable", "description": error.response?.data.message || "Something went wrong" });
-        }
+        return response.data.data;
     }
 
     const isFollowingQuery = useQuery({
@@ -185,36 +180,8 @@ const ShowPost = () => {
             } else {
                 await likeMutation.mutateAsync(postQuery.data?.id);
             }
-        } catch (err: any) {
-            const error = err as AxiosErrorResponseData;
-            const errorCode = error.response?.data.code;
-            const errorMessage = error.response?.data.message;
-
-            if (errorCode === ERROR_RESPONSE_CODE.tooManyRequests) {
-                return notify.error({
-                    title: "Too Many Requests",
-                    description: errorMessage,
-                });
-            }
-
-            if (errorCode === ERROR_RESPONSE_CODE.badRequest) {
-                return notify.error({
-                    title: "Invalid Request",
-                    description: errorMessage,
-                });
-            }
-
-            if (errorCode === ERROR_RESPONSE_CODE.conflict) {
-                return notify.error({
-                    title: "Action Not Allowed",
-                    description: errorMessage,
-                });
-            }
-
-            return notify.error({
-                title: "Something Went Wrong",
-                description: "Please try again in a moment.",
-            });
+        } catch (err: unknown) {
+            handleApiErrorNotification(err);
         }
     }
 

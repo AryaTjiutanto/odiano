@@ -1,4 +1,4 @@
-import type { ERROR_RESPONSE_CODE, ErrorResponseData, FailedAttemptError, TooManyRequestError, ValidationError } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, type ErrorResponseData, type FailedAttemptError, type TooManyRequestError, type ValidationError } from "@connect/shared"
 import type { AxiosError } from "axios"
 
 export type ValidationErrorResponse = ErrorResponseData<ValidationError[]> & {
@@ -17,6 +17,18 @@ export type ForbiddenErrorResponse = ErrorResponseData & {
     code : typeof ERROR_RESPONSE_CODE.forbidden,
 }
 
-export type AllErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse
+export type ConflictErrorResponse = ErrorResponseData & {
+    code : typeof ERROR_RESPONSE_CODE.conflict
+}
+
+export type BadRequestErrorResponse = ErrorResponseData & {
+    code : typeof ERROR_RESPONSE_CODE.badRequest
+}
+
+export type UnauthorizedErrorResponse = ErrorResponseData & {
+    code : typeof ERROR_RESPONSE_CODE.unauthorized
+}
+
+export type AllErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse | ConflictErrorResponse | BadRequestErrorResponse | UnauthorizedErrorResponse;
 
 export type AxiosErrorResponseData = AxiosError<ErrorResponseData>

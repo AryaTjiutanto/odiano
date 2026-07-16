@@ -5,7 +5,7 @@ import { apiLimiter, consume } from "../libs/limiter";
 import { createPostLimiter } from "../libs/limiter/limiters/createPost.limiter";
 import { postIndexLimiter } from "../libs/limiter/limiters/postIndex.limiter";
 import { createComment, deleteComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
-import { createPostCommentSchema } from "@connect/shared";
+import { createPostCommentSchema, createPostSchema } from "@connect/shared";
 import commentLimiter from "../libs/limiter/limiters/createComment.limiter";
 import { validateData } from "../middlewares/validateData.middleware";
 import optionalAuth from "../middlewares/optionalAuth.middleware";
@@ -15,7 +15,7 @@ import { likeLimiter } from "../libs/limiter/limiters/like.limiter";
 const router = express.Router();
 
 router.get("/", consume(postIndexLimiter), optionalAuth, indexPost);
-router.post("/create", requireAccessToken, consume(createPostLimiter), createPost);
+router.post("/create", requireAccessToken, consume(createPostLimiter), validateData(createPostSchema), createPost);
 
 // post user
 router.get("/user/:username", consume(apiLimiter), optionalAuth, getUserPosts);

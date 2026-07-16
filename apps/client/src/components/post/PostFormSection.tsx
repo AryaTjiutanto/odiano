@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react"
 import PillSwitch from "../input/PillSwitch";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createPostSchema, ERROR_RESPONSE_CODE, POST_CONTENT_LENGTH, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@connect/shared";
+import { createPostSchema, POST_CONTENT_LENGTH, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
-import type { AllErrorResponse } from "../../types/response.type";
-import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
-import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
+import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 
 type Props = {
     setShowCreatePostFormSection: React.Dispatch<React.SetStateAction<boolean>>
@@ -23,9 +21,6 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
     const currentUserUsername = useAppSelector((state) => state.auth.user?.username);
 
     // handle form
-    const [postFormErrorMessage, setPostFormErrorMessage] = useState<string | null>(null);
-    const [blockTimeLeft, setBlockTimeLeft] = useState<number | null | undefined>(null);
-
     const {
         handleSubmit,
         register,
@@ -59,21 +54,10 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
             setPostPublicId(response.data.data?.publicId || null);
             reset();
             setIsCreated(true);
-        } catch (err: any) {
-            const error = err.response?.data as AllErrorResponse;
-
-            if (error.code === ERROR_RESPONSE_CODE.validationError) {
-                handleApiValidationError<CreatePostSchema>(error.errors, setError);
-                return;
-            }
-
-            if (error.code === ERROR_RESPONSE_CODE.tooManyRequests) {
-                setBlockTimeLeft(error.errors?.timeLeftMs);
-            }
-
-            if (error.message) {
-                setPostFormErrorMessage(error.message);
-            }
+        } catch (err: unknown) {
+            handleApiErrorNotification<CreatePostSchema>(err, {
+                setValidationError : setError
+            })
         }
     }
 
@@ -139,12 +123,6 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
                             Cancel
                         </button>
                     </div>
-                    {
-                        postFormErrorMessage &&
-                        <p className="text-sm text-red-500 mt-2">
-                            {postFormErrorMessage} {blockTimeLeft && <TooManyRequestCountDown timeLeftMs={blockTimeLeft} show="auto" />}
-                        </p>
-                    }
                 </form>
 
                 {/* sucess */}

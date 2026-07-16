@@ -3,8 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
-import { notify } from "../../../helpers/notification/notify.helper";
-import TooManyRequestCountDown from "../../counter/TooManyRequestCountDown";
 import DotsLoader from "../../loader/DotsLoader";
 import { useAppSelector } from "../../../hooks/useRedux";
 import Profile from "../../social/Profile";
@@ -15,7 +13,7 @@ import { postKeys } from "../../../queries/postKeys";
 import type { CreateCommentMutationParams } from "../../../types/post.type";
 import { createComment } from "../../../services/post.service";
 import { addToComment, decreaseCommentCount, increaseCommentCount, removeComment, updateToPostedCommentData } from "../../../helpers/cache/postCache.helper";
-import type { AllErrorResponse } from "../../../types/response.type";
+import { handleApiErrorNotification } from "../../../helpers/errors/apiError.helper";
 
 type CreateCommentProps = {
     postId: string,
@@ -108,36 +106,16 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
         try {
             reset();
 
-            const commentId = `temp:${Date.now()}`;
+            const commentId = `temp:${crypto.randomUUID()}`;
             await commentMutation.mutateAsync({ commentId, data });
-        } catch (err: any) {
-            const error = err.response?.data as AllErrorResponse;
-
-            if (error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
-                if (!error.errors) return;
-
-                notify.error({ title: "Too many request", "element": <TooManyRequestCountDown show="auto" timeLeftMs={error.errors?.timeLeftMs} /> })
-                return;
-            }
-
-            if (error.code == ERROR_RESPONSE_CODE.validationError) {
-                notify.error({
-                    title: "Invalid comment",
-                    description: "Please check your input and try again."
-                });
-                return;
-            }
-
-            if (error.code == ERROR_RESPONSE_CODE.forbidden) {
-                notify.error({
-                    title: "Comment limit reached",
-                    description: error.message
-                })
-
-                return;
-            }
-
-            notify.error({ title: "An Error occured", "description": "Something went wrong" });
+        } catch (err: unknown) {
+            handleApiErrorNotification(err, {
+                notifications : {
+                    [ERROR_RESPONSE_CODE.forbidden] : {
+                        title : "Comment limit reached",
+                    }
+                }
+            })
         }
     }
 
