@@ -7,7 +7,6 @@ import { AppError } from "../errors/appError.error"
 import { Post } from "../models/post.model"
 import { create as createNotification } from "./notification.service";
 import mongoose from "mongoose"
-import logger from "../libs/log/logger"
 
 type createPostCommentParams = {
     content: string,

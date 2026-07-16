@@ -61,12 +61,14 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
             )
 
             // create notification
-            await createNotification(currentUserId, {
-                recepientId : post.author.toString(),
-                targetId : post._id.toString(),
-                targetType : NOTIFICATION_TARGET_TYPE.POST,
-                type : NOTIFICATION_TYPE.LIKE_YOUR_POST
-            })
+            if(currentUserId !== post.author.toString()) {
+                await createNotification(currentUserId, {
+                    recepientId : post.author.toString(),
+                    targetId : post._id.toString(),
+                    targetType : NOTIFICATION_TARGET_TYPE.POST,
+                    type : NOTIFICATION_TYPE.LIKE_YOUR_POST
+                })
+            }
         })
     } finally {
         await session.endSession();

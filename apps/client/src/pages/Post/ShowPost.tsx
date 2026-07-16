@@ -33,6 +33,7 @@ const ShowPost = () => {
 
     const { username, postPublicId } = useParams();
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
     const setQueryDataHandler = useSetQueryDataHandler();
 
@@ -240,25 +241,30 @@ const ShowPost = () => {
                         </Link>
                         <div className="flex items-center space-x-3">
                             {
-                                (isFollowingQuery.isPending && isAuthenticated) ?
-                                    <div className="w-20 h-10 rounded-lg bg-neutral-100 grid place-content-center text-neutral-900">
-                                        <DotsLoader />
-                                    </div>
-                                    :
-                                    <>
-                                        <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
-                                            {
-                                                isFollowingQuery.data?.isFollowing ?
-                                                    <button className="w-28 h-full cursor-pointer" onClick={handleUnfollow}>
-                                                        Unfollow
-                                                    </button>
-                                                    :
-                                                    <button className="w-20 h-full cursor-pointer" onClick={handleFollow}>
-                                                        Follow
-                                                    </button>
-                                            }
-                                        </div>
-                                    </>
+                                currentUserId !== postQuery.data.author?.id &&
+                                <>
+                                    {
+                                        (isFollowingQuery.isPending && isAuthenticated) ?
+                                            <div className="w-20 h-10 rounded-lg bg-neutral-100 grid place-content-center text-neutral-900">
+                                                <DotsLoader />
+                                            </div>
+                                            :
+                                            <>
+                                                <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
+                                                    {
+                                                        isFollowingQuery.data?.isFollowing ?
+                                                            <button className="w-28 h-full cursor-pointer" onClick={handleUnfollow}>
+                                                                Unfollow
+                                                            </button>
+                                                            :
+                                                            <button className="w-20 h-full cursor-pointer" onClick={handleFollow}>
+                                                                Follow
+                                                            </button>
+                                                    }
+                                                </div>
+                                            </>
+                                    }
+                                </>
                             }
                             <EllipsisVertical className="w-4 duration-100 cursor-pointer" />
                         </div>
