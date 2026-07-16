@@ -5,8 +5,8 @@ import { createPostSchema, ERROR_RESPONSE_CODE, POST_CONTENT_LENGTH, type Create
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
-import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response.type";
-import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
+import type { AllErrorResponse } from "../../types/response.type";
+import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
 import TooManyRequestCountDown from "../counter/TooManyRequestCountDown";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -15,8 +15,6 @@ import { useAppSelector } from "../../hooks/useRedux";
 type Props = {
     setShowCreatePostFormSection: React.Dispatch<React.SetStateAction<boolean>>
 }
-
-type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse;
 
 const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
     const [isCreated, setIsCreated] = useState<boolean>(false);
@@ -62,7 +60,7 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
             reset();
             setIsCreated(true);
         } catch (err: any) {
-            const error = err.response?.data as ErrorResponse;
+            const error = err.response?.data as AllErrorResponse;
 
             if (error.code === ERROR_RESPONSE_CODE.validationError) {
                 handleApiValidationError<CreatePostSchema>(error.errors, setError);

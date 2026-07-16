@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/appError.error";
 import * as userServices from "../services/user.service";
 import { ReqBody } from "../types/request.type";
-import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE, UserProfileDTO } from "@connect/shared";
+import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO } from "@connect/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 
@@ -47,6 +47,23 @@ export const getUserProfile = async (req: Request, res: Response, next: NextFunc
         const data = await userServices.getUserProfile(username, currentUserId);
 
         res.status(200).json(successResponseData<UserProfileDTO>(SUCCESS_RESPONSE_CODE.success, "Success", data))
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const updateProfile = async (req : ReqBody<UpdateUserProfile>, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+    const data = req.body;
+    
+    try {
+        if(!currentUserId) {
+            throw new UnauthorizedError();
+        }
+
+        await userServices.updateProfile(currentUserId, data);
+
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.updated, "Updated"));
     } catch (err) {
         next(err);
     }

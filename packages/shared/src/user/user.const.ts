@@ -17,6 +17,3 @@ export const BIO_LENGTH = {
     MIN: 0,
     MAX: 150,
 }
-
-export const MAX_PROFILE_IMAGE_SIZE = 10 * 1024 * 1024;
-export const ALLOWED_PROFILE_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];

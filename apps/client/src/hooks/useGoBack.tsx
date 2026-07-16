@@ -11,17 +11,18 @@ const useGoBack = () => {
 
     const isNavigating = useRef(false);
 
+    
     return () => {
         if(isNavigating.current) return;
         isNavigating.current = true;
-
+        
         const prevRoute = String(routes.at(-2));
-    
+        
         if (prevRoute == location.pathname) {
             navigate("/");
             return
         }
-    
+        
         dispatch(removeRouteFromBack(2));
         navigate(prevRoute);
     }

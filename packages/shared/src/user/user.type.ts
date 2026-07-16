@@ -3,6 +3,11 @@ export type UserProfileImageDTO = {
     publicId: string,
 }
 
+export type UserCoverImageDTO = {
+    url : string,
+    publicId : string,
+}
+
 export type UserSummaryDTO = {
     id : string,
     name : string | null,
@@ -25,6 +30,7 @@ export type UserProfileDTO = {
     bio : string,
     name : string,
     createdAt : Date,
+    coverImage : UserCoverImageDTO | null,
     profileImage : UserProfileImageDTO | null,
     followerCount : number,
     followingCount : number,

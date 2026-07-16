@@ -1,11 +1,12 @@
 import { CloudinarySignaturePayload } from "@connect/shared";
 import "../bootstraps/env.bootstrap";
 import cloudinary from "../config/cloudinary.config";
+import { UploadPresets } from "../consts/cloudinary.const";
 
 type GenerateSignaturePayload = {
     params : {
         timestamp : number,
-        upload_preset : string,
+        upload_preset : UploadPresets,
         folder : string,
     }
 }

@@ -17,4 +17,6 @@ export type ForbiddenErrorResponse = ErrorResponseData & {
     code : typeof ERROR_RESPONSE_CODE.forbidden,
 }
 
+export type AllErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse
+
 export type AxiosErrorResponseData = AxiosError<ErrorResponseData>

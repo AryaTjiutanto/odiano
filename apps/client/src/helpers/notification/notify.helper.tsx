@@ -1,6 +1,6 @@
 import { toast } from "react-hot-toast";
-import Toast from "../components/toast/Toast";
 import type { ReactNode } from "react";
+import Toast from "../../components/toast/Toast";
 
 type NotifyProps = {
     title : string,

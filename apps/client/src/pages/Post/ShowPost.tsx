@@ -12,7 +12,7 @@ import DotsLoader from "../../components/loader/DotsLoader";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import type { AxiosErrorResponseData } from "../../types/response.type";
-import { notify } from "../../helpers/notify.helper";
+import { notify } from "../../helpers/notification/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/social/Profile";
 import { useAppSelector } from "../../hooks/useRedux";
@@ -35,13 +35,9 @@ const ShowPost = () => {
 
     const setQueryDataHandler = useSetQueryDataHandler();
 
-    // check postPublicId
-    if (!postPublicId) {
-        return <NotFound />
-    }
 
     // get post data
-    const postQueryKey = postKeys.detail(postPublicId);
+    const postQueryKey = postKeys.detail(postPublicId!);
 
     const getPost = async () => {
         const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${postPublicId}`);
@@ -220,6 +216,11 @@ const ShowPost = () => {
                 description: "Please try again in a moment.",
             });
         }
+    }
+
+    // check postPublicId
+    if (!postPublicId) {
+        return <NotFound />
     }
 
     // display

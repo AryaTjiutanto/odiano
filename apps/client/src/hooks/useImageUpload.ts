@@ -1,16 +1,28 @@
 import { useState, type ChangeEvent } from "react";
 import { uploadImageToCloudinary } from "../services/cloudinary.service";
+import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE } from "../consts/image.const";
+import type { UploadedImageData } from "../types/image.type";
 
-type UploadedImageData = {
-    profileImagePublicId: string,
-    profileImageUrl: string
+type UseImageUploadOptions = {
+    allowedTypes? : string[],
+    maxSize? : number,
+    multiple? : boolean,
+};
+
+type ImageError = {
+    id : string,
+    message : string,
 }
 
-const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: number) => {
+const useImageUploadHandler = ({
+    allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES, 
+    maxSize = DEFAULT_MAX_IMAGE_SIZE, 
+    multiple = false
+} : UseImageUploadOptions = {}) => {
     const [isCropping, setIsCropping] = useState<boolean>(false);
 
     const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
-    const [imageError, setImageError] = useState<string | null>(null);
+    const [imageError, setImageError] = useState<ImageError | null>(null);
 
     const [prevImageCroppedBlob, setPrevImageCroppedBlob] = useState<Blob | null>(null);
     const [imageCroppedBlob, setImageCroppedBlob] = useState<Blob | null>(null);
@@ -23,16 +35,24 @@ const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: nu
             return;
         }
 
-        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-            setImageError("Only png, jpeg and webp allowed");
+        if (!allowedTypes.includes(file.type)) {
+            setImageError({
+                id : Date.now().toString(),
+                message : "Only png, jpeg and webp allowed"
+            });
+            
             return;
         }
+        
+        if (file.size > maxSize) {
+            setImageError({
+                id : Date.now().toString(),
+                message : `Max image size is ${maxSize / (1024 * 1024)}mb`
+            });
 
-        if (file.size > MAX_IMAGE_SIZE) {
-            setImageError(`Max image size is ${MAX_IMAGE_SIZE / (1024 * 1024)}mb`);
             return;
         }
-
+        
         const url = URL.createObjectURL(file);
         setOriginalImageUrl(url);
 
@@ -40,11 +60,18 @@ const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: nu
         setImageError(null);
     }
 
+    const removeImage = (fn : () => void) => {
+        setOriginalImageUrl(null);
+        setImageCroppedBlob(null);
+        fn();
+    }
+
     const handleImageInput = (e : ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
 
         if(!file) return;
 
+        setImageError(null);
         getOriginalImageUrl(file);
     }
 
@@ -53,8 +80,8 @@ const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: nu
 
         if (isImageNotChange && uploadedImagePublicId && uploadedImageUrl) {
             return {
-                profileImagePublicId : uploadedImagePublicId,
-                profileImageUrl : uploadedImageUrl,
+                publicId : uploadedImagePublicId,
+                url : uploadedImageUrl,
             }
         }
 
@@ -71,8 +98,8 @@ const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: nu
             setUploadedImageUrl(result.url);
 
             return {
-                profileImagePublicId : result.publicId,
-                profileImageUrl : result.url,
+                publicId : result.publicId,
+                url : result.url,
             }
         }
 
@@ -83,6 +110,7 @@ const useImageUploadHandler = (ALLOWED_IMAGE_TYPES: string[], MAX_IMAGE_SIZE: nu
         getOriginalImageUrl,
         uploadImage,
         handleImageInput,
+        removeImage,
 
         imageError,
         originalImageUrl,

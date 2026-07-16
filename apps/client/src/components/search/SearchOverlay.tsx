@@ -10,7 +10,7 @@ import SearchResult from "./searchResult/SearchResult";
 import { useAppSelector } from "../../hooks/useRedux";
 import { deleteAllSearchHistory } from "../../services/searchHistory.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import { notify } from "../../helpers/notify.helper";
+import { notify } from "../../helpers/notification/notify.helper";
 
 type Props = {
     searchQueryData: SearchDTO | null | undefined,

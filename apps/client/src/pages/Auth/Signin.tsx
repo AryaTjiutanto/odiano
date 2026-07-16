@@ -11,10 +11,8 @@ import DotsLoader from "../../components/loader/DotsLoader";
 import { useState } from "react";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
-import type { FailedAttemptErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response.type";
-import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
-
-type AuthErrorResponse = ValidationErrorResponse | FailedAttemptErrorResponse | TooManyRequestErrorResponse;
+import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
+import type { AllErrorResponse } from "../../types/response.type";
 
 const Signin = () => {
     const dispatch = useAppDispatch();
@@ -44,7 +42,7 @@ const Signin = () => {
                 dispatch(intitializeAuth());
             }
         } catch (err : any) {
-            const error = err.response?.data as AuthErrorResponse;
+            const error = err.response?.data as AllErrorResponse;
 
             if(error.code === ERROR_RESPONSE_CODE.validationError) {
                 handleApiValidationError<AuthenticateUserSchema>(error.errors, setError);

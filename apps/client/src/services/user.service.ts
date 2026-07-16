@@ -1,4 +1,4 @@
-import type { CreateUserProfileSchema, SuccessResponseData, UserProfileDTO } from "@connect/shared";
+import type { CreateUserProfileSchema, SuccessResponseData, UpdateUserProfile, UserProfileDTO } from "@connect/shared";
 import { api } from "../libs/api";
 
 export const getUserProfile = async (username: string): Promise<UserProfileDTO> => {
@@ -33,4 +33,10 @@ export const checkUsername = async (username : string) : Promise<boolean> => {
     }
 
     return response.data.data?.available;
+}
+
+export const updateProfile = async (data : UpdateUserProfile) : Promise<SuccessResponseData> => {
+    const response = await api.put<SuccessResponseData>(`/users/profile/update`, data);
+
+    return response.data;
 }

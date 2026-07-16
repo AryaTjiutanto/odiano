@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import { api } from "../../libs/api";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import { notify } from "../../helpers/notify.helper";
+import { notify } from "../../helpers/notification/notify.helper";
 import { type MouseEvent } from "react";
 import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";

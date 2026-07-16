@@ -1,8 +1,12 @@
 import type { UserProfileImageDTO } from "@connect/shared";
 import { User } from "lucide-react";
 
+type ImageUrl = {
+    url : string,
+}
+
 type Props = {
-    data : UserProfileImageDTO | null | undefined,
+    data : UserProfileImageDTO | ImageUrl | null | undefined,
 }
 
 const Profile = ({data} : Props) => {

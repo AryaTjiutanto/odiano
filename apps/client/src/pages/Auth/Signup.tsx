@@ -9,11 +9,9 @@ import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
-import type { TooManyRequestErrorResponse, ValidationErrorResponse } from "../../types/response.type";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";
-import { handleApiValidationError } from "../../helpers/handleApiValidationError.helper";
-
-type AuthErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse;
+import { handleApiValidationError } from "../../helpers/validation/handleApiValidationError.helper";
+import type { AllErrorResponse } from "../../types/response.type";
 
 const Signup = () => {
     const [signupErrorMessage, setSignupErrorMessage] = useState<string>("");
@@ -47,7 +45,7 @@ const Signup = () => {
                 dispatch(intitializeAuth());
             }
         } catch (err : any) {
-            const error = err.response?.data as AuthErrorResponse;
+            const error = err.response?.data as AllErrorResponse;
 
             if(error.code == ERROR_RESPONSE_CODE.validationError) {
                 handleApiValidationError<AuthenticateUserSchema>(error.errors, setError);

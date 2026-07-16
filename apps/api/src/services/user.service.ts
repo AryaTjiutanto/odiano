@@ -1,4 +1,4 @@
-import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UserProfileDTO, UserSummaryDTO } from "@connect/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@connect/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";
@@ -6,6 +6,8 @@ import cloudinary from "../config/cloudinary.config";
 import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
 import { toUserProfileDTO, toUserSummaryDTO } from "../mappers/user.mapper";
 import { Following } from "../models/following.model";
+import mongoose from "mongoose";
+import { commitTempImage } from "../helpers/cloudinary.helper";
 
 type OnboardingPayload = {
     userId: string,
@@ -44,13 +46,12 @@ export const onboarding = async (payload: OnboardingPayload) => {
     user.bio = payload.userData.bio;
     user.isOnboarded = true;
 
-
     user.save();
 }
 
 export const getUserProfile = async (username : string, currentUserId : string | undefined) : Promise<UserProfileDTO> => {
     const user = await User.findOne({username})
-    .select("_id username name bio profileImage createdAt followerCount followingCount")
+    .select("_id username name bio profileImage coverImage createdAt followerCount followingCount")
     .lean<UserProfileQuery>();
 
     if(!user) {
@@ -78,6 +79,70 @@ export const getUserSummary = async (userId : string) : Promise<UserSummaryDTO> 
     }
 
     return toUserSummaryDTO(userSummary);
+}
+
+export const updateProfile = async (currentUserId : string, data : UpdateUserProfile) => {
+    const session = await mongoose.startSession();
+
+    try {
+        await session.withTransaction(async() => {
+            const user = await User.findById(currentUserId)
+            .select("coverImage profileImage isOnboarded name bio")
+            .session(session);
+        
+            if(!user) {
+                throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
+            }
+
+            // delete cover
+            if(!data.coverImagePublicId && user.coverImage) {
+               await cloudinary.api.delete_resources([user.coverImage.publicId]);
+
+               user.coverImage = null;
+            }
+
+            // delete profile image
+            if(!data.profileImagePublicId && user.profileImage) {
+                await cloudinary.api.delete_resources([user.profileImage.publicId]);
+
+                user.profileImage = null;
+            }
+        
+            // update cover image
+            if(data.coverImagePublicId && data.coverImageUrl && data.coverImagePublicId !== user?.coverImage?.publicId) {
+                const result = await commitTempImage(data.coverImagePublicId, user.coverImage?.publicId);
+
+                if(!result) return;
+
+                // change the cover data
+                user.coverImage = {
+                    publicId : result.publicId,
+                    url : result.url,
+                };
+            }
+        
+            // update profile image
+            if(data.profileImagePublicId && data.profileImageUrl && data.profileImagePublicId !== user?.profileImage?.publicId) {
+                const result = await commitTempImage(data.profileImagePublicId, user.profileImage?.publicId);
+
+                if(!result) return;
+
+                // change the cover data
+                user.profileImage = {
+                    publicId : result.publicId,
+                    url : result.url,
+                };
+            }
+        
+            // update data
+            user.name = data.name;
+            user.bio = data.bio;
+        
+            await user.save({session})
+        })
+    } finally {
+        await session.endSession();
+    }
 }
 
 export const searchUsers = async (query: string) : Promise<UserSummaryDTO[]> => {

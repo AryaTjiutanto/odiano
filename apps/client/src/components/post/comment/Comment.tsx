@@ -5,7 +5,7 @@ import Profile from "../../social/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { deleteComment } from "../../../services/post.service";
 import type { AxiosErrorResponseData } from "../../../types/response.type";
-import { notify } from "../../../helpers/notify.helper";
+import { notify } from "../../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 import { postKeys } from "../../../queries/postKeys";
 import { useParams } from "react-router-dom";

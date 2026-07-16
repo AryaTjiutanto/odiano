@@ -3,8 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
-import { notify } from "../../../helpers/notify.helper";
-import type { ForbiddenErrorResponse, TooManyRequestErrorResponse, ValidationErrorResponse } from "../../../types/response.type";
+import { notify } from "../../../helpers/notification/notify.helper";
 import TooManyRequestCountDown from "../../counter/TooManyRequestCountDown";
 import DotsLoader from "../../loader/DotsLoader";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -16,12 +15,11 @@ import { postKeys } from "../../../queries/postKeys";
 import type { CreateCommentMutationParams } from "../../../types/post.type";
 import { createComment } from "../../../services/post.service";
 import { addToComment, decreaseCommentCount, increaseCommentCount, removeComment, updateToPostedCommentData } from "../../../helpers/cache/postCache.helper";
+import type { AllErrorResponse } from "../../../types/response.type";
 
 type CreateCommentProps = {
     postId: string,
 }
-
-type ErrorResponse = ValidationErrorResponse | TooManyRequestErrorResponse | ForbiddenErrorResponse;
 
 const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     const currentUser = useAppSelector((state) => state.auth.user);
@@ -113,7 +111,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
             const commentId = `temp:${Date.now()}`;
             await commentMutation.mutateAsync({ commentId, data });
         } catch (err: any) {
-            const error = err.response?.data as ErrorResponse;
+            const error = err.response?.data as AllErrorResponse;
 
             if (error.code == ERROR_RESPONSE_CODE.tooManyRequests) {
                 if (!error.errors) return;

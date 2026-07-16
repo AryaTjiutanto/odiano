@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import { intitializeAuth, logout, refreshAccessToken } from "./auth.thunk";
 import type { CurrentUserDTO } from "@connect/shared";
+import type { UploadedImageData } from "../../types/image.type";
 
 type AuthState = {
     isAuthLoading: boolean,
@@ -25,6 +26,14 @@ const authSlice = createSlice({
         setAccessToken(state, action: PayloadAction<string>) {
             state.accessToken = action.payload;
             state.isAuthLoading = false;
+        },
+        setCurrentUserProfile(state, action : PayloadAction<UploadedImageData>) {
+            if(!state.user) return;
+
+            state.user.profileImage = {
+                publicId : action.payload.publicId,
+                url : action.payload.url,
+            };
         }
     },
     extraReducers: (builder) => {
@@ -72,5 +81,5 @@ const authSlice = createSlice({
     }
 })
 
-export const { setAccessToken } = authSlice.actions;
+export const { setAccessToken, setCurrentUserProfile } = authSlice.actions;
 export default authSlice.reducer; 

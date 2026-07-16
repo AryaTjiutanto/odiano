@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
 import { deleteAllSearchHistory, deleteSearchHistory } from "../../services/searchHistory.service";
-import { notify } from "../../helpers/notify.helper";
+import { notify } from "../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 
 type Props = {

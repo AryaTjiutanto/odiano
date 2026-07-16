@@ -13,7 +13,7 @@ import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
-import { notify } from "../../helpers/notify.helper";
+import { notify } from "../../helpers/notification/notify.helper";
 import type { AxiosErrorResponseData } from "../../types/response.type";
 import { getUserProfile } from "../../services/user.service";
 import { userKeys } from "../../queries/userKeys";
@@ -212,7 +212,11 @@ const Profile = () => {
                 </div>
 
                 {/* banner and profile picture */}
-                <div className="w-full cover-image-aspect bg-neutral-200 rounded-xl mt-5 relative">
+                <div className="w-full cover-image-aspect mt-5 relative">
+                    <div className="bg-neutral-200 rounded-xl overflow-hidden w-full h-full">
+                        <img src={profileQuery.data?.coverImage?.url} className="w-full h-full"/>
+                    </div>
+
                     {/* profile */}
                     <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-neutral-950 duration-100 rounded-full`}>
                         <ProfileComponent data={profileQuery?.data?.profileImage} />

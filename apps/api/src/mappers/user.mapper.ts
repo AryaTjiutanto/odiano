@@ -8,6 +8,7 @@ export const toUserProfileDTO = (data : UserProfileQuery, isFollowing? : boolean
         username : data.username ?? "",
         bio : data.bio,
         profileImage : data.profileImage,
+        coverImage : data.coverImage,
         createdAt : data.createdAt,
         followerCount : data.followerCount,
         followingCount : data.followingCount,

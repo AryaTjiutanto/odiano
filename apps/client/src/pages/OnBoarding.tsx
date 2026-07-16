@@ -2,7 +2,7 @@ import Footer from "../components/auth/Footer";
 import { useEffect, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH, ALLOWED_PROFILE_IMAGE_TYPES, MAX_PROFILE_IMAGE_SIZE } from "@connect/shared";
+import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../components/loader/DotsLoader";
 import { useAppDispatch } from "../hooks/useRedux";
@@ -15,11 +15,13 @@ import { checkUsername, createUserProfile } from "../services/user.service";
 import useDebounce from "../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { userKeys } from "../queries/userKeys";
+import {  DEFAULT_ALLOWED_IMAGE_TYPES } from "../consts/image.const";
 
 const OnBoarding = () => {
     const dispatch = useAppDispatch();
     const dragAndDrop = useDragAndDrop();
-    const imageUploadHandler = useImageUploadHandler(ALLOWED_PROFILE_IMAGE_TYPES, MAX_PROFILE_IMAGE_SIZE);
+
+    const imageUploadHandler = useImageUploadHandler();
 
     // init form 
     const [formError, setFormError] = useState<string | null>();
@@ -84,8 +86,8 @@ const OnBoarding = () => {
                 throw new Error("Error went uploading the image");
             }
 
-            dataToSubmit.profileImagePublicId = uploadedImageData.profileImagePublicId;
-            dataToSubmit.profileImageUrl = uploadedImageData.profileImageUrl;
+            dataToSubmit.profileImagePublicId = uploadedImageData.publicId;
+            dataToSubmit.profileImageUrl = uploadedImageData.url;
 
             // send data
             await createUserProfile(dataToSubmit);
@@ -140,11 +142,11 @@ const OnBoarding = () => {
                                         </div>
                                     </div>
                                 </label>
-                                <input type="file" id="profile-input" className="hidden" accept={`${ALLOWED_PROFILE_IMAGE_TYPES.join(", ")}`} onChange={imageUploadHandler.handleImageInput}></input>
+                                <input type="file" id="profile-input" className="hidden" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} onChange={imageUploadHandler.handleImageInput}></input>
                                 {
                                     imageUploadHandler.imageError &&
                                     <p className="text-center text-red-500 mt-5">
-                                        {imageUploadHandler.imageError}
+                                        {imageUploadHandler.imageError.message}
                                     </p>
                                 }
                             </div>
