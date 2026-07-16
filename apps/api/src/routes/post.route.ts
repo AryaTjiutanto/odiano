@@ -1,16 +1,13 @@
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import express from "express"
 import { create as createPost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller";
-import { apiLimiter, consume } from "../libs/limiter";
-import { createPostLimiter } from "../libs/limiter/limiters/createPost.limiter";
-import { postIndexLimiter } from "../libs/limiter/limiters/postIndex.limiter";
 import { createComment, deleteComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
 import { createPostCommentSchema, createPostSchema } from "@connect/shared";
-import commentLimiter from "../libs/limiter/limiters/createComment.limiter";
 import { validateData } from "../middlewares/validateData.middleware";
 import optionalAuth from "../middlewares/optionalAuth.middleware";
 import { createPostLike, deletePostLike } from "../controllers/like.controller";
-import { likeLimiter } from "../libs/limiter/limiters/like.limiter";
+import { apiLimiter, consume, createPostLimiter, likeLimiter, postIndexLimiter } from "../libs/limiter";
+import commentLimiter from "../libs/limiter/limiters/createComment.limiter";
 
 const router = express.Router();
 
