@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import DateDropdown from "../../components/input/DateDropdown";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserSchema, type CreateUserSchema, type SignUpResponse, type SuccessResponseData} from "@connect/shared";
+import { createUserSchema, type CreateUserSchema, type AuthenticationResponse, type SuccessResponseData} from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
@@ -27,7 +27,7 @@ const Signup = () => {
 
     const onSubmit: SubmitHandler<CreateUserSchema> = async (data) => {
         try {
-            const response = await api.post<SuccessResponseData<SignUpResponse>>("/auth/signup", data);
+            const response = await api.post<SuccessResponseData<AuthenticationResponse>>("/auth/signup", data);
 
             const accessToken = response.data.data?.access_token;
                

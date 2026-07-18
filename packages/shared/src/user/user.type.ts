@@ -1,6 +1,6 @@
 export type UserProfileImageDTO = {
     url: string,
-    publicId: string,
+    publicId: string | null,
 }
 
 export type UserCoverImageDTO = {

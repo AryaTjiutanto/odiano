@@ -1,10 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../libs/api";
-import type { CurrentUserDTO, SignInResponse, SuccessResponseData } from "@connect/shared";
+import type { CurrentUserDTO, AuthenticationResponse, SuccessResponseData } from "@connect/shared";
 
 export const refreshAccessToken = createAsyncThunk("auth/refreshAccessToken", async (_, thunkApi) => {
     try {
-        const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/refresh");
+        const response = await api.post<SuccessResponseData<AuthenticationResponse>>("/auth/refresh");
         const newAccessToken = response.data.data?.access_token || null;
 
         if(!newAccessToken) {

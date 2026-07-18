@@ -1,10 +1,20 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { ImageAsset } from "../types/user.type";
+import { AUTH_PROVIDERS, AuthProviders } from "../consts/user.const";
+
 // types for schema
+type AuthenticationSchema = {
+    providerId : string | null,
+    provider : AuthProviders
+}
+
 type UserSchema = {
     email: string,
-    password: string,
+    
+    password: string | null,
+    authentication : AuthenticationSchema,
+
     dateOfBirth: string | null,
     name: string | null,
     username: string | null,
@@ -17,7 +27,7 @@ type UserSchema = {
     followerCount : number
 }
 
-// profile image schema
+// schema
 const profileImageSchema = new mongoose.Schema<ImageAsset>({
     url: {
         type: String,
@@ -25,11 +35,10 @@ const profileImageSchema = new mongoose.Schema<ImageAsset>({
     },
     publicId: {
         type: String,
-        required: true,
+        required: false,
     }
 }, { _id: false })
 
-// cover image schema
 const coverImageSchema = new mongoose.Schema<ImageAsset>({
     url : {
         type : String,
@@ -41,16 +50,23 @@ const coverImageSchema = new mongoose.Schema<ImageAsset>({
     }
 }, {_id : false});
 
-// user schema
+const authenticationSchema = new mongoose.Schema<AuthenticationSchema>({
+    providerId : {
+        type : String,
+        required : false,
+    },
+    provider : {
+        type : String,
+        enum : Object.values(AUTH_PROVIDERS),
+        required : true,
+    }
+});
+
 const userSchema = new mongoose.Schema<UserSchema>({
     email: {
         required: true,
         type: String,
         unique: true
-    },
-    password: {
-        required: true,
-        type: String,
     },
     username: {
         required: false,
@@ -58,6 +74,21 @@ const userSchema = new mongoose.Schema<UserSchema>({
         default: null,
         index : true,
     },
+
+    password: {
+        required: false,
+        type: String,
+        default : null,
+    },
+    authentication : {
+        required : true,
+        type : authenticationSchema,
+        default : {
+            providerId : null,
+            provider : AUTH_PROVIDERS.LOCAL,
+        }
+    },
+
     name: {
         required: false,
         type: String,
@@ -67,6 +98,10 @@ const userSchema = new mongoose.Schema<UserSchema>({
         required: false,
         type: String,
         default: null,
+    },
+    dateOfBirth : {
+        type : String,
+        required : false,
     },
     profileImage: {
         type: profileImageSchema,
@@ -98,7 +133,7 @@ const userSchema = new mongoose.Schema<UserSchema>({
 }, { timestamps: true, toJSON : {versionKey : false} });
 
 userSchema.pre("save", async function () {
-    if (this.isModified("password")) {
+    if (this.isModified("password") && this.password) {
         this.password = await bcrypt.hash(this.password, 12);
     }
 })

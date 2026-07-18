@@ -1,5 +1,5 @@
 import express from "express";
-import { logout, me, refresh, signin, signup } from "../controllers/auth.controller";
+import { googleAuth, logout, me, refresh, signin, signup } from "../controllers/auth.controller";
 import { requireGuest } from "../middlewares/requireGuest.middleware";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import { requireRefreshToken } from "../middlewares/requireRefreshToken.middleware";
@@ -14,5 +14,7 @@ router.post("/signup", consume(signupLimiter), requireGuest, validateData(create
 router.get("/me", consume(apiLimiter), requireAccessToken, me);
 router.post("/refresh", consume(refreshLimiter), requireRefreshToken, refresh);
 router.post("/logout", logout);
+
+router.post("/google", consume(signinLimiter), requireGuest, googleAuth);
 
 export default router;

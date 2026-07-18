@@ -1,8 +1,7 @@
 import loginImage from "../../assets/img/login-img.webp";
-import googleLogo from "../../assets/img/logo/google.svg";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type SignInResponse } from "@connect/shared";
+import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type AuthenticationResponse } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
@@ -10,6 +9,7 @@ import { setAccessToken } from "../../features/auth/auth.slice";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
+import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 
 const Signin = () => {
     const dispatch = useAppDispatch();
@@ -26,7 +26,7 @@ const Signin = () => {
 
     const onSubmit: SubmitHandler<AuthenticateUserSchema> = async (data) => {
         try {
-            const response = await api.post<SuccessResponseData<SignInResponse>>("/auth/signin", data);
+            const response = await api.post<SuccessResponseData<AuthenticationResponse>>("/auth/signin", data);
 
             const accessToken = response.data.data?.[AUTH_TOKEN.ACCESS];
 
@@ -101,16 +101,13 @@ const Signin = () => {
                                         </div>
                                     </div>
                                 </form>
-                                <div className="w-full hidden 2xl:flex items-center justify-between my-8">
+                                <div className="w-full hidden lg:flex items-center justify-between my-8">
                                     <div className="w-[45%] h-px bg-neutral-200"></div>
                                     <span>or</span>
                                     <div className="w-[45%] h-px bg-neutral-200"></div>
                                 </div>
                                 <div className="mt-5 2xl:mt-10">
-                                    <button className="w-full bg-white hover:bg-sky-50 h-12 rounded-lg text-neutral-800 cursor-pointer relative duration-100">
-                                        <img src={googleLogo} className="absolute top-0 bottom-0 my-auto left-5"></img>
-                                        Continue with google
-                                    </button>
+                                    <GoogleLoginButton/>
                                 </div>
 
                                 {/* sign up */}

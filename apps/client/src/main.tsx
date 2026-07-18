@@ -24,6 +24,7 @@ import SocketProvider from './providers/SocketProvider.tsx'
 import { queryClient } from './libs/react-query/queryClient.ts'
 import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
 import EditProfile from './pages/Social/EditProfile.tsx'
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const IDBPersister = createIDBPersister();
 
@@ -41,43 +42,45 @@ createRoot(document.getElementById('root')!).render(
         },
       }}>
         <SocketProvider>
-          <BrowserRouter>
-            <NavigationTracker />
-            <Routes>
-              <Route element={<AppLayout />}>
-                <Route element={<PageLoader />}>
-                  {/* social */}
-                  <Route element={<SocialLayout />}>
-                    <Route path='/' element={<Homepage />} />
+          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <BrowserRouter>
+              <NavigationTracker />
+              <Routes>
+                <Route element={<AppLayout />}>
+                  <Route element={<PageLoader />}>
+                    {/* social */}
+                    <Route element={<SocialLayout />}>
+                      <Route path='/' element={<Homepage />} />
 
-                    {/* post */}
-                    <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+                      {/* post */}
+                      <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
 
-                    {/* profile */}
-                    <Route path='/profile/:username' element={<Profile />} />
-                    <Route element={<RequireAuthGuard/>}>
-                      <Route path='/profile/:username/edit' element={<EditProfile />} />
+                      {/* profile */}
+                      <Route path='/profile/:username' element={<Profile />} />
+                      <Route element={<RequireAuthGuard />}>
+                        <Route path='/profile/:username/edit' element={<EditProfile />} />
+                      </Route>
                     </Route>
-                  </Route>
 
-                  {/* auth process */}
-                  <Route element={<RequireGuestGuard />}>
-                    <Route element={<AuthLayout />}>
-                      <Route path='/signin' element={<Signin />} />
-                      <Route path='/signup' element={<Signup />} />
+                    {/* auth process */}
+                    <Route element={<RequireGuestGuard />}>
+                      <Route element={<AuthLayout />}>
+                        <Route path='/signin' element={<Signin />} />
+                        <Route path='/signup' element={<Signup />} />
+                      </Route>
                     </Route>
-                  </Route>
 
-                  {/* onboarding */}
-                  <Route element={<RequireUnOnboarded />}>
-                    <Route path='/onboarding' element={<OnBoarding />} />
+                    {/* onboarding */}
+                    <Route element={<RequireUnOnboarded />}>
+                      <Route path='/onboarding' element={<OnBoarding />} />
+                    </Route>
+                    {/* not fond */}
+                    <Route path='*' element={<NotFound />} />
                   </Route>
-                  {/* not fond */}
-                  <Route path='*' element={<NotFound />} />
                 </Route>
-              </Route>
-            </Routes>
-          </BrowserRouter>
+              </Routes>
+            </BrowserRouter>
+          </GoogleOAuthProvider>
         </SocketProvider>
       </PersistQueryClientProvider>
     </Provider>

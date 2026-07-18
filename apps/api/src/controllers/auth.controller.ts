@@ -3,11 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service";
 import { AppError } from "../errors/appError.error";
 import { successResponseData } from "../utils/response.util";
-import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, SignInResponse, SignUpResponse, SUCCESS_RESPONSE_CODE, type CurrentUserDTO } from "@connect/shared";
+import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse,  SUCCESS_RESPONSE_CODE, type CurrentUserDTO } from "@connect/shared";
 import { authCookieOptions } from "../libs/auth/auth.cookie";
 import { ReqBody } from "../types/request.type";
 import { type AuthenticateUserSchema } from "@connect/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import * as googleService from "../services/google.service";
 
 export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {
@@ -22,7 +23,7 @@ export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response
 
         res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
 
-        res.status(200).json(successResponseData<SignInResponse>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
+        res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
             [AUTH_TOKEN.ACCESS]: authData.access_token,
         }))
     } catch (err) {
@@ -46,7 +47,7 @@ export const signup = async (req: ReqBody<CreateUserSchema>, res: Response, next
         
         // response
         res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
-        res.status(201).json(successResponseData<SignUpResponse>(SUCCESS_RESPONSE_CODE.created, "Register successfully", {
+        res.status(201).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.created, "Register successfully", {
             [AUTH_TOKEN.ACCESS] : authData.access_token,
         }))
     } catch (err) {
@@ -85,7 +86,7 @@ export const refresh = async (req : Request, res : Response, next : NextFunction
 
         res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
 
-        res.status(200).json(successResponseData<SignInResponse>(SUCCESS_RESPONSE_CODE.success, "Successfully refresh the session", {
+        res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.success, "Successfully refresh the session", {
             access_token: authData.access_token
         }))
     } catch (err) {
@@ -106,6 +107,23 @@ export const logout = async (req : Request, res : Response, next : NextFunction)
         res.clearCookie(AUTH_TOKEN.REFRESH, authCookieOptions());
         res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.ok, "Logged out successfully"));
     } catch(err) {
+        next(err);
+    }
+}
+
+export const googleAuth = async (req : Request, res : Response, next : NextFunction) => {
+    const {credential} = req.body
+    
+    try {
+        if(!credential) {
+            throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
+        }    
+
+        const result = await googleService.authentication(credential);
+
+        res.cookie(AUTH_TOKEN.REFRESH, result.refresh_token, authCookieOptions());
+        res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.ok, "ok", {access_token : result.access_token}))
+    } catch (err) {
         next(err);
     }
 }

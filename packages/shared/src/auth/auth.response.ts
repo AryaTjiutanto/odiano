@@ -1,9 +1,5 @@
 import { AUTH_TOKEN } from "./auth.const"
 
-export type SignInResponse = {
+export type AuthenticationResponse = {
     [AUTH_TOKEN.ACCESS] : string,
 };
-
-export type SignUpResponse = {
-    [AUTH_TOKEN.ACCESS] : string,
-}

@@ -9,6 +9,7 @@ import { UnauthorizedError } from "../errors/unauthorized.error";
 import { delCache, getCache, setCache } from "../libs/redis";
 import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper";
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper";
+import { Types } from "mongoose";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -48,6 +49,15 @@ export const signIn = async (email: string, password: string, ip: string): Promi
         })
     }
 
+    if(!currentUser.password) {
+        return failedAttemptHandler({
+            cacheKey : emailSigninAttemptsCacheKey,
+            MAX_ATTEMPT : MAX_EMAIL_SIGNIN_ATTEMPT,
+            message: "Unable to sign in with email and password. Please try another sign-in method.",
+            attempt,
+        })
+    }
+
     // check password
     const isPasswordValid = await bcrypt.compare(password, currentUser.password);
 
@@ -61,17 +71,12 @@ export const signIn = async (email: string, password: string, ip: string): Promi
     }
 
     // create auth token
-    const userId = currentUser._id.toString();
-    const accessToken = generateAccessToken({ userId });
-    const refreshToken = await createRefreshToken(userId);
+    const token = await createAuthSession(currentUser._id); 
 
     // delete attempt cache
     await delCache(emailSigninAttemptsCacheKey);
 
-    return {
-        [AUTH_TOKEN.ACCESS]: accessToken,
-        [AUTH_TOKEN.REFRESH]: refreshToken,
-    };
+    return token;
 }
 
 export const signUp = async (dateOfBirth: string, email: string, password: string, ip : string): Promise<AuthToken> => {
@@ -100,18 +105,25 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
     });
 
     // generate auth token
-    const userId = currentUser._id.toString();
-    const accessToken = generateAccessToken({ userId });
-    const refreshToken = await createRefreshToken(userId);
+    const token = await createAuthSession(currentUser._id);
 
     // increate signup count
     count++;
     await setCache(cacheKey, count, {PX : oneDayAge});
 
+    return token;
+}
+
+export const createAuthSession = async (userId : Types.ObjectId) : Promise<AuthToken> => {
+    const id = userId.toString();
+
+    const accessToken = generateAccessToken({ userId : id });
+    const refreshToken = await createRefreshToken(id);
+
     return {
         [AUTH_TOKEN.ACCESS]: accessToken,
         [AUTH_TOKEN.REFRESH]: refreshToken,
-    };
+    }
 }
 
 export const me = async (userId: string): Promise<CurrentUserDTO> => {

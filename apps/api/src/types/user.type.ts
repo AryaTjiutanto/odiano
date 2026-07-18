@@ -3,7 +3,7 @@ import { Types } from "mongoose"
 
 export type ImageAsset = {
     url: string,
-    publicId: string,
+    publicId: string | null,
 }
 
 export type UserProfileQuery = {
