@@ -21,7 +21,7 @@ export const onboarding = async (payload: OnboardingPayload) => {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
     }
 
-    if(user.isOnboarded) {
+    if (user.isOnboarded) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "User is already onboarded");
     }
 
@@ -31,8 +31,8 @@ export const onboarding = async (payload: OnboardingPayload) => {
         const newPublicId = removeTemp(payload.userData.profileImagePublicId);
 
         const result = await cloudinary.uploader.rename(oldPublicId, newPublicId);
-        
-        if(result) {
+
+        if (result) {
             user.profileImage = {
                 publicId: result.public_id,
                 url: result.secure_url,
@@ -49,20 +49,20 @@ export const onboarding = async (payload: OnboardingPayload) => {
     user.save();
 }
 
-export const getUserProfile = async (username : string, currentUserId : string | undefined) : Promise<UserProfileDTO> => {
-    const user = await User.findOne({username})
-    .select("_id username name bio profileImage coverImage createdAt followerCount followingCount")
-    .lean<UserProfileQuery>();
+export const getUserProfile = async (username: string, currentUserId: string | undefined): Promise<UserProfileDTO> => {
+    const user = await User.findOne({ username })
+        .select("_id username name bio profileImage coverImage createdAt followerCount followingCount")
+        .lean<UserProfileQuery>();
 
-    if(!user) {
+    if (!user) {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "user not found");
     }
 
     let isFollowing = false;
-    if(currentUserId && currentUserId != user._id.toString()) {
-        isFollowing = !!(await Following.exists({userId : currentUserId, followUserId : user._id}));
+    if (currentUserId && currentUserId != user._id.toString()) {
+        isFollowing = !!(await Following.exists({ userId: currentUserId, followUserId: user._id }));
     }
-    
+
     return toUserProfileDTO(user, isFollowing);
 }
 
@@ -71,156 +71,156 @@ export const checkUsernameAvailability = async (username: string) => {
     return !user;
 }
 
-export const getUserSummary = async (userId : string) : Promise<UserSummaryDTO> => {
+export const getUserSummary = async (userId: string): Promise<UserSummaryDTO> => {
     const userSummary = await User.findById(userId).select("_id username name profileImage").lean<UserSummaryQuery>();
 
-    if(!userSummary) {
+    if (!userSummary) {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User is not found");
     }
 
     return toUserSummaryDTO(userSummary);
 }
 
-export const updateProfile = async (currentUserId : string, data : UpdateUserProfile) => {
+export const updateProfile = async (currentUserId: string, data: UpdateUserProfile) => {
     const session = await mongoose.startSession();
 
     try {
-        await session.withTransaction(async() => {
+        await session.withTransaction(async () => {
             const user = await User.findById(currentUserId)
-            .select("coverImage profileImage isOnboarded name bio")
-            .session(session);
-        
-            if(!user) {
+                .select("coverImage profileImage isOnboarded name bio")
+                .session(session);
+
+            if (!user) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
             }
 
             // delete cover
-            if(!data.coverImagePublicId && user.coverImage) {
-               await cloudinary.api.delete_resources([user.coverImage.publicId]);
+            if (!data.coverImagePublicId && user.coverImage && user.coverImage.publicId) {
+                await cloudinary.api.delete_resources([user.coverImage.publicId]);
 
-               user.coverImage = null;
+                user.coverImage = null;
             }
 
             // delete profile image
-            if(!data.profileImagePublicId && user.profileImage) {
+            if (!data.profileImagePublicId && user.profileImage && user.profileImage.publicId) {
                 await cloudinary.api.delete_resources([user.profileImage.publicId]);
 
                 user.profileImage = null;
             }
-        
+
             // update cover image
-            if(data.coverImagePublicId && data.coverImageUrl && data.coverImagePublicId !== user?.coverImage?.publicId) {
+            if (data.coverImagePublicId && data.coverImageUrl && data.coverImagePublicId !== user?.coverImage?.publicId) {
                 const result = await commitTempImage(data.coverImagePublicId, user.coverImage?.publicId);
 
-                if(!result) return;
+                if (!result) return;
 
                 // change the cover data
                 user.coverImage = {
-                    publicId : result.publicId,
-                    url : result.url,
+                    publicId: result.publicId,
+                    url: result.url,
                 };
             }
-        
+
             // update profile image
-            if(data.profileImagePublicId && data.profileImageUrl && data.profileImagePublicId !== user?.profileImage?.publicId) {
+            if (data.profileImagePublicId && data.profileImageUrl && data.profileImagePublicId !== user?.profileImage?.publicId) {
                 const result = await commitTempImage(data.profileImagePublicId, user.profileImage?.publicId);
 
-                if(!result) return;
+                if (!result) return;
 
                 // change the cover data
                 user.profileImage = {
-                    publicId : result.publicId,
-                    url : result.url,
+                    publicId: result.publicId,
+                    url: result.url,
                 };
             }
-        
+
             // update data
             user.name = data.name;
             user.bio = data.bio;
-        
-            await user.save({session})
+
+            await user.save({ session })
         })
     } finally {
         await session.endSession();
     }
 }
 
-export const searchUsers = async (query: string) : Promise<UserSummaryDTO[]> => {
+export const searchUsers = async (query: string): Promise<UserSummaryDTO[]> => {
     const users = await User.aggregate<UserSummaryQuery>([
         {
-            $match : {
-                $or : [
-                    {username : {$regex : query, $options : 'i'}},
-                    {username : {$regex : query, $options : 'i'}}
+            $match: {
+                $or: [
+                    { username: { $regex: query, $options: 'i' } },
+                    { username: { $regex: query, $options: 'i' } }
                 ]
             }
         },
         {
-            $addFields : {
-                score : {
-                    $switch : {
-                        branches : [
+            $addFields: {
+                score: {
+                    $switch: {
+                        branches: [
                             {
-                                case : {
-                                    $regexMatch : {
-                                        input : "$username",
-                                        regex : `^${query}$`,
-                                        options : "i",
+                                case: {
+                                    $regexMatch: {
+                                        input: "$username",
+                                        regex: `^${query}$`,
+                                        options: "i",
                                     }
                                 },
-                                then : 100,
+                                then: 100,
                             },
                             {
-                                case : {
-                                    $regexMatch : {
-                                        input : "$username",
-                                        regex : `^${query}`,
-                                        options : "i",
+                                case: {
+                                    $regexMatch: {
+                                        input: "$username",
+                                        regex: `^${query}`,
+                                        options: "i",
                                     }
                                 },
-                                then : 80,
+                                then: 80,
                             },
                             {
-                                case : {
-                                    $regexMatch : {
-                                        input : "$name",
-                                        regex : `^${query}`,
-                                        options : 'i'
+                                case: {
+                                    $regexMatch: {
+                                        input: "$name",
+                                        regex: `^${query}`,
+                                        options: 'i'
                                     }
                                 },
-                                then : 60
+                                then: 60
                             },
                             {
-                                case : {
-                                    $regexMatch : {
-                                        input : "$name",
-                                        regex : query,
-                                        options : "i",
+                                case: {
+                                    $regexMatch: {
+                                        input: "$name",
+                                        regex: query,
+                                        options: "i",
                                     }
                                 },
-                                then : 60
+                                then: 60
                             }
                         ],
-                        default : 0,
+                        default: 0,
                     }
                 }
             }
         },
         {
-            $sort : {
-                score : -1,
-                followerCount : -1,
+            $sort: {
+                score: -1,
+                followerCount: -1,
             }
         },
         {
-            $limit : 5,
+            $limit: 5,
         },
         {
-            $project : {
-                _id : 1,
-                name : 1,
-                username : 1,
-                profileImage : 1,
+            $project: {
+                _id: 1,
+                name: 1,
+                username: 1,
+                profileImage: 1,
             }
         },
     ]);

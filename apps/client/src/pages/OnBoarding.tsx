@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../components/loader/DotsLoader";
-import { useAppDispatch } from "../hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Check, RotateCcw, Upload, User, X } from "lucide-react";
 import useDragAndDrop from "../hooks/useDragAndDrop";
@@ -15,13 +15,16 @@ import { checkUsername, createUserProfile } from "../services/user.service";
 import useDebounce from "../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { userKeys } from "../queries/userKeys";
-import {  DEFAULT_ALLOWED_IMAGE_TYPES } from "../consts/image.const";
+import { DEFAULT_ALLOWED_IMAGE_TYPES } from "../consts/image.const";
+import DateInputSection from "../components/input/DateInputSection";
+import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 
 const OnBoarding = () => {
     const dispatch = useAppDispatch();
     const dragAndDrop = useDragAndDrop();
 
     const imageUploadHandler = useImageUploadHandler();
+    const currentUserData = useAppSelector((state) => state.auth.user);
 
     // init form 
     const [formError, setFormError] = useState<string | null>();
@@ -30,11 +33,17 @@ const OnBoarding = () => {
         register,
         setError,
         watch,
+        setValue,
         handleSubmit,
         formState: { errors, isSubmitting }
     } = useForm<CreateUserProfileSchema>({
         mode: "onTouched",
-        resolver: zodResolver(createUserProfileSchema)
+        resolver: zodResolver(createUserProfileSchema),
+
+        defaultValues : {
+            profileImageUrl : null,
+            profileImagePublicId : null
+        }
     })
 
     // handle username
@@ -59,7 +68,7 @@ const OnBoarding = () => {
     }, [usernameQuery.data, setError, usernameQuery.isSuccess]);
 
     useEffect(() => {
-        if(usernameQuery.error) {
+        if (usernameQuery.error) {
             setError("username", {
                 type: "server",
                 message: "Something went wrong, try again later"
@@ -80,14 +89,16 @@ const OnBoarding = () => {
             const dataToSubmit = { ...data };
 
             // handle image upload
-            const uploadedImageData = await imageUploadHandler.uploadImage("/upload/profile-signature", "profile.webp");
+            if(dataToSubmit.profileImagePublicId) {
+                const uploadedImageData = await imageUploadHandler.uploadImage("/upload/profile-signature", "profile.webp");
 
-            if (!uploadedImageData) {
-                throw new Error("Error went uploading the image");
+                if(!uploadedImageData) {
+                    throw new Error("Error went uploading the image");
+                }
+    
+                dataToSubmit.profileImagePublicId = uploadedImageData.publicId;
+                dataToSubmit.profileImageUrl = uploadedImageData.url;
             }
-
-            dataToSubmit.profileImagePublicId = uploadedImageData.publicId;
-            dataToSubmit.profileImageUrl = uploadedImageData.url;
 
             // send data
             await createUserProfile(dataToSubmit);
@@ -96,7 +107,10 @@ const OnBoarding = () => {
             await dispatch(intitializeAuth());
 
             setFormError(null);
-        } catch {
+        } catch (err : unknown) {
+            console.log(err);
+            handleApiErrorNotification(err);
+
             setFormError("Something went wrong, please try again later")
             return;
         }
@@ -128,6 +142,7 @@ const OnBoarding = () => {
                     <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
                         <form onSubmit={handleSubmit(onSubmit)} className="w-full md:max-w-120 2xl:max-w-137.5 flex flex-col items-center">
                             <h1 className="text-center text-2xl md:text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
+
                             <div className="my-16 flex flex-col items-center">
                                 <label htmlFor="profile-input" className="">
                                     <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
@@ -150,7 +165,9 @@ const OnBoarding = () => {
                                     </p>
                                 }
                             </div>
+
                             <div className="w-full space-y-4">
+                                {/* profile input */}
                                 <div>
                                     <input className="w-full h-12 border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="Name" {...register("name")}></input>
                                     {
@@ -160,6 +177,8 @@ const OnBoarding = () => {
                                         </p>
                                     }
                                 </div>
+
+                                {/* username input */}
                                 <div>
                                     <div className="relative h-12">
                                         <input className="w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" placeholder="Username" {...register("username")}></input>
@@ -191,6 +210,8 @@ const OnBoarding = () => {
                                     }
                                 </div>
                             </div>
+
+                            {/* bio input */}
                             <div className="mt-8 w-full h-28 relative">
                                 <textarea className={"w-full h-full border border-neutral-300 rounded-sm placeholder:text-neutral-400 px-6 py-4 text-sm"} placeholder="Bio" {...register("bio")}></textarea>
                                 {
@@ -204,6 +225,27 @@ const OnBoarding = () => {
                                     {watch("bio")?.length}/{BIO_LENGTH.MAX}
                                 </div>
                             </div>
+
+                            {/* birthday input */}
+                            {
+                                !currentUserData?.dateOfBirth &&
+                                <div className="w-full mt-7">
+                                    <DateInputSection setDate={(date: string) => {
+                                        setValue("dateOfBirth", date, {
+                                            shouldDirty: true,
+                                            shouldTouch: true,
+                                            shouldValidate: true,
+                                        })
+                                    }} />
+                                    {
+                                        errors.dateOfBirth &&
+                                        <p className="text-xs text-red-500 mt-1">
+                                            {errors.dateOfBirth.message}
+                                        </p>
+                                    }
+                                </div>
+                            }
+
                             <button type="submit" className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 rounded-lg duration-150 cursor-pointer mt-8 grid place-content-center">
                                 {
                                     isSubmitting ?
@@ -224,7 +266,6 @@ const OnBoarding = () => {
                     </div>
                     <Footer />
                 </div>
-
             </div>
         </>
     )

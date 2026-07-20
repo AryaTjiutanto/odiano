@@ -10,8 +10,9 @@ export const createUserSchema = z.object({
         .min(PASSWORD_LENGTH.MIN, { message: `Password minimum ${PASSWORD_LENGTH.MIN} characters` })
         .max(PASSWORD_LENGTH.MAX, { message: `Password maximum ${PASSWORD_LENGTH.MAX} characters` })
         .trim(),
-    dateOfBirth: z.string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid format" })
+    dateOfBirth: z.string({message : "Please enter your Date of Birth"})
+        .min(1, { message: "Please enter your Date of Birth" })
+        .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Something went wrong, please try again" })
 });
 
 export const createUserProfileSchema = z.object({
@@ -41,6 +42,9 @@ export const createUserProfileSchema = z.object({
     bio: z.string()
         .max(BIO_LENGTH.MAX, { message: `Bio maximum ${BIO_LENGTH.MAX} characters` })
         .trim(),
+    dateOfBirth: z.string({message : "Please enter your Date of Birth"})
+        .min(1, { message: "Please enter your Date of Birth" })
+        .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Something went wrong, please try again" })
 })
 
 export const authenticateUserSchema = z.object({

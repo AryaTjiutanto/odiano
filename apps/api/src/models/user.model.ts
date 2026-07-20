@@ -11,13 +11,13 @@ type AuthenticationSchema = {
 
 type UserSchema = {
     email: string,
+    username: string,
     
     password: string | null,
     authentication : AuthenticationSchema,
 
     dateOfBirth: string | null,
     name: string | null,
-    username: string | null,
     bio: string | null,
     isOnboarded: boolean,
     emailVerifiedAt: Date | null,
@@ -69,9 +69,8 @@ const userSchema = new mongoose.Schema<UserSchema>({
         unique: true
     },
     username: {
-        required: false,
+        required: true,
         type: String,
-        default: null,
         index : true,
     },
 

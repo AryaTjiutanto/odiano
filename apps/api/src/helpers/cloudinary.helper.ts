@@ -6,7 +6,7 @@ type CloudinaryNewDataResult = {
     url : string
 }
 
-export const commitTempImage = async (tempPublicId : string, oldPublicId? : string) : Promise<CloudinaryNewDataResult | null> => {
+export const commitTempImage = async (tempPublicId : string, oldPublicId? : string | null | undefined) : Promise<CloudinaryNewDataResult | null> => {
     // delete old image
     if (oldPublicId) {
         await cloudinary.api.delete_resources([oldPublicId]);

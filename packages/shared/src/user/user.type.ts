@@ -11,17 +11,18 @@ export type UserCoverImageDTO = {
 export type UserSummaryDTO = {
     id : string,
     name : string | null,
-    username : string | null,
+    username : string,
     profileImage : UserProfileImageDTO | null
 }
 
 export type CurrentUserDTO = {
     id: string,
     email: string,
-    username: string | null,
+    username: string,
     name: string | null,
     profileImage: UserProfileImageDTO | null,
     isOnboarded: boolean,
+    dateOfBirth:string | null,
 }
 
 export type UserProfileDTO = {

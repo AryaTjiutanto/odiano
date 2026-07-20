@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-import DateDropdown from "../../components/input/DateDropdown";
-import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserSchema, type CreateUserSchema, type AuthenticationResponse, type SuccessResponseData} from "@connect/shared";
+import { createUserSchema, type CreateUserSchema, type AuthenticationResponse, type SuccessResponseData } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
@@ -10,15 +8,16 @@ import { useAppDispatch } from "../../hooks/useRedux";
 import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
+import DateInputSection from "../../components/input/DateInputSection";
 
 const Signup = () => {
-    const [dateOfBirth, setDateOfBirth] = useState<string>("2010-01-01");
     const dispatch = useAppDispatch();
 
     const {
         register,
         setError,
         handleSubmit,
+        setValue,
         formState: { errors, isSubmitting }
     } = useForm<CreateUserSchema>({
         mode: "onTouched",
@@ -30,14 +29,14 @@ const Signup = () => {
             const response = await api.post<SuccessResponseData<AuthenticationResponse>>("/auth/signup", data);
 
             const accessToken = response.data.data?.access_token;
-               
-            if(accessToken) {
+
+            if (accessToken) {
                 dispatch(setAccessToken(accessToken));
                 dispatch(intitializeAuth());
             }
-        } catch (err : unknown) {
+        } catch (err: unknown) {
             handleApiErrorNotification<CreateUserSchema>(err, {
-                setValidationError : setError
+                setValidationError: setError
             });
         }
     }
@@ -59,55 +58,56 @@ const Signup = () => {
                         Create your account
                     </h1>
                     <div className="w-full flex flex-col space-y-5 mt-6 md:mt-10">
+                        {/* email */}
                         <div>
                             <input className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="email" placeholder="youremail@email.com" {...register("email")}></input>
                             {
                                 errors.email &&
-                                <p className="text-xs text-red-500">
+                                <p className="text-xs text-red-500 mt-1">
                                     {errors.email.message}
                                 </p>
                             }
                         </div>
+                        {/* password */}
                         <div>
                             <input className="w-full h-12 border border-neutral-200 rounded-sm placeholder:text-neutral-400 px-3 pl-6 text-sm" type="password" placeholder="password" {...register("password")}></input>
                             {
                                 errors.password &&
-                                <p className="text-xs text-red-500">
+                                <p className="text-xs text-red-500 mt-1">
                                     {errors.password.message}
                                 </p>
                             }
                         </div>
+                        {/* date of birthday */}
                         <div>
-                            <h2 className="font-bold">
-                                Date of birthday
-                            </h2>
-                            <p className="text-sm text-neutral-300 mt-1">
-                                This won’t be shown publicly. We only need your age to set appropriate restrictions.
-                            </p>
-                            <div className="mt-4 w-full">
-                                <DateDropdown setDate={setDateOfBirth} />
-                            </div>
+                            <DateInputSection setDate={(date : string) => {
+                                setValue("dateOfBirth", date, {
+                                    shouldDirty : true,
+                                    shouldTouch : true,
+                                    shouldValidate : true,
+                                });
+                            }} />
                             {
                                 errors.dateOfBirth &&
-                                <p className="text-xs text-red-500">
-                                    Something went wrong, try to refresh this page.
+                                <p className="text-xs text-red-500 mt-1">
+                                    {errors.dateOfBirth.message}
                                 </p>
                             }
-                            <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 grid place-content-center rounded-lg duration-150 cursor-pointer mt-10" disabled={isSubmitting}>
-                                {
-                                    isSubmitting ?
-                                        <DotsLoader />
-                                        :
-                                        <span>
-                                            create
-                                        </span>
-                                }
-                            </button>
-                            <div className="mt-4 text-sm text-neutral-300">
-                                By signing up, you agree to the <Link to={"#"} className="underline hover:text-rose-500 duration-100">Terms of Service</Link> and <Link to={"#"} className="underline hover:text-rose-500 duration-100">Privacy Policy</Link>, including <Link to={"#"} className="underline hover:text-rose-500 duration-100">Cookie Use</Link>.
-                            </div>
                         </div>
-                        <input type="hidden" {...register("dateOfBirth")} value={dateOfBirth}></input>
+
+                        <button className="w-full h-12 bg-white hover:bg-neutral-200 text-neutral-800 grid place-content-center rounded-lg duration-150 cursor-pointer mt-10" disabled={isSubmitting}>
+                            {
+                                isSubmitting ?
+                                    <DotsLoader />
+                                    :
+                                    <span>
+                                        create
+                                    </span>
+                            }
+                        </button>
+                        <div className="mt-4 text-sm text-neutral-300">
+                            By signing up, you agree to the <Link to={"#"} className="underline hover:text-rose-500 duration-100">Terms of Service</Link> and <Link to={"#"} className="underline hover:text-rose-500 duration-100">Privacy Policy</Link>, including <Link to={"#"} className="underline hover:text-rose-500 duration-100">Cookie Use</Link>.
+                        </div>
                     </div>
 
                     {/* signin */}

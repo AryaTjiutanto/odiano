@@ -101,7 +101,8 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
     const currentUser = await User.create({
         email,
         password,
-        dateOfBirth
+        dateOfBirth,
+        username : `user_${nanoid(6).toString()}`,
     });
 
     // generate auth token
@@ -127,7 +128,9 @@ export const createAuthSession = async (userId : Types.ObjectId) : Promise<AuthT
 }
 
 export const me = async (userId: string): Promise<CurrentUserDTO> => {
-    const user = await User.findById(userId).lean();
+    const user = await User.findById(userId)
+        .select("_id email username isOnboarded name profileImage dateOfBirth")
+        .lean();
 
     if (!user) {
         throw new AppError(404, ERROR_RESPONSE_CODE.conflict, "User not found");
@@ -140,6 +143,7 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         isOnboarded: user?.isOnboarded,
         name: user?.name,
         profileImage: user?.profileImage,
+        dateOfBirth : user?.dateOfBirth
     }
 }
 
