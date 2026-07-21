@@ -129,7 +129,7 @@ export const createAuthSession = async (userId : Types.ObjectId) : Promise<AuthT
 
 export const me = async (userId: string): Promise<CurrentUserDTO> => {
     const user = await User.findById(userId)
-        .select("_id email username isOnboarded name profileImage dateOfBirth")
+        .select("_id email username isOnboarded name profileImage dateOfBirth emailVerifiedAt")
         .lean();
 
     if (!user) {
@@ -143,7 +143,8 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         isOnboarded: user?.isOnboarded,
         name: user?.name,
         profileImage: user?.profileImage,
-        dateOfBirth : user?.dateOfBirth
+        dateOfBirth : user?.dateOfBirth,
+        isEmailVerified : !!user?.emailVerifiedAt,
     }
 }
 

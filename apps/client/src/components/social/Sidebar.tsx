@@ -26,6 +26,12 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
     // profile
     const [isProfilePopoverHidden, setIsProfilePopoverHidden] = useState<boolean>(true);
 
+    const profileLink = !isAuthenticated
+        ? "/signin"
+        : !userData?.isEmailVerified
+            ? "/email/verify"
+            : "/onboarding";
+
     // openSidebar
     const handleOpenNotificationSidebar = () => {
         if (!isInitialized) {
@@ -147,23 +153,31 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                         </p>
                                     </div>
                                 </div>
-                                <EllipsisVertical className=""/>
+                                <EllipsisVertical className="" />
                             </button>
                         </div>
                         :
-                        <Link to={isAuthenticated ? "/onboarding" : "/signin"}>
+                        <Link to={profileLink}>
                             <button className="w-full flex items-center justify-between space-x-10 cursor-pointer">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-12 h-12">
                                         <Profile data={null} />
                                     </div>
+
                                     <div className="text-left">
-                                        {
-                                            isAuthenticated ?
-                                                <h1 className="text-base font-semibold">Complete you data</h1>
-                                                :
-                                                <h1 className="text-base font-semibold">Create an account or signin</h1>
-                                        }
+                                        {!isAuthenticated ? (
+                                            <h1 className="text-base font-semibold">
+                                                Create an account or sign in
+                                            </h1>
+                                        ) : !userData.isEmailVerified ? (
+                                            <h1 className="text-base font-semibold">
+                                                Verify your Email
+                                            </h1>
+                                        ) : (
+                                            <h1 className="text-base font-semibold">
+                                                Complete your data
+                                            </h1>
+                                        )}
                                     </div>
                                 </div>
                             </button>

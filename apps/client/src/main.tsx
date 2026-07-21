@@ -25,6 +25,8 @@ import { queryClient } from './libs/react-query/queryClient.ts'
 import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
 import EditProfile from './pages/Social/EditProfile.tsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import EmailVerification from './pages/Auth/EmailVerification.tsx'
+import RequireUnVerify from './components/guard/RequireUnVerify.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -68,6 +70,11 @@ createRoot(document.getElementById('root')!).render(
                         <Route path='/signin' element={<Signin />} />
                         <Route path='/signup' element={<Signup />} />
                       </Route>
+                    </Route>
+
+                    {/* email verification */}
+                    <Route element={<RequireUnVerify />}>
+                      <Route path='/email/verify' element={<EmailVerification />} />
                     </Route>
 
                     {/* onboarding */}

@@ -23,6 +23,7 @@ export type CurrentUserDTO = {
     profileImage: UserProfileImageDTO | null,
     isOnboarded: boolean,
     dateOfBirth:string | null,
+    isEmailVerified: boolean,
 }
 
 export type UserProfileDTO = {

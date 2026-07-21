@@ -28,6 +28,15 @@ const useRequireAuth = () : GuardResult => {
         }
     }
 
+    // is email verified
+    if(userData && !userData.isEmailVerified) {
+        return {
+            isLoading : false,
+            allowed : false,
+            redirectTo : "/email/verify",
+        }
+    }
+
     // if not boarded, redirect to onboarding page
     if(userData && !userData.isOnboarded && location.pathname != "/onboarding") {
         return {

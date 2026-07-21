@@ -1,7 +1,7 @@
 import { useAppSelector } from "../hooks/useRedux";
 import type { GuardResult } from "../types/guard.type";
 
-const useRequireUnOnboarded = (): GuardResult => {
+const useRequireUnVerify = (): GuardResult => {
     const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const user = useAppSelector((state) => state.auth.user);
@@ -18,24 +18,16 @@ const useRequireUnOnboarded = (): GuardResult => {
         return {
             isLoading: false,
             allowed: false,
-            redirectTo: "signin"
+            redirectTo: "/signin"
         }
     }
 
     // is email verified
-    if (user && !user.isEmailVerified) {
+    if (user && user.isEmailVerified) {
         return {
             isLoading: false,
             allowed: false,
-            redirectTo: "/email/verify",
-        }
-    }
-
-    if (user?.isOnboarded) {
-        return {
-            isLoading: false,
-            allowed: false,
-            redirectTo: `profile/${user.username}`
+            redirectTo: "/onboarding",
         }
     }
 
@@ -46,4 +38,4 @@ const useRequireUnOnboarded = (): GuardResult => {
     }
 }
 
-export default useRequireUnOnboarded;
+export default useRequireUnVerify;
