@@ -7,3 +7,4 @@ export * from "./postComment";
 export * from  "./notification";
 export * from "./search";
 export * from "./searchHistory";
+export * from "./otp/otp.const";
