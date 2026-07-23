@@ -69,7 +69,7 @@ export const handleApiErrorNotification = <T extends FieldValues> (
             notify.error({
                 title: custom?.title ?? "Too Many Requests",
                 description:
-                    custom?.description ??
+                    custom?.description ?? error.message ??
                     "Please wait a moment before trying again.",
             });
 

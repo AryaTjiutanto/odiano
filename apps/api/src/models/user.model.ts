@@ -78,6 +78,7 @@ const userSchema = new mongoose.Schema<UserSchema>({
         required: false,
         type: String,
         default : null,
+        select : false,
     },
     authentication : {
         required : true,

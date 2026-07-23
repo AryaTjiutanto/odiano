@@ -15,6 +15,7 @@ const otpSchema = new Schema<OtpSchema>({
     target : {
         required : true,
         type : String,
+        index : true,
     },
     channel : {
         required : true,
@@ -25,10 +26,12 @@ const otpSchema = new Schema<OtpSchema>({
         required : true,
         type : String,
         enum : Object.values(OTP_PURPOSES),
+        index : true,
     },
     code : {
         required : true,
-        type : String
+        type : String,
+        select : false,
     },
     attempt : {
         required : true,
@@ -39,7 +42,7 @@ const otpSchema = new Schema<OtpSchema>({
         type : Date,
         index : {expires : 0}
     }
-})
+}, {timestamps : true, versionKey : false});
 
 otpSchema.pre("save", async function() {
     if(this.code) {

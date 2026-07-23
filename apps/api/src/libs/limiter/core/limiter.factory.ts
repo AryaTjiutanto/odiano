@@ -1,5 +1,5 @@
+import {redis} from "@connect/redis"
 import { RateLimiterMemory, RateLimiterRedis } from "rate-limiter-flexible"
-import { redis } from "../../redis"
 
 type CreateLimiterProps = {
     duration: number,

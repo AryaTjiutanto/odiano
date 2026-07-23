@@ -3,12 +3,14 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service";
 import { AppError } from "../errors/appError.error";
 import { successResponseData } from "../utils/response.util";
-import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse,  SUCCESS_RESPONSE_CODE, type CurrentUserDTO } from "@connect/shared";
+import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse,  SUCCESS_RESPONSE_CODE, type CurrentUserDTO, OTP_PURPOSES, OTP_CHANNELS } from "@connect/shared";
 import { authCookieOptions } from "../libs/auth/auth.cookie";
 import { ReqBody } from "../types/request.type";
 import { type AuthenticateUserSchema } from "@connect/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import * as googleService from "../services/google.service";
+import { createAndSendOTP } from "../services/otp.service";
+import { auth } from "google-auth-library";
 
 export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {
@@ -123,6 +125,39 @@ export const googleAuth = async (req : Request, res : Response, next : NextFunct
 
         res.cookie(AUTH_TOKEN.REFRESH, result.refresh_token, authCookieOptions());
         res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.ok, "ok", {access_token : result.access_token}))
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const resendEmailVerification = async (req : Request, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+    
+    try {
+        if(!currentUserId) { 
+            throw new UnauthorizedError();
+        }
+
+        await authServices.sendEmailVerification(currentUserId);
+
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.success, "success"));
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const verifyEmail = async (req : Request, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+    const { code } = req.body;
+    
+    try {
+        if(!currentUserId) { 
+            throw new UnauthorizedError();
+        }
+
+        await authServices.verifyEmail(currentUserId, code);
+
+        res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.success, "success"));
     } catch (err) {
         next(err);
     }

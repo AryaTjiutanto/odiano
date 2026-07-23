@@ -1,6 +1,6 @@
 import { ERROR_RESPONSE_CODE, FailedAttemptError } from "@connect/shared";
 import { AppError } from "../../errors/appError.error";
-import { setCache } from "../../libs/redis";
+import { setCache } from "@connect/redis";
 
 type Params = {
     cacheKey : string,

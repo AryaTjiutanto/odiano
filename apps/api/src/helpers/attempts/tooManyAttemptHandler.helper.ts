@@ -1,5 +1,5 @@
 import { ERROR_RESPONSE_CODE, TooManyRequestError } from "@connect/shared";
-import { getCachePTTL } from "../../libs/redis";
+import { getCachePTTL } from "@connect/redis";
 import { AppError } from "../../errors/appError.error";
 
 type Params = {

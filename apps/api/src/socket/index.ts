@@ -1,7 +1,7 @@
 import "../bootstraps/env.bootstrap";
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
-import { redis } from "../libs/redis";
+import {redis} from "@connect/redis"
 import { createAdapter } from "@socket.io/redis-adapter";
 import { socketAuth } from "./middleware";
 

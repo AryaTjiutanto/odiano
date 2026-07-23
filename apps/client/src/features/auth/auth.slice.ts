@@ -34,6 +34,11 @@ const authSlice = createSlice({
                 publicId : action.payload.publicId,
                 url : action.payload.url,
             };
+        },
+        setEmailVerified(state, action : PayloadAction<boolean>) {
+            if(!state.user) return;
+
+            state.user.isEmailVerified = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -81,5 +86,5 @@ const authSlice = createSlice({
     }
 })
 
-export const { setAccessToken, setCurrentUserProfile } = authSlice.actions;
+export const { setAccessToken, setCurrentUserProfile, setEmailVerified } = authSlice.actions;
 export default authSlice.reducer; 

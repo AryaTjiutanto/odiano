@@ -1,4 +1,4 @@
-import { AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE } from "@connect/shared";
+import { AUTH_CACHE_KEYS, AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES } from "@connect/shared";
 import { AppError } from "../errors/appError.error";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
@@ -6,10 +6,11 @@ import bcrypt from "bcrypt";
 import { RefreshToken } from "../models/refreshToken.model";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
-import { delCache, getCache, setCache } from "../libs/redis";
+import { delCache, getCache, setCache } from "@connect/redis";
 import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper";
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper";
 import { Types } from "mongoose";
+import { createAndSendOTP, verifyOTP } from "./otp.service";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -18,11 +19,11 @@ export const signIn = async (email: string, password: string, ip: string): Promi
     const MAX_SIGNIN_ATTEMPT = MAX_EMAIL_SIGNIN_ATTEMPT * 6;
 
     // get, check and increase signin attempt
-    const signinAttemptsCacheKey = `auth:signin:attempts:ip:${ip}`;
+    const signinAttemptsCacheKey = AUTH_CACHE_KEYS.SIGNIN_ATTEMPT(ip);
     let signinAttempts = Number(await getCache(signinAttemptsCacheKey)) | 0;
 
     if (signinAttempts >= MAX_SIGNIN_ATTEMPT) {
-        return tooManyAttemptHandler({cacheKey : signinAttemptsCacheKey, message : "Too many sign-in requests detected."});
+        return tooManyAttemptHandler({ cacheKey: signinAttemptsCacheKey, message: "Too many sign-in requests detected." });
     }
 
     signinAttempts++;
@@ -30,11 +31,11 @@ export const signIn = async (email: string, password: string, ip: string): Promi
 
 
     // get and check email signin attempt 
-    const emailSigninAttemptsCacheKey = `auth:signin:attempts:${email}:${ip}`
+    const emailSigninAttemptsCacheKey = AUTH_CACHE_KEYS.EMAIL_SIGNIN_ATTEMPT(email, ip);
     let attempt = Number(await getCache(emailSigninAttemptsCacheKey) || 0);
 
     if (attempt >= MAX_EMAIL_SIGNIN_ATTEMPT) {
-        return tooManyAttemptHandler({cacheKey : emailSigninAttemptsCacheKey, message : "Too many sign-in attempts for this account."});
+        return tooManyAttemptHandler({ cacheKey: emailSigninAttemptsCacheKey, message: "Too many sign-in attempts for this account." });
     }
 
     // check is user exist
@@ -42,17 +43,17 @@ export const signIn = async (email: string, password: string, ip: string): Promi
 
     if (!currentUser) {
         return failedAttemptHandler({
-            cacheKey : emailSigninAttemptsCacheKey,
-            MAX_ATTEMPT : MAX_EMAIL_SIGNIN_ATTEMPT,
-            message : "Email or Password is wrong",
+            cacheKey: emailSigninAttemptsCacheKey,
+            MAX_ATTEMPT: MAX_EMAIL_SIGNIN_ATTEMPT,
+            message: "Email or Password is wrong",
             attempt
         })
     }
 
-    if(!currentUser.password) {
+    if (!currentUser.password) {
         return failedAttemptHandler({
-            cacheKey : emailSigninAttemptsCacheKey,
-            MAX_ATTEMPT : MAX_EMAIL_SIGNIN_ATTEMPT,
+            cacheKey: emailSigninAttemptsCacheKey,
+            MAX_ATTEMPT: MAX_EMAIL_SIGNIN_ATTEMPT,
             message: "Unable to sign in with email and password. Please try another sign-in method.",
             attempt,
         })
@@ -63,15 +64,15 @@ export const signIn = async (email: string, password: string, ip: string): Promi
 
     if (!isPasswordValid) {
         return failedAttemptHandler({
-            cacheKey : emailSigninAttemptsCacheKey,
-            MAX_ATTEMPT : MAX_EMAIL_SIGNIN_ATTEMPT,
-            message : "Email or Password is wrong",
+            cacheKey: emailSigninAttemptsCacheKey,
+            MAX_ATTEMPT: MAX_EMAIL_SIGNIN_ATTEMPT,
+            message: "Email or Password is wrong",
             attempt
         })
     }
 
     // create auth token
-    const token = await createAuthSession(currentUser._id); 
+    const token = await createAuthSession(currentUser._id);
 
     // delete attempt cache
     await delCache(emailSigninAttemptsCacheKey);
@@ -79,15 +80,15 @@ export const signIn = async (email: string, password: string, ip: string): Promi
     return token;
 }
 
-export const signUp = async (dateOfBirth: string, email: string, password: string, ip : string): Promise<AuthToken> => {
+export const signUp = async (dateOfBirth: string, email: string, password: string, ip: string): Promise<AuthToken> => {
     const MAX_SIGNUP_COUNT = 2;
 
     // get and check signup count
-    const cacheKey = `auth:signup:count:ip:${ip}`;
+    const cacheKey = AUTH_CACHE_KEYS.SIGNUP_COUNT(ip);
     let count = Number(await getCache(cacheKey)) | 0;
 
-    if(count >= MAX_SIGNUP_COUNT) {
-        return tooManyAttemptHandler({cacheKey, message : "You have create too many account."});
+    if (count >= MAX_SIGNUP_COUNT) {
+        return tooManyAttemptHandler({ cacheKey, message: "You have create too many account." });
     }
 
     // check is email already used
@@ -102,23 +103,26 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
         email,
         password,
         dateOfBirth,
-        username : `user_${nanoid(6).toString()}`,
+        username: `user_${nanoid(6).toString()}`,
     });
 
     // generate auth token
     const token = await createAuthSession(currentUser._id);
 
+    // send verification email
+    await createAndSendOTP(email, OTP_CHANNELS.EMAIL, OTP_PURPOSES.VERIFY_EMAIL);
+
     // increate signup count
     count++;
-    await setCache(cacheKey, count, {PX : oneDayAge});
+    await setCache(cacheKey, count, { PX: oneDayAge * 3 });
 
     return token;
 }
 
-export const createAuthSession = async (userId : Types.ObjectId) : Promise<AuthToken> => {
+export const createAuthSession = async (userId: Types.ObjectId): Promise<AuthToken> => {
     const id = userId.toString();
 
-    const accessToken = generateAccessToken({ userId : id });
+    const accessToken = generateAccessToken({ userId: id });
     const refreshToken = await createRefreshToken(id);
 
     return {
@@ -143,8 +147,8 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         isOnboarded: user?.isOnboarded,
         name: user?.name,
         profileImage: user?.profileImage,
-        dateOfBirth : user?.dateOfBirth,
-        isEmailVerified : !!user?.emailVerifiedAt,
+        dateOfBirth: user?.dateOfBirth,
+        isEmailVerified: !!user?.emailVerifiedAt,
     }
 }
 
@@ -206,3 +210,44 @@ export const logout = async (refreshToken: string) => {
 
     }
 };
+
+export const sendEmailVerification = async (currentUserId: string) => {
+    const user = await User.findById(currentUserId).select("email emailVerifiedAt").lean();
+
+    if (!user) {
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
+    }
+
+    if (user.emailVerifiedAt) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Email already verified");
+    }
+
+    // send otp to email
+    await createAndSendOTP(user.email, OTP_CHANNELS.EMAIL, OTP_PURPOSES.VERIFY_EMAIL);
+}
+
+export const verifyEmail = async (currentUserId: string, code: null | undefined | string) => {
+    if (!code) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Code is required");
+    }
+
+    if (code.length !== 6) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Code is invalid");
+    }
+
+    // get user email
+    const user = await User.findById(currentUserId).select("email emailVerifiedAt").lean();
+
+    if (!user) {
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
+    }
+
+    if (user.emailVerifiedAt) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Email already verified");
+    }
+
+    // verify otp
+    await verifyOTP(user.email, code, OTP_PURPOSES.VERIFY_EMAIL);
+
+    await User.updateOne({ _id: currentUserId }, { emailVerifiedAt: new Date() });
+}

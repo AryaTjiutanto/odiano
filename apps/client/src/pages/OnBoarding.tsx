@@ -22,6 +22,7 @@ import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 const OnBoarding = () => {
     const dispatch = useAppDispatch();
     const dragAndDrop = useDragAndDrop();
+    const userData = useAppSelector((state) => state.auth.user);
 
     const imageUploadHandler = useImageUploadHandler();
     const currentUserData = useAppSelector((state) => state.auth.user);
@@ -40,11 +41,21 @@ const OnBoarding = () => {
         mode: "onTouched",
         resolver: zodResolver(createUserProfileSchema),
 
-        defaultValues : {
-            profileImageUrl : null,
-            profileImagePublicId : null
+        defaultValues: {
+            profileImageUrl: null,
+            profileImagePublicId: null
         }
     })
+
+    useEffect(() => {
+        if(userData) {
+            setValue("profileImageUrl", userData.profileImage?.url);
+
+            if(userData.dateOfBirth) {
+                setValue("dateOfBirth", userData.dateOfBirth);
+            }
+        }
+    }, [userData, setValue])
 
     // handle username
     const username = watch("username");
@@ -89,13 +100,13 @@ const OnBoarding = () => {
             const dataToSubmit = { ...data };
 
             // handle image upload
-            if(dataToSubmit.profileImagePublicId) {
+            if (dataToSubmit.profileImagePublicId) {
                 const uploadedImageData = await imageUploadHandler.uploadImage("/upload/profile-signature", "profile.webp");
 
-                if(!uploadedImageData) {
+                if (!uploadedImageData) {
                     throw new Error("Error went uploading the image");
                 }
-    
+
                 dataToSubmit.profileImagePublicId = uploadedImageData.publicId;
                 dataToSubmit.profileImageUrl = uploadedImageData.url;
             }
@@ -107,7 +118,7 @@ const OnBoarding = () => {
             await dispatch(intitializeAuth());
 
             setFormError(null);
-        } catch (err : unknown) {
+        } catch (err: unknown) {
             console.log(err);
             handleApiErrorNotification(err);
 
