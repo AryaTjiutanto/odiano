@@ -4,19 +4,20 @@ import { getCloudinarySignedUrl } from "../utils/cloudinary.util";
 import axios from "axios";
 
 type UploadImagePayload = {
-    generatorRoute : string,
-    imageName : string,
-    imageCroppedBlob : Blob
+    generatorRoute: string,
+    imageName: string,
+    imageCroppedBlob: Blob
 };
 
 type UploadedImagePayload = {
-    publicId : string,
-    url : string,
+    publicId: string,
+    url: string,
 }
 
-export const uploadImageToCloudinary = async (payload : UploadImagePayload) : Promise<UploadedImagePayload> => {
+export const uploadImageToCloudinary = async (payload: UploadImagePayload): Promise<UploadedImagePayload> => {
     // get signature
     const response = await api.get<SuccessResponseData<CloudinarySignaturePayload>>(payload.generatorRoute);
+
     const signaturePayload = response.data.data;
     if (!signaturePayload) {
         throw new Error("Missing signature payload");

@@ -3,6 +3,7 @@ import * as uploadServices from "../services/upload.service";
 import { successResponseData } from "../utils/response.util";
 import { CloudinarySignaturePayload, SUCCESS_RESPONSE_CODE } from "@connect/shared";
 import { UPLOAD_PRESETS } from "../consts/cloudinary.const";
+import logger from "../libs/log/logger";
 
 export const generateProfileSignature = (req: Request, res: Response, next: NextFunction) => {
     const userId = req.userId;

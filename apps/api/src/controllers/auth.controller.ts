@@ -9,8 +9,6 @@ import { ReqBody } from "../types/request.type";
 import { type AuthenticateUserSchema } from "@connect/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import * as googleService from "../services/google.service";
-import { createAndSendOTP } from "../services/otp.service";
-import { auth } from "google-auth-library";
 
 export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {

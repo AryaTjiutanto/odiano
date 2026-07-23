@@ -63,12 +63,6 @@ export const createAndSendOTP = async (target: string, channel: OtpChannels, pur
 export const verifyOTP = async (target: string, code: string, purpose: OtpPurposes) => {
     const otp = await OTP.findOne({ target, purpose }).sort({ createdAt: -1 }).select("_id +code expiresAt attempt");
 
-    logger.info({
-        _id : otp?._id,
-        expiresAt : otp?.expiresAt,
-        attempt : otp?.attempt,
-    })
-
     if (!otp) {
         throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Invalid code");
     }

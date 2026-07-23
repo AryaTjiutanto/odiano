@@ -2,6 +2,7 @@ import { CloudinarySignaturePayload } from "@connect/shared";
 import "../bootstraps/env.bootstrap";
 import cloudinary from "../config/cloudinary.config";
 import { UploadPresets } from "../consts/cloudinary.const";
+import logger from "../libs/log/logger";
 
 type GenerateSignaturePayload = {
     params : {

@@ -100,7 +100,7 @@ const OnBoarding = () => {
             const dataToSubmit = { ...data };
 
             // handle image upload
-            if (dataToSubmit.profileImagePublicId) {
+            if (imageUploadHandler.imageCroppedBlob) {
                 const uploadedImageData = await imageUploadHandler.uploadImage("/upload/profile-signature", "profile.webp");
 
                 if (!uploadedImageData) {
@@ -119,7 +119,7 @@ const OnBoarding = () => {
 
             setFormError(null);
         } catch (err: unknown) {
-            console.log(err);
+            console.log(err.response);
             handleApiErrorNotification(err);
 
             setFormError("Something went wrong, please try again later")
