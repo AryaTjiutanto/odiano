@@ -266,7 +266,9 @@ const ShowPost = () => {
                                     }
                                 </>
                             }
-                            <EllipsisVertical className="w-4 duration-100 cursor-pointer" />
+
+                            {/* comming soon */}
+                            {/* <EllipsisVertical className="w-4 duration-100 cursor-pointer" /> */}
                         </div>
                     </div>
                     {/* content */}
@@ -306,14 +308,17 @@ const ShowPost = () => {
                                     {postQuery.data?.commentCount ?? 0}
                                 </p>
                             </div>
-                            <button className="cursor-pointer">
+
+                            {/* comming soon */}
+                            {/* <button className="cursor-pointer">
                                 <Send />
-                            </button>
+                            </button> */}
                         </div>
 
-                        <button className="cursor-pointer">
+                        {/* comming soon */}
+                        {/* <button className="cursor-pointer">
                             <Bookmark />
-                        </button>
+                        </button> */}
                     </div>
                 </div>
 

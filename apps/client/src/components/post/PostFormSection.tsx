@@ -83,12 +83,14 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
             <div className="w-[650px] h-fit bg-neutral-900 rounded-3xl overflow-hidden duration-100 z-22">
                 {/* form */}
                 <form onSubmit={handleSubmit(onSubmit)} className={`w-full p-10 h-full relative ${isCreated && "hidden"}`}>
-                    <div className="w-full h-24">
+                    {/* comming soon */}
+                    {/* <div className="w-full h-24">
                         <label className="w-full h-full rounded-xl border border-neutral-400 border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer" htmlFor="media-input">
                             <span>Drag and drop photos or videos here, or click to select files. (optional)</span>
                         </label>
                         <input type="file" className="hidden" id="media-input" accept="image/*,video/*" />
-                    </div>
+                    </div> */}
+                    
                     <div>
                         <div className="w-full relative">
                             <textarea className="mt-4 w-full h-40 border border-neutral-600 rounded-xl py-4 px-5 text-neutral-200 default-input-text-behaviour" placeholder="What's on your mind?" {...register("content")}></textarea>
@@ -101,7 +103,9 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
                             <p className="mt-1 text-xs text-red-500">{errors.content.message}</p>
                         }
                     </div>
-                    <div className="flex flex-col space-y-2 mt-3">
+
+                    {/* comming soon */}
+                    {/* <div className="flex flex-col space-y-2 mt-3">
                         <div className="flex items-center space-x-10">
                             <p className="h-fit">
                                 Hide Like and view count on this post?
@@ -114,7 +118,8 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
                             </p>
                             <PillSwitch checked={turnOffCommenting} onToggle={() => handleToggle("turnOffCommenting")} />
                         </div>
-                    </div>
+                    </div> */}
+
                     <div className="mt-10 flex items-center text-sm space-x-3">
                         <button className={`px-11 h-11 border border-white bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-transparent hover:text-neutral-100"} duration-100 cursor-pointer rounded`} disabled={isSubmitting}>
                             {isSubmitting ? <DotsLoader /> : "Post"}
@@ -128,17 +133,19 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
                 {/* sucess */}
                 <div className={`w-full h-120 flex flex-col items-center justify-center px-6 ${!isCreated && "hidden"}`}>
                     <div className="flex justify-center">
-                        <div className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 p-[2px] rounded-full">
-                            <div className="flex items-center justify-center w-20 h-20 rounded-full  bg-neutral-900">
-                                <Check size={40} />
+                        <div className="bg-neutral-50 p-[2px] rounded-full">
+                            <div className="flex items-center justify-center w-20 h-20 rounded-full  bg-neutral-900 text-neutral-50">
+                                <Check size={40}/>
                             </div>
                         </div>
                     </div>
 
                     <div className="mt-6 text-center">
-                        <h2 className="text-3xl font-bold text-white">
-                            Post Created!
-                        </h2>
+                        <div className="bg-clip-text text-transparent bg-linear-to-br from-neutral-700 to-neutral-50">
+                            <h2 className="text-3xl font-bold">
+                                Post Created!
+                            </h2>
+                        </div>
 
                         <p className="mt-3 text-sm text-neutral-200 leading-relaxed">
                             Your post has been successfully published and is now visible to your audience.

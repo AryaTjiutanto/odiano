@@ -43,22 +43,27 @@ const Homepage = () => {
 
                     {/* filter */}
                     <div className="w-fit flex items-center space-x-4">
-                        <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-500">
+                        {/* comming soon */}
+                        {/* <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-500">
                             Following
-                        </button>
+                        </button> */}
                         <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-100">
                             My Feed
                         </button>
-                        <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-500">
+
+                        {/* comming soon */}
+                        {/* <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-500">
                             Popular
-                        </button>
+                        </button> */}
                     </div>
                 </section>
+
                 {/* story */}
-                <StoryList />
+                {/* comming soon */}
+                {/* <StoryList /> */}
 
                 {/* posts */}
-                <div className="mt-8 space-y-6 pb-6">
+                <div className="mt-2 space-y-6 pb-6">
                     {
                         isPending &&
                         Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`}/>)

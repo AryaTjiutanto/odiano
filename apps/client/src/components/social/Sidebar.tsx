@@ -61,14 +61,15 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                     </span>
                                 </Link>
                             </li>
-                            <li>
+                            {/* comming soon */}
+                            {/* <li>
                                 <Link to={""} className="flex items-center space-x-5 text-lg">
                                     <Search />
                                     <span>
                                         Explore
                                     </span>
                                 </Link>
-                            </li>
+                            </li> */}
                             {
                                 isAuthenticated &&
                                 <>
@@ -80,7 +81,9 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                             </span>
                                         </button>
                                     </li>
-                                    <li>
+
+                                    {/* comming soon */}
+                                    {/* <li>
                                         <Link to={""} className="flex items-center space-x-5 text-lg">
                                             <MessageCircle />
                                             <span>
@@ -95,7 +98,8 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                                 Bookmark
                                             </span>
                                         </Link>
-                                    </li>
+                                    </li> */}
+
                                     {
                                         userData?.isOnboarded &&
                                         <li>
@@ -107,14 +111,16 @@ const Sidebar = ({ setIsNotificationIsSidebarVisible, setShowCreatePropsSection 
                                             </Link>
                                         </li>
                                     }
-                                    <li>
+
+                                    {/* comming soon */}
+                                    {/* <li>
                                         <Link to={""} className="flex items-center space-x-5 text-lg">
                                             <Settings />
                                             <span>
                                                 Setting and privacy
                                             </span>
                                         </Link>
-                                    </li>
+                                    </li> */}
                                 </>
                             }
                         </ul>

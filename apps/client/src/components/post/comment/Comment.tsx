@@ -117,7 +117,9 @@ const Comment = ({ data, postId }: Props) => {
                                 <span>
                                     {formatRelativeShort(data.createdAt)}
                                 </span>
-                                <button className="text-sm flex items-center space-x-1 cursor-pointer">
+
+                                {/* comming soon */}
+                                {/* <button className="text-sm flex items-center space-x-1 cursor-pointer">
                                     <Heart className="w-4" />
                                     <span>
                                         5
@@ -125,7 +127,7 @@ const Comment = ({ data, postId }: Props) => {
                                 </button>
                                 <button className="cursor-pointer">
                                     Replay
-                                </button>
+                                </button> */}
                             </div>
                     }
                 </div>

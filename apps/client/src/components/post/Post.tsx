@@ -84,7 +84,9 @@ const Post = ({ data, author }: Props) => {
                         </div>
                     </div>
                 </Link>
-                <EllipsisVertical className="w-4" />
+
+                {/* comming soon */}
+                {/* <EllipsisVertical className="w-4" /> */}
             </div>
             <p className="text-sm mt-8">
                 {data.content ?? ""}
@@ -104,9 +106,11 @@ const Post = ({ data, author }: Props) => {
                         </span>
                     </button>
                 </div>
-                <button>
+
+                {/* comming soon */}
+                {/* <button>
                     <Bookmark className="w-4 cursor-pointer hover:text-sky-500 duration-100" onClick={(e) => e.preventDefault()} />
-                </button>
+                </button> */}
             </div>
         </article>
     )

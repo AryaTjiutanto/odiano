@@ -205,9 +205,11 @@ const Profile = () => {
                         <h1 className="font-bold text-white">
                             {profileQuery.data && profileQuery.data.name || ""}
                         </h1>
-                        <h2 className="text-xs text-neutral-400">
+
+                        {/* comming soon */}
+                        {/* <h2 className="text-xs text-neutral-400">
                             0 Post
-                        </h2>
+                        </h2> */}
                     </div>
                 </div>
 
@@ -251,12 +253,14 @@ const Profile = () => {
                         </>
 
                     }
-                    {
+
+                    {/* comming soon */}
+                    {/* {
                         isAuthenticated &&
                         <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
                             <EllipsisVertical />
                         </button>
-                    }
+                    } */}
                 </div>
 
                 {/* user information */}

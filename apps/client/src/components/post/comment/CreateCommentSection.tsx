@@ -1,6 +1,5 @@
 import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type PostCommentDTO, type PostDTO } from "@connect/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SmileIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import DotsLoader from "../../loader/DotsLoader";
@@ -158,12 +157,13 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
 
                     <div className="flex justify-between mt-1">
                         <div className="flex items-center space-x-3">
-                            <button className="cursor-pointer">
+                            {/* comming soon */}
+                            {/* <button className="cursor-pointer">
                                 <SmileIcon className="w-5" />
                             </button>
                             <button className="w-6 h-5 border border-neutral-2 grid place-content-center font-semibold text-[8px] rounded cursor-pointer">
                                 GIF
-                            </button>
+                            </button> */}
                         </div>
                         <div className="flex items-center space-x-2">
                             {
