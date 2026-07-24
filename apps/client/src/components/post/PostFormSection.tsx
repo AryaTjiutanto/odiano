@@ -45,6 +45,8 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
 
     const onSubmit: SubmitHandler<CreatePostSchema> = async (data) => {
         try {
+            console.log(data);
+
             const response = await api.post<SuccessResponseData<PostPublicId>>("/post/create", data);
 
             if (!response.data) {

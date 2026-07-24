@@ -88,7 +88,7 @@ const Post = ({ data, author }: Props) => {
                 {/* comming soon */}
                 {/* <EllipsisVertical className="w-4" /> */}
             </div>
-            <p className="text-sm mt-8">
+            <p className="text-sm mt-8 whitespace-pre-wrap">
                 {data.content ?? ""}
             </p>
             <div className="mt-8 flex items-center justify-between text-sm">

@@ -1,4 +1,4 @@
-import { Bookmark, EllipsisVertical, Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { type SuccessResponseData, type PostDTO } from "@connect/shared";
@@ -272,7 +272,7 @@ const ShowPost = () => {
                         </div>
                     </div>
                     {/* content */}
-                    <div className="mt-6">
+                    <div className="mt-6 whitespace-pre-wrap">
                         {
                             postQuery.data?.content ?? ""
                         }

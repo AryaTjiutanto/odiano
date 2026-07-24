@@ -275,7 +275,7 @@ const Profile = () => {
                     </div>
 
                     {(profileQuery.data) &&
-                        <p className="mt-5 text-neutral-400">
+                        <p className="mt-5 text-neutral-400 whitespace-pre-wrap">
                             {profileQuery.data.bio || ""}
                         </p>
                     }

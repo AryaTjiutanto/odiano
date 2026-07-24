@@ -1,4 +1,4 @@
-import { EllipsisVertical, Heart } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import { type PostCommentDTO, type PostDTO } from "@connect/shared";
 import Profile from "../../social/Profile";
@@ -104,7 +104,7 @@ const Comment = ({ data, postId }: Props) => {
                             </button>
                         }
                     </div>
-                    <p className="mt-1">
+                    <p className="mt-1 whitespace-pre-wrap">
                         {data.content || ""}
                     </p>
                     {
