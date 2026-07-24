@@ -57,7 +57,7 @@ const ErrorState = ({
 
                 <button
                     onClick={() => window.location.reload()}
-                    className="cursor-pointer px-4 py-2 rounded-full border border-neutral-700 text-sm font-medium hover:bg-neutral-900 transition"
+                    className="cursor-pointer px-4 py-2 rounded-full border border-neutral-700 text-sm font-medium hover:bg-neutral-950 transition"
                 >
                     Try again
                 </button>

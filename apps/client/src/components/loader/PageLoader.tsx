@@ -36,7 +36,7 @@ const PageLoader = () => {
 
     if (isLoading) {
         return (
-            <div className={`w-full h-screen fixed top-0 left-0 z-9999 bg-neutral-950 duration-150 text-white ${isLoaderVisible ? "opacity-100" : "opacity-0"} grid place-content-center relative`} >
+            <div className={`w-full h-screen fixed top-0 left-0 z-9999 bg-black duration-150 text-white ${isLoaderVisible ? "opacity-100" : "opacity-0"} grid place-content-center relative`} >
                 <img src={connectLogo} className="w-32" />
 
                 <div className="absolute bottom-16 w-full flex items-center justify-center text-neutral-400 space-x-3 px-10 text-center">

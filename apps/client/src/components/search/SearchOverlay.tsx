@@ -70,7 +70,7 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
     }
 
     return (
-        <div className={`absolute top-14 w-full overflow-y-auto ${isSearchPanelOpen ? 'max-h-100 opacity-100' : 'max-h-0 opacity-0 touch-none'} bg-neutral-950 border border-neutral-700 rounded-lg transition-[max-height,opacity] duration-100 overflow-hidden`} ref={ref} style={floatingStyles} {...floatingProps}>
+        <div className={`absolute top-14 w-full overflow-y-auto ${isSearchPanelOpen ? 'max-h-100 opacity-100' : 'max-h-0 opacity-0 touch-none'} bg-black border border-neutral-700 rounded-lg transition-[max-height,opacity] duration-100 overflow-hidden`} ref={ref} style={floatingStyles} {...floatingProps}>
             {
                 (isLoading) ?
                     <div className="w-full space-y-2">

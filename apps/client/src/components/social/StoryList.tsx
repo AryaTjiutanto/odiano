@@ -62,7 +62,7 @@ const StoryList = () => {
             </div>
             <div className="w-full grid grid-cols-8 gap-5 mt-6">
                 <div className="w-full flex flex-col items-center">
-                    <div className="w-full aspect-square rounded-full bg-neutral-800 grid place-content-center text-neutral-600">
+                    <div className="w-full aspect-square rounded-full bg-neutral-900 grid place-content-center text-neutral-600">
                         <Plus />
                     </div>
                     <span className="text-[11px] text-neutral-300 mt-2">
@@ -74,7 +74,7 @@ const StoryList = () => {
                     stories.map((story) => (
                         <div className="w-full flex flex-col items-center">
                             <div className={`w-full aspect-square rounded-full ${story.gradientColor} grid place-content-center relative`}>
-                                <div className="w-[95%] aspect-square rounded-full bg-neutral-800 grid place-content-center text-neutral-600 absolute top-0 left-0 right-0 bottom-0 m-auto">
+                                <div className="w-[95%] aspect-square rounded-full bg-neutral-900 grid place-content-center text-neutral-600 absolute top-0 left-0 right-0 bottom-0 m-auto">
                                 </div>
                             </div>
                             <span className="text-[11px] text-neutral-300 mt-2">

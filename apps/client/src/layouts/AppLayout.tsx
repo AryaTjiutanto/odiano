@@ -33,8 +33,9 @@ const AppLayout = () => {
                 position="top-right"
                 reverseOrder={false}
             />
+            
             <GoogleOneTap/>
-            <div className="w-full max-w-480 min-h-screen bg-neutral-950 text-neutral-300">
+            <div className="w-full max-w-480 min-h-screen bg-black text-neutral-100">
                 <Outlet />
             </div>
         </>

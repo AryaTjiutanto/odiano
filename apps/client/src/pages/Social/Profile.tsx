@@ -120,7 +120,7 @@ const Profile = () => {
     // display the data
     if (profileQuery.isPending) {
         return (
-            <div className="w-full min-h-screen bg-neutral-950 text-neutral-200">
+            <div className="w-full min-h-screen bg-black text-neutral-200">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
@@ -197,7 +197,7 @@ const Profile = () => {
 
     return (
         <>
-            <div className="w-full min-h-screen bg-neutral-950 text-neutral-200">
+            <div className="w-full min-h-screen bg-black text-neutral-200">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
@@ -220,7 +220,7 @@ const Profile = () => {
                     </div>
 
                     {/* profile */}
-                    <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-neutral-950 duration-100 rounded-full`}>
+                    <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-black duration-100 rounded-full`}>
                         <ProfileComponent data={profileQuery?.data?.profileImage} />
                     </div>
                 </div>
@@ -275,7 +275,7 @@ const Profile = () => {
                     </div>
 
                     {(profileQuery.data) &&
-                        <p className="mt-5 text-neutral-400 whitespace-pre-wrap">
+                        <p className="mt-5 text-neutral-400">
                             {profileQuery.data.bio || ""}
                         </p>
                     }

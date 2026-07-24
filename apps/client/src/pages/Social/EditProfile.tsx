@@ -262,10 +262,10 @@ const EditProfile = () => {
                             }
                         </div>
 
-                        <div className={`w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1  rounded-xl grid place-content-center duration-100 ${coverDragAndDrop.isDrag ? "bg-neutral-950/50" : "bg-neutral-950/40"}`} onDragEnter={coverDragAndDrop.handleDragEnter} onDragLeave={coverDragAndDrop.handleDragLeave} onDragOver={coverDragAndDrop.handleDragOver} onDrop={(e) => coverDragAndDrop.handleDrop(e, coverImageUpload.getOriginalImageUrl)}>
+                        <div className={`w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1  rounded-xl grid place-content-center duration-100 ${coverDragAndDrop.isDrag ? "bg-black/50" : "bg-black/40"}`} onDragEnter={coverDragAndDrop.handleDragEnter} onDragLeave={coverDragAndDrop.handleDragLeave} onDragOver={coverDragAndDrop.handleDragOver} onDrop={(e) => coverDragAndDrop.handleDrop(e, coverImageUpload.getOriginalImageUrl)}>
                             <div className="w-fit flex items-center space-x-3">
                                 {/* upload */}
-                                <label htmlFor="inputCoverImage" className={`w-14 aspect-square rounded-full duration-100 grid place-content-center cursor-pointer ${coverDragAndDrop.isDrag ? "bg-neutral-900/80" : "bg-neutral-900/60 hover:bg-neutral-800/60 hover:text-neutral-50 "}`}>
+                                <label htmlFor="inputCoverImage" className={`w-14 aspect-square rounded-full duration-100 grid place-content-center cursor-pointer ${coverDragAndDrop.isDrag ? "bg-neutral-950/80" : "bg-neutral-950/60 hover:bg-neutral-900/60 hover:text-neutral-50 "}`}>
                                     <Upload className="w-5" />
                                 </label>
                                 <input id="inputCoverImage" type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" onChange={coverImageUpload.handleImageInput} />
@@ -273,7 +273,7 @@ const EditProfile = () => {
                                 {/* delete cover */}
                                 {
                                     (coverImageUpload.imageCroppedBlob || userProfile.data?.coverImage) &&
-                                    <button type="button" className={`w-14 aspect-square rounded-full bg-neutral-900/60  duration-100 grid place-content-center cursor-pointer hover:bg-neutral-800/60 hover:text-neutral-50`} disabled={isSubmitting} onClick={() => coverImageUpload.removeImage(() => {
+                                    <button type="button" className={`w-14 aspect-square rounded-full bg-neutral-950/60  duration-100 grid place-content-center cursor-pointer hover:bg-neutral-900/60 hover:text-neutral-50`} disabled={isSubmitting} onClick={() => coverImageUpload.removeImage(() => {
                                         setValue("coverImagePublicId", null);
                                         setValue("coverImageUrl", null);
                                     })}>
@@ -284,7 +284,7 @@ const EditProfile = () => {
                         </div>
 
                         {/* profile */}
-                        <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-neutral-950 rounded-full overflow-hidden z-2`} onDragEnter={profileDragAndDrop.handleDragEnter} onDragOver={profileDragAndDrop.handleDragOver} onDragLeave={profileDragAndDrop.handleDragLeave} onDrop={(e) => profileDragAndDrop.handleDrop(e, profileImageUpload.getOriginalImageUrl)}>
+                        <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-black rounded-full overflow-hidden z-2`} onDragEnter={profileDragAndDrop.handleDragEnter} onDragOver={profileDragAndDrop.handleDragOver} onDragLeave={profileDragAndDrop.handleDragLeave} onDrop={(e) => profileDragAndDrop.handleDrop(e, profileImageUpload.getOriginalImageUrl)}>
                             <ProfileComponent data={
                                 profileImageUpload.imageCroppedBlob ?
                                     {
@@ -294,7 +294,7 @@ const EditProfile = () => {
                                     userProfile.data?.profileImage
                             } />
 
-                            <label htmlFor="inputProfileImage" className={`w-full h-full cursor-pointer absolute top-0 left-0 right-0 bottom-0 m-auto  hover:text-neutral-50 duration-100 grid place-content-center ${profileDragAndDrop.isDrag ? "hover:bg-neutral-950/80 bg-neutral-950/60" : "hover:bg-neutral-950/60 bg-neutral-950/40"}`}>
+                            <label htmlFor="inputProfileImage" className={`w-full h-full cursor-pointer absolute top-0 left-0 right-0 bottom-0 m-auto  hover:text-neutral-50 duration-100 grid place-content-center ${profileDragAndDrop.isDrag ? "hover:bg-black/80 bg-black/60" : "hover:bg-black/60 bg-black/40"}`}>
                                 <Upload />
                             </label>
 
@@ -304,7 +304,7 @@ const EditProfile = () => {
 
                     {/* username input */}
                     <div className={`w-full mt-18`}>
-                        <div className={`w-full rounded bg-neutral-950 border p-1 pt-1.25 px-3 flex flex-col ${errors.name ? "border-red-500" : "focus-within:border-sky-500 border-neutral-600"} -space-y-1 group`}>
+                        <div className={`w-full rounded bg-black border p-1 pt-1.25 px-3 flex flex-col ${errors.name ? "border-red-500" : "focus-within:border-sky-500 border-neutral-600"} -space-y-1 group`}>
                             <label className={`text-sm ${errors.name ? "text-red-500" : "text-neutral-500 group-focus-within:text-sky-500"} duration-100`}>
                                 Name
                             </label>
@@ -320,7 +320,7 @@ const EditProfile = () => {
 
                     {/* bio */}
                     <div className="w-full mt-4">
-                        <div className={`w-full col-span-1 rounded bg-neutral-950 border ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "border-red-500" : "border-neutral-600 focus-within:border-sky-500"} p-1 pt-2 px-3 flex flex-col group relative`}>
+                        <div className={`w-full col-span-1 rounded bg-black border ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "border-red-500" : "border-neutral-600 focus-within:border-sky-500"} p-1 pt-2 px-3 flex flex-col group relative`}>
                             <label className={`text-sm ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "text-red-500" : "text-neutral-500 focus-within:text-sky-500"} duration-100`}>
                                 Bio
                             </label>

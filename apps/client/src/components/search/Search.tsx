@@ -44,7 +44,7 @@ const SearchBar = () => {
 
             {/* search input */}
             <div className={`${isSearchPanelOpen ? 'w-82' : 'w-64'} h-fit relative duration-100`} ref={refs.setReference} {...getReferenceProps()}>
-                <div className="w-full duration-100 h-11 rounded-lg bg-neutral-900 border border-neutral-700 flex items-center pr-2">
+                <div className="w-full duration-100 h-11 rounded-lg bg-neutral-950 border border-neutral-700 flex items-center pr-2">
                     <button className="w-10 h-full grid place-content-center text-neutral-300 cursor-pointer">
                         <Search className="w-4" />
                     </button>

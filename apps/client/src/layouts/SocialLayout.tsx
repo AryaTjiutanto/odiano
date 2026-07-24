@@ -22,29 +22,37 @@ const SocialLayout = () => {
     }, [])
 
     return (
-        <div className="w-full min-h-screen px-16 2xl:px-40">
+        <div className="w-full min-h-screen px-2 xl:px-10 2xl:px-40">
             {
                 showCreatePostFormSection &&
-                <Suspense fallback={<div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-20"></div>}>
+                <Suspense fallback={<div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-20"></div>}>
                     <CreatePostFormSection setShowCreatePostFormSection={setShowCreatePostFormSection} />
                 </Suspense>
             }
-            <div className="w-full h-full grid grid-cols-12 2xl:grid-cols-11 gap-16 relative">
-                {/* content */}
-                <aside className="w-full h-screen col-span-3 2xl:col-span-3 py-10 sticky top-0">
+            <div className="w-full h-full grid lg:grid-cols-11 xl:grid-cols-12 gap-5 xl:gap-8 relative">
+                {/* left sidebar */}
+                <aside className="w-full h-screen col-span-1 xl:col-span-3 py-10 sticky top-0">
                     <div className="w-full h-full px-3">
-                        <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationIsSidebarVisible={setIsNotificationSidebarVisible} />
+                        <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationSidebarVisible={setIsNotificationSidebarVisible} isNotificationSidebarVisible={isNotificationSidebarVisible}/>
                     </div>
 
-                    <div className={`h-screen bg-neutral-950 py-10 absolute top-0 left-0 overflow-hidden z-20 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
+                    {/* notification */}
+                    <div className={`hidden xl:inline-block h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 ${isNotificationSidebarVisible ? "lg:w-72 xl:w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
                         <NotificationSidebar setIsNotificatoinSidebarVisible={setIsNotificationSidebarVisible} />
                     </div>
                 </aside>
-                <main className="col-span-6 2xl:col-span-5 pt-10">
+
+                {/* main */}
+                <main className="col-span-6 xl:col-span-6 2xl:pt-10">
                     <Outlet />
                 </main>
-                <div className="col-span-3 2xl:col-span-3 pt-10">
-                    <div></div>
+
+                {/* right sidebar */}
+                <div className="col-span-4 xl:col-span-3 h-screen sticky top-0 right-0 pt-10">  
+                    {/* notification */}
+                    <div className={`xl:hidden h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 px-5 ${isNotificationSidebarVisible ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
+                        <NotificationSidebar setIsNotificatoinSidebarVisible={setIsNotificationSidebarVisible} />
+                    </div>
                 </div>
             </div>
         </div>

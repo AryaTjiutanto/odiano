@@ -80,9 +80,9 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
     }, [])
 
     return (
-        <div className="w-screen h-screen fixed bg-neutral-950/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32">
+        <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32">
             {/* content */}
-            <div className="w-[650px] h-fit bg-neutral-900 rounded-3xl overflow-hidden duration-100 z-22">
+            <div className="w-[650px] h-fit bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22">
                 {/* form */}
                 <form onSubmit={handleSubmit(onSubmit)} className={`w-full p-10 h-full relative ${isCreated && "hidden"}`}>
                     {/* comming soon */}
@@ -136,7 +136,7 @@ const PostFormSection = ({ setShowCreatePostFormSection }: Props) => {
                 <div className={`w-full h-120 flex flex-col items-center justify-center px-6 ${!isCreated && "hidden"}`}>
                     <div className="flex justify-center">
                         <div className="bg-neutral-50 p-[2px] rounded-full">
-                            <div className="flex items-center justify-center w-20 h-20 rounded-full  bg-neutral-900 text-neutral-50">
+                            <div className="flex items-center justify-center w-20 h-20 rounded-full  bg-neutral-950 text-neutral-50">
                                 <Check size={40}/>
                             </div>
                         </div>

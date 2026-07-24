@@ -53,9 +53,9 @@ export const ImageCropper = (payload: Payload) => {
     })
 
     return (
-        <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-neutral-950 z-22">
+        <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-black z-22">
             {/* shortcut key */}
-            <div className="hidden lg:flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-900 p-5 border border-neutral-700 rounded-lg">
+            <div className="hidden lg:flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-950 p-5 border border-neutral-700 rounded-lg">
                 <h1 className="font-bold">
                     Shortcut key
                 </h1>
@@ -66,7 +66,7 @@ export const ImageCropper = (payload: Payload) => {
                                 Close the cropping process
                             </span>
                         </div>
-                        <kbd className="h-5 px-2 bg-neutral-800 border border-neutral-500 rounded text-xs">
+                        <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
                             Esc
                         </kbd>
                     </div>
@@ -76,7 +76,7 @@ export const ImageCropper = (payload: Payload) => {
                                 Finish the cropping process
                             </span>
                         </div>
-                        <kbd className="h-5 px-2 bg-neutral-800 border border-neutral-500 rounded text-xs">
+                        <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
                             Enter
                         </kbd>
                     </div>

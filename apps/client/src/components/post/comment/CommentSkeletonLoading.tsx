@@ -2,7 +2,7 @@ const CommentSkeletonLoading = () => {
     return (
         <div className="w-full flex space-x-3">
             <div className="">
-                <div className="w-12 aspect-square rounded-full bg-neutral-800 animate-pulse"></div>
+                <div className="w-12 aspect-square rounded-full bg-neutral-900 animate-pulse"></div>
             </div>
             <div className="w-full">
                 <div className="flex items-center justify-between w-full">

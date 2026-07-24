@@ -120,7 +120,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
 
     if (!isAuthenticated) {
         return (
-            <div className="w-full sticky top-0 left-0 bg-neutral-950 border-y border-neutral-800 py-8 grid place-content-center mt-10">
+            <div className="w-full sticky top-0 left-0 bg-black border-y border-neutral-800 py-8 grid place-content-center mt-10">
                 <h1>
                     <Link to="/signin" className="text-sky-500 underline hover:text-sky-400 duration-100">
                         Sign in
@@ -136,7 +136,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="sticky top-0 left-0 w-full bg-neutral-950 border-y border-neutral-800 py-8 mt-10">
+        <form onSubmit={handleSubmit(onSubmit)} className="sticky top-0 left-0 w-full bg-black border-y border-neutral-800 py-8 mt-10">
             <div className="flex gap-4">
                 <div className="w-12 h-12">
                     <Profile data={currentUser?.profileImage} />

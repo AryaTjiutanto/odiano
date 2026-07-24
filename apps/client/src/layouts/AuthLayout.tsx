@@ -4,7 +4,7 @@ import connectLogo from "../assets/img/logo/connect-gradient.svg";
 
 const AuthLayout = () => {
     return (
-        <div className="dark:bg-neutral-950 w-full h-full text-neutral-100 selection:bg-pink-500">
+        <div className="dark:bg-black w-full h-full text-neutral-100 selection:bg-pink-500">
             <div className="w-full max-w-[1650px] mx-auto min-h-screen">
                 <Link to={""}>
                     <div className="flex items-center space-x-10 absolute top-10 md:top-12 2xl:top-20 left-12 md:left-20 2xl:left-28">

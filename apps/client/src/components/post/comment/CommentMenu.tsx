@@ -36,12 +36,12 @@ const CommentMenu = forwardRef<HTMLDivElement, Props>(({ isOpen, handlers, style
 
     return (
         <FloatingPortal>
-            <div ref={ref} style={style} {...floatingProps} className="w-60 py-2 bg-neutral-900 rounded-xl text-neutral-100 overflow-hidden">
+            <div ref={ref} style={style} {...floatingProps} className="w-60 py-2 bg-neutral-950 rounded-xl text-neutral-100 overflow-hidden">
                 {
                     items && items.map(item => {
                         const Icon = item.icon;
                         return (
-                            <button className="w-full px-5 h-11 flex items-center justify-between cursor-pointer hover:bg-neutral-800 duration-100" key={item.label} onClick={item.handler}>
+                            <button className="w-full px-5 h-11 flex items-center justify-between cursor-pointer hover:bg-neutral-900 duration-100" key={item.label} onClick={item.handler}>
                                 <div className="flex items-center space-x-3">
                                     <Icon className="w-4"/>
                                     <span>

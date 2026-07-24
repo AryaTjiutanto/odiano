@@ -1,6 +1,6 @@
 const PostSkeletonLoading = () => {
     return (
-        <article className="w-full p-7 rounded-lg bg-neutral-900">
+        <article className="w-full p-7 rounded-lg bg-neutral-950">
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                     <div className="h-10 aspect-square rounded-full bg-neutral-700 animate-pulse"></div>

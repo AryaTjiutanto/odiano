@@ -37,7 +37,7 @@ const Homepage = () => {
             {/* body */}
             <div className="w-full flex flex-col">
                 {/* heading */}
-                <section className="w-full sticky top-0 py-10 flex justify-between items-center bg-neutral-950/10 backdrop-blur-2xl z-23">
+                <section className="w-full sticky top-0 py-10 flex justify-between items-center bg-black/10 backdrop-blur-2xl z-23">
                     {/* search bar */}
                     <SearchBar/>
 

@@ -71,11 +71,11 @@ const DateInputSection = ({ setDate }: Props) => {
                             </div>
                         </div>
 
-                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-neutral-950 rounded-md duration-100 max-h-96 transition-none transition-opacity ${monthDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} {...monthDropdown.getFloatingProps()} ref={monthDropdown.refs.setFloating} style={monthDropdown.floatingStyles}>
+                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-96 transition-none transition-opacity ${monthDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} {...monthDropdown.getFloatingProps()} ref={monthDropdown.refs.setFloating} style={monthDropdown.floatingStyles}>
                             {
                                 months.map((month, index) => {
                                     return (
-                                        <button key={`month-${index}`} type="button" onClick={() => monthDropdown.selectValue(index)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${monthDropdown.value == month.value ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                        <button key={`month-${index}`} type="button" onClick={() => monthDropdown.selectValue(index)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${monthDropdown.value == month.value ? "bg-neutral-950" : "hover:bg-neutral-950"}`}>
                                             {month.name}
                                         </button>
                                     )
@@ -102,11 +102,11 @@ const DateInputSection = ({ setDate }: Props) => {
                             </div>
                         </div>
 
-                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-neutral-950 rounded-md duration-100 max-h-96 transition-none transition-opacity ${dayDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={dayDropdown.floatingStyles} {...dayDropdown.getFloatingProps()} ref={dayDropdown.refs.setFloating}>
+                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-96 transition-none transition-opacity ${dayDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={dayDropdown.floatingStyles} {...dayDropdown.getFloatingProps()} ref={dayDropdown.refs.setFloating}>
                             {
                                 Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
                                     return (
-                                        <button type="button" key={`day-${day}`} onClick={() => dayDropdown.selectValue(day)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${dayDropdown.value == day ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                        <button type="button" key={`day-${day}`} onClick={() => dayDropdown.selectValue(day)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${dayDropdown.value == day ? "bg-neutral-950" : "hover:bg-neutral-950"}`}>
                                             {day}
                                         </button>
                                     )
@@ -130,11 +130,11 @@ const DateInputSection = ({ setDate }: Props) => {
                             </div>
                         </div>
 
-                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-neutral-950 rounded-md duration-100 max-h-96 transition-none transition-opacity ${yearDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={yearDropdown.floatingStyles} {...yearDropdown.getFloatingProps()} ref={yearDropdown.refs.setFloating}>
+                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-96 transition-none transition-opacity ${yearDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={yearDropdown.floatingStyles} {...yearDropdown.getFloatingProps()} ref={yearDropdown.refs.setFloating}>
                             {
                                 Array.from({ length: 150 }, (_, i) => new Date().getFullYear() - i).map((year) => {
                                     return (
-                                        <button key={`year-${year}`} type="button" onClick={() => yearDropdown.selectValue(year)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${yearDropdown.value == year ? "bg-neutral-900" : "hover:bg-neutral-900"}`}>
+                                        <button key={`year-${year}`} type="button" onClick={() => yearDropdown.selectValue(year)} className={`w-full h-10 text-left px-4 duration-100 cursor-pointer ${yearDropdown.value == year ? "bg-neutral-950" : "hover:bg-neutral-950"}`}>
                                             {year}
                                         </button>
                                     )

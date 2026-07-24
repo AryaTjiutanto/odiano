@@ -66,7 +66,7 @@ const Post = ({ data, author }: Props) => {
 
 
     return (
-        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full p-7 rounded-lg bg-neutral-900 cursor-pointer">
+        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full p-7 rounded-lg bg-neutral-950 cursor-pointer">
             <div className="flex items-center justify-between">
                 <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
                     <div className="flex items-center space-x-3">

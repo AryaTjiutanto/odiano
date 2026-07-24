@@ -148,7 +148,7 @@ const OnBoarding = () => {
             }
 
             {/* content */}
-            <div className="bg-neutral-950 min-h-screen">
+            <div className="bg-black min-h-screen">
                 <div className="w-full text-neutral-100" onDrop={(e) => dragAndDrop.handleDrop(e, imageUploadHandler.getOriginalImageUrl)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                     <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
                         <form onSubmit={handleSubmit(onSubmit)} className="w-full md:max-w-120 2xl:max-w-137.5 flex flex-col items-center">
@@ -156,14 +156,14 @@ const OnBoarding = () => {
 
                             <div className="my-16 flex flex-col items-center">
                                 <label htmlFor="profile-input" className="">
-                                    <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-900 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
+                                    <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-950 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
                                         {
                                             imageUploadHandler.imageCroppedBlob ?
                                                 <img src={URL.createObjectURL(imageUploadHandler.imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                 :
                                                 <User className="size-20 text-neutral-700" />
                                         }
-                                        <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-900/80 cursor-pointer opacity-0 duration-100 z-10 ${dragAndDrop.isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
+                                        <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-950/80 cursor-pointer opacity-0 duration-100 z-10 ${dragAndDrop.isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
                                             <Upload className="w-10 text-neutral-400" />
                                         </div>
                                     </div>
