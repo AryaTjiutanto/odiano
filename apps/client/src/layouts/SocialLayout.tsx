@@ -29,9 +29,9 @@ const SocialLayout = () => {
                     <CreatePostFormSection setShowCreatePostFormSection={setShowCreatePostFormSection} />
                 </Suspense>
             }
-            <div className="w-full h-full grid lg:grid-cols-11 xl:grid-cols-12 gap-5 xl:gap-8 relative">
+            <div className="w-full h-full grid lg:grid-cols-11 xl:grid-cols-12 gap-5 xl:gap-14 relative">
                 {/* left sidebar */}
-                <aside className="w-full h-screen col-span-1 xl:col-span-3 py-10 sticky top-0">
+                <aside className="w-full h-screen col-span-1 xl:col-span-3 py-7 xl:py-10 sticky top-0">
                     <div className="w-full h-full px-3">
                         <Sidebar setShowCreatePropsSection={setShowCreatePostFormSection} setIsNotificationSidebarVisible={setIsNotificationSidebarVisible} isNotificationSidebarVisible={isNotificationSidebarVisible}/>
                     </div>
@@ -43,7 +43,7 @@ const SocialLayout = () => {
                 </aside>
 
                 {/* main */}
-                <main className="col-span-6 xl:col-span-6 2xl:pt-10">
+                <main className="col-span-6 xl:col-span-6">
                     <Outlet />
                 </main>
 

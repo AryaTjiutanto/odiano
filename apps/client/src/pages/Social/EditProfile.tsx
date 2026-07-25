@@ -223,7 +223,7 @@ const EditProfile = () => {
             }
 
             {/* form */}
-            <div className={`w-full min-h-screen ${isSubmitting && "pointer-events-none"}`}>
+            <div className={`w-full min-h-screen pt-8 ${isSubmitting && "pointer-events-none"}`}>
                 <form onSubmit={handleSubmit(update)} className="w-full h-full">
                     {/* header */}
                     <div className="w-full flex items-center justify-between">

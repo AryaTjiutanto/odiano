@@ -210,7 +210,7 @@ const ShowPost = () => {
 
     return (
         <>
-            <div className="w-full h-full relative">
+            <div className="w-full h-full relative pt-8">
                 <div>
                     <div className="flex items-center space-x-5">
                         <GoBackIconButton />

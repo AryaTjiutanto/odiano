@@ -197,7 +197,7 @@ const Profile = () => {
 
     return (
         <>
-            <div className="w-full min-h-screen bg-black text-neutral-200">
+            <div className="w-full min-h-screen bg-black text-neutral-200 pt-8">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
