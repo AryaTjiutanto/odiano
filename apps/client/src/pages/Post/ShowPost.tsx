@@ -195,14 +195,15 @@ const ShowPost = () => {
         }
     }
 
-    // check postPublicId
-    if (!postPublicId || (!postQuery.data && !postQuery.isPending)) {
-        return <NotFound />
-    }
-
+    
     // display
     if (postQuery.isPending) {
         return <PostDetailSkeletonLoading />
+    }
+
+    // check postPublicId
+    if (!postPublicId || !postQuery.data) {
+        return <NotFound />
     }
 
     if (postQuery.isError) {
