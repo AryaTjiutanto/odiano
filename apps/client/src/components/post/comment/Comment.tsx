@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteComment } from "../../../services/post.service";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 import { postKeys } from "../../../queries/postKeys";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { decreaseCommentCount, increaseCommentCount, removeComment } from "../../../helpers/cache/postCache.helper";
 import {flip, offset, shift, useClick, useDismiss, useFloating, useInteractions} from "@floating-ui/react";
 import { useState } from "react";
@@ -89,10 +89,10 @@ const Comment = ({ data, postId }: Props) => {
                 <div className="w-full">
                     <div className="flex items-center justify-between w-full">
                         <div className="w-full flex items-center justify-between">
-                            <div className="flex items-center space-x-2 text-sm">
+                            <Link to={`/profile/${data.author.username}`} className="flex items-center space-x-2 text-sm">
                                 <h1 className="font-bold">{data.author.name || ""}</h1>
                                 <h2 className="text-neutral-500">@{data.author.username || ""}</h2>
-                            </div>
+                            </Link>
                         </div>
                         
                         {

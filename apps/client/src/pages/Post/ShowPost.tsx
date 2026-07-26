@@ -32,6 +32,7 @@ const ShowPost = () => {
     const navigate = useNavigate();
 
     const { username, postPublicId } = useParams();
+    const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
@@ -56,6 +57,7 @@ const ShowPost = () => {
         queryFn: getPost,
         enabled: !!postPublicId,
         staleTime: 10 * 1000,
+        initialData : null,
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -78,6 +80,7 @@ const ShowPost = () => {
         queryFn: getIsFollowingInformation,
         queryKey: isFollowingQueryKey,
         enabled: (!!postQuery?.data && isAuthenticated),
+        initialData : null,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
     });
@@ -175,6 +178,12 @@ const ShowPost = () => {
     const handleLike = async () => {
         if (!postQuery.data) return;
 
+        if(!isInitialized) return;
+
+        if(!isAuthenticated) {
+            return navigate("/signin")
+        }
+
         try {
             if (postQuery.data?.isLiked) {
                 await unlikeMutation.mutateAsync(postQuery.data?.id);
@@ -187,7 +196,7 @@ const ShowPost = () => {
     }
 
     // check postPublicId
-    if (!postPublicId) {
+    if (!postPublicId || (!postQuery.data && !postQuery.isPending)) {
         return <NotFound />
     }
 

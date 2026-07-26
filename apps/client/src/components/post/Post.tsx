@@ -11,6 +11,7 @@ import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from ".
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { createLike, deleteLike } from "../../services/post.service";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
+import { useAppSelector } from "../../hooks/useRedux";
 
 type Props = {
     data: PostDTO,
@@ -18,6 +19,9 @@ type Props = {
 }
 
 const Post = ({ data, author }: Props) => {
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+    const isInitialized = useAppSelector(state => state.auth.isInitialized);
+
     const navigate = useNavigate();
     const setQueryDataHandler = useSetQueryDataHandler();
 
@@ -46,6 +50,12 @@ const Post = ({ data, author }: Props) => {
     // handle like
     const handleLike = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+
+        if(!isInitialized) return;
+
+        if(!isAuthenticated) {
+            return navigate("/signin");
+        }
 
         try {
             if (data.isLiked) {

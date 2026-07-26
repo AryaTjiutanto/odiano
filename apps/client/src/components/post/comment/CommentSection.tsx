@@ -28,6 +28,7 @@ const CommentSection = ({ postId }: Props) => {
     const currentUserCommentQuery = useQuery({
         queryKey: currentUserQueryKey,
         queryFn: getCurrentUserComments,
+        initialData : null,
         staleTime: 30 * 1000,
         enabled : isAuthenticated,
         gcTime: DEFAULT_GC_TIME,
@@ -86,7 +87,7 @@ const CommentSection = ({ postId }: Props) => {
                             {
                                 commentQuery.data?.pages.map((page) =>
                                     page.items.map((item) => (
-                                        <Comment data={item} postId={postId}/>
+                                        <Comment data={item} postId={postId} key={`comment-${item.id}`}/>
                                     )))
                             }
 

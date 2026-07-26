@@ -29,6 +29,7 @@ import EmailVerification from './pages/Auth/EmailVerification.tsx'
 import RequireUnVerify from './components/guard/RequireUnVerify.tsx'
 import CreatePostLayout from './layouts/PostFormLayout.tsx'
 import NotificationSectionLayout from './layouts/NotificationSectionLayout.tsx'
+import ScrollToTop from './router/ScrollToTop.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -48,6 +49,7 @@ createRoot(document.getElementById('root')!).render(
         <SocketProvider>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <BrowserRouter>
+              <ScrollToTop/>
               <NavigationTracker />
               <Routes>
                 <Route element={<AppLayout />}>
