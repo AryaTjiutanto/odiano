@@ -14,7 +14,7 @@ import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import type { AxiosErrorResponseData } from "../../types/response.type";
 import { notify } from "../../helpers/notification/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
-import Profile from "../../components/social/Profile";
+import Profile from "../../components/profile/Profile";
 import { useAppSelector } from "../../hooks/useRedux";
 import { postKeys } from "../../queries/postKeys";
 import NotFound from "../Error/NotFound";
@@ -210,7 +210,7 @@ const ShowPost = () => {
 
     return (
         <>
-            <div className="w-full h-full relative pt-8">
+            <div className="w-full h-full relative main-section-padding-top">
                 <div>
                     <div className="flex items-center space-x-5">
                         <GoBackIconButton />

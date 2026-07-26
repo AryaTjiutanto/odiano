@@ -1,6 +1,6 @@
 import type { NotificationDTO } from "@connect/shared";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
-import Profile from "../../social/Profile";
+import Profile from "../../profile/Profile";
 
 type Props = {
     item: NotificationDTO

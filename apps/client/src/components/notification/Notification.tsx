@@ -20,7 +20,7 @@ const Notification = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, ha
                 <div className="w-full space-y-2">
                     {data.pages.map((page) => page.items.map(item => {
                         return (
-                            <article className={`w-full ${!item.isRead && 'bg-neutral-950'} rounded-xl px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)}>
+                            <article className={`w-full ${!item.isRead && 'bg-neutral-950'} rounded-xl px-5 sm:px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)}>
                                 {
                                     (item.type == NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST) &&
                                     <CommentOnYourPostNotification item={item} />

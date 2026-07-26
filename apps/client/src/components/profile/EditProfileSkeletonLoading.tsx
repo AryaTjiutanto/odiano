@@ -2,7 +2,7 @@ import GoBackIconButton from "../common/GoBackIconButton";
 
 const EditProfileSkeletonLoading = () => {
     return (
-        <div className="w-full min-h-screen">
+        <div className="w-full min-h-screen default-input-text-behaviour">
             {/* header */}
             <div className="w-full flex items-center justify-between">
                 <div className="flex items-center space-x-2">

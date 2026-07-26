@@ -2,7 +2,7 @@ import { ERROR_RESPONSE_CODE, type PostDTO, type UserSummaryDTO } from "@connect
 import { Bookmark, EllipsisVertical, Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
-import Profile from "../social/Profile";
+import Profile from "../profile/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
@@ -66,7 +66,7 @@ const Post = ({ data, author }: Props) => {
 
 
     return (
-        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full p-7 rounded-lg bg-neutral-950 cursor-pointer">
+        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 sm:p-7 sm:rounded-lg sm:bg-neutral-950 cursor-pointer border-b last:border-0 border-neutral-900 sm:border-0">
             <div className="flex items-center justify-between">
                 <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
                     <div className="flex items-center space-x-3">

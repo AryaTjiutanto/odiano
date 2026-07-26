@@ -27,6 +27,8 @@ import EditProfile from './pages/Social/EditProfile.tsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import EmailVerification from './pages/Auth/EmailVerification.tsx'
 import RequireUnVerify from './components/guard/RequireUnVerify.tsx'
+import CreatePostLayout from './layouts/PostFormLayout.tsx'
+import NotificationSectionLayout from './layouts/NotificationSectionLayout.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -51,16 +53,20 @@ createRoot(document.getElementById('root')!).render(
                 <Route element={<AppLayout />}>
                   <Route element={<PageLoader />}>
                     {/* social */}
-                    <Route element={<SocialLayout />}>
-                      <Route path='/' element={<Homepage />} />
+                    <Route element={<CreatePostLayout />}>
+                      <Route element={<NotificationSectionLayout />}>
+                        <Route element={<SocialLayout />}>
+                          <Route path='/' element={<Homepage />} />
 
-                      {/* post */}
-                      <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+                          {/* post */}
+                          <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
 
-                      {/* profile */}
-                      <Route path='/profile/:username' element={<Profile />} />
-                      <Route element={<RequireAuthGuard />}>
-                        <Route path='/profile/:username/edit' element={<EditProfile />} />
+                          {/* profile */}
+                          <Route path='/profile/:username' element={<Profile />} />
+                          <Route element={<RequireAuthGuard />}>
+                            <Route path='/profile/:username/edit' element={<EditProfile />} />
+                          </Route>
+                        </Route>
                       </Route>
                     </Route>
 
@@ -91,5 +97,5 @@ createRoot(document.getElementById('root')!).render(
         </SocketProvider>
       </PersistQueryClientProvider>
     </Provider>
-  </StrictMode>,
+  </StrictMode >,
 )

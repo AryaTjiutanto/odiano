@@ -48,7 +48,7 @@ const Toast = ({ t, title, description, element, type }: ToastProps) => {
     return (
         <div
             className={`${t.visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
-                } max-w-sm w-full bg-neutral-950/70 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 duration-100 text-neutral-100 relative backdrop-blur-2xl overflow-hidden`}
+                } mx-w-[70%] sm:max-w-sm w-full bg-neutral-950/70 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 duration-100 text-neutral-100 relative backdrop-blur-2xl overflow-hidden`}
         >
             <div className="flex-1 w-0 p-4">
                 <div className="flex items-start">

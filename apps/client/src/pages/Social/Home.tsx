@@ -1,4 +1,3 @@
-import StoryList from "../../components/social/StoryList";
 import Post from "../../components/post/Post";
 import type { InfiniteQuery, PostDTO } from "@connect/shared";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
@@ -6,8 +5,9 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { postKeys } from "../../queries/postKeys";
-import SearchBar from "../../components/search/Search";
 import { getPosts } from "../../services/post.service";
+import HomeHeader from "../../components/social/HomeHeader";
+import CreatePostFloatingButton from "../../components/social/CreatePostFloatingButton";
 
 const Homepage = () => {
     const postsQueryKey = postKeys.all;
@@ -34,36 +34,20 @@ const Homepage = () => {
                 content="Connect with friends, share posts, and explore communities."
             />
 
+            {/* create post button - mobile */}
+            <CreatePostFloatingButton/>
+
             {/* body */}
             <div className="w-full flex flex-col">
-                {/* heading */}
-                <section className="w-full sticky top-0 pt-5 xl:pt-9 pb-6 flex justify-between items-center bg-black/10 backdrop-blur-2xl z-23">
-                    {/* search bar */}
-                    <SearchBar/>
-
-                    {/* filter */}
-                    <div className="w-fit flex items-center space-x-4">
-                        {/* comming soon */}
-                        {/* <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-500">
-                            Following
-                        </button> */}
-                        <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-100">
-                            My Feed
-                        </button>
-
-                        {/* comming soon */}
-                        {/* <button className="text-sm font-semibold cursor-pointer duration-150 hover:text-neutral-100 text-neutral-500">
-                            Popular
-                        </button> */}
-                    </div>
-                </section>
+                {/* header */}
+                <HomeHeader/>
 
                 {/* story */}
                 {/* comming soon */}
                 {/* <StoryList /> */}
 
                 {/* posts */}
-                <div className="mt-2 space-y-6 pb-6">
+                <div className="mt-2 space-y-6 sm:pb-6">
                     {
                         isPending &&
                         Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`}/>)

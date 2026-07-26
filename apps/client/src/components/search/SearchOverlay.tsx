@@ -23,6 +23,7 @@ type Props = {
 
 const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, floatingStyles, floatingProps, isSearchQueryPending, query, searchQueryData }, ref) => {
     const isInitialized = useAppSelector((state) => state.auth.isInitialized);
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
 
     // get search history
@@ -40,7 +41,7 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
         queryKey: searchKeys.history,
         queryFn: getSearchHistories,
         staleTime: 30 * 10000,
-        enabled: !!isInitialized,
+        enabled: !!(isInitialized && isSearchPanelOpen && isAuthenticated),
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -70,9 +71,9 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
     }
 
     return (
-        <div className={`absolute top-14 w-full overflow-y-auto ${isSearchPanelOpen ? 'max-h-100 opacity-100' : 'max-h-0 opacity-0 touch-none'} bg-black border border-neutral-700 rounded-lg transition-[max-height,opacity] duration-100 overflow-hidden`} ref={ref} style={floatingStyles} {...floatingProps}>
+        <div className={`w-full overflow-y-auto ${isSearchPanelOpen ? 'max-h-100 opacity-100' : 'max-h-0 opacity-0 touch-none'} bg-black border border-neutral-700 rounded-lg transition-[max-height,opacity] duration-100 overflow-hidden`} ref={ref} style={floatingStyles} {...floatingProps}>
             {
-                (isLoading) ?
+                (isLoading && isAuthenticated) ?
                     <div className="w-full space-y-2">
                         {
                             Array.from({ length: 3 }).map((_, i) => (
@@ -114,7 +115,7 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
                             ))
                         }
                         {
-                            (query.length > 0 && isSearchResultEmpty) &&
+                            (query.length > 0 && isSearchResultEmpty && !isLoading) &&
                             <div className="w-full h-20 grid place-content-center text-sm text-neutral-500">
                                 No result found for "{query}"
                             </div>

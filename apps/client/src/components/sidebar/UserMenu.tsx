@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { logout } from "../../features/auth/auth.thunk";
-import Profile from "../social/Profile";
-import { EllipsisVertical } from "lucide-react";
+import Profile from "../profile/Profile";
+import { EllipsisVertical, FilePenLine, LogIn, MailWarning } from "lucide-react";
 import { Link } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
 
@@ -12,31 +12,31 @@ const UserMenu = () => {
     const userData = useAppSelector((state) => state.auth.user);
     const dispatch = useAppDispatch();
 
-    
+
     const profileLink = !isAuthenticated
-    ? "/signin"
-    : !userData?.isEmailVerified
-    ? "/email/verify"
-    : "/onboarding";
-    
+        ? "/signin"
+        : !userData?.isEmailVerified
+            ? "/email/verify"
+            : "/onboarding";
+
     // popover handler
     const [isOpen, setIsOpen] = useState<boolean>();
-    const {refs, floatingStyles, context} = useFloating({
-        strategy : "fixed",
-        whileElementsMounted : autoUpdate,
-        middleware : [
+    const { refs, floatingStyles, context } = useFloating({
+        strategy: "fixed",
+        whileElementsMounted: autoUpdate,
+        middleware: [
             offset(20),
             shift(),
         ],
-        placement : "top-start",
-        open : isOpen,
-        onOpenChange : setIsOpen,
+        placement: "top-start",
+        open: isOpen,
+        onOpenChange: setIsOpen,
     });
 
     const click = useClick(context);
     const dismiss = useDismiss(context);
 
-    const {getReferenceProps, getFloatingProps} = useInteractions([click, dismiss])
+    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss])
 
     // logout
     const logoutHandler = () => {
@@ -62,24 +62,34 @@ const UserMenu = () => {
         return (
             <Link to={profileLink}>
                 <button className="w-full flex items-center justify-between space-x-10 cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12">
+                    <div className="flex items-center xl:space-x-3">
+                        <div className="w-12 h-12 hidden xl:inline-block">
                             <Profile data={null} />
                         </div>
 
-                        <div className="text-left">
+                        <div className="w-10 h-10 text-neutral-900 xl:text-neutral-100 bg-neutral-50 xl:bg-transparent rounded-full xl:rounded-none xl:h-fit xl:w-fit xl:text-left flex items-center justify-center xl:justify-start">
                             {!isAuthenticated ? (
-                                <h1 className="text-base font-semibold">
-                                    Create an account or sign in
-                                </h1>
+                                <>
+                                    <LogIn className="xl:hidden w-4" />
+                                    <h1 className="text-base font-semibold hidden xl:inline-block">
+                                        Create an account or sign in
+                                    </h1>
+                                </>
                             ) : !userData?.isEmailVerified ? (
-                                <h1 className="text-base font-semibold">
-                                    Verify your Email
-                                </h1>
+                                <>
+                                    <MailWarning className="xl:hidden w-4" />
+
+                                    <h1 className="text-base font-semibold hidden xl:inline-block">
+                                        Verify your Email
+                                    </h1>
+                                </>
                             ) : (
-                                <h1 className="text-base font-semibold">
-                                    Complete your data
-                                </h1>
+                                <>
+                                    <FilePenLine className="xl:hidden w-4" />
+                                    <h1 className="text-base font-semibold hidden xl:inline-block">
+                                        Complete your data
+                                    </h1>
+                                </>
                             )}
                         </div>
                     </div>
@@ -94,7 +104,7 @@ const UserMenu = () => {
                 {/* popover */}
                 <FloatingPortal>
                     {isOpen &&
-                        <div className={`w-48 text-white xl:w-60 duration-100 font-bold transition-none transition-opacity z-25 ${!isOpen ? "opacity-0 overflow-hidden" : "opacity-100"}`} {...getFloatingProps()} style={floatingStyles} ref={refs.setFloating}>
+                        <div className={`w-72 xl:w-60 2xl:w-80 text-white duration-100 font-bold transition-none transition-opacity z-25 ${!isOpen ? "opacity-0 overflow-hidden" : "opacity-100"}`} {...getFloatingProps()} style={floatingStyles} ref={refs.setFloating}>
                             <div className="w-full relative rounded-xl z-2 overflow-hidden bg-neutral-900">
                                 <button className="w-full px-5 py-4 text-left bg-neutral-900 hover:text-neutral-500 cursor-pointer duration-100" onClick={logoutHandler}>
                                     Log out @{userData.username}

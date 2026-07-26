@@ -71,7 +71,7 @@ const DateInputSection = ({ setDate }: Props) => {
                             </div>
                         </div>
 
-                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-96 transition-none transition-opacity ${monthDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} {...monthDropdown.getFloatingProps()} ref={monthDropdown.refs.setFloating} style={monthDropdown.floatingStyles}>
+                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-60 md:max-h-96 transition-none transition-opacity ${monthDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} {...monthDropdown.getFloatingProps()} ref={monthDropdown.refs.setFloating} style={monthDropdown.floatingStyles}>
                             {
                                 months.map((month, index) => {
                                     return (
@@ -102,7 +102,7 @@ const DateInputSection = ({ setDate }: Props) => {
                             </div>
                         </div>
 
-                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-96 transition-none transition-opacity ${dayDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={dayDropdown.floatingStyles} {...dayDropdown.getFloatingProps()} ref={dayDropdown.refs.setFloating}>
+                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-60 md:max-h-96 transition-none transition-opacity ${dayDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={dayDropdown.floatingStyles} {...dayDropdown.getFloatingProps()} ref={dayDropdown.refs.setFloating}>
                             {
                                 Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
                                     return (
@@ -130,7 +130,7 @@ const DateInputSection = ({ setDate }: Props) => {
                             </div>
                         </div>
 
-                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-96 transition-none transition-opacity ${yearDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={yearDropdown.floatingStyles} {...yearDropdown.getFloatingProps()} ref={yearDropdown.refs.setFloating}>
+                        <div className={`w-full overflow-y-auto border border-neutral-200 bg-black rounded-md duration-100 max-h-60 md:max-h-96 transition-none transition-opacity ${yearDropdown.isOpen ? "py-2 opacity-100" : "h-0 py-0 opacity-0"}`} style={yearDropdown.floatingStyles} {...yearDropdown.getFloatingProps()} ref={yearDropdown.refs.setFloating}>
                             {
                                 Array.from({ length: 150 }, (_, i) => new Date().getFullYear() - i).map((year) => {
                                     return (

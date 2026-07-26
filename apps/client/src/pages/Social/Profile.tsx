@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
-import { CalendarDays, EllipsisVertical } from "lucide-react";
-import ProfileComponent from "../../components/social/Profile";
+import { CalendarDays } from "lucide-react";
+import ProfileComponent from "../../components/profile/Profile";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@connect/shared";
 import ErrorState from "../../components/common/ErrorState";
@@ -120,7 +120,7 @@ const Profile = () => {
     // display the data
     if (profileQuery.isPending) {
         return (
-            <div className="w-full min-h-screen bg-black text-neutral-200">
+            <div className="w-full min-h-screen bg-black text-neutral-200 default-input-text-behaviour">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
@@ -197,7 +197,7 @@ const Profile = () => {
 
     return (
         <>
-            <div className="w-full min-h-screen bg-black text-neutral-200 pt-8">
+            <div className="w-full min-h-screen bg-black text-neutral-200 main-section-padding-top">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
@@ -340,7 +340,7 @@ const Profile = () => {
                         }
                         {
                             (isPostsEmpty && !postsQuery.isPending) &&
-                            <div className="w-full h-fit py-20 px-32 rounded-xl border border-neutral-700 border-dashed flex flex-col items-center justify-center">
+                            <div className="w-full h-fit py-20 px-5 sm:px-10 xl:px-32 rounded-xl border border-neutral-700 border-dashed flex flex-col items-center justify-center">
                                 <h1 className="text-lg font-semibold text-neutral-200">
                                     No posts yet
                                 </h1>

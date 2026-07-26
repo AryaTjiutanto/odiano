@@ -1,4 +1,4 @@
-import Profile from "../../social/Profile";
+import Profile from "../../profile/Profile";
 import { type UserSummaryDTO } from "@connect/shared";
 
 type Props = {

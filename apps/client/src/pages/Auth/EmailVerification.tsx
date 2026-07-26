@@ -74,11 +74,11 @@ const EmailVerification = () => {
         <>
             <title>Email verification - Connect</title>
 
-            <div className="w-screen h-screen grid place-content-center">
-                <div className="flex flex-col items-center justify-center">
+            <div className="w-screen h-screen grid place-content-center p-7 sm:p-0">
+                <div className="flex flex-col items-center justify-center text-center">
                     <img src={connectLogo} />
                     <h1 className="mt-7 text-3xl font-bold">Please Check your email</h1>
-                    <p className="mt-3 text-neutral-400">
+                    <p className="text-base mt-3 text-neutral-400">
                         We have sent an OTP to <b className="text-neutral-200">{userData?.email}</b>
                     </p>
 

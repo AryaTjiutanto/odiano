@@ -1,6 +1,6 @@
 import { BIO_LENGTH, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@connect/shared";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
-import ProfileComponent from "../../components/social/Profile";
+import ProfileComponent from "../../components/profile/Profile";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
@@ -223,7 +223,7 @@ const EditProfile = () => {
             }
 
             {/* form */}
-            <div className={`w-full min-h-screen pt-8 ${isSubmitting && "pointer-events-none"}`}>
+            <div className={`w-full min-h-screen main-section-padding-top ${isSubmitting && "pointer-events-none"}`}>
                 <form onSubmit={handleSubmit(update)} className="w-full h-full">
                     {/* header */}
                     <div className="w-full flex items-center justify-between">

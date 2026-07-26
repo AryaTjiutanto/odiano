@@ -3,13 +3,13 @@ import OTP from "../models/otp.model";
 import { customAlphabet } from "nanoid";
 import { emailQueue, EmailQueueData } from "@connect/queue";
 import { render } from "@react-email/components";
-import VerifyEmail from "../emails/verifyEmail";
 import React from "react";
 import { getCache, setCache } from "@connect/redis";
 import { AppError } from "../errors/appError.error";
 
 import bcrypt from "bcrypt";
 import logger from "../libs/log/logger";
+import VerifyEmail from "../emails/verifyEmail";
 
 export const createAndSendOTP = async (target: string, channel: OtpChannels, purpose: OtpPurposes) => {
     // check send email verification attempt

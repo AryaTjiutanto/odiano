@@ -1,6 +1,6 @@
 const PostDetailSkeletonLoading = () => {
     return (
-        <div className="w-full">
+        <div className="w-full default-input-text-behaviour">
             {/* profile */}
             <div className="w-full flex items-center justify-between mt-8">
                 <div className="flex items-center space-x-3">

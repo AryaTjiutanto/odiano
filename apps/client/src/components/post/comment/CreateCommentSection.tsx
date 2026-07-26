@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import DotsLoader from "../../loader/DotsLoader";
 import { useAppSelector } from "../../../hooks/useRedux";
-import Profile from "../../social/Profile";
+import Profile from "../../profile/Profile";
 import { useMutation } from "@tanstack/react-query";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 import { Link, useParams } from "react-router-dom";

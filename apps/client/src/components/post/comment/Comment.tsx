@@ -1,7 +1,7 @@
 import { EllipsisVertical } from "lucide-react";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import { type PostCommentDTO, type PostDTO } from "@connect/shared";
-import Profile from "../../social/Profile";
+import Profile from "../../profile/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { deleteComment } from "../../../services/post.service";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";

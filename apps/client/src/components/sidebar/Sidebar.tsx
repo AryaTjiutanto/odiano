@@ -2,16 +2,15 @@ import { Link, useLocation } from "react-router-dom";
 import ConnectLogo from "../../assets/img/logo/connect-gradient.svg";
 import { Bell, Home, Pencil, User } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
-import UserMenu from "../sidebar/UserMenu";
+import UserMenu from "./UserMenu";
+import { usePostForm } from "../../providers/PostFormProvider";
+import { useNotificationSection } from "../../providers/NotificationSectionProvider";
 
-type Props = {
-    setShowCreatePropsSection: React.Dispatch<React.SetStateAction<boolean>>,
 
-    isNotificationSidebarVisible: boolean,
-    setIsNotificationSidebarVisible: React.Dispatch<React.SetStateAction<boolean>>
-}
+const Sidebar = () => {
+    const postForm = usePostForm();
+    const notificationSection = useNotificationSection();
 
-const Sidebar = ({ setIsNotificationSidebarVisible, isNotificationSidebarVisible, setShowCreatePropsSection }: Props) => {
     // location
     const location = useLocation();
     const pathName = location.pathname;
@@ -22,12 +21,12 @@ const Sidebar = ({ setIsNotificationSidebarVisible, isNotificationSidebarVisible
     const userData = useAppSelector((state) => state.auth.user);
 
     // openSidebar
-    const handleOpenNotificationSidebar = () => {
+    const handleOpenNotificationSection = () => {
         if (!isInitialized) {
             return;
         }
 
-        setIsNotificationSidebarVisible(!isNotificationSidebarVisible)
+        notificationSection.open();
     }
 
     return (
@@ -58,7 +57,7 @@ const Sidebar = ({ setIsNotificationSidebarVisible, isNotificationSidebarVisible
                                 isAuthenticated &&
                                 <>
                                     <li className="w-full">
-                                        <button onClick={handleOpenNotificationSidebar} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg cursor-pointer">
+                                        <button onClick={handleOpenNotificationSection} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg cursor-pointer">
                                             <Bell className="size-7 xl:size-auto" />
                                             <span className="hidden xl:inline-block">
                                                 Notification
@@ -108,17 +107,17 @@ const Sidebar = ({ setIsNotificationSidebarVisible, isNotificationSidebarVisible
                                 </>
                             }
                         </ul>
-                    </nav >
+                    </nav>
                     {
                         (isAuthenticated && userData?.isOnboarded) &&
                         <>
                             {/* xl */}
-                            <button onClick={() => setShowCreatePropsSection(true)} className="w-40 h-14 bg-white rounded-xl mt-10 text-lg text-neutral-900 font-bold cursor-pointer hidden hover:bg-white/0 hover:text-neutral-100 border border-white duration-100 xl:grid xl:place-content-center">
+                            <button onClick={postForm.open} className="w-40 h-14 bg-white rounded-xl mt-10 text-lg text-neutral-900 font-bold cursor-pointer hidden hover:bg-white/0 hover:text-neutral-100 border border-white duration-100 xl:grid xl:place-content-center">
                                 Post
                             </button>
                             
                             {/* md */}
-                            <button className="xl:hidden mt-14 w-10 h-10 bg-neutral-50 rounded-full text-neutral-800 grid place-content-center" onClick={() => setShowCreatePropsSection(true)}>
+                            <button className="xl:hidden mt-14 w-10 h-10 bg-neutral-50 rounded-full text-neutral-800 grid place-content-center" onClick={postForm.open}>
                                 <Pencil className="size-4"/>
                             </button>
                         </>
