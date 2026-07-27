@@ -1,6 +1,6 @@
-import { ERROR_RESPONSE_CODE, FailedAttemptError } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, FailedAttemptError } from "@odiano/shared";
 import { AppError } from "../../errors/appError.error";
-import { setCache } from "@connect/redis";
+import { setCache } from "@odiano/redis";
 
 type Params = {
     cacheKey : string,

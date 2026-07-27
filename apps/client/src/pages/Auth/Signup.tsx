@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserSchema, type CreateUserSchema, type AuthenticationResponse, type SuccessResponseData } from "@connect/shared";
+import { createUserSchema, type CreateUserSchema, type AuthenticationResponse, type SuccessResponseData } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
@@ -44,10 +44,10 @@ const Signup = () => {
     return (
         <>
             {/* head */}
-            <title>Create an account - connect</title>
+            <title>Create an account - odiano</title>
             <meta
                 name="description"
-                content="Connect with friends, share posts, and explore communities."
+                content="odiano with friends, share posts, and explore communities."
             />
 
             {/* body */}

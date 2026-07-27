@@ -1,4 +1,4 @@
-import { type SearchHistoryDTO } from "@connect/shared"
+import { type SearchHistoryDTO } from "@odiano/shared"
 import SearchResult from "./searchResult/SearchResult"
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";

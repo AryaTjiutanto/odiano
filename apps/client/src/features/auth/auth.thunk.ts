@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../libs/api";
-import type { CurrentUserDTO, AuthenticationResponse, SuccessResponseData } from "@connect/shared";
+import type { CurrentUserDTO, AuthenticationResponse, SuccessResponseData } from "@odiano/shared";
 
 export const refreshAccessToken = createAsyncThunk("auth/refreshAccessToken", async (_, thunkApi) => {
     try {

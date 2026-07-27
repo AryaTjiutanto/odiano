@@ -2,7 +2,7 @@ import Footer from "../components/auth/Footer";
 import { useEffect, useState } from "react";
 import { ImageCropper } from "../components/cropper/ImageCropper";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH } from "@connect/shared";
+import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../components/loader/DotsLoader";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
@@ -130,10 +130,10 @@ const OnBoarding = () => {
     return (
         <>
             {/* head */}
-            <title>Set Up Your Profile - Connect</title>
+            <title>Set Up Your Profile - odiano</title>
             <meta
                 name="description"
-                content="Connect with friends, share posts, and explore communities."
+                content="odiano with friends, share posts, and explore communities."
             />
 
             {/* body */}

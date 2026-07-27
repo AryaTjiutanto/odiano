@@ -1,4 +1,4 @@
-import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType } from "@connect/shared";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
 
 type NotificationSchema = {

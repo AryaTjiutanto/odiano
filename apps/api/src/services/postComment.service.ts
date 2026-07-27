@@ -1,4 +1,4 @@
-import { ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PostCommentDTO } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PostCommentDTO } from "@odiano/shared"
 import { toPostCommentDTO } from "../mappers/postComment.mapper"
 import PostComment from "../models/postComment.model"
 import { PostCommentQuery } from "../types/postComment.type"

@@ -1,4 +1,4 @@
-import { ErrorResponseCode } from "@connect/shared";
+import { ErrorResponseCode } from "@odiano/shared";
 
 export class AppError extends Error {
     statusCode : number;

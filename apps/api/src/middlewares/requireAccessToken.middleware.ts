@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../libs/auth/auth.token";
 import { AppError } from "../errors/appError.error";
 import { UnauthorizedError } from "../errors/unauthorized.error";
-import { ERROR_RESPONSE_CODE } from "@connect/shared";
+import { ERROR_RESPONSE_CODE } from "@odiano/shared";
 
 export const requireAccessToken = (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -1,4 +1,4 @@
-import { getRedis } from "@connect/redis"
+import { getRedis } from "@odiano/redis"
 import { RateLimiterMemory, RateLimiterRedis } from "rate-limiter-flexible"
 
 type CreateLimiterProps = {

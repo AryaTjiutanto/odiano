@@ -1,4 +1,4 @@
-import { SEARCH_TYPES } from "@connect/shared";
+import { SEARCH_TYPES } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
 import { SearchHistory as SearchHistorySchema } from "../types/searchHistory.type";
 

@@ -1,5 +1,5 @@
 import Profile from "../../profile/Profile";
-import { type UserSummaryDTO } from "@connect/shared";
+import { type UserSummaryDTO } from "@odiano/shared";
 
 type Props = {
     user: UserSummaryDTO,

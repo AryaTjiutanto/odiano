@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createPostSchema, POST_CONTENT_LENGTH, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@connect/shared";
+import { createPostSchema, POST_CONTENT_LENGTH, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";

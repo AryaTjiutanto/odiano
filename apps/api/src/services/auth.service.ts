@@ -1,4 +1,4 @@
-import { AUTH_CACHE_KEYS, AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES } from "@connect/shared";
+import { AUTH_CACHE_KEYS, AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES } from "@odiano/shared";
 import { AppError } from "../errors/appError.error";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import { RefreshToken } from "../models/refreshToken.model";
 import { nanoid } from "nanoid";
 import { UnauthorizedError } from "../errors/unauthorized.error";
-import { delCache, getCache, setCache } from "@connect/redis";
+import { delCache, getCache, setCache } from "@odiano/redis";
 import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper";
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper";
 import { Types } from "mongoose";

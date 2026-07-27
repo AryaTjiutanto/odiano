@@ -1,4 +1,4 @@
-import { NotificationDTO } from "@connect/shared";
+import { NotificationDTO } from "@odiano/shared";
 import { getIo } from ".."
 
 export const emitToUser = (notificaton : NotificationDTO, userId : string) => {

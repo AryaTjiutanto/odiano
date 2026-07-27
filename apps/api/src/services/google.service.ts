@@ -3,7 +3,7 @@ import { googleClient } from "../libs/google/client"
 import { User } from "../models/user.model";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { createAuthSession } from "./auth.service";
-import { AuthToken, ERROR_RESPONSE_CODE } from "@connect/shared";
+import { AuthToken, ERROR_RESPONSE_CODE } from "@odiano/shared";
 import { AUTH_PROVIDERS } from "../consts/user.const";
 import { nanoid } from "nanoid";
 import { AppError } from "../errors/appError.error";

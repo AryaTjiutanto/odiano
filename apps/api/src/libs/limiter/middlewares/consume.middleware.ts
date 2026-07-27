@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import { AppError } from "../../../errors/appError.error";
-import { TooManyRequestError } from "@connect/shared";
+import { TooManyRequestError } from "@odiano/shared";
 
 const defaultKeyGenerator = (req : Request) => {
     const apiKey = req?.ip || "anonymous";

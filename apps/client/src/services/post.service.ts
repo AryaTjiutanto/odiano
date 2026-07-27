@@ -1,4 +1,4 @@
-import type { CreatedDocumentId, InfiniteQuery, PostDTO, SuccessResponseData } from "@connect/shared";
+import type { CreatedDocumentId, InfiniteQuery, PostDTO, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 import type { CreateCommentMutationParams } from "../types/post.type";
 

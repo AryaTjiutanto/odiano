@@ -1,4 +1,4 @@
-import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@connect/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";

@@ -1,4 +1,4 @@
-import { PostMedia, PostVisibilities } from "@connect/shared"
+import { PostMedia, PostVisibilities } from "@odiano/shared"
 import { Types } from "mongoose"
 import { UserSummaryQuery } from "./user.type"
 

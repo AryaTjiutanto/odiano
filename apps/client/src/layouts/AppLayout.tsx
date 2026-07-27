@@ -16,7 +16,7 @@ const AppLayout = () => {
             {/* head */}
             <meta
                 name="keywords"
-                content="social media, connect, community, posts, friends"
+                content="social media, odiano, community, posts, friends"
             />
             <meta
                 name="author"

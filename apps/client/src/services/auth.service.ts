@@ -1,4 +1,4 @@
-import type { AuthenticationResponse, SuccessResponseData } from "@connect/shared";
+import type { AuthenticationResponse, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 
 export const googleAuth = async (credential : string) => {

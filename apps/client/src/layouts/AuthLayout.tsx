@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import Footer from "../components/auth/Footer";
-import connectLogo from "../assets/img/logo/connect-gradient.svg";
+import connectLogo from "../assets/img/logo/odiano-gradient.svg";
 
 const AuthLayout = () => {
     return (

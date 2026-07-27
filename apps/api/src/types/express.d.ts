@@ -1,4 +1,4 @@
-import { UserSummaryDTO } from "@connect/shared";
+import { UserSummaryDTO } from "@odiano/shared";
 
 export {};
 

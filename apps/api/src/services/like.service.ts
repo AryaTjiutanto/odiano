@@ -3,7 +3,7 @@ import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
 import Like from "../models/like.model";
 import { Post } from "../models/post.model";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@odiano/shared";
 import { create as createNotification } from "./notification.service";
 
 export const getLikedIds = async (currentUserId: string, type: LikeTypes, targetIds: string[] | Types.ObjectId[]) => {

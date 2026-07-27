@@ -1,4 +1,4 @@
-import { SEARCH_TYPES, SearchHistoryDTO, SearchTypes } from "@connect/shared";
+import { SEARCH_TYPES, SearchHistoryDTO, SearchTypes } from "@odiano/shared";
 import { SEARCH_HISTORY_LIMIT } from "../consts/searchHistory.const"
 import { User } from "../models/user.model";
 import { UserSummaryQuery } from "../types/user.type";

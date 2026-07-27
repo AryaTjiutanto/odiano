@@ -1,10 +1,10 @@
-import { AUTH_CACHE_KEYS, DEFAULT_OTP_EXPIRES_TIME, ERROR_RESPONSE_CODE, OtpChannels, OtpPurposes } from "@connect/shared";
+import { AUTH_CACHE_KEYS, DEFAULT_OTP_EXPIRES_TIME, ERROR_RESPONSE_CODE, OtpChannels, OtpPurposes } from "@odiano/shared";
 import OTP from "../models/otp.model";
 import { customAlphabet } from "nanoid";
-import { emailQueue, EmailQueueData } from "@connect/queue";
+import { emailQueue, EmailQueueData } from "@odiano/queue";
 import { render } from "@react-email/components";
 import React from "react";
-import { getCache, setCache } from "@connect/redis";
+import { getCache, setCache } from "@odiano/redis";
 import { AppError } from "../errors/appError.error";
 
 import bcrypt from "bcrypt";

@@ -1,5 +1,5 @@
 import SearchBar from "../search/Search";
-import connect from "../../assets/img/logo/connect.svg"
+import odiano from "../../assets/img/logo/odiano.svg"
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,7 @@ const HomeHeader = () => {
         <>
             {/* heading - mobile */}
             <section className="w-full sticky top-0 pt-6 sm:pt-6 lg:pt-5 xl:pt-9 pb-6 flex sm:hidden justify-between items-center bg-black/10 backdrop-blur-2xl z-23">
-                <img src={connect} className="w-10" />
+                <img src={odiano} className="w-10" />
 
                 {
                     (isInitialized && isAuthenticated) &&

@@ -1,4 +1,4 @@
-import { EmailQueueData } from "@connect/queue";
+import { EmailQueueData } from "@odiano/queue";
 import resend from "../lib/resend/resend";
 
 export const sendEmail = async (data : EmailQueueData) => {

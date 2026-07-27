@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "./errors/appError.error";
 import { errorResponseData } from "./utils/response.util";
 import { ZodError } from "zod";
-import { ERROR_RESPONSE_CODE, ValidationError } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, ValidationError } from "@odiano/shared";
 import helmet from "helmet";
 import logger from "./libs/log/logger";
 

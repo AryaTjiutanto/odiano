@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as postServices from "../services/post.service";
 import { ReqBody } from "../types/request.type";
-import { CreatePostSchema, InfiniteQuery, PostDTO, PostPublicId, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { CreatePostSchema, InfiniteQuery, PostDTO, PostPublicId, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { successResponseData } from "../utils/response.util";
 
 export const index = async(req: Request, res: Response, next: NextFunction) => {

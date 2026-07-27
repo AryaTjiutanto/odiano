@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as searchHistoryService from "../services/searchHistory.service";
 import { successResponseData } from "../utils/response.util";
-import { ERROR_RESPONSE_CODE, SearchHistoryDTO, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, SearchHistoryDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { AppError } from "../errors/appError.error";
 import logger from "../libs/log/logger";

@@ -1,6 +1,6 @@
 import express from "express";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
-import { createUserProfileSchema, updateUserProfile } from "@connect/shared";
+import { createUserProfileSchema, updateUserProfile } from "@odiano/shared";
 import { validateData } from "../middlewares/validateData.middleware";
 import { checkUsernameAvailability, getUserProfile, onboarding, updateProfile } from "../controllers/user.controller";
 import { apiLimiter, consume, searchLimiter } from "../libs/limiter";

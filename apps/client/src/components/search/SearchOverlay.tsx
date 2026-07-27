@@ -1,4 +1,4 @@
-import { SEARCH_TYPES, type SearchDTO, type SearchHistoryDTO, type SuccessResponseData } from "@connect/shared";
+import { SEARCH_TYPES, type SearchDTO, type SearchHistoryDTO, type SuccessResponseData } from "@odiano/shared";
 import SearchHistory from "./SearchHistory";
 import SearchSkeletonLoading from "./SearchSkeletonLoading";
 import { useMutation, useQuery } from "@tanstack/react-query";

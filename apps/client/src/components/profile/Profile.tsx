@@ -1,4 +1,4 @@
-import type { UserProfileImageDTO } from "@connect/shared";
+import type { UserProfileImageDTO } from "@odiano/shared";
 import { User } from "lucide-react";
 
 type ImageUrl = {

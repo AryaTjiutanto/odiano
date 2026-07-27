@@ -1,4 +1,4 @@
-import type { SearchDTO, SuccessResponseData } from "@connect/shared";
+import type { SearchDTO, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 
 export const getSearchResult = async (query : string | undefined | null) : Promise<SearchDTO> => {

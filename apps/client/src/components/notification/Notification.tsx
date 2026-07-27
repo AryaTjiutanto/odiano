@@ -1,6 +1,6 @@
 import type { InfiniteData } from "@tanstack/react-query"
 import CommentOnYourPostNotification from "./types/CommentOnYourPostNotification"
-import { NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@connect/shared"
+import { NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@odiano/shared"
 import FollowYouNotification from "./types/FollowYouNotification"
 import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel"
 import LikeYourPost from "./types/LikeYourPost"

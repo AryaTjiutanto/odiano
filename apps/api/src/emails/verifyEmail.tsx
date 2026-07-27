@@ -25,7 +25,7 @@ export default function VerifyEmail({
             <Head />
 
             <Preview>
-                Your Connect verification code
+                Your odiano verification code
             </Preview>
 
             <Body
@@ -58,7 +58,7 @@ export default function VerifyEmail({
                             letterSpacing: "-0.5px",
                         }}
                     >
-                        Connect
+                        odiano
                     </Text>
 
                     <Hr
@@ -91,7 +91,7 @@ export default function VerifyEmail({
                         }}
                     >
                         Enter the verification code below to continue signing in
-                        to your Connect account.
+                        to your odiano account.
                     </Text>
 
                     {/* OTP */}
@@ -170,7 +170,7 @@ export default function VerifyEmail({
                             margin: 0,
                         }}
                     >
-                        © {new Date().getFullYear()} Connect. All rights
+                        © {new Date().getFullYear()} odiano. All rights
                         reserved.
                     </Text>
                 </Container>

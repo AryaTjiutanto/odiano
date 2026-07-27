@@ -1,4 +1,4 @@
-import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO, type NotificationReadStatus, type SuccessResponseData } from "@connect/shared";
+import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO, type NotificationReadStatus, type SuccessResponseData } from "@odiano/shared";
 import { useInfiniteQuery, useMutation, type InfiniteData, type QueryFunctionContext } from "@tanstack/react-query";
 import { api } from "../../libs/api";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";

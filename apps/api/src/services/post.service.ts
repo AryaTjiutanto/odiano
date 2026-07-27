@@ -1,4 +1,4 @@
-import { CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, type PostDTO as PostFeedItem } from "@connect/shared";
+import { CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, type PostDTO as PostFeedItem } from "@odiano/shared";
 import { Post } from "../models/post.model";
 import { toPostDto } from "../mappers/post.mapper";
 import { PostQuery } from "../types/post.type";

@@ -10,13 +10,13 @@ importers:
 
   apps/api:
     dependencies:
-      '@connect/queue':
+      '@odiano/queue':
         specifier: workspace:*
         version: link:../../packages/queue
-      '@connect/redis':
+      '@odiano/redis':
         specifier: workspace:*
         version: link:../../packages/redis
-      '@connect/shared':
+      '@odiano/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@react-email/components':
@@ -122,15 +122,15 @@ importers:
 
   apps/client:
     dependencies:
-      '@connect/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       '@floating-ui/react':
         specifier: ^0.27.19
         version: 0.27.19(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.72.1(react@19.2.5))
+      '@odiano/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@react-oauth/google':
         specifier: ^0.13.5
         version: 0.13.5(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -234,13 +234,13 @@ importers:
 
   apps/worker:
     dependencies:
-      '@connect/queue':
+      '@odiano/queue':
         specifier: workspace:*
         version: link:../../packages/queue
-      '@connect/redis':
+      '@odiano/redis':
         specifier: workspace:*
         version: link:../../packages/redis
-      '@connect/shared':
+      '@odiano/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       bullmq:

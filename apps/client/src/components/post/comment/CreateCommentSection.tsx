@@ -1,4 +1,4 @@
-import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type PostCommentDTO, type PostDTO } from "@connect/shared";
+import { createPostCommentSchema, ERROR_RESPONSE_CODE, POST_COMMENT_CONTENT_LENGTH, type CreatePostCommentSchema, type PostCommentDTO, type PostDTO } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";

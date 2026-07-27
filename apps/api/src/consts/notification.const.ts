@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { UserSummaryQuery } from "../types/user.type";
-import { NotificationTargetType, NotificationType } from "@connect/shared";
+import { NotificationTargetType, NotificationType } from "@odiano/shared";
 
 export const NOTIFICATION_PAGE_SIZE = 15 as const;
 

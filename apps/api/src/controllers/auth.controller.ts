@@ -3,10 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service";
 import { AppError } from "../errors/appError.error";
 import { successResponseData } from "../utils/response.util";
-import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse,  SUCCESS_RESPONSE_CODE, type CurrentUserDTO, OTP_PURPOSES, OTP_CHANNELS } from "@connect/shared";
+import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse,  SUCCESS_RESPONSE_CODE, type CurrentUserDTO, OTP_PURPOSES, OTP_CHANNELS } from "@odiano/shared";
 import { authCookieOptions } from "../libs/auth/auth.cookie";
 import { ReqBody } from "../types/request.type";
-import { type AuthenticateUserSchema } from "@connect/shared";
+import { type AuthenticateUserSchema } from "@odiano/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import * as googleService from "../services/google.service";
 

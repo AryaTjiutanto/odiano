@@ -1,4 +1,4 @@
-import { OTP_CHANNELS, OTP_PURPOSES, OtpChannels, OtpPurposes } from "@connect/shared";
+import { OTP_CHANNELS, OTP_PURPOSES, OtpChannels, OtpPurposes } from "@odiano/shared";
 import { model, Schema } from "mongoose"
 import bcrypt from "bcrypt"
 

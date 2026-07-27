@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { socketAuth } from "./middleware";
-import { getRedis } from "@connect/redis";
+import { getRedis } from "@odiano/redis";
 
 let io : Server;
 

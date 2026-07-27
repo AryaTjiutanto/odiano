@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/appError.error";
-import { CreatedDocumentId, CreatePostCommentSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostCommentDTO, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { CreatedDocumentId, CreatePostCommentSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostCommentDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import * as postCommentService from "../services/postComment.service";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";

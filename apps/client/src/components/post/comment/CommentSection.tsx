@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
-import { type SuccessResponseData, type InfiniteQuery, type PostCommentDTO } from "@connect/shared";
+import { type SuccessResponseData, type InfiniteQuery, type PostCommentDTO } from "@odiano/shared";
 import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
 import { api } from "../../../libs/api";
 import CommentSkeletonLoading from "./CommentSkeletonLoading";

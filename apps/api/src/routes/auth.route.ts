@@ -4,7 +4,7 @@ import { requireGuest } from "../middlewares/requireGuest.middleware";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import { requireRefreshToken } from "../middlewares/requireRefreshToken.middleware";
 import { validateData } from "../middlewares/validateData.middleware";
-import { authenticateUserSchema, createUserSchema } from "@connect/shared";
+import { authenticateUserSchema, createUserSchema } from "@odiano/shared";
 import { apiLimiter, consume, otpLimiter, refreshLimiter, signinLimiter, signupLimiter, verifyLimiter } from "../libs/limiter";
 
 const router = express.Router();

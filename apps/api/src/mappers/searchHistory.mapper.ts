@@ -1,4 +1,4 @@
-import { SEARCH_TYPES, SearchHistoryDTO, UserSummaryDTO } from "@connect/shared";
+import { SEARCH_TYPES, SearchHistoryDTO, UserSummaryDTO } from "@odiano/shared";
 import { searchHistoryQuery } from "../types/searchHistory.type";
 
 export const toSearchHistoryDTO = (data : searchHistoryQuery, usersMap? : Map<String,UserSummaryDTO>) : SearchHistoryDTO => {

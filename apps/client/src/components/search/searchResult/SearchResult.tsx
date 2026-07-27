@@ -4,7 +4,7 @@ import {
     type SearchHistoryDTO,
     type SearchTypes,
     type UserSummaryDTO,
-} from "@connect/shared";
+} from "@odiano/shared";
 import UserSearchResult from "./UserSearchResult";
 import { searchKeys } from "../../../queries/searchKeys";
 import { recordSearchHistory } from "../../../services/searchHistory.service";

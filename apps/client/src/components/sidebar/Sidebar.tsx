@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import ConnectLogo from "../../assets/img/logo/connect-gradient.svg";
+import ConnectLogo from "../../assets/img/logo/odiano-gradient.svg";
 import { Bell, Home, Pencil, User } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import UserMenu from "./UserMenu";

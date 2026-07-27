@@ -1,4 +1,4 @@
-import type { NotificationDTO } from "@connect/shared"
+import type { NotificationDTO } from "@odiano/shared"
 import { formatRelativeShort } from "../../../utils/dateFormater.util"
 import Profile from "../../profile/Profile"
 

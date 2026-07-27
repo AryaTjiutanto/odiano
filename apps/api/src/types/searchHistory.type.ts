@@ -1,4 +1,4 @@
-import { SearchTypes } from "@connect/shared"
+import { SearchTypes } from "@odiano/shared"
 import { Types } from "mongoose"
 
 export type SearchHistory = {

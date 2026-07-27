@@ -1,4 +1,4 @@
-import type { SuccessResponseData } from "@connect/shared";
+import type { SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 
 export const createFollowing = async (followUserId: string | undefined) => {

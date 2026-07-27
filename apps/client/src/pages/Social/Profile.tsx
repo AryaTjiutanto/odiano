@@ -3,7 +3,7 @@ import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays } from "lucide-react";
 import ProfileComponent from "../../components/profile/Profile";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@odiano/shared";
 import ErrorState from "../../components/common/ErrorState";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";

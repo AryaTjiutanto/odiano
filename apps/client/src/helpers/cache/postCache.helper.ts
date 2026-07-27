@@ -1,4 +1,4 @@
-import type { CurrentUserDTO, PostCommentDTO, PostDTO } from "@connect/shared"
+import type { CurrentUserDTO, PostCommentDTO, PostDTO } from "@odiano/shared"
 import type { CreateCommentMutationParams, InfiniteQueryPostDTO } from "../../types/post.type"
 
 // like

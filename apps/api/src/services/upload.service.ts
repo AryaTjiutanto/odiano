@@ -1,4 +1,4 @@
-import { CloudinarySignaturePayload } from "@connect/shared";
+import { CloudinarySignaturePayload } from "@odiano/shared";
 import "../bootstraps/env.bootstrap";
 import cloudinary from "../config/cloudinary.config";
 import { UploadPresets } from "../consts/cloudinary.const";

@@ -1,4 +1,4 @@
-import { ERROR_RESPONSE_CODE, type ErrorResponseData, type FailedAttemptError, type TooManyRequestError, type ValidationError } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, type ErrorResponseData, type FailedAttemptError, type TooManyRequestError, type ValidationError } from "@odiano/shared"
 import type { AxiosError } from "axios"
 
 export type ValidationErrorResponse = ErrorResponseData<ValidationError[]> & {

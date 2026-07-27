@@ -2,7 +2,7 @@ import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import express from "express"
 import { create as createPost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller";
 import { createComment, deleteComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
-import { createPostCommentSchema, createPostSchema } from "@connect/shared";
+import { createPostCommentSchema, createPostSchema } from "@odiano/shared";
 import { validateData } from "../middlewares/validateData.middleware";
 import optionalAuth from "../middlewares/optionalAuth.middleware";
 import { createPostLike, deletePostLike } from "../controllers/like.controller";

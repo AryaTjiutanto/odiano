@@ -1,4 +1,4 @@
-import { ErrorResponseCode, ErrorResponseData, SuccessResponseCode, SuccessResponseData } from "@connect/shared"
+import { ErrorResponseCode, ErrorResponseData, SuccessResponseCode, SuccessResponseData } from "@odiano/shared"
 
 export const successResponseData = <T = null>(code : SuccessResponseCode, message: string, data : T | null = null) : SuccessResponseData<T> => {
     return {

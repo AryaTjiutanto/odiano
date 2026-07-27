@@ -1,5 +1,5 @@
 import { Lock } from "lucide-react";
-import connectLogo from "../../assets/img/logo/connect-full.webp";
+import connectLogo from "../../assets/img/logo/odiano-full.webp";
 import { useEffect, useRef, useState } from "react";
 import useRequireAuth from "../../guard/useRequireAuth.guard";
 import { Outlet } from "react-router-dom";

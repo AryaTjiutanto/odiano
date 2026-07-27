@@ -1,4 +1,4 @@
-import { ERROR_RESPONSE_CODE, type PostDTO, type UserSummaryDTO } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, type PostDTO, type UserSummaryDTO } from "@odiano/shared";
 import { Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";

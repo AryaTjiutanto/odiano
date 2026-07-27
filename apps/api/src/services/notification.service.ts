@@ -1,4 +1,4 @@
-import { InfiniteQuery, NotificationDTO, NotificationTargetType, NotificationType } from "@connect/shared";
+import { InfiniteQuery, NotificationDTO, NotificationTargetType, NotificationType } from "@odiano/shared";
 import { Notification } from "../models/notification.model"
 import { emitToUser } from "../socket/emitters/notification.emitter";
 import { getUserSummary } from "./user.service";

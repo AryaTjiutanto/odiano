@@ -1,7 +1,7 @@
 import { Heart, MessageCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { type SuccessResponseData, type PostDTO } from "@connect/shared";
+import { type SuccessResponseData, type PostDTO } from "@odiano/shared";
 import { api } from "../../libs/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import PostDetailSkeletonLoading from "../../components/post/PostDetailSkeletonLoading";

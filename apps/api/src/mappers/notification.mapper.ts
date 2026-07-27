@@ -1,4 +1,4 @@
-import { NotificationDTO } from "@connect/shared";
+import { NotificationDTO } from "@odiano/shared";
 import { notificationQuery } from "../consts/notification.const";
 
 export const toNotificationDTO = (data : notificationQuery) : NotificationDTO => {

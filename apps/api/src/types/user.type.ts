@@ -1,4 +1,4 @@
-import { UserProfileDTO, UserProfileImageDTO } from "@connect/shared"
+import { UserProfileDTO, UserProfileImageDTO } from "@odiano/shared"
 import { Types } from "mongoose"
 
 export type ImageAsset = {

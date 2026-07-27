@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ERROR_RESPONSE_CODE, type ErrorResponseCode } from "@connect/shared";
+import { ERROR_RESPONSE_CODE, type ErrorResponseCode } from "@odiano/shared";
 import type { AllErrorResponse } from "../../types/response.type";
 import { notify } from "../notification/notify.helper";
 import TooManyRequestCountDown from "../../components/counter/TooManyRequestCountDown";

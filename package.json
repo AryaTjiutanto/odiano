@@ -1,5 +1,5 @@
 {
-  "name": "connect",
+  "name": "odiano",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,12 +9,12 @@
     "build" : "pnpm -r build",
     "test": "echo \"Error: no test specified\" && exit 1",
 
-    "build:client" : "pnpm --filter @connect/client... build",
-    "build:api" : "pnpm --filter @connect/api... build",
-    "build:worker" : "pnpm --filter @connect/worker... build",
+    "build:client" : "pnpm --filter @odiano/client... build",
+    "build:api" : "pnpm --filter @odiano/api... build",
+    "build:worker" : "pnpm --filter @odiano/worker... build",
 
-    "start:api" : "pnpm --filter @connect/api run start",
-    "start:worker" : "pnpm --filter @connect/worker run start"
+    "start:api" : "pnpm --filter @odiano/api run start",
+    "start:worker" : "pnpm --filter @odiano/worker run start"
   },
   "keywords": [],
   "author": "",

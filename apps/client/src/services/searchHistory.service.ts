@@ -1,4 +1,4 @@
-import type { SearchTypes, SuccessResponseData } from "@connect/shared";
+import type { SearchTypes, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api"
 
 export const recordSearchHistory = async (targetId: string, type: SearchTypes, keyword?: string) => {

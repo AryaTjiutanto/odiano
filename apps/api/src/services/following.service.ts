@@ -1,4 +1,4 @@
-import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationDTO } from "@connect/shared"
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationDTO } from "@odiano/shared"
 import { AppError } from "../errors/appError.error"
 import { Following } from "../models/following.model";
 import { User } from "../models/user.model";

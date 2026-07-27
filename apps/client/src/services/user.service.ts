@@ -1,4 +1,4 @@
-import type { CreateUserProfileSchema, SuccessResponseData, UpdateUserProfile, UserProfileDTO } from "@connect/shared";
+import type { CreateUserProfileSchema, SuccessResponseData, UpdateUserProfile, UserProfileDTO } from "@odiano/shared";
 import { api } from "../libs/api";
 
 export const getUserProfile = async (username: string): Promise<UserProfileDTO> => {

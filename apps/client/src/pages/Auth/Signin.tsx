@@ -1,7 +1,7 @@
 import loginImage from "../../assets/img/login-img.webp";
 import { Link } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type AuthenticationResponse } from "@connect/shared";
+import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type AuthenticationResponse } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
@@ -44,10 +44,10 @@ const Signin = () => {
     return (
         <>
             {/* head */}
-            <title>Signin - connect</title>
+            <title>Signin - odiano</title>
             <meta
                 name="description"
-                content="Connect with friends, share posts, and explore communities."
+                content="odiano with friends, share posts, and explore communities."
             />
 
             {/* body */}

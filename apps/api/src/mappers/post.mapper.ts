@@ -1,4 +1,4 @@
-import { PostDTO } from "@connect/shared";
+import { PostDTO } from "@odiano/shared";
 import { type PostQuery } from "../types/post.type";
 import { toUserSummaryDTO } from "./user.mapper";
 

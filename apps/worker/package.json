@@ -1,5 +1,5 @@
 {
-  "name": "@connect/worker",
+  "name": "@odiano/worker",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,9 +15,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.26.2",
   "dependencies": {
-    "@connect/queue": "workspace:*",
-    "@connect/redis": "workspace:*",
-    "@connect/shared": "workspace:*",
+    "@odiano/queue": "workspace:*",
+    "@odiano/redis": "workspace:*",
+    "@odiano/shared": "workspace:*",
     "bullmq": "^5.78.1",
     "dotenv": "^17.4.2",
     "pino": "^10.3.1",

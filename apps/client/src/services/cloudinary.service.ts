@@ -1,4 +1,4 @@
-import type { CloudinarySignaturePayload, SuccessResponseData } from "@connect/shared";
+import type { CloudinarySignaturePayload, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 import { getCloudinarySignedUrl } from "../utils/cloudinary.util";
 import axios from "axios";

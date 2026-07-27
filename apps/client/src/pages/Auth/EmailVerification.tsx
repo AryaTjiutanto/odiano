@@ -1,12 +1,12 @@
 import { useState } from "react";
-import connectLogo from "../../assets/img/logo/connect.svg";
+import connectLogo from "../../assets/img/logo/odiano.svg";
 import CustomOTPInput from "../../components/input/CustomOTPInput";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { notify } from "../../helpers/notification/notify.helper";
 import { api } from "../../libs/api";
-import type { SuccessResponseData } from "@connect/shared";
+import type { SuccessResponseData } from "@odiano/shared";
 import { useNavigate } from "react-router-dom";
 import { setEmailVerified } from "../../features/auth/auth.slice";
 
@@ -72,7 +72,7 @@ const EmailVerification = () => {
 
     return (
         <>
-            <title>Email verification - Connect</title>
+            <title>Email verification - odiano</title>
 
             <div className="w-screen h-screen grid place-content-center p-7 sm:p-0">
                 <div className="flex flex-col items-center justify-center text-center">

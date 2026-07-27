@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE } from "@connect/shared";
+import { ERROR_RESPONSE_CODE } from "@odiano/shared";
 
 type FollowingSchema = {
     userId : Types.ObjectId,

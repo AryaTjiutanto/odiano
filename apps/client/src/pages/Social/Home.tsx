@@ -1,5 +1,5 @@
 import Post from "../../components/post/Post";
-import type { InfiniteQuery, PostDTO } from "@connect/shared";
+import type { InfiniteQuery, PostDTO } from "@odiano/shared";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
@@ -28,10 +28,10 @@ const Homepage = () => {
     return (
         <>
             {/* head */}
-            <title>Connect - Share Your Moments</title>
+            <title>odiano - Share Your Moments</title>
             <meta
                 name="description"
-                content="Connect with friends, share posts, and explore communities."
+                content="odiano with friends, share posts, and explore communities."
             />
 
             {/* create post button - mobile */}

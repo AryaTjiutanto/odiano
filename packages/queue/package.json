@@ -1,5 +1,5 @@
 {
-  "name": "@connect/queue",
+  "name": "@odiano/queue",
   "version": "1.0.0",
   "description": "",
   "types": "./dist/index.d.ts",

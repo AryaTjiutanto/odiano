@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as uploadServices from "../services/upload.service";
 import { successResponseData } from "../utils/response.util";
-import { CloudinarySignaturePayload, SUCCESS_RESPONSE_CODE } from "@connect/shared";
+import { CloudinarySignaturePayload, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { UPLOAD_PRESETS } from "../consts/cloudinary.const";
 
 export const generateProfileSignature = (req: Request, res: Response, next: NextFunction) => {

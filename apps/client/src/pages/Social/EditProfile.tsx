@@ -1,4 +1,4 @@
-import { BIO_LENGTH, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@connect/shared";
+import { BIO_LENGTH, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@odiano/shared";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import ProfileComponent from "../../components/profile/Profile";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
@@ -202,7 +202,7 @@ const EditProfile = () => {
     return (
         <>
             {/* head */}
-            <title>Edit your profile - Connect</title>
+            <title>Edit your profile - odiano</title>
 
             {/* profile image cropper */}
             {

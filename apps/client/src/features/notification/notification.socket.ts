@@ -1,4 +1,4 @@
-import type { InfiniteQuery, NotificationDTO } from "@connect/shared";
+import type { InfiniteQuery, NotificationDTO } from "@odiano/shared";
 import { socket } from "../../libs/socket"
 import { queryClient } from "../../libs/react-query/queryClient";
 import type { InfiniteData } from "@tanstack/react-query";

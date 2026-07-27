@@ -1,6 +1,6 @@
 import { EllipsisVertical } from "lucide-react";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
-import { type PostCommentDTO, type PostDTO } from "@connect/shared";
+import { type PostCommentDTO, type PostDTO } from "@odiano/shared";
 import Profile from "../../profile/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { deleteComment } from "../../../services/post.service";
