@@ -1,9 +1,11 @@
-import { redis } from "./client";
+import { getRedis } from "./client";
 
 type CacheOptions = {
     NX? : boolean,
     PX? : number,
 };
+
+const redis = getRedis();
 
 export const setCache = async (key : string, payload : object | string | number, options : CacheOptions) => {
     let data = typeof payload == "object" ? JSON.stringify(payload) : payload;

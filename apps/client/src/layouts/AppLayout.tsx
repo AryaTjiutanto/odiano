@@ -3,7 +3,6 @@ import { useAppDispatch } from "../hooks/useRedux";
 import { useEffect } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Toaster } from "react-hot-toast";
-import GoogleOneTap from "../components/auth/GoogleOneTap";
 
 const AppLayout = () => {
     const dispatch = useAppDispatch();
@@ -34,7 +33,6 @@ const AppLayout = () => {
                 reverseOrder={false}
             />
             
-            <GoogleOneTap/>
             <div className="w-full max-w-480 min-h-screen bg-black text-neutral-100">
                 <Outlet />
             </div>

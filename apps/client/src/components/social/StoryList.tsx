@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Story = {
     owner: {
@@ -9,48 +9,46 @@ type Story = {
     gradientColor: string,
 }
 
+const gradientColors = [
+    "bg-linear-to-r from-yellow-400 via-pink-500 to-purple-600",
+    "bg-linear-to-r from-orange-400 via-rose-500 to-fuchsia-600",
+    "bg-linear-to-r from-pink-500 via-red-500 to-yellow-500",
+    "bg-linear-to-r from-fuchsia-500 via-pink-500 to-orange-400",
+    "bg-linear-to-r from-rose-500 via-pink-500 to-purple-500",
+    "bg-linear-to-r from-orange-500 via-pink-500 to-purple-600",
+    "bg-linear-to-r from-red-500 via-orange-400 to-yellow-400",
+    "bg-linear-to-r from-pink-600 via-rose-500 to-orange-400",
+    "bg-linear-to-r from-purple-500 via-fuchsia-500 to-pink-500",
+    "bg-linear-to-r from-yellow-300 via-orange-400 to-pink-500",
+];
+
+
 const StoryList = () => {
-    const [stories, setStories] = useState<Story[] | null>();
-    const maxStories = window.innerWidth >= 1980 ? 7 : window.innerWidth >= 1980 ? 6 : 3;
-
-    const gradientColors = [
-        "bg-linear-to-r from-yellow-400 via-pink-500 to-purple-600",
-        "bg-linear-to-r from-orange-400 via-rose-500 to-fuchsia-600",
-        "bg-linear-to-r from-pink-500 via-red-500 to-yellow-500",
-        "bg-linear-to-r from-fuchsia-500 via-pink-500 to-orange-400",
-        "bg-linear-to-r from-rose-500 via-pink-500 to-purple-500",
-        "bg-linear-to-r from-orange-500 via-pink-500 to-purple-600",
-        "bg-linear-to-r from-red-500 via-orange-400 to-yellow-400",
-        "bg-linear-to-r from-pink-600 via-rose-500 to-orange-400",
-        "bg-linear-to-r from-purple-500 via-fuchsia-500 to-pink-500",
-        "bg-linear-to-r from-yellow-300 via-orange-400 to-pink-500",
-    ];
-
-    useEffect(() => {
-        setStories([
-            {
-                gradientColor: gradientColors[Math.floor(Math.random() * gradientColors.length)],
-                owner: {
-                    userId: "190",
-                    username: "Test",
-                }
-            },
-            {
-                gradientColor: gradientColors[Math.floor(Math.random() * gradientColors.length)],
-                owner: {
-                    userId: "190",
-                    username: "Test 2",
-                }
-            },
-            {
-                gradientColor: gradientColors[Math.floor(Math.random() * gradientColors.length)],
-                owner: {
-                    userId: "190",
-                    username: "Test 3",
-                }
+    const [stories] = useState<Story[] | null>(() => [
+        {
+            gradientColor: gradientColors[Math.floor(Math.random() * gradientColors.length)],
+            owner: {
+                userId: "190",
+                username: "Test",
             }
-        ])
-    }, [])
+        },
+        {
+            gradientColor: gradientColors[Math.floor(Math.random() * gradientColors.length)],
+            owner: {
+                userId: "190",
+                username: "Test 2",
+            }
+        },
+        {
+            gradientColor: gradientColors[Math.floor(Math.random() * gradientColors.length)],
+            owner: {
+                userId: "190",
+                username: "Test 3",
+            }
+        }
+    ]);
+
+    // const maxStories = window.innerWidth >= 1980 ? 7 : window.innerWidth >= 1980 ? 6 : 3;
 
     return (
         <div className="">

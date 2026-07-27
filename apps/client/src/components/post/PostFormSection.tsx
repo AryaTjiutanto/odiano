@@ -22,7 +22,6 @@ const PostFormSection = () => {
         handleSubmit,
         register,
         watch,
-        setValue,
         setFocus,
         setError,
         reset,
@@ -59,15 +58,16 @@ const PostFormSection = () => {
     }
 
     // handle post setting
-    const hideLikeAndViewCount = watch("hideLikeAndViewCount");
-    const turnOffCommenting = watch("turnOffCommenting");
-    const handleToggle = (field: "hideLikeAndViewCount" | "turnOffCommenting") => {
-        setValue(field, !watch(field), {
-            shouldDirty: true,
-            shouldTouch: true,
-            shouldValidate: true,
-        })
-    };
+    // comming soon
+    // const hideLikeAndViewCount = watch("hideLikeAndViewCount");
+    // const turnOffCommenting = watch("turnOffCommenting");
+    // const handleToggle = (field: "hideLikeAndViewCount" | "turnOffCommenting") => {
+    //     setValue(field, !watch(field), {
+    //         shouldDirty: true,
+    //         shouldTouch: true,
+    //         shouldValidate: true,
+    //     })
+    // };
 
     // setting
     useEffect(() => {

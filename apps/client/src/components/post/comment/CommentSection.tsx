@@ -71,7 +71,7 @@ const CommentSection = ({ postId }: Props) => {
                     (commentQuery.isPending || (isAuthenticated && currentUserCommentQuery.isPending)) ?
                         <>
                             {
-                                Array.from({ length: 3 }).map((item, index) => (
+                                Array.from({ length: 3 }).map((_item, index) => (
                                     <CommentSkeletonLoading key={`skeleton-comment-${index}`} />
                                 ))
                             }

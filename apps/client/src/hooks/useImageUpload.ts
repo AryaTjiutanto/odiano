@@ -6,7 +6,7 @@ import type { UploadedImageData } from "../types/image.type";
 type UseImageUploadOptions = {
     allowedTypes? : string[],
     maxSize? : number,
-    multiple? : boolean,
+    // multiple? : boolean,
 };
 
 type ImageError = {
@@ -17,7 +17,7 @@ type ImageError = {
 const useImageUploadHandler = ({
     allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES, 
     maxSize = DEFAULT_MAX_IMAGE_SIZE, 
-    multiple = false
+    // multiple = false
 } : UseImageUploadOptions = {}) => {
     const [isCropping, setIsCropping] = useState<boolean>(false);
 

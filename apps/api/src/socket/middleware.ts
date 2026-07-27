@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import { verifyAccessToken } from "../libs/auth/auth.token";
-import logger from "../libs/log/logger";
 
 export const socketAuth = (socket : Socket, next : Function) => {
     try {

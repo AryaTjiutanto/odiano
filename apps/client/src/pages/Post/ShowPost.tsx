@@ -57,7 +57,7 @@ const ShowPost = () => {
         queryFn: getPost,
         enabled: !!postPublicId,
         staleTime: 10 * 1000,
-        initialData: null,
+        initialData: undefined,
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -201,8 +201,7 @@ const ShowPost = () => {
         return <PostDetailSkeletonLoading />
     }
 
-    // check postPublicId
-    if (!postQuery.data) {
+    if (postQuery.data == null) {
         return <NotFound />
     }
 

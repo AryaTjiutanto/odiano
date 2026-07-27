@@ -7,7 +7,11 @@
   "scripts": {
     "dev": "pnpm -r --parallel --stream run dev",
     "build" : "pnpm -r build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+    "build:client" : "pnpm --filter @connect/client... build",
+    "build:api" : "pnpm --filter @connect/api... build",
+    "build:worker" : "pnpm --filter @connect/worker... build"
   },
   "keywords": [],
   "author": "",

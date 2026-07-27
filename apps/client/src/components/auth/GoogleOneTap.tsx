@@ -13,6 +13,8 @@ const GoogleOneTap = () => {
         onError : handleOnError,
         disabled : !isInitialized || isAuthenticated
     })
+
+    return null;
 }
 
 export default GoogleOneTap;

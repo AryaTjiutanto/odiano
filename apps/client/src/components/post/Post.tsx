@@ -1,5 +1,5 @@
 import { ERROR_RESPONSE_CODE, type PostDTO, type UserSummaryDTO } from "@connect/shared";
-import { Bookmark, EllipsisVertical, Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "../profile/Profile";

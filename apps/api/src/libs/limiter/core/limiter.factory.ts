@@ -1,4 +1,4 @@
-import {redis} from "@connect/redis"
+import { getRedis } from "@connect/redis"
 import { RateLimiterMemory, RateLimiterRedis } from "rate-limiter-flexible"
 
 type CreateLimiterProps = {
@@ -11,7 +11,7 @@ export const createLimiter = (props: CreateLimiterProps) => {
     return new RateLimiterRedis({
         duration: props.duration,
         points: props.points,
-        storeClient: redis,
+        storeClient: getRedis(),
         keyPrefix: props.keyPrefix,
         insuranceLimiter: new RateLimiterMemory({
             duration: props.duration,

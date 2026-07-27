@@ -3,7 +3,7 @@ import SearchResult from "./searchResult/SearchResult"
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
-import { deleteAllSearchHistory, deleteSearchHistory } from "../../services/searchHistory.service";
+import { deleteSearchHistory } from "../../services/searchHistory.service";
 import { notify } from "../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 
@@ -12,8 +12,6 @@ type Props = {
 }
 
 const SearchHistory = ({ data }: Props) => {
-    if(!data.targetData) return null;
-
     const setQueryDataHandler = useSetQueryDataHandler();
 
     // delete single history
@@ -38,10 +36,12 @@ const SearchHistory = ({ data }: Props) => {
     const deleteSearchHistoryHandler = async () => {
         try {
             await historyMutation.mutateAsync(data.id);
-        } catch (err) {
+        } catch {
             notify.error({title : "Fail", description : "Something went wrong"});
         }
     }
+
+    if(!data.targetData) return null;
 
     return (
         <div className="relative group">

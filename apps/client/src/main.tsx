@@ -30,6 +30,7 @@ import RequireUnVerify from './components/guard/RequireUnVerify.tsx'
 import CreatePostLayout from './layouts/PostFormLayout.tsx'
 import NotificationSectionLayout from './layouts/NotificationSectionLayout.tsx'
 import ScrollToTop from './router/ScrollToTop.tsx'
+import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -49,6 +50,7 @@ createRoot(document.getElementById('root')!).render(
         <SocketProvider>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <BrowserRouter>
+              <GoogleOneTap/>
               <ScrollToTop/>
               <NavigationTracker />
               <Routes>

@@ -14,7 +14,7 @@ export const deleteLike = async (postId: string) => {
 }
 
 // comment
-export const createComment = async ({ commentId, data }: CreateCommentMutationParams) => {
+export const createComment = async ({ data }: CreateCommentMutationParams) => {
     const response = await api.post<SuccessResponseData<CreatedDocumentId>>(`${baseRoute}/comment/create`, data)
 
     if (!response.data.data) {
