@@ -11,7 +11,10 @@
 
     "build:client" : "pnpm --filter @connect/client... build",
     "build:api" : "pnpm --filter @connect/api... build",
-    "build:worker" : "pnpm --filter @connect/worker... build"
+    "build:worker" : "pnpm --filter @connect/worker... build",
+
+    "start:api" : "pnpm --filter @connect/api run start",
+    "start:worker" : "pnpm --filter @connect/worker run start"
   },
   "keywords": [],
   "author": "",
