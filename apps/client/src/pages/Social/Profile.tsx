@@ -120,7 +120,7 @@ const Profile = () => {
     // display the data
     if (profileQuery.isPending) {
         return (
-            <div className="w-full min-h-screen bg-black text-neutral-200 default-input-text-behaviour">
+            <div className="w-full min-h-screen bg-black text-neutral-200 default-input-text-behaviour main-section-padding-top">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />

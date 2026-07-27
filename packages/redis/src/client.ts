@@ -1,7 +1,22 @@
 import Redis from "ioredis";
 
-export const redis = new Redis({maxRetriesPerRequest : null});
 
-redis.on("error", (err) => {
-    console.log(err);
-})
+let redis : Redis | null = null;
+
+export function getRedis () {
+    if(!redis) {
+        const redisUrl = process.env.REDIS_URL;
+
+        if(!redisUrl) {
+            throw new Error("Something is Missing");
+        }
+    
+        redis = new Redis(redisUrl,{maxRetriesPerRequest : null});
+        
+        redis.on("error", (err) => {
+            console.log(err);
+        })
+    }
+
+    return redis;
+}

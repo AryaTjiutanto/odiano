@@ -22,7 +22,7 @@ const ErrorState = ({
         <div className="flex flex-col items-center justify-center text-center">
             {
                 code &&
-                <div className="bg-linear-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent text-[90px] font-bold">
+                <div className="bg-linear-to-r from-neutral-800 to-neutral-50 bg-clip-text text-transparent text-[90px] font-bold">
                     {code ?? '?'}
                 </div>
             }

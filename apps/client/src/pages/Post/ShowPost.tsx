@@ -57,7 +57,7 @@ const ShowPost = () => {
         queryFn: getPost,
         enabled: !!postPublicId,
         staleTime: 10 * 1000,
-        initialData : null,
+        initialData: null,
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -80,7 +80,7 @@ const ShowPost = () => {
         queryFn: getIsFollowingInformation,
         queryKey: isFollowingQueryKey,
         enabled: (!!postQuery?.data && isAuthenticated),
-        initialData : null,
+        initialData: null,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
     });
@@ -178,9 +178,9 @@ const ShowPost = () => {
     const handleLike = async () => {
         if (!postQuery.data) return;
 
-        if(!isInitialized) return;
+        if (!isInitialized) return;
 
-        if(!isAuthenticated) {
+        if (!isAuthenticated) {
             return navigate("/signin")
         }
 
@@ -195,14 +195,14 @@ const ShowPost = () => {
         }
     }
 
-    
+
     // display
     if (postQuery.isPending) {
         return <PostDetailSkeletonLoading />
     }
 
     // check postPublicId
-    if (!postPublicId || !postQuery.data) {
+    if (!postQuery.data) {
         return <NotFound />
     }
 
@@ -237,7 +237,7 @@ const ShowPost = () => {
                         <Link to={`/profile/${username}`}>
                             <div className="flex items-center space-x-3">
                                 <div className="w-12 aspect-square">
-                                    <Profile data={postQuery?.data.author?.profileImage} />
+                                    <Profile data={postQuery?.data?.author?.profileImage} />
                                 </div>
                                 <div>
                                     <div className="flex items-center space-x-2 text-base">
@@ -251,7 +251,7 @@ const ShowPost = () => {
                         </Link>
                         <div className="flex items-center space-x-3">
                             {
-                                currentUserId !== postQuery.data.author?.id &&
+                                currentUserId !== postQuery.data?.author?.id &&
                                 <>
                                     {
                                         (isFollowingQuery.isPending && isAuthenticated) ?
@@ -306,8 +306,8 @@ const ShowPost = () => {
 
                     <div className="flex items-center justify-between mt-10">
                         <div className="flex items-center space-x-10">
-                            <button className={`flex items-center space-x-2 cursor-pointer ${postQuery.data.isLiked && "text-rose-500"}`} onClick={handleLike}>
-                                <Heart className={`${postQuery.data.isLiked && "fill-rose-500"}`} />
+                            <button className={`flex items-center space-x-2 cursor-pointer ${postQuery?.data?.isLiked && "text-rose-500"}`} onClick={handleLike}>
+                                <Heart className={`${postQuery?.data?.isLiked && "fill-rose-500"}`} />
                                 <p>
                                     {postQuery.data?.likeCount ?? 0}
                                 </p>
@@ -333,7 +333,9 @@ const ShowPost = () => {
                 </div>
 
                 {/* comment */}
-                <CommentSection postId={postQuery.data.id} />
+                {postQuery.data?.id &&
+                    <CommentSection postId={postQuery.data.id} />
+                }
             </div>
         </>
     )
