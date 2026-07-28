@@ -16,11 +16,12 @@ export const toUserProfileDTO = (data : UserProfileQuery, isFollowing? : boolean
     }
 }
 
-export const toUserSummaryDTO = (data : UserSummaryQuery) : UserSummaryDTO => {
+export const toUserSummaryDTO = (data : UserSummaryQuery, isFollowing? : boolean | null | undefined) : UserSummaryDTO => {
     return {
         id : data._id.toString(),
         name : data.name,
         username : data.username,
-        profileImage : data.profileImage
+        profileImage : data.profileImage,
+        ...(isFollowing ? {isFollowing} : {}),
     }
 }

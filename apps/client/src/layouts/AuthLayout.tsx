@@ -9,7 +9,7 @@ const AuthLayout = () => {
                 <Link to={""}>
                     <div className="flex items-center space-x-10 absolute top-10 md:top-12 2xl:top-20 left-12 md:left-20 2xl:left-28">
                         <img src={connectLogo} className="w-16 md:w-fit"></img>
-                        <span className="hover:text-rose-500 duration-100 hidden md:inline-block">
+                        <span className="hover:text-sky-500 duration-100 hidden md:inline-block">
                             Go back to homepage
                         </span>
                     </div>

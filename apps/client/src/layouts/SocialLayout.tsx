@@ -6,6 +6,8 @@ import { registerNotificationListeners, unregisterNotificationListeners } from "
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
 import { useNotificationSection } from "../providers/NotificationSectionProvider";
+import UserSuggestions from "../components/social/UserSuggestions";
+import RightSidebarFooter from "../components/sidebar/RightSidebarFooter";
 
 const PostFormSection = lazy(() =>
     import("../components/post/PostFormSection")
@@ -36,7 +38,7 @@ const SocialLayout = () => {
 
                 <div className="w-full h-full grid sm:grid-cols-16 md:grid-cols-10 lg:grid-cols-11 xl:grid-cols-12 2xl:grid-cols-11 gap-5 xl:gap-14 relative">
                     {/* left sidebar */}
-                    <aside className="hidden sm:inline-block w-full h-screen sm:col-span-2 md:col-span-1 xl:col-span-3 py-8 lg:py-7 xl:py-10 sticky top-0">
+                    <aside className="hidden sm:inline-block w-full h-screen sm:col-span-2 md:col-span-1 xl:col-span-3 2xl:col-span-2 py-8 lg:py-7 xl:py-10 sticky top-0">
                         <div className="w-full h-full px-3">
                             <Sidebar/>
                         </div>
@@ -58,11 +60,17 @@ const SocialLayout = () => {
                     </main>
 
                     {/* right sidebar */}
-                    <div className="hidden sm:inline-block sm:col-span-6 md:col-span-4 xl:col-span-3 h-screen sticky top-0 right-0 pt-10">  
+                    <div className="hidden sm:inline-block sm:col-span-6 md:col-span-4 xl:col-span-3 h-screen sticky top-0 right-0 pt-10 2xl:pl-20">  
                         {/* notification */}
                         <div className={`xl:hidden h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 xl:px-5 ${notificationSection.isOpen ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
                             <NotificationSection/>
                         </div>
+
+                        {/* user suggestions */}
+                        <UserSuggestions/>
+
+                        {/* footer */}
+                        <RightSidebarFooter/>
                     </div>
                 </div>
 

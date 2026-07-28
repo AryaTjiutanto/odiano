@@ -7,7 +7,6 @@ import { AppError } from "../errors/appError.error";
 import { User } from "../models/user.model";
 import { LIKE_TYPES } from "../consts/like.const";
 import { getIsLiked, getLikedIds } from "./like.service";
-import logger from "../libs/log/logger";
 
 export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     const query = cursor ? {

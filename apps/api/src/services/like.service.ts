@@ -10,7 +10,9 @@ export const getLikedIds = async (currentUserId: string, type: LikeTypes, target
     const likes = await Like.find({
         user: currentUserId,
         type,
-        targetId: { $in: targetIds }
+        targetId: mongoose.trusted({ 
+            $in: targetIds 
+        })
     }).select("targetId").lean();
 
     const likedPostIds = likes.map(like => like.targetId.toString());

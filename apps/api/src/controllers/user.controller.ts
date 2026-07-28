@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/appError.error";
 import * as userServices from "../services/user.service";
 import { ReqBody } from "../types/request.type";
-import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO } from "@odiano/shared";
+import { CreateUserProfileSchema, SUCCESS_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 
@@ -64,6 +64,22 @@ export const updateProfile = async (req : ReqBody<UpdateUserProfile>, res : Resp
         await userServices.updateProfile(currentUserId, data);
 
         res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.updated, "Updated"));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const suggestions = async (req : Request, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+
+    try {
+        if(!currentUserId) {
+            throw new UnauthorizedError();
+        }
+
+        const data = await userServices.getSuggestedUsers(currentUserId);
+
+        res.status(200).json(successResponseData<UserSummaryDTO[]>(SUCCESS_RESPONSE_CODE.success, "success", data));
     } catch (err) {
         next(err);
     }

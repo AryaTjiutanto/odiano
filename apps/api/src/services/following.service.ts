@@ -2,11 +2,11 @@ import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, Notif
 import { AppError } from "../errors/appError.error"
 import { Following } from "../models/following.model";
 import { User } from "../models/user.model";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { create as createNotification, deleteNotificationWithRecepient } from "./notification.service";
 
 export const createFollowing = async (currentUserId: string, targetUserId: string) => {
-    if(currentUserId == targetUserId) {
+    if (currentUserId == targetUserId) {
         throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You can't follow you account");
     }
 
@@ -31,13 +31,13 @@ export const createFollowing = async (currentUserId: string, targetUserId: strin
             // create following and increase follow count
             await Following.create([
                 {
-                    userId : currentUserId,
-                    followUserId : targetUserId,
+                    userId: currentUserId,
+                    followUserId: targetUserId,
                 }
             ], { session })
 
-            await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: 1 } }, {session});
-            await User.updateOne({ _id: targetUserId }, { $inc: { followerCount: 1 } }, {session});
+            await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: 1 } }, { session });
+            await User.updateOne({ _id: targetUserId }, { $inc: { followerCount: 1 } }, { session });
 
             // create notification
             await createNotification(currentUserId, {
@@ -59,7 +59,7 @@ export const deleteFollowing = async (currentUserId: string, followUserId: strin
     }
 
     // check is following exist
-    const isFollowing = await Following.exists({ userId : currentUserId, followUserId });
+    const isFollowing = await Following.exists({ userId: currentUserId, followUserId });
 
     if (!isFollowing) {
         throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "You haven't followed this account yet");
@@ -70,9 +70,9 @@ export const deleteFollowing = async (currentUserId: string, followUserId: strin
 
     try {
         await session.withTransaction(async () => {
-            await Following.deleteOne({ userId : currentUserId, followUserId }, {session});
-            await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: -1 } }, {session});
-            await User.updateOne({ _id: followUserId }, { $inc: { followerCount: -1 } }, {session});
+            await Following.deleteOne({ userId: currentUserId, followUserId }, { session });
+            await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: -1 } }, { session });
+            await User.updateOne({ _id: followUserId }, { $inc: { followerCount: -1 } }, { session });
 
             await deleteNotificationWithRecepient(followUserId, NOTIFICATION_TYPE.FOLLOW_YOU, session);
         });
@@ -85,4 +85,14 @@ export const isFollowing = async (currentUserId: string, followUserId: string) =
     const result = await Following.exists({ userId: currentUserId, followUserId });
 
     return !!result;
+}
+
+export const getFollowingIds = async (currentUserId: string): Promise<Types.ObjectId[]> => {
+    const following = await Following.find({
+        userId: currentUserId,
+    }).select("followUserId").lean();
+    
+    const followingIds = following.map((data) => data.followUserId);
+
+    return followingIds;
 }

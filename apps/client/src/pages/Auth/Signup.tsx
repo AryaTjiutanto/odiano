@@ -106,7 +106,7 @@ const Signup = () => {
                             }
                         </button>
                         <div className="mt-4 text-sm text-neutral-300">
-                            By signing up, you agree to the <Link to={"#"} className="underline hover:text-rose-500 duration-100">Terms of Service</Link> and <Link to={"#"} className="underline hover:text-rose-500 duration-100">Privacy Policy</Link>, including <Link to={"#"} className="underline hover:text-rose-500 duration-100">Cookie Use</Link>.
+                            By signing up, you agree to the <Link to={"#"} className="underline hover:text-sky-500 duration-100">Terms of Service</Link> and <Link to={"#"} className="underline hover:text-sky-500 duration-100">Privacy Policy</Link>, including <Link to={"#"} className="underline hover:text-sky-500 duration-100">Cookie Use</Link>.
                         </div>
                     </div>
 

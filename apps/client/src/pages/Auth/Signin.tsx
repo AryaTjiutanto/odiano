@@ -95,7 +95,7 @@ const Signin = () => {
                                                         </div>
                                                 }
                                             </button>
-                                            <Link className="text-sm underline hover:text-rose-500 duration-150" to={"#"}>
+                                            <Link className="text-sm underline hover:text-sky-500 duration-150" to={"#"}>
                                                 Forgot password
                                             </Link>
                                         </div>

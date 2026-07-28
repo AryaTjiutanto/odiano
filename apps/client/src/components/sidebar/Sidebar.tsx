@@ -37,7 +37,7 @@ const Sidebar = () => {
                     <nav className="mt-20 xl:mt-16 w-full">
                         <ul className="w-full space-y-7 xl:space-y-5">
                             <li className="w-full">
-                                <Link to={"/"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg ${pathName == "/" && "text-white font-semibold"} duration-100`}>
+                                <Link to={"/"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/" && "text-white font-semibold"} duration-100`}>
                                     <Home className="size-7 w-fit xl:size-auto" />
                                     <span className="hidden xl:inline-block">
                                         Home
@@ -46,7 +46,7 @@ const Sidebar = () => {
                             </li>
                             {/* comming soon */}
                             {/* <li className="w-full">
-                                <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg">
+                                <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
                                     <Search />
                                     <span>
                                         Explore
@@ -57,17 +57,17 @@ const Sidebar = () => {
                                 isAuthenticated &&
                                 <>
                                     <li className="w-full">
-                                        <button onClick={handleOpenNotificationSection} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg cursor-pointer">
+                                        <button onClick={handleOpenNotificationSection} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl cursor-pointer">
                                             <Bell className="size-7 xl:size-auto" />
                                             <span className="hidden xl:inline-block">
-                                                Notification
+                                                Notifications
                                             </span>
                                         </button>
                                     </li>
 
                                     {/* comming soon */}
                                     {/* <li className="w-full">
-                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg">
+                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
                                             <MessageCircle />
                                             <span>
                                                 Chat
@@ -75,7 +75,7 @@ const Sidebar = () => {
                                         </Link>
                                     </li>
                                     <li className="w-full">
-                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg">
+                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
                                             <Bookmark />
                                             <span>
                                                 Bookmark
@@ -86,7 +86,7 @@ const Sidebar = () => {
                                     {
                                         userData?.isOnboarded &&
                                         <li className="w-full">
-                                            <Link to={`profile/${userData && userData?.username}`} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
+                                            <Link to={`profile/${userData && userData?.username}`} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/profile" && "text-white font-semibold"} duration-100`}>
                                                 <User className="size-7 xl:size-auto" />
                                                 <span className="hidden xl:inline-block">
                                                     Profile
@@ -97,7 +97,7 @@ const Sidebar = () => {
 
                                     {/* comming soon */}
                                     {/* <li className="w-full">
-                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg">
+                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
                                             <Settings />
                                             <span>
                                                 Setting and privacy

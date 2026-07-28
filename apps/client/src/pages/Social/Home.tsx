@@ -28,7 +28,7 @@ const Homepage = () => {
     return (
         <>
             {/* head */}
-            <title>odiano - Share Your Moments</title>
+            <title>Odiano - Share Your Moments</title>
             <meta
                 name="description"
                 content="odiano with friends, share posts, and explore communities."

@@ -8,6 +8,7 @@ import { toUserProfileDTO, toUserSummaryDTO } from "../mappers/user.mapper";
 import { Following } from "../models/following.model";
 import mongoose from "mongoose";
 import { commitTempImage } from "../helpers/cloudinary.helper";
+import { getFollowingIds } from "./following.service";
 
 type OnboardingPayload = {
     userId: string,
@@ -145,6 +146,41 @@ export const updateProfile = async (currentUserId: string, data: UpdateUserProfi
     }
 }
 
+export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSummaryDTO[]> => {
+    const followingIds = await getFollowingIds(currentUserId);
+
+    const users = await User.aggregate<UserSummaryQuery>([
+        {
+            $match : {
+                emailVerifiedAt : {
+                    $ne : null
+                },
+                _id : {
+                    $nin : followingIds,
+                    $ne : currentUserId
+                }
+            },
+        },
+        {
+            $sample : {
+                size : 5,
+            }
+        },
+        {
+            $project : {
+                _id : 1,
+                name : 1,
+                username : 1,
+                profileImage : 1,
+            }
+        }
+    ]);
+
+    const formmatedUsers = users.map((data) => toUserSummaryDTO(data, false));
+
+    return formmatedUsers;
+}
+
 export const searchUsers = async (query: string): Promise<UserSummaryDTO[]> => {
     const users = await User.aggregate<UserSummaryQuery>([
         {
@@ -225,7 +261,7 @@ export const searchUsers = async (query: string): Promise<UserSummaryDTO[]> => {
         },
     ]);
 
-    const formattedUsers = users.map(toUserSummaryDTO);
+    const formattedUsers = users.map((data) => toUserSummaryDTO(data));
 
     return formattedUsers;
 }

@@ -8,6 +8,8 @@ export const connectDB = async () => {
         throw new Error("MONGO URI is missing");
     }
 
+    mongoose.set("sanitizeFilter", true);
+
     await mongoose.connect(MONGO_URI)
         .then(() => {
             logger.info("Mongodb successfully connected");

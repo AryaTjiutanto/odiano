@@ -12,7 +12,8 @@ export type UserSummaryDTO = {
     id : string,
     name : string | null,
     username : string,
-    profileImage : UserProfileImageDTO | null
+    profileImage : UserProfileImageDTO | null,
+    isFollowing? : boolean
 }
 
 export type CurrentUserDTO = {

@@ -259,7 +259,7 @@ const ShowPost = () => {
                                             </div>
                                             :
                                             <>
-                                                <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
+                                                <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-sky-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
                                                     {
                                                         isFollowingQuery.data?.isFollowing ?
                                                             <button className="w-28 h-full cursor-pointer" onClick={handleUnfollow}>

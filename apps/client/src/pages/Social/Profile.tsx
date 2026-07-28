@@ -238,7 +238,7 @@ const Profile = () => {
                     {
                         (!isAuthenticated || username != currentUserData?.username) &&
                         <>
-                            <div className={`max-w-32 h-11 duration-100 rounded-lg border text-sm ${profileQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-rose-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
+                            <div className={`max-w-32 h-11 duration-100 rounded-lg border text-sm ${profileQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-sky-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
                                 {
                                     profileQuery.data?.isFollowing ?
                                         <button className="w-32 h-full cursor-pointer" onClick={handleUnfollow}>
