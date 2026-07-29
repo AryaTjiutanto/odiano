@@ -13,16 +13,13 @@ import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
-import { notify } from "../../helpers/notification/notify.helper";
-import type { AxiosErrorResponseData } from "../../types/response.type";
 import { getUserProfile } from "../../services/user.service";
 import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
 import { postKeys } from "../../queries/postKeys";
+import FollowingButton from "../../components/social/FollowingButton";
 
 const Profile = () => {
-    const navigate = useNavigate();
-
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserData = useAppSelector((state) => state.auth.user);
     const setQueryDataHandler = useSetQueryDataHandler();
@@ -76,20 +73,6 @@ const Profile = () => {
         })
     })
 
-    const handleFollow = async () => {
-        if (!isAuthenticated) {
-            return navigate("/signin");
-        }
-
-        try {
-            await followMutation.mutateAsync(profileQuery.data?.id);
-        } catch (err) {
-            const error = err as AxiosErrorResponseData;
-
-            notify.error({ "title": "Follow failed", "description": error.response?.data.message || "Something went wrong" });
-        }
-    }
-
     // delete following handler
     const unfollowMutation = useMutation({
         mutationFn: deleteFollowing,
@@ -106,16 +89,6 @@ const Profile = () => {
             isFollowing: true,
         }))
     })
-
-    const handleUnfollow = async () => {
-        try {
-            await unfollowMutation.mutateAsync(profileQuery.data?.id);
-        } catch (err) {
-            const error = err as AxiosErrorResponseData;
-
-            notify.error({ "title": "Unfollow failed", "description": error.response?.data.message || "Something went wrong" });
-        }
-    }
 
     // display the data
     if (profileQuery.isPending) {
@@ -216,7 +189,7 @@ const Profile = () => {
                 {/* banner and profile picture */}
                 <div className="w-full cover-image-aspect mt-5 relative">
                     <div className="bg-neutral-200 rounded-xl overflow-hidden w-full h-full">
-                        <img src={profileQuery.data?.coverImage?.url} className="w-full h-full"/>
+                        <img src={profileQuery.data?.coverImage?.url} className="w-full h-full" />
                     </div>
 
                     {/* profile */}
@@ -238,17 +211,8 @@ const Profile = () => {
                     {
                         (!isAuthenticated || username != currentUserData?.username) &&
                         <>
-                            <div className={`max-w-32 h-11 duration-100 rounded-lg border text-sm ${profileQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-sky-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
-                                {
-                                    profileQuery.data?.isFollowing ?
-                                        <button className="w-32 h-full cursor-pointer" onClick={handleUnfollow}>
-                                            Unfollow
-                                        </button>
-                                        :
-                                        <button className="w-24 h-full cursor-pointer" onClick={handleFollow}>
-                                            Follow
-                                        </button>
-                                }
+                            <div role="button" className={`duration-100 h-11 ${profileQuery.data?.isFollowing ? "w-32" : "w-24"}`}>
+                                <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={profileQuery.data?.isFollowing} userId={profileQuery.data?.id} />
                             </div>
                         </>
 

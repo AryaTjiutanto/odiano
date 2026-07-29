@@ -6,6 +6,7 @@ import { searchHistoryQuery } from "../types/searchHistory.type";
 import { toUserSummaryDTO } from "../mappers/user.mapper";
 import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper";
 import { SearchHistory } from "../models/searchHistory.model";
+import mongoose from "mongoose";
 
 export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
     const searchHistories = await SearchHistory.find({user : currentUserId})
@@ -16,7 +17,9 @@ export const getSearchHistory = async (currentUserId : string) : Promise<SearchH
     // get user summary
     const userHistories = searchHistories.filter((search) => search.type == SEARCH_TYPES.USER);
     const userIds = userHistories.map(h => h.targetId);
-    const userSummaries = await User.find({ _id : {$in : userIds} })
+    const userSummaries = await User.find({ _id : mongoose.trusted({
+        $in : userIds
+    }) })
     .select("_id name username profileImage updatedAt")
     .lean<UserSummaryQuery[]>();
     

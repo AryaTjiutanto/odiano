@@ -157,7 +157,7 @@ export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSu
                 },
                 _id : {
                     $nin : followingIds,
-                    $ne : currentUserId
+                    $ne : new mongoose.Types.ObjectId(currentUserId)
                 }
             },
         },

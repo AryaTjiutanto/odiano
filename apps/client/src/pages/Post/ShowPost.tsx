@@ -11,8 +11,6 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import type { AxiosErrorResponseData } from "../../types/response.type";
-import { notify } from "../../helpers/notification/notify.helper";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/profile/Profile";
 import { useAppSelector } from "../../hooks/useRedux";
@@ -23,6 +21,7 @@ import { applyLikeToInfinitePostCache, applyLikeToPostCache, removeLikeFromInfin
 import { createLike, deleteLike } from "../../services/post.service";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
+import FollowingButton from "../../components/social/FollowingButton";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -101,21 +100,6 @@ const ShowPost = () => {
         }),
     })
 
-    const handleFollow = async () => {
-        if (!isAuthenticated) {
-            return navigate("/signin");
-        }
-
-        try {
-            await followMutation.mutateAsync(postQuery.data?.author?.id);
-        } catch (err) {
-            const error = err as AxiosErrorResponseData;
-
-            notify.error({ "title": "Follow failed", "description": error.response?.data.message || "Something went wrong" });
-        }
-    }
-
-    // handle unfollow mutation
     const unfollowMutation = useMutation({
         mutationFn: deleteFollowing,
 
@@ -127,20 +111,6 @@ const ShowPost = () => {
             isFollowing: true,
         }))
     })
-
-    const handleUnfollow = async () => {
-        if (!isAuthenticated) {
-            return navigate("/signin");
-        }
-
-        try {
-            await unfollowMutation.mutateAsync(postQuery.data?.author?.id);
-        } catch (err) {
-            const error = err as AxiosErrorResponseData;
-
-            notify.error({ "title": "Unfollow failed", "description": error.response?.data.message || "Something went wrong" });
-        }
-    }
 
     // like mutation
     const likeMutation = useMutation({
@@ -259,17 +229,8 @@ const ShowPost = () => {
                                             </div>
                                             :
                                             <>
-                                                <div className={`max-w-28 h-10 duration-100 rounded-lg border text-sm ${isFollowingQuery.data?.isFollowing ? "border-neutral-100 hover:bg-transparent hover:border-rose-500 hover:text-sky-500" : "border-neutral-100 hover:bg-neutral-100 hover:text-neutral-700"}`}>
-                                                    {
-                                                        isFollowingQuery.data?.isFollowing ?
-                                                            <button className="w-28 h-full cursor-pointer" onClick={handleUnfollow}>
-                                                                Unfollow
-                                                            </button>
-                                                            :
-                                                            <button className="w-20 h-full cursor-pointer" onClick={handleFollow}>
-                                                                Follow
-                                                            </button>
-                                                    }
+                                                <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing? "w-28" : "w-20"}`}>
+                                                    <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={isFollowingQuery.data?.isFollowing} userId={postQuery.data.author?.id} />
                                                 </div>
                                             </>
                                     }

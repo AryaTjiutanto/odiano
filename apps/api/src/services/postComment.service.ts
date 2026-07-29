@@ -132,12 +132,12 @@ export const get = async (cursor : string | undefined, postId : string, userId :
     // get comment
     const comments = await PostComment.find({
         postId,
-        ...(userId ? { author: { $ne: userId } } : {}),
+        ...(userId ? { author: mongoose.trusted({ $ne: userId }) } : {}),
         depth: 0,
         ...(cursor ? {
-            _id: {
-                $lt: cursor
-            }
+            _id: mongoose.trusted({
+                mongoose$lt: cursor
+            })
         } : {})
     })
         .sort({ _id: -1 })
