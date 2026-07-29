@@ -36,7 +36,7 @@ const SocialLayout = () => {
                     </Suspense>
                 }
 
-                <div className="w-full h-full grid sm:grid-cols-16 md:grid-cols-10 lg:grid-cols-11 xl:grid-cols-12 2xl:grid-cols-11 gap-5 xl:gap-14 relative">
+                <div className="w-full h-full grid sm:grid-cols-16 md:grid-cols-10 lg:grid-cols-11 xl:grid-cols-15 2xl:grid-cols-11 gap-5 md:gap-6 lg:gap-10 xl:gap-14 relative">
                     {/* left sidebar */}
                     <aside className="hidden sm:inline-block w-full h-screen sm:col-span-2 md:col-span-1 xl:col-span-3 2xl:col-span-2 py-8 lg:py-7 xl:py-10 sticky top-0">
                         <div className="w-full h-full px-3">
@@ -44,13 +44,13 @@ const SocialLayout = () => {
                         </div>
 
                         {/* notification */}
-                        <div className={`hidden xl:inline-block h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 ${notificationSection.isOpen ? "lg:w-72 xl:w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
+                        <div className={`hidden 2xl:inline-block h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 ${notificationSection.isOpen ? "lg:w-72 xl:w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
                             <NotificationSection/>
                         </div>
                     </aside>
 
                     {/* main */}
-                    <main className="sm:col-span-8 md:col-span-5 lg:col-span-6 2xl:col-span-5 pb-16 sm:pb-0">
+                    <main className="sm:col-span-8 md:col-span-5 lg:col-span-6 xl:col-span-7 2xl:col-span-5 pb-16 sm:pb-0">
                         <Outlet />
 
                         {/* notification Section */}
@@ -60,9 +60,9 @@ const SocialLayout = () => {
                     </main>
 
                     {/* right sidebar */}
-                    <div className="hidden sm:inline-block sm:col-span-6 md:col-span-4 xl:col-span-3 h-screen sticky top-0 right-0 pt-10 2xl:pl-20">  
+                    <div className="hidden sm:inline-block sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 2xl:col-span-3 h-screen sticky top-0 right-0 pt-5 lg:pt-6 xl:pt-8 2xl:pl-20 md:pr-5 lg:pr-10 xl:pr-0">
                         {/* notification */}
-                        <div className={`xl:hidden h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 xl:px-5 ${notificationSection.isOpen ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
+                        <div className={`2xl:hidden h-screen bg-black py-5 xl:py-10 absolute top-0 left-0 overflow-hidden z-30 2xl:px-5 ${notificationSection.isOpen ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
                             <NotificationSection/>
                         </div>
 

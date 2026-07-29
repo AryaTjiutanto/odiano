@@ -136,7 +136,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="sticky top-0 left-0 w-full bg-black border-y border-neutral-800 py-8 mt-10">
+        <form onSubmit={handleSubmit(onSubmit)} className="sticky top-0 left-0 w-full bg-black border-y border-neutral-800 py-8 mt-10 z-10">
             <div className="flex gap-4">
                 <div className="w-12 h-12">
                     <Profile data={currentUser?.profileImage} />

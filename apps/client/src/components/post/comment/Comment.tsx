@@ -94,13 +94,12 @@ const Comment = ({ data, postId }: Props) => {
                                 <h2 className="text-neutral-500">@{data.author.username || ""}</h2>
                             </Link>
                         </div>
-                        
                         {
                             (!("isPosted" in data) || data.isPosted) &&
                             <button className="relative cursor-pointer group hover:text-sky-500 duration-100" ref={refs.setReference} {...getReferenceProps()}>
                                 {/* content */}
                                 <div className="w-10 h-10 rounded-full absolute top-0 bottom-0 my-auto -left-1/2 m-auto bg-sky-500/5 z-1 opacity-0 group-hover:opacity-100 duration-100"></div>
-                                <EllipsisVertical className="w-5 z-2" />
+                                <EllipsisVertical className="w-5 z-1" />
                             </button>
                         }
                     </div>

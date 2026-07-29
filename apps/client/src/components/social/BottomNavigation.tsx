@@ -15,7 +15,7 @@ export const BottomNavigation = () => {
     // close notification
     const closeNotificationSection = () => {
         setTimeout(() => {
-            notificationSection.close
+            notificationSection.close();
         }, 400)
     }
 

@@ -6,7 +6,6 @@ import UserMenu from "./UserMenu";
 import { usePostForm } from "../../providers/PostFormProvider";
 import { useNotificationSection } from "../../providers/NotificationSectionProvider";
 
-
 const Sidebar = () => {
     const postForm = usePostForm();
     const notificationSection = useNotificationSection();
@@ -26,7 +25,7 @@ const Sidebar = () => {
             return;
         }
 
-        notificationSection.open();
+        notificationSection.toggle();
     }
 
     return (
