@@ -54,7 +54,12 @@ export const getPosts = async (cursor: string | undefined | null): Promise<Infin
     return response.data.data;
 }
 
-// delete
+// delete post
+export const deletePost = async (postId: string) => {
+    await api.delete(`${baseRoute}/${postId}`);
+}
+
+// delete comment
 export const deleteComment = async (commentId: string) => {
     await api.delete(`${baseRoute}/comment/${commentId}`);
 }

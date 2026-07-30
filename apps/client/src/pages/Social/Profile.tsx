@@ -42,7 +42,7 @@ const Profile = () => {
         queryFn: ({ pageParam }) => getUserPosts(pageParam, username!),
         queryKey: postKeys.userPosts(username!),
         enabled: !!profileQuery.data,
-        staleTime: 30 * 1000,
+        staleTime: 3 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
@@ -294,7 +294,7 @@ const Profile = () => {
                                 {
                                     postsQuery.data.pages.map(page => page.items.map((item) => {
                                         return (
-                                            <Post data={item} author={profileQuery.data} key={`post-${item.id}`} />
+                                            <Post data={item} author={profileQuery.data} key={`post-${item.id}`} canDeletePost={true}/>
                                         )
                                     }))
                                 }

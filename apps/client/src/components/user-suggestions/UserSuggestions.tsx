@@ -8,7 +8,7 @@ import UserSuggestionsSkeletonLoading from "./UserSuggestionsSkeletonLoading";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { Link } from "react-router-dom";
-import FollowingButton from "./FollowingButton";
+import FollowingButton from "../social/FollowingButton";
 
 const UserSuggestions = () => {
     const setQueryDataHandler = useSetQueryDataHandler();

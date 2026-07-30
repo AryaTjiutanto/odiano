@@ -8,6 +8,7 @@ import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { postKeys } from "../../../queries/postKeys";
+import { useEffect } from "react";
 
 type Props = {
     postId: string,

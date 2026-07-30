@@ -4,6 +4,7 @@ import { ReqBody } from "../types/request.type";
 import { CreatePostSchema, InfiniteQuery, PostDTO, PostPublicId, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import logger from "../libs/log/logger";
 
 export const index = async(req: Request, res: Response, next: NextFunction) => {
     const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;

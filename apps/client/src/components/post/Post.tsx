@@ -6,19 +6,21 @@ import Profile from "../profile/Profile";
 import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
-import { type MouseEvent } from "react";
+import { useEffect, type MouseEvent } from "react";
 import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { createLike, deleteLike } from "../../services/post.service";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { useAppSelector } from "../../hooks/useRedux";
+import PostMenu from "../floating-menu/PostMenu";
 
 type Props = {
     data: PostDTO,
-    author?: UserSummaryDTO
+    author?: UserSummaryDTO,
+    canDeletePost?: boolean,
 }
 
-const Post = ({ data, author }: Props) => {
+const Post = ({ data, author, canDeletePost = false }: Props) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
 
@@ -33,15 +35,15 @@ const Post = ({ data, author }: Props) => {
         mutationFn: createLike,
         mutationKey: postQueryKey,
 
-        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old)=> applyLikeToInfinitePostCache(old, data.id)),
+        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => applyLikeToInfinitePostCache(old, data.id)),
 
         onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => removeLikeFromInfinitePostCache(old, data.id)),
     })
 
     // unlike postMutation
     const removeLikeMutation = useMutation({
-        mutationFn : deleteLike,
-        mutationKey : postQueryKey,
+        mutationFn: deleteLike,
+        mutationKey: postQueryKey,
 
         onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => removeLikeFromInfinitePostCache(old, data.id)),
         onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => applyLikeToInfinitePostCache(old, data.id)),
@@ -51,9 +53,9 @@ const Post = ({ data, author }: Props) => {
     const handleLike = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
 
-        if(!isInitialized) return;
+        if (!isInitialized) return;
 
-        if(!isAuthenticated) {
+        if (!isAuthenticated) {
             return navigate("/signin");
         }
 
@@ -65,15 +67,14 @@ const Post = ({ data, author }: Props) => {
             }
         } catch (err: unknown) {
             handleApiErrorNotification(err, {
-                notifications : {
-                    [ERROR_RESPONSE_CODE.conflict] : {
-                        title : "Action not allowed",
+                notifications: {
+                    [ERROR_RESPONSE_CODE.conflict]: {
+                        title: "Action not allowed",
                     }
                 }
             });
         }
     }
-
 
     return (
         <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 sm:p-7 sm:rounded-lg sm:bg-neutral-950 cursor-pointer border-b last:border-0 border-neutral-900 sm:border-0">
@@ -95,8 +96,9 @@ const Post = ({ data, author }: Props) => {
                     </div>
                 </Link>
 
-                {/* comming soon */}
-                {/* <EllipsisVertical className="w-4" /> */}
+                <div onClick={(e) => e.stopPropagation()}>
+                    <PostMenu authorUsername={author?.username} post={data} canDeletePost={canDeletePost} />
+                </div>
             </div>
             <p className="text-sm mt-8 whitespace-pre-wrap">
                 {data.content ?? ""}

@@ -6,7 +6,7 @@ import { registerNotificationListeners, unregisterNotificationListeners } from "
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
 import { useNotificationSection } from "../providers/NotificationSectionProvider";
-import UserSuggestions from "../components/social/UserSuggestions";
+import UserSuggestions from "../components/user-suggestions/UserSuggestions";
 import RightSidebarFooter from "../components/sidebar/RightSidebarFooter";
 
 const PostFormSection = lazy(() =>

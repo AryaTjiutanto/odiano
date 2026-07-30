@@ -161,7 +161,8 @@ export const deletePost = async (currentUserId : string, postId : string | undef
         await session.withTransaction(async () => {
             const post = await Post.findOne({
                 _id : postId,
-            }, {session})
+            })
+            .session(session)
             .select("_id author");
             
             if(!post) {

@@ -1,6 +1,17 @@
 import type { CurrentUserDTO, PostCommentDTO, PostDTO } from "@odiano/shared"
 import type { CreateCommentMutationParams, InfiniteQueryPostDTO } from "../../types/post.type"
 
+// post
+export function removePostFromUserPostCache(oldData: InfiniteQueryPostDTO, postId: string): InfiniteQueryPostDTO {
+    return {
+        ...oldData,
+        pages: oldData.pages.map(page => ({
+            ...page,
+            items: page.items.filter((item) => item.id !== postId)
+        }))
+    }
+}
+
 // like
 export function applyLikeToInfinitePostCache(oldData: InfiniteQueryPostDTO, postId: string): InfiniteQueryPostDTO {
     return {
@@ -75,12 +86,12 @@ export function decreaseCommentCount(oldData: PostDTO) {
     }
 }
 
-export function updateToPostedCommentData(oldData: PostCommentDTO[], commentId: string, newId : string) {
+export function updateToPostedCommentData(oldData: PostCommentDTO[], commentId: string, newId: string) {
     return oldData.map((comment) => {
         return {
             ...(comment.id == commentId ? {
                 ...comment,
-                id : newId,
+                id: newId,
                 isPosted: true
             } : comment)
         }
@@ -110,6 +121,6 @@ export function addToComment(mutationData: CreateCommentMutationParams, oldData:
     ]
 }
 
-export function removeComment(oldData: PostCommentDTO[], commentId : string) {
+export function removeComment(oldData: PostCommentDTO[], commentId: string) {
     return oldData.filter((comment) => comment.id !== commentId);
 }
