@@ -72,7 +72,7 @@ const EmailVerification = () => {
 
     return (
         <>
-            <title>Email verification - odiano</title>
+            <title>Email verification - Odiano</title>
 
             <div className="w-screen h-screen grid place-content-center p-7 sm:p-0">
                 <div className="flex flex-col items-center justify-center text-center">

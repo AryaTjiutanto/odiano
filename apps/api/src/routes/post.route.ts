@@ -1,6 +1,6 @@
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import express from "express"
-import { create as createPost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller";
+import { create as createPost, deletePost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller";
 import { createComment, deleteComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
 import { createPostCommentSchema, createPostSchema } from "@odiano/shared";
 import { validateData } from "../middlewares/validateData.middleware";
@@ -29,5 +29,8 @@ router.get("/:postId/comments", consume(apiLimiter), optionalAuth, getComments)
 
 // post detail
 router.get("/:postPublicId", consume(apiLimiter), optionalAuth, showPost);
+
+// delete post
+router.delete("/:postId", consume(apiLimiter), requireAccessToken, deletePost);
 
 export default router;

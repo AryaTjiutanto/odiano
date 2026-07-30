@@ -25,7 +25,7 @@ export default function VerifyEmail({
             <Head />
 
             <Preview>
-                Your odiano verification code
+                Your Odiano verification code
             </Preview>
 
             <Body
@@ -58,7 +58,7 @@ export default function VerifyEmail({
                             letterSpacing: "-0.5px",
                         }}
                     >
-                        odiano
+                        Odiano
                     </Text>
 
                     <Hr
@@ -91,7 +91,7 @@ export default function VerifyEmail({
                         }}
                     >
                         Enter the verification code below to continue signing in
-                        to your odiano account.
+                        to your Odiano account.
                     </Text>
 
                     {/* OTP */}
@@ -170,7 +170,7 @@ export default function VerifyEmail({
                             margin: 0,
                         }}
                     >
-                        © {new Date().getFullYear()} odiano. All rights
+                        © {new Date().getFullYear()} Odiano. All rights
                         reserved.
                     </Text>
                 </Container>

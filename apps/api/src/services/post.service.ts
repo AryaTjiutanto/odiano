@@ -7,6 +7,7 @@ import { AppError } from "../errors/appError.error";
 import { User } from "../models/user.model";
 import { LIKE_TYPES } from "../consts/like.const";
 import { getIsLiked, getLikedIds } from "./like.service";
+import mongoose, { Types } from "mongoose";
 
 export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     const query = cursor ? {
@@ -147,4 +148,34 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
         nextCursor,
         items,
     };
+}
+
+export const deletePost = async (currentUserId : string, postId : string | undefined | null) => {
+    if(!postId) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+        await session.withTransaction(async () => {
+            const post = await Post.findOne({
+                _id : postId,
+            }, {session})
+            .select("_id author");
+            
+            if(!post) {
+                throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post Not found")
+            }
+            
+            if(post.author.toString() != currentUserId) {
+                throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You dont have permission to delete this post");
+            }
+
+            await post.deleteOne({session});
+        });
+    } finally {
+        await session.endSession();
+    }
+
 }

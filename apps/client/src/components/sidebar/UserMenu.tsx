@@ -122,8 +122,8 @@ const UserMenu = () => {
                             <Profile data={userData.profileImage} />
                         </div>
                         <div className="text-left hidden xl:inline-block">
-                            <h1 className="text-base font-semibold">{userData.name}</h1>
-                            <p className="text-sm text-neutral-700">
+                            <h1 className="text-base font-semibold truncate">{userData.name}</h1>
+                            <p className="text-sm text-neutral-700 truncate">
                                 @{userData.username}
                             </p>
                         </div>
