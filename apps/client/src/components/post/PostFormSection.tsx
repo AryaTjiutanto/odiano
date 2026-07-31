@@ -9,8 +9,12 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { usePostForm } from "../../providers/PostFormProvider";
+import useDragAndDrop from "../../hooks/useDragAndDrop";
+import useImageUploadHandler from "../../hooks/useImageUpload";
 const PostFormSection = () => {
     const postForm = usePostForm();
+    const dragAndDrop = useDragAndDrop();
+    const imageUpload = useImageUploadHandler();
 
     const [isCreated, setIsCreated] = useState<boolean>(false);
     const [postPublicId, setPostPublicId] = useState<string | null>(null);
@@ -72,10 +76,10 @@ const PostFormSection = () => {
     // setting
     useEffect(() => {
         setFocus("content");
-    }, [])
+    }, [setFocus])
 
     return (
-        <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32">
+        <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, imageUpload.getOriginalImageUrl)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
             {/* content */}
             <div className="w-full sm:w-[500px] md:w-[650px] h-full sm:h-fit bg-black sm:bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
                 {/* form */}
@@ -89,14 +93,16 @@ const PostFormSection = () => {
                         </h1>
                     </div>
 
-                    {/* comming soon */}
-                    {/* <div className="w-full h-24">
-                        <label className="w-full h-full rounded-xl border border-neutral-400 border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer" htmlFor="media-input">
-                            <span>Drag and drop photos or videos here, or click to select files. (optional)</span>
+                    {/* image input */}
+                    <div className={`w-full h-24`}>
+                        <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 ${dragAndDrop.isDrag ? "border-sky-500"  : "border-neutral-500"}`} htmlFor="media-input">
+                            <span className={`${dragAndDrop.isDrag && "hidden"}`}>Drag and drop photos or videos here, or click to select files. (optional)</span>
+                            <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500`}>Drop your Files</span>
                         </label>
-                        <input type="file" className="hidden" id="media-input" accept="image/*,video/*" />
-                    </div> */}
+                        <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple/>
+                    </div>
                     
+                    {/* text input */}
                     <div className="w-full">
                         <div className="w-full relative">
                             <textarea className="mt-4 w-full h-64 sm:h-40 border border-neutral-600 rounded-xl py-4 px-5 text-neutral-200 default-input-text-behaviour" placeholder="What's on your mind?" {...register("content")}></textarea>
@@ -110,11 +116,11 @@ const PostFormSection = () => {
                         }
                     </div>
 
-                    {/* comming soon */}
+                    {/* commming soon */}
                     {/* <div className="flex flex-col space-y-2 mt-3">
                         <div className="flex items-center space-x-10">
                             <p className="h-fit">
-                                Hide Like and view count on this post?
+                                Hide Like count on this post?
                             </p>
                             <PillSwitch checked={hideLikeAndViewCount} onToggle={() => handleToggle("hideLikeAndViewCount")} />
                         </div>
