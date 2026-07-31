@@ -8,7 +8,7 @@ import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { postKeys } from "../../../queries/postKeys";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 type Props = {
     postId: string,
@@ -29,9 +29,9 @@ const CommentSection = ({ postId }: Props) => {
     const currentUserCommentQuery = useQuery({
         queryKey: currentUserQueryKey,
         queryFn: getCurrentUserComments,
-        initialData : null,
+        initialData: null,
         staleTime: 30 * 1000,
-        enabled : isAuthenticated,
+        enabled: isAuthenticated,
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -64,7 +64,7 @@ const CommentSection = ({ postId }: Props) => {
     return (
         <>
             {/* create comment */}
-            <CreateCommentSection postId={postId}/>
+            <CreateCommentSection postId={postId} />
 
             {/* comments */}
             <div className="w-full space-y-8 mt-10 pb-6">
@@ -81,19 +81,19 @@ const CommentSection = ({ postId }: Props) => {
                         <>
                             {/* current user comments */}
                             {
-                                currentUserCommentQuery.data?.map(data => <Comment data={data} postId={postId}/>)
+                                currentUserCommentQuery.data?.map(data => <Comment data={data} postId={postId} />)
                             }
 
                             {/* comments */}
                             {
                                 commentQuery.data?.pages.map((page) =>
                                     page.items.map((item) => (
-                                        <Comment data={item} postId={postId} key={`comment-${item.id}`}/>
+                                        <Comment data={item} postId={postId} key={`comment-${item.id}`} />
                                     )))
                             }
 
                             {/* sentinel */}
-                            <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage} />
+                            <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage} textForGuest="to view more comments."/>
                         </>
                 }
             </div>

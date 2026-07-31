@@ -7,9 +7,10 @@ type Props = {
     fetchNextPage: () => void,
     hasNextPage: boolean,
     isFetchingNextPage: boolean,
+    textForGuest? : string,
 }
 
-const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage }: Props) => {
+const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage, textForGuest = "to view more content" }: Props) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const sentinel = useRef<HTMLDivElement | null>(null);
 
@@ -36,7 +37,7 @@ const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage
                 observer.unobserve(sentinel.current);
             }
         }
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage, isAuthenticated]);
 
 
     if(!hasNextPage) return <></>;
@@ -48,7 +49,11 @@ const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage
                     <Link to="/signin" className="text-sky-500 underline hover:text-sky-400 duration-100">
                         Sign in
                     </Link>{" "}
-                    to view more comments.
+                    or {" "}
+                    <Link to="/signup" className="text-sky-500 underline hover:text-sky-400 duration-100">
+                        Create an account
+                    </Link>{" "}
+                    {textForGuest}
                 </h1>
             </div>
         )

@@ -16,7 +16,7 @@ type createPostCommentParams = {
     depth: number
 }
 
-export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams) : Promise<string> => {
+export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams): Promise<string> => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
         .select("visibility isArchive turnOffCommenting commentCount")
@@ -96,39 +96,44 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
     }
 }
 
-export const deleteComment = async (currentUserId : string, commentId : string) => {
+export const deleteComment = async (currentUserId: string, commentId: string) => {
     const session = await mongoose.startSession();
 
     try {
         await session.withTransaction(async () => {
             // check authorization
             const deletedComment = await PostComment.findOneAndDelete({
-                _id : commentId,
-                author : currentUserId
+                _id: commentId,
+                author: currentUserId
             }, {
                 session,
-                projection : {
-                    postId : 1,
+                projection: {
+                    postId: 1,
                 }
             })
 
-            if(!deletedComment) {
+            if (!deletedComment) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Comment not found");
             }
-    
+
             // decrese post commentCount
-            await Post.updateOne({_id : deletedComment?.postId}, {
-                $inc : {
-                    commentCount : -1
+            await Post.updateOne({ _id: deletedComment?.postId }, {
+                $inc: {
+                    commentCount: -1
                 }
-            }, {session});
+            }, { session });
         })
     } finally {
         await session.endSession();
     }
 }
 
-export const get = async (cursor : string | undefined, postId : string, userId : string | undefined): Promise<InfiniteQuery<PostCommentDTO[]>> => {
+export const get = async (cursor: string | undefined, postId: string, userId: string | undefined): Promise<InfiniteQuery<PostCommentDTO[]>> => {
+    // check is user authenticated
+    if (cursor && !currentUserId) {
+        throw new UnauthorizedError();
+    }
+
     // get comment
     const comments = await PostComment.find({
         postId,

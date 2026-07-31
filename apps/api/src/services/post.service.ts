@@ -7,14 +7,20 @@ import { AppError } from "../errors/appError.error";
 import { User } from "../models/user.model";
 import { LIKE_TYPES } from "../consts/like.const";
 import { getIsLiked, getLikedIds } from "./like.service";
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
+    // check is user authenticated
+    if (cursor && !currentUserId) {
+        throw new UnauthorizedError();
+    }
+
+    // get posts data
     const query = cursor ? {
         _id: { $lt: cursor }
     } : {};
 
-    // get posts data
     let posts = await Post.find(query)
         .sort({ _id: -1 })
         .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt commentCount likeCount")
@@ -86,6 +92,12 @@ export const create = async (userId: string, data: CreatePostSchema) => {
 }
 
 export const getUserPosts = async (currentUserId: string | null | undefined, username: string, cursor: string | null): Promise<InfiniteQuery<PostDTO[]>> => {
+    // check is user authenticated
+    if (cursor && !currentUserId) {
+        throw new UnauthorizedError();
+    }
+
+    // get user
     const user = await User.findOne({ username })
         .select('_id')
         .lean();
@@ -115,7 +127,7 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
         .lean<PostQuery[]>();
 
     let nextCursor = null;
-    let items : PostDTO[] = [];
+    let items: PostDTO[] = [];
 
     // handle hasNextPage
     let hasNextPage = posts.length > POSTS_PAGE_SIZE;
@@ -150,8 +162,8 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
     };
 }
 
-export const deletePost = async (currentUserId : string, postId : string | undefined | null) => {
-    if(!postId) {
+export const deletePost = async (currentUserId: string, postId: string | undefined | null) => {
+    if (!postId) {
         throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
     }
 
@@ -160,20 +172,20 @@ export const deletePost = async (currentUserId : string, postId : string | undef
     try {
         await session.withTransaction(async () => {
             const post = await Post.findOne({
-                _id : postId,
+                _id: postId,
             })
-            .session(session)
-            .select("_id author");
-            
-            if(!post) {
+                .session(session)
+                .select("_id author");
+
+            if (!post) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post Not found")
             }
-            
-            if(post.author.toString() != currentUserId) {
+
+            if (post.author.toString() != currentUserId) {
                 throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You dont have permission to delete this post");
             }
 
-            await post.deleteOne({session});
+            await post.deleteOne({ session });
         });
     } finally {
         await session.endSession();

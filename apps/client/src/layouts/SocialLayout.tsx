@@ -1,13 +1,12 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/sidebar/Sidebar";
+import LeftSidebar from "../components/sidebar/LeftSidebar";
 import { lazy, Suspense, useEffect } from "react";
 import NotificationSection from "../components/sidebar/NotificationSection";
 import { registerNotificationListeners, unregisterNotificationListeners } from "../features/notification/notification.socket";
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
 import { useNotificationSection } from "../providers/NotificationSectionProvider";
-import UserSuggestions from "../components/user-suggestions/UserSuggestions";
-import RightSidebarFooter from "../components/sidebar/RightSidebarFooter";
+import RightSidebar from "../components/sidebar/RightSidebar";
 
 const PostFormSection = lazy(() =>
     import("../components/post/PostFormSection")
@@ -40,7 +39,7 @@ const SocialLayout = () => {
                     {/* left sidebar */}
                     <aside className="hidden sm:inline-block w-full h-screen sm:col-span-2 md:col-span-1 xl:col-span-3 2xl:col-span-2 py-8 lg:py-7 xl:py-10 sticky top-0">
                         <div className="w-full h-full px-3">
-                            <Sidebar/>
+                            <LeftSidebar/>
                         </div>
 
                         {/* notification */}
@@ -61,16 +60,7 @@ const SocialLayout = () => {
 
                     {/* right sidebar */}
                     <div className="hidden sm:inline-block sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 2xl:col-span-3 h-screen sticky top-0 right-0 pt-5 lg:pt-6 xl:pt-8 2xl:pl-20 md:pr-5 lg:pr-10 xl:pr-0">
-                        {/* notification */}
-                        <div className={`2xl:hidden h-screen bg-black py-5 xl:py-10 absolute top-0 left-0 overflow-hidden z-30 2xl:px-5 ${notificationSection.isOpen ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
-                            <NotificationSection/>
-                        </div>
-
-                        {/* user suggestions */}
-                        <UserSuggestions/>
-
-                        {/* footer */}
-                        <RightSidebarFooter/>
+                        <RightSidebar/>
                     </div>
                 </div>
 

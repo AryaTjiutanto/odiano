@@ -6,7 +6,7 @@ import UserMenu from "./UserMenu";
 import { usePostForm } from "../../providers/PostFormProvider";
 import { useNotificationSection } from "../../providers/NotificationSectionProvider";
 
-const Sidebar = () => {
+const LeftSidebar = () => {
     const postForm = usePostForm();
     const notificationSection = useNotificationSection();
 
@@ -19,7 +19,7 @@ const Sidebar = () => {
     const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const userData = useAppSelector((state) => state.auth.user);
 
-    // openSidebar
+    // openLeftSidebar
     const handleOpenNotificationSection = () => {
         if (!isInitialized) {
             return;
@@ -33,18 +33,22 @@ const Sidebar = () => {
             <div className="w-full h-full flex flex-col items-center xl:items-start justify-between">
                 <div className="w-full flex flex-col items-center xl:items-start">
                     <img src={ConnectLogo} className="w-9 xl:w-auto" />
-                    <nav className="mt-20 xl:mt-16 w-full">
-                        <ul className="w-full space-y-7 xl:space-y-5">
-                            <li className="w-full">
-                                <Link to={"/"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/" && "text-white font-semibold"} duration-100`}>
-                                    <Home className="size-7 w-fit xl:size-auto" />
-                                    <span className="hidden xl:inline-block">
-                                        Home
-                                    </span>
-                                </Link>
-                            </li>
-                            {/* comming soon */}
-                            {/* <li className="w-full">
+
+                    {
+                        (isAuthenticated && userData?.isOnboarded) &&
+                        <>
+                            <nav className="mt-20 xl:mt-16 w-full">
+                                <ul className="w-full space-y-7 xl:space-y-5">
+                                    <li className="w-full">
+                                        <Link to={"/"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/" && "text-white font-semibold"} duration-100`}>
+                                            <Home className="size-7 w-fit xl:size-auto" />
+                                            <span className="hidden xl:inline-block">
+                                                Home
+                                            </span>
+                                        </Link>
+                                    </li>
+                                    {/* comming soon */}
+                                    {/* <li className="w-full">
                                 <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
                                     <Search />
                                     <span>
@@ -52,9 +56,7 @@ const Sidebar = () => {
                                     </span>
                                 </Link>
                             </li> */}
-                            {
-                                isAuthenticated &&
-                                <>
+
                                     <li className="w-full">
                                         <button onClick={handleOpenNotificationSection} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl cursor-pointer">
                                             <Bell className="size-7 xl:size-auto" />
@@ -103,30 +105,25 @@ const Sidebar = () => {
                                             </span>
                                         </Link>
                                     </li> */}
-                                </>
-                            }
-                        </ul>
-                    </nav>
-                    {
-                        (isAuthenticated && userData?.isOnboarded) &&
-                        <>
+                                </ul>
+                            </nav>
                             {/* xl */}
                             <button onClick={postForm.open} className="w-40 h-14 bg-white rounded-xl mt-10 text-lg text-neutral-900 font-bold cursor-pointer hidden hover:bg-white/0 hover:text-neutral-100 border border-white duration-100 xl:grid xl:place-content-center">
                                 Post
                             </button>
-                            
+
                             {/* md */}
                             <button className="xl:hidden mt-14 w-10 h-10 bg-neutral-50 rounded-full text-neutral-800 grid place-content-center" onClick={postForm.open}>
-                                <Pencil className="size-4"/>
+                                <Pencil className="size-4" />
                             </button>
                         </>
                     }
                 </div>
 
-                <UserMenu/>
+                <UserMenu />
             </div>
         </>
     )
 }
 
-export default Sidebar;
+export default LeftSidebar;

@@ -1,6 +1,7 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { notify } from "../../helpers/notification/notify.helper";
 import type { AxiosErrorResponseData } from "../../types/response.type";
+import { useAppSelector } from "../../hooks/useRedux";
 
 type Props = {
     unfollowMutation: UseMutationResult<any, Error, string | undefined, void>,
@@ -10,6 +11,8 @@ type Props = {
 }
 
 const FollowingButton = ({ followMutation, unfollowMutation, isFollowing, userId }: Props) => {
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+
     const handleFollow = async (userId: string) => {
         try {
             await followMutation.mutateAsync(userId);
@@ -41,6 +44,8 @@ const FollowingButton = ({ followMutation, unfollowMutation, isFollowing, userId
 
         return handleFollow(userId);
     }
+
+    if(!isAuthenticated) return;
 
     return (
         <button className={`w-full h-full bg-white rounded-lg text-neutral-900 text-sm border border-white hover:bg-transparent duration-100 cursor-pointer group font-semibold ${isFollowing ? "hover:text-rose-500 hover:border-rose-500" : "hover:text-white"}`} onClick={handleFollowing}>

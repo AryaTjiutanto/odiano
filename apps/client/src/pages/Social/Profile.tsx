@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays } from "lucide-react";
 import ProfileComponent from "../../components/profile/Profile";
@@ -299,7 +299,7 @@ const Profile = () => {
                                     }))
                                 }
 
-                                <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage} />
+                                <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage} textForGuest={`to see @${profileQuery.data?.username} full profile`}/>
                             </>
                         }
                         {

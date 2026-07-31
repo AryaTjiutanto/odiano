@@ -1,1 +1,1 @@
-export const POSTS_PAGE_SIZE = 10 as const;
+export const POSTS_PAGE_SIZE = 8 as const;

@@ -8,12 +8,15 @@ import { postKeys } from "../../queries/postKeys";
 import { getPosts } from "../../services/post.service";
 import HomeHeader from "../../components/social/HomeHeader";
 import CreatePostFloatingButton from "../../components/social/CreatePostFloatingButton";
+import { useAppSelector } from "../../hooks/useRedux";
+import { Link } from "react-router-dom";
 
 const Homepage = () => {
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const postsQueryKey = postKeys.all;
 
     const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryFn: ({pageParam}) => getPosts(pageParam),
+        queryFn: ({ pageParam }) => getPosts(pageParam),
         queryKey: postsQueryKey,
         staleTime: 10 * 1000,
         gcTime: DEFAULT_GC_TIME,
@@ -35,12 +38,12 @@ const Homepage = () => {
             />
 
             {/* create post button - mobile */}
-            <CreatePostFloatingButton/>
+            <CreatePostFloatingButton />
 
             {/* body */}
             <div className="w-full flex flex-col">
                 {/* header */}
-                <HomeHeader/>
+                <HomeHeader />
 
                 {/* story */}
                 {/* comming soon */}
@@ -50,7 +53,7 @@ const Homepage = () => {
                 <div className="mt-2 space-y-6 sm:pb-6">
                     {
                         isPending &&
-                        Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`}/>)
+                        Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
                     }
                     {
                         data &&
@@ -58,11 +61,11 @@ const Homepage = () => {
                             {
                                 data?.pages.map((page) =>
                                     page.items.map((item) => (
-                                        <Post data={item} key={`post-${item.publicId}`}/>
+                                        <Post data={item} key={`post-${item.publicId}`} />
                                     ))
                                 )
                             }
-                            <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} />
+                            <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts."/>
                         </>
                     }
 

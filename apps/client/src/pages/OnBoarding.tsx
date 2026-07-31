@@ -100,7 +100,7 @@ const OnBoarding = () => {
             const dataToSubmit = { ...data };
 
             // handle image upload
-            if (dataToSubmit.profileImagePublicId) {
+            if (imageUploadHandler.originalImageUrl) {
                 const uploadedImageData = await imageUploadHandler.uploadImage("/upload/profile-signature", "profile.webp");
 
                 if (!uploadedImageData) {

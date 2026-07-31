@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { logout } from "../../features/auth/auth.thunk";
 import Profile from "../profile/Profile";
-import { EllipsisVertical, FilePenLine, LogIn, MailWarning } from "lucide-react";
+import { EllipsisVertical, FilePenLine, MailWarning } from "lucide-react";
 import { Link } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
 
@@ -58,7 +58,9 @@ const UserMenu = () => {
         )
     }
 
-    if (!isAuthenticated || !userData || !userData.isOnboarded || !userData.isEmailVerified) {
+    if (!isAuthenticated) return;
+
+    if (!userData || !userData.isOnboarded || !userData.isEmailVerified) {
         return (
             <Link to={profileLink}>
                 <button className="w-full flex items-center justify-between space-x-10 cursor-pointer">
@@ -68,14 +70,7 @@ const UserMenu = () => {
                         </div>
 
                         <div className="w-10 h-10 text-neutral-900 xl:text-neutral-100 bg-neutral-50 xl:bg-transparent rounded-full xl:rounded-none xl:h-fit xl:w-fit xl:text-left flex items-center justify-center xl:justify-start">
-                            {!isAuthenticated ? (
-                                <>
-                                    <LogIn className="xl:hidden w-4" />
-                                    <h1 className="text-base font-semibold hidden xl:inline-block">
-                                        Create an account or sign in
-                                    </h1>
-                                </>
-                            ) : !userData?.isEmailVerified ? (
+                            {!userData?.isEmailVerified ? (
                                 <>
                                     <MailWarning className="xl:hidden w-4" />
 
