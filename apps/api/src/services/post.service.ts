@@ -18,7 +18,7 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
 
     // get posts data
     const query = cursor ? {
-        _id: { $lt: cursor }
+        _id: mongoose.trusted({ $lt: cursor })
     } : {};
 
     let posts = await Post.find(query)
@@ -110,9 +110,9 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
         author: user._id,
         ...(cursor ?
             {
-                _id: {
+                _id: mongoose.trusted({
                     $lt: cursor
-                }
+                })
             }
             :
             {}

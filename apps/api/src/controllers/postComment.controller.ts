@@ -57,7 +57,7 @@ export const getComments = async (req: Request, res: Response, next: NextFunctio
         if (!postId) {
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
-        
+              
         const comments = await postCommentService.get(cursor && String(cursor), String(postId), userId && String(userId));
 
         res.status(200).json(successResponseData<InfiniteQuery<PostCommentDTO[]>>(SUCCESS_RESPONSE_CODE.success, "success", comments));
