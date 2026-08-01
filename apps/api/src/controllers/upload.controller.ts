@@ -43,3 +43,11 @@ export const generateCoverSignature = (req: Request, res: Response, next: NextFu
         next(err);
     }
 }
+
+export const generatePostAssetSignature = (req : Request, res : Response, next : NextFunction) => {
+    try {
+
+    } catch (err) {
+        next(err);
+    }
+}

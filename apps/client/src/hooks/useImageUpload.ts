@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent } from "react";
 import { uploadImageToCloudinary } from "../services/cloudinary.service";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE } from "../consts/file.const";
-import type { UploadedImageData } from "../types/image.type";
+import type { UploadedImageData } from "../types/file.type";
 
 type UseImageUploadOptions = {
     allowedTypes? : string[],

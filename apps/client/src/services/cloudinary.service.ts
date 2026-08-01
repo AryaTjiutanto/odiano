@@ -1,29 +1,11 @@
-import type { CloudinarySignaturePayload, SuccessResponseData } from "@odiano/shared";
-import { api } from "../libs/api";
+import type { CloudinarySignaturePayload } from "@odiano/shared";
 import { getCloudinarySignedUrl } from "../utils/cloudinary.util";
 import axios from "axios";
+import type { UploadedFileData } from "../types/file.type";
 
-type UploadImagePayload = {
-    generatorRoute : string,
-    imageName : string,
-    imageCroppedBlob : Blob
-};
-
-type UploadedImagePayload = {
-    publicId : string,
-    url : string,
-}
-
-export const uploadImageToCloudinary = async (payload : UploadImagePayload) : Promise<UploadedImagePayload> => {
-    // get signature
-    const response = await api.get<SuccessResponseData<CloudinarySignaturePayload>>(payload.generatorRoute);
-    const signaturePayload = response.data.data;
-    if (!signaturePayload) {
-        throw new Error("Missing signature payload");
-    }
-
+export const uploadFileToCloudinary = async (blob : Blob, fileName : string, signaturePayload : CloudinarySignaturePayload) : Promise<UploadedFileData> => {
     // upload to cloudinary
-    const file = new File([payload.imageCroppedBlob], `${payload.imageName}.webp`, { type: payload.imageCroppedBlob.type });
+    const file = new File([blob], `${fileName}`, { type: blob.type });
 
     const formData = new FormData();
     formData.append("file", file);

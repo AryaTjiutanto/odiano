@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import { intitializeAuth, logout, refreshAccessToken } from "./auth.thunk";
 import type { CurrentUserDTO } from "@odiano/shared";
-import type { UploadedImageData } from "../../types/image.type";
+import type { UploadedImageData } from "../../types/file.type";
 
 type AuthState = {
     isAuthLoading: boolean,

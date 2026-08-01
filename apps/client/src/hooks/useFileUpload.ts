@@ -1,137 +1,113 @@
 import { useState, type ChangeEvent } from "react";
-import { uploadImageToCloudinary } from "../services/cloudinary.service";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE } from "../consts/file.const";
-import type { UploadedImageData } from "../types/image.type";
+import type { FileData, UploadedFileData } from "../types/file.type";
+import { notify } from "../helpers/notification/notify.helper";
+import { uploadCoverImage, uploadProfileImage } from "../services/upload.service";
+import { uploadSingleFile } from "../helpers/uploadFile.helper";
 
 type UseImageUploadOptions = {
-    allowedTypes? : string[],
-    maxSize? : number,
-    // multiple? : boolean,
+    maximumFiles?: number,
+    allowedTypes?: string[],
+    maxSize?: number,
+    autoCropping?: boolean,
+    type: "profile" | "cover" | "post-asset",
 };
 
-type FileData = {
-    id : string,
-    url : string,
-    blob? : Blob,
-    prev? : {
-        blob? : Blob,
-        publicId? : string,
-        url? : string, 
-    }
-    error : {
-        id : string,
-        message : string,
-    },
-}
-
 const useFileUpload = ({
-    allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES, 
+    allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES,
     maxSize = DEFAULT_MAX_IMAGE_SIZE,
-} : UseImageUploadOptions = {}) => {
+    autoCropping = true,
+    maximumFiles = 1,
+    type,
+}: UseImageUploadOptions) => {
     const [isCropping, setIsCropping] = useState<boolean>(false);
-
     const [fileData, setFileData] = useState<FileData[] | null>(null);
 
-    const getFilesOriginalUrl = (file: File | undefined) => {
+    const processFile = (file: File | undefined) => {
         if (!file) {
             return;
         }
 
+        if (fileData && fileData?.length >= maximumFiles) {
+            notify.error({
+                title: "Maximum files reached",
+                description: `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`,
+            });
+
+            return;
+        }
+
         if (!allowedTypes.includes(file.type)) {
-            setImageError({
-                id : Date.now().toString(),
-                message : "Only png, jpeg and webp allowed"
-            });
-            
+            notify.error({ title: "Upload fail", "description": "Only png, jpeg and webp allowed" });
+
             return;
         }
-        
+
         if (file.size > maxSize) {
-            setImageError({
-                id : Date.now().toString(),
-                message : `Max image size is ${maxSize / (1024 * 1024)}mb`
-            });
+            notify.error({ title: "Upload fail", "description": `Max image size is ${maxSize / (1024 * 1024)}mb` });
 
             return;
         }
-        
-        const url = URL.createObjectURL(file);
-        setOriginalImageUrl(url);
 
-        setIsCropping(true);
-        setImageError(null);
+        const url = URL.createObjectURL(file);
+        const data: FileData = {
+            id: crypto.randomUUID(),
+            url,
+            blob: file,
+        }
+
+        setFileData((oldData) => [
+            ...(oldData ?? []),
+            data,
+        ])
+
+        if (autoCropping) {
+            setIsCropping(true);
+        }
     }
 
-    const removeImage = (fn : () => void) => {
-        setOriginalImageUrl(null);
-        setImageCroppedBlob(null);
+    const removeFile = (id: string, fn: () => void) => {
+        const newData = fileData?.filter((data) => data.id !== id);
+
+        setFileData(newData || null);
         fn();
     }
 
-    const handleImageInput = (e : ChangeEvent<HTMLInputElement>) => {
+    const handleImageInput = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        if (!file) return;
 
-        if(!file) return;
-
-        setImageError(null);
-        getOriginalImageUrl(file);
+        processFile(file);
     }
 
-    const uploadImage = async (generatorRoute : string, imageName : string) : Promise<UploadedImageData | null> => {
-        const isImageNotChange = imageCroppedBlob == prevImageCroppedBlob;
-
-        if (isImageNotChange && uploadedImagePublicId && uploadedImageUrl) {
-            return {
-                publicId : uploadedImagePublicId,
-                url : uploadedImageUrl,
-            }
+    const uploadFile = async (): Promise<UploadedFileData | UploadedFileData[] | null | undefined> => {
+        if (!fileData || fileData.length === 0) {
+            throw new Error("File is empty");
         }
 
-        if (imageCroppedBlob && !isImageNotChange) {
-            const result = await uploadImageToCloudinary({
-                generatorRoute,
-                imageCroppedBlob,
-                imageName
-            })
+        switch (type) {
+            case "profile": {
+                return await uploadSingleFile(fileData[0], async (blob: Blob) => uploadProfileImage(blob), setFileData);
+            }
 
-            setPrevImageCroppedBlob(imageCroppedBlob);
+            case "cover": {
+                return await uploadSingleFile(fileData[0], async (blob: Blob) => uploadCoverImage(blob), setFileData);
+            }
 
-            setUploadedImagePublicId(result.publicId);
-            setUploadedImageUrl(result.url);
-
-            return {
-                publicId : result.publicId,
-                url : result.url,
+            case "post-asset": {
+                // return await uploadPostAssets(fileData, setFileData);
             }
         }
-
-        return null;
-    }
+    };
 
     return {
-        getOriginalImageUrl,
-        uploadImage,
+        processFile,
+        uploadFile,
         handleImageInput,
-        removeImage,
+        removeFile,
 
-        imageError,
-        originalImageUrl,
-        
         isCropping,
         setIsCropping,
-
-        prevImageCroppedBlob,
-        setPrevImageCroppedBlob,
-
-        imageCroppedBlob,
-        setImageCroppedBlob,
-
-
-        uploadedImagePublicId,
-        setUploadedImagePublicId,
-
-        uploadedImageUrl,
-        setUploadedImageUrl,
     }
 }
 
