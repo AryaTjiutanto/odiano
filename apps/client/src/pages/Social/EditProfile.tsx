@@ -13,7 +13,7 @@ import EditProfileSkeletonLoading from "../../components/profile/EditProfileSkel
 import { Upload, X } from "lucide-react";
 import useDragAndDrop from "../../hooks/useDragAndDrop";
 import useImageUploadHandler from "../../hooks/useImageUpload";
-import { COVER_MAX_IMAGE_SIZE, DEFAULT_ALLOWED_IMAGE_TYPES } from "../../consts/image.const";
+import { COVER_MAX_IMAGE_SIZE, DEFAULT_ALLOWED_IMAGE_TYPES } from "../../consts/file.const";
 import { createPortal } from "react-dom";
 import { ImageCropper } from "../../components/cropper/ImageCropper";
 import { notify } from "../../helpers/notification/notify.helper";

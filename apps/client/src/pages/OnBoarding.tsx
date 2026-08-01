@@ -15,7 +15,7 @@ import { checkUsername, createUserProfile } from "../services/user.service";
 import useDebounce from "../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { userKeys } from "../queries/userKeys";
-import { DEFAULT_ALLOWED_IMAGE_TYPES } from "../consts/image.const";
+import { DEFAULT_ALLOWED_IMAGE_TYPES } from "../consts/file.const";
 import DateInputSection from "../components/input/DateInputSection";
 import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 

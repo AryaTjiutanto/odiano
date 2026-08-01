@@ -9,28 +9,30 @@ type UseImageUploadOptions = {
     // multiple? : boolean,
 };
 
-type ImageError = {
+type FileData = {
     id : string,
-    message : string,
+    url : string,
+    blob? : Blob,
+    prev? : {
+        blob? : Blob,
+        publicId? : string,
+        url? : string, 
+    }
+    error : {
+        id : string,
+        message : string,
+    },
 }
 
-const useImageUploadHandler = ({
+const useFileUpload = ({
     allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES, 
-    maxSize = DEFAULT_MAX_IMAGE_SIZE, 
-    // multiple = false
+    maxSize = DEFAULT_MAX_IMAGE_SIZE,
 } : UseImageUploadOptions = {}) => {
     const [isCropping, setIsCropping] = useState<boolean>(false);
 
-    const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
-    const [imageError, setImageError] = useState<ImageError | null>(null);
+    const [fileData, setFileData] = useState<FileData[] | null>(null);
 
-    const [prevImageCroppedBlob, setPrevImageCroppedBlob] = useState<Blob | null>(null);
-    const [imageCroppedBlob, setImageCroppedBlob] = useState<Blob | null>(null);
-
-    const [uploadedImagePublicId, setUploadedImagePublicId] = useState<string | null>(null);
-    const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
-
-    const getOriginalImageUrl = (file: File | undefined) => {
+    const getFilesOriginalUrl = (file: File | undefined) => {
         if (!file) {
             return;
         }
@@ -133,4 +135,4 @@ const useImageUploadHandler = ({
     }
 }
 
-export default useImageUploadHandler;
+export default useFileUpload;
