@@ -68,7 +68,7 @@ createRoot(document.getElementById('root')!).render(
                           {/* profile */}
                           <Route path='/profile/:username' element={<Profile />} />
                           <Route element={<RequireAuthGuard />}>
-                            <Route path='/profile/:username/edit' element={<EditProfile />} />
+                            <Route path='/edit-profile' element={<EditProfile />} />
                           </Route>
                         </Route>
                       </Route>

@@ -1,3 +1,4 @@
+
 import { BIO_LENGTH, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@odiano/shared";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import ProfileComponent from "../../components/profile/Profile";
@@ -12,19 +13,19 @@ import { useEffect } from "react";
 import EditProfileSkeletonLoading from "../../components/profile/EditProfileSkeletonLoading";
 import { Upload, X } from "lucide-react";
 import useDragAndDrop from "../../hooks/useDragAndDrop";
-import useImageUploadHandler from "../../hooks/useImageUpload";
 import { COVER_MAX_IMAGE_SIZE, DEFAULT_ALLOWED_IMAGE_TYPES } from "../../consts/file.const";
 import { createPortal } from "react-dom";
 import { ImageCropper } from "../../components/cropper/ImageCropper";
 import { notify } from "../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import DotsLoader from "../../components/loader/DotsLoader";
-import { useAppDispatch } from "../../hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { setCurrentUserProfile } from "../../features/auth/auth.slice";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
+import useFileUpload from "../../hooks/useFileUpload";
 
 const EditProfile = () => {
-    const { username } = useParams();
+    const username = useAppSelector(state => state.auth.user?.username);
     const setQueryDataHandler = useSetQueryDataHandler();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -32,9 +33,14 @@ const EditProfile = () => {
     const coverDragAndDrop = useDragAndDrop();
     const profileDragAndDrop = useDragAndDrop();
 
-    const profileImageUpload = useImageUploadHandler();
-    const coverImageUpload = useImageUploadHandler({
-        maxSize: COVER_MAX_IMAGE_SIZE,
+    const profileImageUpload = useFileUpload({
+        type: "profile",
+        autoCropping: true,
+    });
+    const coverImageUpload = useFileUpload({
+        maxImageSize: COVER_MAX_IMAGE_SIZE,
+        type: "cover",
+        autoCropping: true,
     })
 
     // get user profile
@@ -76,12 +82,12 @@ const EditProfile = () => {
             let profileImageUrl: string | null;
 
             // upload profile image
-            if (profileImageUpload.imageCroppedBlob) {
-                profileImageUrl = URL.createObjectURL(profileImageUpload.imageCroppedBlob);
+            if (profileImageUpload.fileData && profileImageUpload.fileData.length > 0 && profileImageUpload.fileData[0].blob?.edited) {
+                profileImageUrl = URL.createObjectURL(profileImageUpload.fileData[0].blob?.edited || profileImageUpload.fileData[0].blob?.original);
 
-                const imageData = await profileImageUpload.uploadImage("/upload/profile-signature", "profile.webp");
+                const imageData = await profileImageUpload.uploadFile();
 
-                if (!imageData) {
+                if (!imageData || Array.isArray(imageData)) {
                     notify.error({
                         title: "Failed to upload profile image",
                         description: "Please try again in a moment.",
@@ -90,17 +96,17 @@ const EditProfile = () => {
                     return;
                 }
 
-                dataToSend.profileImagePublicId = imageData?.publicId;
-                dataToSend.profileImageUrl = imageData?.url;
+                dataToSend.profileImagePublicId = imageData.publicId;
+                dataToSend.profileImageUrl = imageData.url;
             }
 
             // upload cover image
-            if (coverImageUpload.imageCroppedBlob) {
-                coverImageUrl = URL.createObjectURL(coverImageUpload.imageCroppedBlob);
+            if (coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited) {
+                coverImageUrl = URL.createObjectURL(coverImageUpload.fileData[0].blob?.edited || coverImageUpload.fileData[0].blob?.original);
 
-                const imageData = await coverImageUpload.uploadImage("/upload/cover-signature", "cover.webp");
+                const imageData = await coverImageUpload.uploadFile();
 
-                if (!imageData) {
+                if (!imageData || Array.isArray(imageData)) {
                     notify.error({
                         title: "Failed to upload cover image",
                         description: "Please try again in a moment.",
@@ -109,8 +115,8 @@ const EditProfile = () => {
                     return;
                 }
 
-                dataToSend.coverImagePublicId = imageData?.publicId;
-                dataToSend.coverImageUrl = imageData?.url
+                dataToSend.coverImagePublicId = imageData.publicId;
+                dataToSend.coverImageUrl = imageData.url
             }
 
             // update profile
@@ -144,8 +150,8 @@ const EditProfile = () => {
                             }),
                     }
 
-                    if(profileImageUrl && dataToSend.profileImagePublicId) {
-                        dispatch(setCurrentUserProfile({publicId : dataToSend.profileImagePublicId, url : profileImageUrl}))
+                    if (profileImageUrl && dataToSend.profileImagePublicId) {
+                        dispatch(setCurrentUserProfile({ publicId: dataToSend.profileImagePublicId, url: profileImageUrl }))
                     }
 
                     return data;
@@ -155,7 +161,7 @@ const EditProfile = () => {
             }
         } catch (err: unknown) {
             handleApiErrorNotification<UpdateUserProfile>(err, {
-                setValidationError : setError
+                setValidationError: setError
             })
         }
     }
@@ -172,25 +178,6 @@ const EditProfile = () => {
         })
     }, [userProfile.data, reset]);
 
-    // handle image upload error
-    useEffect(() => {
-        if (profileImageUpload.imageError) {
-            notify.error({
-                title: "Profile image upload failed",
-                description: profileImageUpload.imageError.message,
-            });
-        }
-    }, [profileImageUpload.imageError]);
-
-    useEffect(() => {
-        if (coverImageUpload.imageError) {
-            notify.error({
-                title: "Cover image upload failed",
-                description: coverImageUpload.imageError.message,
-            });
-        }
-    }, [coverImageUpload.imageError]);
-
     // check is pending
     if (userProfile.isPending) {
         return (
@@ -206,18 +193,18 @@ const EditProfile = () => {
 
             {/* profile image cropper */}
             {
-                ((profileImageUpload.isCropping && profileImageUpload.originalImageUrl)) &&
+                ((profileImageUpload.isCropping && profileImageUpload.fileData && profileImageUpload.fileData.length > 0 && profileImageUpload.fileData[0].blob?.original)) &&
                 createPortal(
-                    <ImageCropper aspect={1} imageUrl={profileImageUpload.originalImageUrl} setImageCroppedBlob={profileImageUpload.setImageCroppedBlob} setIsCropping={profileImageUpload.setIsCropping} key={`profile-image-cropper`} />,
+                    <ImageCropper aspect={1} imageUrl={profileImageUpload.fileData[0].url} setImageCroppedBlob={(blob: Blob) => profileImageUpload.setImageCroppedBlob(blob, 0)} setIsCropping={profileImageUpload.setIsCropping} key={`profile-image-cropper`} />,
                     document.body
                 )
             }
 
             {/* cover image cropper */}
             {
-                ((coverImageUpload.isCropping && coverImageUpload.originalImageUrl)) &&
+                ((coverImageUpload.isCropping && coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.original)) &&
                 createPortal(
-                    <ImageCropper aspect={3 / 1} imageUrl={coverImageUpload.originalImageUrl} setImageCroppedBlob={coverImageUpload.setImageCroppedBlob} setIsCropping={coverImageUpload.setIsCropping} key={`cover-image-cropper`} />,
+                    <ImageCropper aspect={3/1} imageUrl={coverImageUpload.fileData[0].url} setImageCroppedBlob={(blob: Blob) => coverImageUpload.setImageCroppedBlob(blob, 0)} setIsCropping={coverImageUpload.setIsCropping} key={`profile-image-cropper`} />,
                     document.body
                 )
             }
@@ -253,16 +240,16 @@ const EditProfile = () => {
                             className={`cover-image-aspect bg-neutral-500 rounded-xl mt-5 overflow-hidden duration-100`}
                         >
                             {
-                                coverImageUpload.imageCroppedBlob &&
-                                <img src={URL.createObjectURL(coverImageUpload.imageCroppedBlob)} className="w-full h-full" />
+                                coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited &&
+                                <img src={URL.createObjectURL(coverImageUpload.fileData[0].blob?.edited || coverImageUpload.fileData[0].blob?.original)} className="w-full h-full" />
                             }
                             {
-                                (coverImageUrl && !coverImageUpload.imageCroppedBlob) &&
+                                (coverImageUrl && (!coverImageUpload.fileData || coverImageUpload.fileData.length === 0)) &&
                                 <img src={coverImageUrl} className="w-full h-full" />
                             }
                         </div>
 
-                        <div className={`w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1  rounded-xl grid place-content-center duration-100 ${coverDragAndDrop.isDrag ? "bg-black/50" : "bg-black/40"}`} onDragEnter={coverDragAndDrop.handleDragEnter} onDragLeave={coverDragAndDrop.handleDragLeave} onDragOver={coverDragAndDrop.handleDragOver} onDrop={(e) => coverDragAndDrop.handleDrop(e, coverImageUpload.getOriginalImageUrl)}>
+                        <div className={`w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1  rounded-xl grid place-content-center duration-100 ${coverDragAndDrop.isDrag ? "bg-black/50" : "bg-black/40"}`} onDragEnter={coverDragAndDrop.handleDragEnter} onDragLeave={coverDragAndDrop.handleDragLeave} onDragOver={coverDragAndDrop.handleDragOver} onDrop={(e) => coverDragAndDrop.handleDrop(e, coverImageUpload.processFile)}>
                             <div className="w-fit flex items-center space-x-3">
                                 {/* upload */}
                                 <label htmlFor="inputCoverImage" className={`w-14 aspect-square rounded-full duration-100 grid place-content-center cursor-pointer ${coverDragAndDrop.isDrag ? "bg-neutral-950/80" : "bg-neutral-950/60 hover:bg-neutral-900/60 hover:text-neutral-50 "}`}>
@@ -272,8 +259,8 @@ const EditProfile = () => {
 
                                 {/* delete cover */}
                                 {
-                                    (coverImageUpload.imageCroppedBlob || userProfile.data?.coverImage) &&
-                                    <button type="button" className={`w-14 aspect-square rounded-full bg-neutral-950/60  duration-100 grid place-content-center cursor-pointer hover:bg-neutral-900/60 hover:text-neutral-50`} disabled={isSubmitting} onClick={() => coverImageUpload.removeImage(() => {
+                                    ((coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited) || userProfile.data?.coverImage) &&
+                                    <button type="button" className={`w-14 aspect-square rounded-full bg-neutral-950/60  duration-100 grid place-content-center cursor-pointer hover:bg-neutral-900/60 hover:text-neutral-50`} disabled={isSubmitting} onClick={() => coverImageUpload.removeFile(0,() => {
                                         setValue("coverImagePublicId", null);
                                         setValue("coverImageUrl", null);
                                     })}>
@@ -284,11 +271,11 @@ const EditProfile = () => {
                         </div>
 
                         {/* profile */}
-                        <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-black rounded-full overflow-hidden z-2`} onDragEnter={profileDragAndDrop.handleDragEnter} onDragOver={profileDragAndDrop.handleDragOver} onDragLeave={profileDragAndDrop.handleDragLeave} onDrop={(e) => profileDragAndDrop.handleDrop(e, profileImageUpload.getOriginalImageUrl)}>
+                        <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-black rounded-full overflow-hidden z-2`} onDragEnter={profileDragAndDrop.handleDragEnter} onDragOver={profileDragAndDrop.handleDragOver} onDragLeave={profileDragAndDrop.handleDragLeave} onDrop={(e) => profileDragAndDrop.handleDrop(e, profileImageUpload.processFile)}>
                             <ProfileComponent data={
-                                profileImageUpload.imageCroppedBlob ?
+                                profileImageUpload.fileData && profileImageUpload.fileData.length > 0 && profileImageUpload.fileData[0].blob?.edited ?
                                     {
-                                        url: URL.createObjectURL(profileImageUpload.imageCroppedBlob)
+                                        url: URL.createObjectURL(profileImageUpload.fileData[0].blob.edited)
                                     }
                                     :
                                     userProfile.data?.profileImage

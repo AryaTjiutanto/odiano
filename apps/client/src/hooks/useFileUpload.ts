@@ -1,21 +1,23 @@
 import { useState, type ChangeEvent } from "react";
-import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE } from "../consts/file.const";
+import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE, DEFAULT_MAX_VIDEO_SIZE } from "../consts/file.const";
 import type { FileData, UploadedFileData } from "../types/file.type";
 import { notify } from "../helpers/notification/notify.helper";
-import { uploadCoverImage, uploadProfileImage } from "../services/upload.service";
+import { uploadCoverImage, uploadPostAssets, uploadProfileImage } from "../services/upload.service";
 import { uploadSingleFile } from "../helpers/uploadFile.helper";
 
 type UseImageUploadOptions = {
     maximumFiles?: number,
     allowedTypes?: string[],
-    maxSize?: number,
+    maxImageSize?: number,
+    maxVideoSize?: number,
     autoCropping?: boolean,
-    type: "profile" | "cover" | "post-asset",
+    type: "profile" | "cover" | "post-media",
 };
 
 const useFileUpload = ({
     allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES,
-    maxSize = DEFAULT_MAX_IMAGE_SIZE,
+    maxImageSize = DEFAULT_MAX_IMAGE_SIZE,
+    maxVideoSize = DEFAULT_MAX_VIDEO_SIZE,
     autoCropping = true,
     maximumFiles = 1,
     type,
@@ -23,12 +25,15 @@ const useFileUpload = ({
     const [isCropping, setIsCropping] = useState<boolean>(false);
     const [fileData, setFileData] = useState<FileData[] | null>(null);
 
-    const processFile = (file: File | undefined) => {
-        if (!file) {
+    const processMultipleFiles = (files: FileList | undefined | null) => {
+        if (!files) {
             return;
         }
+        let filesArray: File[] = Array.from(files);
 
-        if (fileData && fileData?.length >= maximumFiles) {
+        // check file length
+        const currentCount = fileData?.length || 0;
+        if (maximumFiles !== 1 && currentCount >= maximumFiles) {
             notify.error({
                 title: "Maximum files reached",
                 description: `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`,
@@ -37,50 +42,104 @@ const useFileUpload = ({
             return;
         }
 
+        if(currentCount + files.length > maximumFiles) {
+            filesArray = filesArray.slice(0, maximumFiles - currentCount);
+        }
+
+        // process file
+        filesArray.forEach((file) => {
+            processFile(file);
+        })
+    }
+
+    const processFile = (file: File | undefined) => {
+        if (!file) {
+            return;
+        }
+
+        if (maximumFiles !== 1 && fileData && fileData?.length >= maximumFiles) {
+            notify.error({
+                title: "Maximum files reached",
+                description: `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`,
+            });
+
+            return;
+        }
+
+        // check file type
         if (!allowedTypes.includes(file.type)) {
             notify.error({ title: "Upload fail", "description": "Only png, jpeg and webp allowed" });
 
             return;
         }
 
-        if (file.size > maxSize) {
-            notify.error({ title: "Upload fail", "description": `Max image size is ${maxSize / (1024 * 1024)}mb` });
+        // check file size
+        if ( file.type.startsWith("image/") && file.size > maxImageSize) {
+            notify.error({ title: "Upload fail", "description": `Max image size is ${maxImageSize / (1024 * 1024)}mb` });
+
+            return;
+        }
+
+        if ( file.type.startsWith("video/") && file.size > maxVideoSize) {
+            notify.error({ title: "Upload fail", "description": `Max video size is ${maxVideoSize / (1024 * 1024)}mb` });
 
             return;
         }
 
         const url = URL.createObjectURL(file);
-        const data: FileData = {
-            id: crypto.randomUUID(),
-            url,
-            blob: file,
-        }
 
-        setFileData((oldData) => [
-            ...(oldData ?? []),
-            data,
-        ])
+        if (maximumFiles === 1) {
+            setFileData((oldData) => {
+                return [
+                    {
+                        ...(oldData && {...oldData[0]}),
+                        id: crypto.randomUUID(),
+                        url,
+                        blob: {
+                            original: file,
+                        },
+                    }
+                ]
+            })
+        } else {
+            const data: FileData = {
+                id: crypto.randomUUID(),
+                url,
+                blob: {
+                    original: file,
+                },
+            }
+
+            setFileData((oldData) => [
+                ...(oldData ?? []),
+                data,
+            ])
+        }
 
         if (autoCropping) {
             setIsCropping(true);
         }
     }
 
-    const removeFile = (id: string, fn: () => void) => {
-        const newData = fileData?.filter((data) => data.id !== id);
+    const removeFile = (index: number, fn?: () => void) => {
+        const newData = fileData?.filter((_, i) => i !== index);
 
         setFileData(newData || null);
-        fn();
+        if(fn) fn();
     }
 
     const handleImageInput = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const files = e.target.files;
+        
+        if(files?.length == 1) {
+            processFile(files[0]);
+            return;
+        }
 
-        processFile(file);
+        processMultipleFiles(files);
     }
 
-    const uploadFile = async (): Promise<UploadedFileData | UploadedFileData[] | null | undefined> => {
+    const uploadFile = async (): Promise<UploadedFileData | (UploadedFileData | null)[] | null | undefined> => {
         if (!fileData || fileData.length === 0) {
             throw new Error("File is empty");
         }
@@ -94,13 +153,36 @@ const useFileUpload = ({
                 return await uploadSingleFile(fileData[0], async (blob: Blob) => uploadCoverImage(blob), setFileData);
             }
 
-            case "post-asset": {
-                // return await uploadPostAssets(fileData, setFileData);
+            case "post-media": {
+                return await uploadPostAssets(fileData, setFileData);
             }
         }
     };
 
+    const setImageCroppedBlob = (blob: Blob, fileIndex: number = 0) => {
+        if (!blob) return;
+
+        setFileData(prev => {
+            if (!prev) return prev;
+
+            const next = [...prev];
+
+            next[fileIndex] = {
+                ...next[fileIndex],
+                blob: {
+                    original: next[0].blob?.original,
+                    edited: blob,
+                },
+            };
+
+            return next;
+        });
+    }
+
     return {
+        fileData,
+
+        processMultipleFiles,
         processFile,
         uploadFile,
         handleImageInput,
@@ -108,6 +190,8 @@ const useFileUpload = ({
 
         isCropping,
         setIsCropping,
+
+        setImageCroppedBlob,
     }
 }
 

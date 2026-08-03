@@ -1,4 +1,5 @@
 export const DEFAULT_MAX_IMAGE_SIZE = 15 * 1024 * 1024;
+export const DEFAULT_MAX_VIDEO_SIZE = 150 * 1024 * 1024;
 export const DEFAULT_ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 export const DEFAULT_ALLOWED_VIDEO_TYPES = ["video/mp4"];
 

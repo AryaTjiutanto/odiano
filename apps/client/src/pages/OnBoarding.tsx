@@ -9,22 +9,29 @@ import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Check, RotateCcw, Upload, User, X } from "lucide-react";
 import useDragAndDrop from "../hooks/useDragAndDrop";
-import useImageUploadHandler from "../hooks/useImageUpload";
 import { createPortal } from 'react-dom';
 import { checkUsername, createUserProfile } from "../services/user.service";
 import useDebounce from "../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { userKeys } from "../queries/userKeys";
-import { DEFAULT_ALLOWED_IMAGE_TYPES } from "../consts/file.const";
+import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE } from "../consts/file.const";
 import DateInputSection from "../components/input/DateInputSection";
 import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
+import useFileUpload from "../hooks/useFileUpload";
+import { useNavigate } from "react-router-dom";
 
 const OnBoarding = () => {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const dragAndDrop = useDragAndDrop();
     const userData = useAppSelector((state) => state.auth.user);
 
-    const imageUploadHandler = useImageUploadHandler();
+    const fileUpload = useFileUpload({
+        autoCropping : true,
+        allowedTypes : DEFAULT_ALLOWED_IMAGE_TYPES,
+        maxImageSize : DEFAULT_MAX_IMAGE_SIZE,
+        type : "profile",
+    });
     const currentUserData = useAppSelector((state) => state.auth.user);
 
     // init form 
@@ -100,10 +107,10 @@ const OnBoarding = () => {
             const dataToSubmit = { ...data };
 
             // handle image upload
-            if (imageUploadHandler.originalImageUrl) {
-                const uploadedImageData = await imageUploadHandler.uploadImage("/upload/profile-signature", "profile.webp");
+            if (fileUpload.fileData && fileUpload.fileData.length > 0) {
+                const uploadedImageData = await fileUpload.uploadFile();
 
-                if (!uploadedImageData) {
+                if (!uploadedImageData || Array.isArray(uploadedImageData)) {
                     throw new Error("Error went uploading the image");
                 }
 
@@ -116,6 +123,8 @@ const OnBoarding = () => {
 
             // onboarding success
             await dispatch(intitializeAuth());
+
+            navigate(`/profile/${dataToSubmit.username}`);
 
             setFormError(null);
         } catch (err: unknown) {
@@ -139,9 +148,9 @@ const OnBoarding = () => {
             {/* body */}
             {/* cropper */}
             {
-                (imageUploadHandler.isCropping && imageUploadHandler.originalImageUrl) && (
+                (fileUpload.isCropping && fileUpload.fileData && fileUpload.fileData.length > 0) && (
                     createPortal(
-                        <ImageCropper aspect={1} imageUrl={imageUploadHandler.originalImageUrl} setImageCroppedBlob={imageUploadHandler.setImageCroppedBlob} setIsCropping={imageUploadHandler.setIsCropping} />,
+                        <ImageCropper aspect={1} imageUrl={fileUpload.fileData[0].url} setImageCroppedBlob={(blob : Blob) => fileUpload.setImageCroppedBlob(blob, 0)} setIsCropping={fileUpload.setIsCropping} />,
                         document.body
                     )
                 )
@@ -149,7 +158,7 @@ const OnBoarding = () => {
 
             {/* content */}
             <div className="bg-black min-h-screen">
-                <div className="w-full text-neutral-100" onDrop={(e) => dragAndDrop.handleDrop(e, imageUploadHandler.getOriginalImageUrl)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
+                <div className="w-full text-neutral-100" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                     <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
                         <form onSubmit={handleSubmit(onSubmit)} className="w-full md:max-w-120 2xl:max-w-137.5 flex flex-col items-center">
                             <h1 className="text-center text-2xl md:text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
@@ -158,8 +167,8 @@ const OnBoarding = () => {
                                 <label htmlFor="profile-input" className="">
                                     <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-950 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
                                         {
-                                            imageUploadHandler.imageCroppedBlob ?
-                                                <img src={URL.createObjectURL(imageUploadHandler.imageCroppedBlob)} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
+                                            fileUpload.fileData && fileUpload.fileData.length > 0 && fileUpload.fileData[0].blob?.edited ?
+                                                <img src={URL.createObjectURL(fileUpload.fileData[0].blob?.edited)} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                 :
                                                 <User className="size-20 text-neutral-700" />
                                         }
@@ -168,11 +177,11 @@ const OnBoarding = () => {
                                         </div>
                                     </div>
                                 </label>
-                                <input type="file" id="profile-input" className="hidden" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} onChange={imageUploadHandler.handleImageInput}></input>
+                                <input type="file" id="profile-input" className="hidden" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} onChange={fileUpload.handleImageInput}></input>
                                 {
-                                    imageUploadHandler.imageError &&
+                                    fileUpload.fileData && fileUpload.fileData.length > 0 && fileUpload.fileData[0].error &&
                                     <p className="text-center text-red-500 mt-5">
-                                        {imageUploadHandler.imageError.message}
+                                        {fileUpload.fileData[0].error.message}
                                     </p>
                                 }
                             </div>

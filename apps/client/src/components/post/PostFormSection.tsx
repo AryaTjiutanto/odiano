@@ -1,20 +1,28 @@
 import { useEffect, useState } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createPostSchema, POST_CONTENT_LENGTH, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
+import { createPostSchema, POST_CONTENT_LENGTH, POST_MAX_MEDIA, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
-import { Check, X } from "lucide-react";
+import { Check, Crop, Plus, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { usePostForm } from "../../providers/PostFormProvider";
 import useDragAndDrop from "../../hooks/useDragAndDrop";
-import useImageUploadHandler from "../../hooks/useImageUpload";
+import useFileUpload from "../../hooks/useFileUpload";
+import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_ALLOWED_VIDEO_TYPES } from "../../consts/file.const";
+
+export const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
+
 const PostFormSection = () => {
     const postForm = usePostForm();
     const dragAndDrop = useDragAndDrop();
-    const imageUpload = useImageUploadHandler();
+    const fileUpload = useFileUpload({
+        allowedTypes: POST_ASSETS_ALLOWED_TYPES,
+        type: "post-media",
+        maximumFiles: POST_MAX_MEDIA,
+    });
 
     const [isCreated, setIsCreated] = useState<boolean>(false);
     const [postPublicId, setPostPublicId] = useState<string | null>(null);
@@ -56,7 +64,7 @@ const PostFormSection = () => {
             setIsCreated(true);
         } catch (err: unknown) {
             handleApiErrorNotification<CreatePostSchema>(err, {
-                setValidationError : setError
+                setValidationError: setError
             })
         }
     }
@@ -79,14 +87,14 @@ const PostFormSection = () => {
     }, [setFocus])
 
     return (
-        <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, imageUpload.getOriginalImageUrl)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
+        <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
             {/* content */}
-            <div className="w-full sm:w-[500px] md:w-[650px] h-full sm:h-fit bg-black sm:bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
+            <div className="w-full sm:w-[500px] md:w-[600px] h-full sm:h-fit bg-black sm:bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
                 {/* form */}
                 <form onSubmit={handleSubmit(onSubmit)} className={`w-full p-8 sm:p-10 h-fit sm:h-full relative ${isCreated && "hidden"}`}>
                     <div className="flex items-center space-x-3 mb-6 sm:hidden">
                         <button className="" onClick={postForm.close}>
-                            <X className="size-9"/>
+                            <X className="size-9" />
                         </button>
                         <h1 className="text-3xl font-bold sm:hidden">
                             Create Post
@@ -94,14 +102,47 @@ const PostFormSection = () => {
                     </div>
 
                     {/* image input */}
-                    <div className={`w-full h-24`}>
-                        <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 ${dragAndDrop.isDrag ? "border-sky-500"  : "border-neutral-500"}`} htmlFor="media-input">
-                            <span className={`${dragAndDrop.isDrag && "hidden"}`}>Drag and drop photos or videos here, or click to select files. (optional)</span>
-                            <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500`}>Drop your Files</span>
-                        </label>
-                        <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple/>
-                    </div>
-                    
+                    {
+                        fileUpload.fileData && fileUpload.fileData.length > 0 ?
+                            <div className="w-full grid grid-cols-3 gap-5">
+                                {
+                                    fileUpload.fileData.map((file, index) => {
+                                        if (file.blob?.original) {
+                                            return (
+                                                <div key={file.id} className="w-full aspect-[4/3] relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden">
+                                                    <img src={URL.createObjectURL(file.blob?.edited || file.blob?.original)} alt="file" className="h-full w-fit" />
+                                                    <div className="absolute top-1 right-1 flex items-center space-x-1">
+                                                        <button className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer" onClick={() => fileUpload.removeFile(index)}>
+                                                            <Crop size={18} />
+                                                        </button>
+                                                        <button className="w-8 h-8 rounded-full bg-neutral-900 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => fileUpload.removeFile(index)}>
+                                                            <X size={20} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    })
+                                }
+                                {
+                                    fileUpload.fileData.length < POST_MAX_MEDIA &&
+                                    <label htmlFor="media-input" className="w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400">
+                                        <div className="w-10 h-10 bg-neutral-900 grid place-content-center rounded-full">
+                                            <Plus />
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                            :
+                            <div className={`w-full h-24`}>
+                                <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 ${dragAndDrop.isDrag ? "border-sky-500" : "border-neutral-500"}`} htmlFor="media-input">
+                                    <span className={`${dragAndDrop.isDrag && "hidden"}`}>Drag and drop photos or videos here, or click to select files. (optional)</span>
+                                    <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500`}>Drop your Files</span>
+                                </label>
+                            </div>
+                    }
+                    <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={fileUpload.handleImageInput} />
+
                     {/* text input */}
                     <div className="w-full">
                         <div className="w-full relative">
@@ -147,7 +188,7 @@ const PostFormSection = () => {
                     <div className="flex justify-center">
                         <div className="bg-neutral-50 p-[2px] rounded-full">
                             <div className="flex items-center justify-center w-20 h-20 rounded-full  bg-neutral-950 text-neutral-50">
-                                <Check size={40}/>
+                                <Check size={40} />
                             </div>
                         </div>
                     </div>

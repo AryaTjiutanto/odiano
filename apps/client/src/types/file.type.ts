@@ -6,16 +6,20 @@ export type UploadedFileData = {
 export type FileData = {
     id: string,
     url: string,
-    blob?: Blob,
+    blob?: {
+        original : Blob | undefined | null,
+        edited? : Blob,
+    },
     index? : number,
+
     uploaded? : {
         publicId: string,
         url: string,
     }
     prev?: {
-        blob: Blob,
-        publicId: string,
-        url: string,
+        blob: Blob | undefined  | null,
+        publicId?: string,
+        url?: string,
     }
     error?: {
         id: string,

@@ -4,7 +4,7 @@ export const POST_CONTENT_LENGTH = {
     MAX : 300,
 } as const;
 
-export const POST_MAX_MEDIA = 10 as const;
+export const POST_MAX_MEDIA = 6 as const;
 
 export const POST_VISIBILITIES = {
     PUBLIC : "public",

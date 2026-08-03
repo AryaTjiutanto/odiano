@@ -7,7 +7,7 @@ type Payload = {
     imageUrl: string,
     aspect : number,
     setIsCropping: React.Dispatch<React.SetStateAction<boolean>>,
-    setImageCroppedBlob: React.Dispatch<React.SetStateAction<Blob | null>>,
+    setImageCroppedBlob: (blob: Blob) => void,
 }
 
 export const ImageCropper = (payload: Payload) => {

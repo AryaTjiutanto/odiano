@@ -38,7 +38,7 @@ export const uploadCoverImage = async (blob: Blob) : Promise<UploadedFileData> =
 
 export const uploadPostAssets = async (
     fileData: FileData[],
-    setFileData: React.Dispatch<React.SetStateAction<FileData[]>>
+    setFileData: React.Dispatch<React.SetStateAction<FileData[] | null>>
 ): Promise<(UploadedFileData | null)[]> => {
     const response = await api.get<
         SuccessResponseData<CloudinarySignaturePayload[]>
@@ -73,11 +73,11 @@ export const uploadPostAssets = async (
                     };
                 }
 
-                if (!file.blob) return null;
+                if (!file.blob?.original) return null;
 
                 try {
                     const result = await uploadFileToCloudinary(
-                        file.blob,
+                        file.blob.edited || file.blob.original,
                         `asset-${index}`,
                         signaturePayload[index]
                     );
@@ -94,7 +94,7 @@ export const uploadPostAssets = async (
                                 url: result.url,
                             },
                             prev: {
-                                blob: next[index].blob!,
+                                blob: next[index].blob?.original,
                                 publicId: result.publicId,
                                 url: result.url,
                             },
