@@ -1,16 +1,16 @@
 import { useState, type ChangeEvent } from "react";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE, DEFAULT_MAX_VIDEO_SIZE } from "../consts/file.const";
-import type { FileData, UploadedFileData } from "../types/file.type";
+import type { FileEditData, FileData, UploadedFileData } from "../types/file.type";
 import { notify } from "../helpers/notification/notify.helper";
 import { uploadCoverImage, uploadPostAssets, uploadProfileImage } from "../services/upload.service";
 import { uploadSingleFile } from "../helpers/uploadFile.helper";
+import { ALLOWED_MEDIA_TYPES } from "@odiano/shared";
 
 type UseImageUploadOptions = {
     maximumFiles?: number,
     allowedTypes?: string[],
     maxImageSize?: number,
     maxVideoSize?: number,
-    autoCropping?: boolean,
     type: "profile" | "cover" | "post-media",
 };
 
@@ -18,11 +18,11 @@ const useFileUpload = ({
     allowedTypes = DEFAULT_ALLOWED_IMAGE_TYPES,
     maxImageSize = DEFAULT_MAX_IMAGE_SIZE,
     maxVideoSize = DEFAULT_MAX_VIDEO_SIZE,
-    autoCropping = true,
     maximumFiles = 1,
     type,
 }: UseImageUploadOptions) => {
     const [isCropping, setIsCropping] = useState<boolean>(false);
+    const [croppingTarget, setCroppingTarget] = useState<number | null>(null);
     const [fileData, setFileData] = useState<FileData[] | null>(null);
 
     const processMultipleFiles = (files: FileList | undefined | null) => {
@@ -42,7 +42,7 @@ const useFileUpload = ({
             return;
         }
 
-        if(currentCount + files.length > maximumFiles) {
+        if (currentCount + files.length > maximumFiles) {
             filesArray = filesArray.slice(0, maximumFiles - currentCount);
         }
 
@@ -74,13 +74,13 @@ const useFileUpload = ({
         }
 
         // check file size
-        if ( file.type.startsWith("image/") && file.size > maxImageSize) {
+        if (file.type.startsWith("image/") && file.size > maxImageSize) {
             notify.error({ title: "Upload fail", "description": `Max image size is ${maxImageSize / (1024 * 1024)}mb` });
 
             return;
         }
 
-        if ( file.type.startsWith("video/") && file.size > maxVideoSize) {
+        if (file.type.startsWith("video/") && file.size > maxVideoSize) {
             notify.error({ title: "Upload fail", "description": `Max video size is ${maxVideoSize / (1024 * 1024)}mb` });
 
             return;
@@ -92,19 +92,24 @@ const useFileUpload = ({
             setFileData((oldData) => {
                 return [
                     {
-                        ...(oldData && {...oldData[0]}),
+                        ...(oldData && { ...oldData[0] }),
                         id: crypto.randomUUID(),
                         url,
                         blob: {
                             original: file,
                         },
+                        type : file.type.split("/")[0] == ALLOWED_MEDIA_TYPES.IMAGE ? ALLOWED_MEDIA_TYPES.IMAGE : ALLOWED_MEDIA_TYPES.VIDEO
                     }
                 ]
             })
+
+            setIsCropping(true);
+            setCroppingTarget(0);
         } else {
             const data: FileData = {
                 id: crypto.randomUUID(),
                 url,
+                type : file.type.split("/")[0] == ALLOWED_MEDIA_TYPES.IMAGE ? ALLOWED_MEDIA_TYPES.IMAGE : ALLOWED_MEDIA_TYPES.VIDEO,
                 blob: {
                     original: file,
                 },
@@ -115,23 +120,19 @@ const useFileUpload = ({
                 data,
             ])
         }
-
-        if (autoCropping) {
-            setIsCropping(true);
-        }
     }
 
     const removeFile = (index: number, fn?: () => void) => {
         const newData = fileData?.filter((_, i) => i !== index);
 
         setFileData(newData || null);
-        if(fn) fn();
+        if (fn) fn();
     }
 
     const handleImageInput = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
-        
-        if(files?.length == 1) {
+
+        if (files?.length == 1) {
             processFile(files[0]);
             return;
         }
@@ -179,6 +180,21 @@ const useFileUpload = ({
         });
     }
 
+    const setImageFileEditData = (fileIndex: number, data: FileEditData) => {
+        if (!fileData || fileData.length === 0) {
+            return;
+        }
+
+        const next = [...fileData];
+
+        next[fileIndex] = {
+            ...next[fileIndex],
+            editData: data,
+        }
+
+        setFileData(next);
+    }
+
     return {
         fileData,
 
@@ -190,8 +206,11 @@ const useFileUpload = ({
 
         isCropping,
         setIsCropping,
+        croppingTarget,
+        setCroppingTarget,
 
         setImageCroppedBlob,
+        setImageFileEditData,
     }
 }
 

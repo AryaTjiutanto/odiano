@@ -7,8 +7,7 @@ export type MediaSource = {
 }
 
 export type PostMedia = {
-    width: number,
-    height: number,
+    aspectRatio: number,
     provider: AllowedMediaProviders,
     type: AllowedMediaTypes
     order: number,

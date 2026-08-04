@@ -10,11 +10,7 @@ type PostSchema = PostType & {
 
 // post media schema
 const postMediaSchema = new mongoose.Schema<PostMedia>({
-    height : {
-        required : true,
-        type : Number,
-    },
-    width : {
+    aspectRatio : {
         required : true,
         type : Number,
     },

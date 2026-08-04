@@ -35,12 +35,10 @@ const EditProfile = () => {
 
     const profileImageUpload = useFileUpload({
         type: "profile",
-        autoCropping: true,
     });
     const coverImageUpload = useFileUpload({
         maxImageSize: COVER_MAX_IMAGE_SIZE,
         type: "cover",
-        autoCropping: true,
     })
 
     // get user profile
@@ -189,7 +187,7 @@ const EditProfile = () => {
     return (
         <>
             {/* head */}
-            <title>Edit your profile - odiano</title>
+            <title>Edit your profile - Odiano</title>
 
             {/* profile image cropper */}
             {

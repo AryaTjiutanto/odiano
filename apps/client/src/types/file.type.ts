@@ -1,23 +1,32 @@
+import type { AllowedMediaTypes } from "@odiano/shared"
+
 export type UploadedFileData = {
     publicId: string,
     url: string
 }
 
+export type FileEditData = {
+    aspectRatio: number,
+    zoom: number,
+    crop: { x: number, y: number },
+}
+
 export type FileData = {
     id: string,
     url: string,
+    type: AllowedMediaTypes,
+    editData?: FileEditData,
     blob?: {
-        original : Blob | undefined | null,
-        edited? : Blob,
+        original: Blob | undefined | null,
+        edited?: Blob,
     },
-    index? : number,
-
-    uploaded? : {
+    order?: number,
+    uploaded?: {
         publicId: string,
         url: string,
     }
     prev?: {
-        blob: Blob | undefined  | null,
+        blob: Blob | undefined | null,
         publicId?: string,
         url?: string,
     }

@@ -42,7 +42,7 @@ export const uploadPostAssets = async (
 ): Promise<(UploadedFileData | null)[]> => {
     const response = await api.get<
         SuccessResponseData<CloudinarySignaturePayload[]>
-    >("/upload/post-assets", {
+    >("/upload/post-media", {
         params: {
             total: fileData.length,
         },

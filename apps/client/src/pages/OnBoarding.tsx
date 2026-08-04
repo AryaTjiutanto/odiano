@@ -27,7 +27,6 @@ const OnBoarding = () => {
     const userData = useAppSelector((state) => state.auth.user);
 
     const fileUpload = useFileUpload({
-        autoCropping : true,
         allowedTypes : DEFAULT_ALLOWED_IMAGE_TYPES,
         maxImageSize : DEFAULT_MAX_IMAGE_SIZE,
         type : "profile",

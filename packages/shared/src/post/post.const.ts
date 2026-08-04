@@ -35,3 +35,13 @@ export const ALLOWED_MEDIA_TYPES = {
     VIDEO : 'video',
 }
 export type AllowedMediaTypes = typeof ALLOWED_MEDIA_TYPES[keyof typeof ALLOWED_MEDIA_TYPES];
+
+// media aspect ratio
+export const MEDIA_ASPECT_RATIO = {
+    "1:1": 1,
+    "4:5": 4 / 5,
+    "16:9": 16 / 9,
+    "7:5": 7 / 5,
+    "9:16": 9 / 16,
+} as const;
+export type MediaAspectRatio = typeof MEDIA_ASPECT_RATIO[keyof typeof MEDIA_ASPECT_RATIO];

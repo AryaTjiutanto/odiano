@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import * as uploadServices from "../services/upload.service";
 import { successResponseData } from "../utils/response.util";
-import { CloudinarySignaturePayload, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
+import { CloudinarySignaturePayload, POST_MAX_MEDIA, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { UPLOAD_PRESETS } from "../consts/cloudinary.const";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 export const generateProfileSignature = (req: Request, res: Response, next: NextFunction) => {
     const userId = req.userId;
@@ -44,9 +45,18 @@ export const generateCoverSignature = (req: Request, res: Response, next: NextFu
     }
 }
 
-export const generatePostAssetSignature = (req : Request, res : Response, next : NextFunction) => {
+export const generatePostMediaSignature = (req : Request, res : Response, next : NextFunction) => {
     try {
+        const currentUserId = req.userId;
+        if (!currentUserId) {
+            throw new UnauthorizedError();
+        }
 
+        const total = req.query.total;
+
+        const signaturePayload = uploadServices.generatePostMediaSignature(total ? Number(total) : POST_MAX_MEDIA, currentUserId);
+
+        res.status(200).json(successResponseData<CloudinarySignaturePayload[]>(SUCCESS_RESPONSE_CODE.success, "success", signaturePayload));
     } catch (err) {
         next(err);
     }

@@ -2,43 +2,64 @@ import { useEffect, useState } from "react";
 import { getCroppedImage } from "../../utils/cropImage.util";
 import Cropper from "react-easy-crop";
 import DotsLoader from "../loader/DotsLoader";
+import { MEDIA_ASPECT_RATIO } from "@odiano/shared";
+import type { FileEditData } from "../../types/file.type";
 
 type Payload = {
     imageUrl: string,
-    aspect : number,
+    aspectRatio: number,
+    allowAspectRatioChange?: boolean,
+    
     setIsCropping: React.Dispatch<React.SetStateAction<boolean>>,
+    setCroppingTarget?: React.Dispatch<React.SetStateAction<number | null>>,
     setImageCroppedBlob: (blob: Blob) => void,
+
+    editData: FileEditData | undefined,
+    setImageFileEditData: (data: FileEditData) => void,
 }
 
-export const ImageCropper = (payload: Payload) => {
-    const [crop, setCrop] = useState({ x: 0, y: 0 });
-    const [zoom, setZoom] = useState(1);
+export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = false, setCroppingTarget, setImageCroppedBlob, setIsCropping, editData, setImageFileEditData }: Payload) => {
+    const [crop, setCrop] = useState(editData?.crop || { x: 0, y: 0 });
+    const [zoom, setZoom] = useState(editData?.zoom || 1);
     const [imageCroppedAreaPixels, setImageCroppedAreaPixels] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [selectedAspectRatio, setSelectedAspectRatio] = useState<number>(editData?.aspectRatio || aspectRatio);
 
     const handleCrop = async () => {
-        if (!payload.imageUrl) {
+        if (!imageUrl) {
             setIsLoading(false);
             return;
         }
 
         setIsLoading(true);
 
-        const blob = await getCroppedImage(payload.imageUrl, imageCroppedAreaPixels);
+        const blob = await getCroppedImage(imageUrl, imageCroppedAreaPixels);
 
         if (!blob) {
             setIsLoading(false);
             return;
         }
 
-        payload.setImageCroppedBlob(blob);
-        payload.setIsCropping(false);
+        setImageCroppedBlob(blob);
+        setImageFileEditData({
+            aspectRatio : selectedAspectRatio,
+            zoom,
+            crop,
+        })
+
+        setIsCropping(false);
+        if (setCroppingTarget) {
+            setCroppingTarget(null);
+        }
     }
 
     useEffect(() => {
-        const handleKeyDown = (e : KeyboardEvent) => {
-            if(e.key == "Escape") {
-                payload.setIsCropping(false);
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key == "Escape") {
+                setIsCropping(false);
+                if (setCroppingTarget) {
+                    setCroppingTarget(null);
+                }
                 setIsLoading(true);
             } else if (e.key == "Enter") {
                 handleCrop();
@@ -53,50 +74,82 @@ export const ImageCropper = (payload: Payload) => {
     })
 
     return (
-        <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-black z-22">
-            {/* shortcut key */}
-            <div className="hidden lg:flex flex-col absolute top-10 2xl:top-20 left-10 2xl:left-32 text-neutral-100 bg-neutral-950 p-5 border border-neutral-700 rounded-lg">
-                <h1 className="font-bold">
-                    Shortcut key
-                </h1>
-                <div className="flex flex-col space-y-3 mt-3">
-                    <div className="flex items-center space-x-1 xl:space-x-2">
-                        <div className="w-48 xl:w-52">
-                            <span className="text-sm text-neutral-300">
-                                Close the cropping process
-                            </span>
+        <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-black z-30">
+            {/* setting */}
+            <div className="absolute top-10 2xl:top-20 left-10 2xl:left-32 flex flex-col space-y-5">
+                {/* shortcut key */}
+                <div className="hidden lg:flex flex-col text-neutral-100 bg-neutral-950 p-5 border border-neutral-700 rounded-lg">
+                    <h1 className="font-bold">
+                        Shortcut key
+                    </h1>
+                    <div className="flex flex-col space-y-3 mt-3">
+                        <div className="flex items-center space-x-1 xl:space-x-2">
+                            <div className="w-48 xl:w-52">
+                                <span className="text-sm text-neutral-300">
+                                    Close the cropping process
+                                </span>
+                            </div>
+                            <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
+                                Esc
+                            </kbd>
                         </div>
-                        <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
-                            Esc
-                        </kbd>
-                    </div>
-                    <div className="flex items-center space-x-1 xl:space-x-2">
-                        <div className="w-48 xl:w-52">
-                            <span className="text-sm text-neutral-300">
-                                Finish the cropping process
-                            </span>
+                        <div className="flex items-center space-x-1 xl:space-x-2">
+                            <div className="w-48 xl:w-52">
+                                <span className="text-sm text-neutral-300">
+                                    Finish the cropping process
+                                </span>
+                            </div>
+                            <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
+                                Enter
+                            </kbd>
                         </div>
-                        <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
-                            Enter
-                        </kbd>
                     </div>
                 </div>
+
+                {/* aspect ratio */}
+                {
+                    allowAspectRatioChange &&
+                    <div className="flex flex-col text-neutral-50">
+                        <h1 className="font-bold">
+                            Aspect ratio
+                        </h1>
+                        <div className="flex flex-col space-y-4 mt-5">
+                            {
+                                Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => {
+                                    return (
+                                        <button type="button" onClick={() => setSelectedAspectRatio(value)} className="w-fit flex flex-col items-center space-x-1 xl:space-x-2 cursor-pointer group">
+                                            <div className={`w-20 border grid place-content-center rounded duration-100 ${value == selectedAspectRatio ? "border-sky-500 text-sky-500 border-2" : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"}`} style={{ aspectRatio: value }}>
+                                                <span className="text-sm">
+                                                    {key}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    )
+                                })
+                            }
+                        </div>
+                    </div>
+                }
             </div>
 
             {/* cropper */}
             <div className="w-[75vw] md:w-[60vw] lg:w-[350px] 2xl:w-[500px] max-h-[70%]">
-                <div className="w-full aspect-square relative overflow-hidden rounded-xl border border-neutral-600">
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-neutral-600">
                     <Cropper
                         crop={crop}
                         zoom={zoom}
-                        aspect={payload.aspect}
-                        onCropChange={setCrop}
-                        onZoomChange={setZoom}
-                        image={payload.imageUrl}
+                        aspect={selectedAspectRatio}
+                        onCropChange={isLoading ? () => {} : setCrop}
+                        onZoomChange={isLoading ? () => {} : setZoom}
+                        image={imageUrl}
                         onCropComplete={(_, croppedAreaPixels) => {
                             setImageCroppedAreaPixels(croppedAreaPixels);
                         }}
                     />
+
+                    {isLoading && (
+                        <div className="absolute inset-0 z-10 cursor-not-allowed" />
+                    )}
                 </div>
                 <button
                     onClick={handleCrop}
@@ -105,13 +158,13 @@ export const ImageCropper = (payload: Payload) => {
                 >
                     {
                         isLoading ?
-                        <div className="flex items-center text-black">
-                            <DotsLoader/>
-                        </div>
-                        :
-                        <p>
-                            Done
-                        </p>
+                            <div className="flex items-center text-black">
+                                <DotsLoader />
+                            </div>
+                            :
+                            <p>
+                                Done
+                            </p>
                     }
                 </button>
             </div>
