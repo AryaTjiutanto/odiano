@@ -140,7 +140,7 @@ const useFileUpload = ({
         processMultipleFiles(files);
     }
 
-    const uploadFile = async (): Promise<UploadedFileData | (UploadedFileData | null)[] | null | undefined> => {
+    const uploadFile = async (): Promise<FileData | (FileData | null)[] | null | undefined> => {
         if (!fileData || fileData.length === 0) {
             throw new Error("File is empty");
         }
@@ -160,7 +160,7 @@ const useFileUpload = ({
         }
     };
 
-    const setImageCroppedBlob = (blob: Blob, fileIndex: number = 0) => {
+    const setImageCroppedBlob = (blob: Blob, data : FileEditData, fileIndex: number = 0) => {
         if (!blob) return;
 
         setFileData(prev => {
@@ -171,28 +171,14 @@ const useFileUpload = ({
             next[fileIndex] = {
                 ...next[fileIndex],
                 blob: {
-                    original: next[0].blob?.original,
+                    original: next[fileIndex].blob?.original,
                     edited: blob,
                 },
+                editData: data,
             };
 
             return next;
         });
-    }
-
-    const setImageFileEditData = (fileIndex: number, data: FileEditData) => {
-        if (!fileData || fileData.length === 0) {
-            return;
-        }
-
-        const next = [...fileData];
-
-        next[fileIndex] = {
-            ...next[fileIndex],
-            editData: data,
-        }
-
-        setFileData(next);
     }
 
     return {
@@ -210,7 +196,6 @@ const useFileUpload = ({
         setCroppingTarget,
 
         setImageCroppedBlob,
-        setImageFileEditData,
     }
 }
 

@@ -4,7 +4,7 @@ import { uploadFileToCloudinary } from "./cloudinary.service";
 import type { FileData, UploadedFileData } from "../types/file.type";
 import type React from "react";
 
-export const uploadProfileImage = async (blob: Blob) : Promise<UploadedFileData> => {
+export const uploadProfileImage = async (blob: Blob): Promise<UploadedFileData> => {
     // get profile signature
     const response = await api.get<SuccessResponseData<CloudinarySignaturePayload>>("/upload/profile-signature");
 
@@ -20,7 +20,7 @@ export const uploadProfileImage = async (blob: Blob) : Promise<UploadedFileData>
     return uploadedFileData;
 };
 
-export const uploadCoverImage = async (blob: Blob) : Promise<UploadedFileData> => {
+export const uploadCoverImage = async (blob: Blob): Promise<UploadedFileData> => {
     // get cover signature 
     const response = await api.get<SuccessResponseData<CloudinarySignaturePayload>>("/upload/cover-signature");
 
@@ -39,7 +39,8 @@ export const uploadCoverImage = async (blob: Blob) : Promise<UploadedFileData> =
 export const uploadPostAssets = async (
     fileData: FileData[],
     setFileData: React.Dispatch<React.SetStateAction<FileData[] | null>>
-): Promise<(UploadedFileData | null)[]> => {
+): Promise<(FileData | null)[]> => {
+    // get signatures
     const response = await api.get<
         SuccessResponseData<CloudinarySignaturePayload[]>
     >("/upload/post-media", {
@@ -54,27 +55,27 @@ export const uploadPostAssets = async (
         throw new Error("Missing signature payload");
     }
 
+    // organize files
     const uploadCount = Math.min(
         fileData.length,
         signaturePayload.length
     );
 
+    // get uploaded file data
     const uploadedFiles = await Promise.all(
         Array.from(
             { length: uploadCount },
-            async (_, index): Promise<UploadedFileData | null> => {
+            async (_, index): Promise<FileData | null> => {
                 const file = fileData[index];
 
                 // Already uploaded previously
                 if (file.prev?.publicId && file.prev.url) {
-                    return {
-                        publicId: file.prev.publicId,
-                        url: file.prev.url,
-                    };
+                    return file;
                 }
 
                 if (!file.blob?.original) return null;
 
+                // upload to cloudinary
                 try {
                     const result = await uploadFileToCloudinary(
                         file.blob.edited || file.blob.original,
@@ -82,31 +83,31 @@ export const uploadPostAssets = async (
                         signaturePayload[index]
                     );
 
+                    const newData: FileData = {
+                        ...fileData[index],
+                        uploaded: {
+                            publicId: result.publicId,
+                            url: result.url,
+                        },
+                        prev: {
+                            blob: fileData[index].blob?.original,
+                            publicId: result.publicId,
+                            url: result.url,
+                        },
+                        error: undefined,
+                    }
+
                     setFileData(prev => {
                         if (!prev) return prev;
 
                         const next = [...prev];
-
-                        next[index] = {
-                            ...next[index],
-                            uploaded: {
-                                publicId: result.publicId,
-                                url: result.url,
-                            },
-                            prev: {
-                                blob: next[index].blob?.original,
-                                publicId: result.publicId,
-                                url: result.url,
-                            },
-                            error: undefined,
-                        };
+                        next[index] = newData;
 
                         return next;
                     });
 
-                    return result;
+                    return newData;
                 } catch (error) {
-                    console.error(`Upload ${index} failed`, error);
                     return null;
                 }
             }

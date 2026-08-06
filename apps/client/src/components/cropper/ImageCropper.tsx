@@ -12,13 +12,12 @@ type Payload = {
     
     setIsCropping: React.Dispatch<React.SetStateAction<boolean>>,
     setCroppingTarget?: React.Dispatch<React.SetStateAction<number | null>>,
-    setImageCroppedBlob: (blob: Blob) => void,
+    setImageCroppedBlob: (blob: Blob, editData : FileEditData) => void,
 
     editData: FileEditData | undefined,
-    setImageFileEditData: (data: FileEditData) => void,
 }
 
-export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = false, setCroppingTarget, setImageCroppedBlob, setIsCropping, editData, setImageFileEditData }: Payload) => {
+export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = false, setCroppingTarget, setImageCroppedBlob, setIsCropping, editData }: Payload) => {
     const [crop, setCrop] = useState(editData?.crop || { x: 0, y: 0 });
     const [zoom, setZoom] = useState(editData?.zoom || 1);
     const [imageCroppedAreaPixels, setImageCroppedAreaPixels] = useState<any | null>(null);
@@ -40,12 +39,11 @@ export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = f
             return;
         }
 
-        setImageCroppedBlob(blob);
-        setImageFileEditData({
+        setImageCroppedBlob(blob, {
             aspectRatio : selectedAspectRatio,
             zoom,
             crop,
-        })
+        });
 
         setIsCropping(false);
         if (setCroppingTarget) {

@@ -1,4 +1,4 @@
-import { CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, type PostDTO as PostFeedItem } from "@odiano/shared";
+import { CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, PostPublicId, type PostDTO as PostFeedItem } from "@odiano/shared";
 import { Post } from "../models/post.model";
 import { toPostDto } from "../mappers/post.mapper";
 import { PostQuery } from "../types/post.type";
@@ -9,6 +9,9 @@ import { LIKE_TYPES } from "../consts/like.const";
 import { getIsLiked, getLikedIds } from "./like.service";
 import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import { nanoid } from "nanoid";
+import { commitTempImage } from "../helpers/cloudinary.helper";
+import logger from "../libs/log/logger";
 
 export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated
@@ -82,14 +85,75 @@ export const getPost = async (currentUserId: string | null | undefined, publicId
     return toPostDto(post, { isLiked });
 }
 
-export const create = async (userId: string, data: CreatePostSchema) => {
-    const post = await Post.create({
-        author: userId,
-        ...data,
-    });
+export const create = async (
+    userId: string,
+    data: CreatePostSchema
+): Promise<PostPublicId> => {
+    const session = await mongoose.startSession();
 
-    return post;
-}
+    try {
+        const result = await session.withTransaction(async () => {
+            // Create post
+            const [post] = await Post.create(
+                [
+                    {
+                        author: userId,
+                        content: data.content,
+                        visibility: data.visibility,
+                        hideLikeAndViewCount: data.hideLikeAndViewCount,
+                        turnOffCommenting: data.turnOffCommenting,
+                        isArchive: data.isArchive,
+                    },
+                ],
+                { session }
+            );
+
+            // Commit temporary media
+            if (data.media?.length) {
+                const committedPostMedia = await Promise.all(
+                    data.media.map(async (media) => {
+                        const committedData = await commitTempImage(
+                            media.source.publicId
+                        );
+
+                        if (!committedData) {
+                            throw new Error(
+                                `Failed to commit media: ${media.source.publicId}`
+                            );
+                        }
+
+                        return {
+                            ...media,
+                            source: committedData,
+                        };
+                    })
+                );
+
+                await Post.updateOne(
+                    { _id: post._id },
+                    {
+                        $set: {
+                            media: committedPostMedia,
+                        },
+                    },
+                    { session }
+                );
+            }
+
+            return {
+                publicId: post.publicId,
+            };
+        });
+
+        if (!result) {
+            throw new Error("Failed to create post");
+        }
+
+        return result;
+    } finally {
+        await session.endSession();
+    }
+};
 
 export const getUserPosts = async (currentUserId: string | null | undefined, username: string, cursor: string | null): Promise<InfiniteQuery<PostDTO[]>> => {
     // check is user authenticated

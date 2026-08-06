@@ -17,6 +17,7 @@ const mediaAspectRatio = z.union([
     z.literal(MEDIA_ASPECT_RATIO["4:5"]),
     z.literal(MEDIA_ASPECT_RATIO["16:9"]),    
     z.literal(MEDIA_ASPECT_RATIO["9:16"]),
+    z.literal(MEDIA_ASPECT_RATIO["7:5"])
 ], `Invalid media aspect ratio`)
 
 const mediaSchema = z.object({

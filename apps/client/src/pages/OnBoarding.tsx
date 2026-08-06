@@ -127,7 +127,6 @@ const OnBoarding = () => {
 
             setFormError(null);
         } catch (err: unknown) {
-            console.log(err);
             handleApiErrorNotification(err);
 
             setFormError("Something went wrong, please try again later")

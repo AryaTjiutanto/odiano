@@ -9,7 +9,6 @@ import { Following } from "../models/following.model";
 import mongoose from "mongoose";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { getFollowingIds } from "./following.service";
-import { UnauthorizedError } from "../errors/unauthorized.error";
 
 type OnboardingPayload = {
     userId: string,

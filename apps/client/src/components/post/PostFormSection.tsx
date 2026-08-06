@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, createPostSchema, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, type CreatePostSchema, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
+import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, createPostSchema, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, type CreatePostSchema, type PostMedia, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
@@ -58,29 +58,38 @@ const PostFormSection = () => {
     const onSubmit: SubmitHandler<CreatePostSchema> = async (data) => {
         try {
             // upload media
-            if(fileUpload.fileData && fileUpload.fileData.length > 0) {
-                await fileUpload.uploadFile();
+            let media : PostMedia[] | null = null;
+            if (fileUpload.fileData && fileUpload.fileData.length > 0) {
+                const uploadedFile = await fileUpload.uploadFile();
+                if(!Array.isArray(uploadedFile)) {
+                    throw new Error("Something went wrong");
+                }
 
-                const media = fileUpload.fileData.map((file, index) => {
-                    if(!file.uploaded) return null;
+                const uploadedMedia = uploadedFile.map((file, index) => {
+                    if (!file?.uploaded) return null;
 
                     return {
-                        aspectRatio : file.editData?.aspectRatio || MEDIA_ASPECT_RATIO["7:5"],
-                        provider : ALLOWED_MEDIA_PROVIDERS.CLOUDINARY,
-                        type : ALLOWED_MEDIA_TYPES.IMAGE,
-                        order : index,
-                        source : {
-                            url : file.uploaded.url,
-                            publicId : file.uploaded.publicId,
+                        aspectRatio: file.editData?.aspectRatio || MEDIA_ASPECT_RATIO["7:5"],
+                        provider: ALLOWED_MEDIA_PROVIDERS.CLOUDINARY,
+                        type: ALLOWED_MEDIA_TYPES.IMAGE,
+                        order: index,
+                        source: {
+                            url: file.uploaded.url,
+                            publicId: file.uploaded.publicId,
                         }
                     }
                 })
 
-                data.media = media.filter((data) => data !== null);
+                media = uploadedMedia.filter((data) => data !== null);
             }
 
             // create post
-            const response = await api.post<SuccessResponseData<PostPublicId>>("/post/create", data);
+            const payload = {
+                ...data,
+                media,
+            }
+            
+            const response = await api.post<SuccessResponseData<PostPublicId>>("/post/create", payload);
 
             if (!response.data) {
                 throw Error("Something went wrong");
@@ -118,7 +127,7 @@ const PostFormSection = () => {
             {
                 (croppingTarget !== null && fileUpload.fileData && fileUpload.fileData.length > 0) &&
                 createPortal(
-                    <ImageCropper aspectRatio={MEDIA_ASPECT_RATIO["7:5"]} setCroppingTarget={fileUpload.setCroppingTarget} imageUrl={fileUpload.fileData[croppingTarget].url} setImageCroppedBlob={(blob: Blob) => fileUpload.setImageCroppedBlob(blob, croppingTarget)} setIsCropping={fileUpload.setIsCropping} allowAspectRatioChange={true} editData={fileUpload.fileData[croppingTarget]?.editData} setImageFileEditData={(data : FileEditData) => fileUpload.setImageFileEditData(croppingTarget, data)} />,
+                    <ImageCropper aspectRatio={MEDIA_ASPECT_RATIO["7:5"]} setCroppingTarget={fileUpload.setCroppingTarget} imageUrl={fileUpload.fileData[croppingTarget].url} setImageCroppedBlob={(blob: Blob, editData : FileEditData) => fileUpload.setImageCroppedBlob(blob, editData, croppingTarget)} setIsCropping={fileUpload.setIsCropping} allowAspectRatioChange={true} editData={fileUpload.fileData[croppingTarget]?.editData} />,
                     document.body
                 )
             }
@@ -145,9 +154,11 @@ const PostFormSection = () => {
                                         fileUpload.fileData.map((file, index) => {
                                             if (file.blob?.original) {
                                                 return (
-                                                    <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio : MEDIA_ASPECT_RATIO["7:5"] }}>
+                                                    <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
                                                         {file.type == "image" &&
-                                                            <img src={URL.createObjectURL(file.blob?.edited || file.blob?.original)} alt="file" className="h-full w-fit" />
+                                                            <>
+                                                                <img src={URL.createObjectURL(file.blob?.edited || file.blob?.original)} alt="file" className="h-full w-fit" />
+                                                            </>
                                                         }
                                                         {
                                                             file.type == "video" &&

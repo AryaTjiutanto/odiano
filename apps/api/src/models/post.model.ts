@@ -41,7 +41,6 @@ const postMediaSchema = new mongoose.Schema<PostMedia>({
 });
 
 // post schema
-
 const postSchema = new mongoose.Schema<PostSchema>({
     author: {
         type: Types.ObjectId,
@@ -74,7 +73,7 @@ const postSchema = new mongoose.Schema<PostSchema>({
         required : true,
     },
     media : {
-        type : postMediaSchema,
+        type : [postMediaSchema],
         required : false,
         default : null,
     },
