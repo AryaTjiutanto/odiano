@@ -30,6 +30,8 @@ const mediaSchema = z.object({
     source : mediaSourceSchema,
 }) satisfies z.ZodType<PostMedia>;
 
+
+// base create post schema
 export const createPostSchema = z.object({
     content: z.string("Invalid format")
         .max(
@@ -48,8 +50,10 @@ export const createPostSchema = z.object({
     hideLikeAndViewCount: z.boolean("Invalid format"),
     turnOffCommenting: z.boolean("Invalid format"),
     visibility: z.nativeEnum(POST_VISIBILITIES, "Invalid visibilities"),
-})
-.refine(
+}) satisfies z.ZodType<Omit<Post, "commentCount" | "likeCount">>;
+
+// api create post schema
+export const createPostApiSchema = createPostSchema.refine(
     (data) => {
         const hasMedia = data.media !== null && data.media.length > 0;
         const hasContent = data.content.trim().length > 0;
@@ -60,6 +64,7 @@ export const createPostSchema = z.object({
         path: ["content"],
         message: "Content cannot be empty when no media is provided",
     }
-) satisfies z.ZodType<Omit<Post, "commentCount" | "likeCount">>;
+);
 
+export type CreatePostApiSchema = z.infer<typeof createPostApiSchema>;
 export type CreatePostSchema = z.infer<typeof createPostSchema>;

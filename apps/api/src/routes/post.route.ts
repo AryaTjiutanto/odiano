@@ -2,7 +2,7 @@ import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import express from "express"
 import { create as createPost, deletePost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller";
 import { createComment, deleteComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
-import { createPostCommentSchema, createPostSchema } from "@odiano/shared";
+import { createPostCommentSchema, createPostApiSchema } from "@odiano/shared";
 import { validateData } from "../middlewares/validateData.middleware";
 import optionalAuth from "../middlewares/optionalAuth.middleware";
 import { createPostLike, deletePostLike } from "../controllers/like.controller";
@@ -12,7 +12,7 @@ import commentLimiter from "../libs/limiter/limiters/createComment.limiter";
 const router = express.Router();
 
 router.get("/", consume(postIndexLimiter), optionalAuth, indexPost);
-router.post("/create", requireAccessToken, consume(createPostLimiter), validateData(createPostSchema), createPost);
+router.post("/create", requireAccessToken, consume(createPostLimiter), validateData(createPostApiSchema), createPost);
 
 // post user
 router.get("/user/:username", consume(apiLimiter), optionalAuth, getUserPosts);

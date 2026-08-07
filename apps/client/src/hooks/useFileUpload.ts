@@ -1,10 +1,10 @@
 import { useState, type ChangeEvent } from "react";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE, DEFAULT_MAX_VIDEO_SIZE } from "../consts/file.const";
-import type { FileEditData, FileData, UploadedFileData } from "../types/file.type";
+import type { FileEditData, FileData } from "../types/file.type";
 import { notify } from "../helpers/notification/notify.helper";
 import { uploadCoverImage, uploadPostAssets, uploadProfileImage } from "../services/upload.service";
 import { uploadSingleFile } from "../helpers/uploadFile.helper";
-import { ALLOWED_MEDIA_TYPES } from "@odiano/shared";
+import { ALLOWED_MEDIA_TYPES, POST_MAX_MEDIA } from "@odiano/shared";
 
 type UseImageUploadOptions = {
     maximumFiles?: number,
@@ -181,6 +181,15 @@ const useFileUpload = ({
         });
     }
 
+    const isMediaNotFull = () => fileData && (fileData?.length < POST_MAX_MEDIA);
+    const getFileDisplayUrl = (index: number) : string | undefined => {
+        const blob = fileData?.[index].blob;
+        
+        if(!blob || !blob.original) return undefined;
+        
+        return URL.createObjectURL(blob.edited || blob.original)
+    };
+
     return {
         fileData,
 
@@ -196,6 +205,9 @@ const useFileUpload = ({
         setCroppingTarget,
 
         setImageCroppedBlob,
+
+        getFileDisplayUrl,
+        isMediaNotFull
     }
 }
 

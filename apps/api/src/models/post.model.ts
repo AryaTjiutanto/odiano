@@ -53,7 +53,7 @@ const postSchema = new mongoose.Schema<PostSchema>({
     },
     content: {
         type: String,
-        required: true,
+        required: false,
     },
     hideLikeAndViewCount: {
         type: Boolean,

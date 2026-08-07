@@ -100,9 +100,31 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
                     <PostMenu authorUsername={author?.username} post={data} canDeletePost={canDeletePost} />
                 </div>
             </div>
-            <p className="text-sm mt-8 whitespace-pre-wrap">
-                {data.content ?? ""}
-            </p>
+            <div className="w-full mt-8 space-y-5">
+                {
+                    (data.media && data.media?.length > 0) &&
+                    <div className="flex space-x-3 mt-8">
+                        {
+                            data.media.map((media, index) => {
+                                return (
+                                    <div key={index} className="w-full relative rounded-xl overflow-hidden" style={{ aspectRatio : media.aspectRatio }}>
+                                        {media.type == "image" &&
+                                            <img src={media.source.url} className="h-full w-full" />
+                                        }
+                                        {
+                                            media.type == "video" &&
+                                            <video src={media.source.url} className="h-full w-full" />
+                                        }
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                }
+                <p className="text-sm whitespace-pre-wrap">
+                    {data.content ?? ""}
+                </p>
+            </div>
             <div className="mt-8 flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-1 z-20 hover:text-sky-500 duration-100" onClick={(e) => e.preventDefault()}>

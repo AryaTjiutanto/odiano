@@ -148,21 +148,21 @@ const PostFormSection = () => {
 
                         {/* image input */}
                         {
-                            fileUpload.fileData && fileUpload.fileData.length > 0 ?
+                            (fileUpload.fileData && fileUpload.fileData.length > 0) ?
                                 <div className="w-full grid grid-cols-3 gap-5">
                                     {
-                                        fileUpload.fileData.map((file, index) => {
+                                        fileUpload.fileData?.map((file, index) => {
                                             if (file.blob?.original) {
                                                 return (
                                                     <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
                                                         {file.type == "image" &&
                                                             <>
-                                                                <img src={URL.createObjectURL(file.blob?.edited || file.blob?.original)} alt="file" className="h-full w-fit" />
+                                                                <img src={fileUpload.getFileDisplayUrl(index)} alt="file" className="h-full w-fit" />
                                                             </>
                                                         }
                                                         {
                                                             file.type == "video" &&
-                                                            <video src={URL.createObjectURL(file.blob?.edited || file.blob?.original)} className="h-full w-fit" />
+                                                            <video src={fileUpload.getFileDisplayUrl(index)} className="h-full w-fit" />
                                                         }
 
                                                         <div className="absolute top-1 right-1 flex items-center space-x-1">
@@ -182,7 +182,7 @@ const PostFormSection = () => {
                                         })
                                     }
                                     {
-                                        fileUpload.fileData.length < POST_MAX_MEDIA &&
+                                        fileUpload.isMediaNotFull() &&
                                         <label htmlFor="media-input" className="w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400">
                                             <div className="w-10 h-10 bg-neutral-900 grid place-content-center rounded-full">
                                                 <Plus />
