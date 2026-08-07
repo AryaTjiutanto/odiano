@@ -15,10 +15,13 @@ import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_ALLOWED_VIDEO_TYPES } from "../../
 import { ImageCropper } from "../cropper/ImageCropper";
 import { createPortal } from "react-dom";
 import type { FileEditData } from "../../types/file.type";
+import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 
 export const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
 const PostFormSection = () => {
+    const confirmationModal = useConfirmationModal();
+
     const postForm = usePostForm();
     const dragAndDrop = useDragAndDrop();
     const fileUpload = useFileUpload({
@@ -102,6 +105,23 @@ const PostFormSection = () => {
             handleApiErrorNotification<CreatePostSchema>(err, {
                 setValidationError: setError
             })
+        }
+    }
+
+    const handleCancel = async () => {
+        handleCloseForm("You will not be able to recover this post if you cancel it.");
+    }
+
+    const handleCloseForm = async (description : string = "You will not be able to recover this post if you cancel it.") => {
+        if((!fileUpload.fileData || fileUpload.fileData.length == 0 ) && watch("content")?.length <= 0) {
+            postForm.close();
+            return;
+        }
+
+        const confirmationResult = await confirmationModal.confirm("Are you sure?", description, "Yes, I'm sure", "Cancel");
+
+        if(confirmationResult) {
+            postForm.close();
         }
     }
 
@@ -234,7 +254,7 @@ const PostFormSection = () => {
                             <button className={`w-full sm:w-fit px-11 h-14 sm:h-11 border border-white bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-transparent hover:text-neutral-100"} duration-100 cursor-pointer rounded`} disabled={isSubmitting}>
                                 {isSubmitting ? <DotsLoader /> : "Post"}
                             </button>
-                            <button type="button" onClick={postForm.close} className="w-full sm:w-fit px-8 h-14 sm:h-11 border border-white hover:bg-white hover:text-neutral-800 duration-100 cursor-pointer rounded">
+                            <button type="button" onClick={handleCancel} className="w-full sm:w-fit px-8 h-14 sm:h-11 border border-white hover:bg-white hover:text-neutral-800 duration-100 cursor-pointer rounded">
                                 Cancel
                             </button>
                         </div>
@@ -281,7 +301,7 @@ const PostFormSection = () => {
                 </div>
 
                 {/* background to close section */}
-                <div className="w-full h-full fixed top-0 left-0" onClick={postForm.close}></div>
+                <div className="w-full h-full fixed top-0 left-0" onClick={() => handleCloseForm()}></div>
             </div>
         </>
     )

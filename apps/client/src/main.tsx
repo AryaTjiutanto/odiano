@@ -31,6 +31,7 @@ import CreatePostLayout from './layouts/PostFormLayout.tsx'
 import NotificationSectionLayout from './layouts/NotificationSectionLayout.tsx'
 import ScrollToTop from './router/ScrollToTop.tsx'
 import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
+import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -49,54 +50,56 @@ createRoot(document.getElementById('root')!).render(
       }}>
         <SocketProvider>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <BrowserRouter>
-              <GoogleOneTap/>
-              <ScrollToTop/>
-              <NavigationTracker />
-              <Routes>
-                <Route element={<AppLayout />}>
-                  <Route element={<PageLoader />}>
-                    {/* social */}
-                    <Route element={<CreatePostLayout />}>
-                      <Route element={<NotificationSectionLayout />}>
-                        <Route element={<SocialLayout />}>
-                          <Route path='/' element={<Homepage />} />
+            <ConfirmationModalProvider>
+              <BrowserRouter>
+                <GoogleOneTap />
+                <ScrollToTop />
+                <NavigationTracker />
+                <Routes>
+                  <Route element={<AppLayout />}>
+                    <Route element={<PageLoader />}>
+                      {/* social */}
+                      <Route element={<CreatePostLayout />}>
+                        <Route element={<NotificationSectionLayout />}>
+                          <Route element={<SocialLayout />}>
+                            <Route path='/' element={<Homepage />} />
 
-                          {/* post */}
-                          <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+                            {/* post */}
+                            <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
 
-                          {/* profile */}
-                          <Route path='/profile/:username' element={<Profile />} />
-                          <Route element={<RequireAuthGuard />}>
-                            <Route path='/edit-profile' element={<EditProfile />} />
+                            {/* profile */}
+                            <Route path='/profile/:username' element={<Profile />} />
+                            <Route element={<RequireAuthGuard />}>
+                              <Route path='/edit-profile' element={<EditProfile />} />
+                            </Route>
                           </Route>
                         </Route>
                       </Route>
-                    </Route>
 
-                    {/* auth process */}
-                    <Route element={<RequireGuestGuard />}>
-                      <Route element={<AuthLayout />}>
-                        <Route path='/signin' element={<Signin />} />
-                        <Route path='/signup' element={<Signup />} />
+                      {/* auth process */}
+                      <Route element={<RequireGuestGuard />}>
+                        <Route element={<AuthLayout />}>
+                          <Route path='/signin' element={<Signin />} />
+                          <Route path='/signup' element={<Signup />} />
+                        </Route>
                       </Route>
-                    </Route>
 
-                    {/* email verification */}
-                    <Route element={<RequireUnVerify />}>
-                      <Route path='/email/verify' element={<EmailVerification />} />
-                    </Route>
+                      {/* email verification */}
+                      <Route element={<RequireUnVerify />}>
+                        <Route path='/email/verify' element={<EmailVerification />} />
+                      </Route>
 
-                    {/* onboarding */}
-                    <Route element={<RequireUnOnboarded />}>
-                      <Route path='/onboarding' element={<OnBoarding />} />
+                      {/* onboarding */}
+                      <Route element={<RequireUnOnboarded />}>
+                        <Route path='/onboarding' element={<OnBoarding />} />
+                      </Route>
+                      {/* not fond */}
+                      <Route path='*' element={<NotFound />} />
                     </Route>
-                    {/* not fond */}
-                    <Route path='*' element={<NotFound />} />
                   </Route>
-                </Route>
-              </Routes>
-            </BrowserRouter>
+                </Routes>
+              </BrowserRouter>
+            </ConfirmationModalProvider>
           </GoogleOAuthProvider>
         </SocketProvider>
       </PersistQueryClientProvider>

@@ -3,8 +3,11 @@ import { useAppDispatch } from "../hooks/useRedux";
 import { useEffect } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Toaster } from "react-hot-toast";
+import ConfirmationModal from "../components/modal/ConfirmationModal";
+import { useConfirmationModal } from "../providers/ConfirmationModalProvider";
 
 const AppLayout = () => {
+    const confirmationModal = useConfirmationModal();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -34,6 +37,10 @@ const AppLayout = () => {
             />
             
             <div className="w-full max-w-480 min-h-screen bg-black text-neutral-100">
+                {
+                    confirmationModal.isOpen &&
+                    <ConfirmationModal cancelButtonText={confirmationModal.cancelButtonText} confirmButtonText={confirmationModal.confirmButtonText} description={confirmationModal.description} handleCancel={confirmationModal.handleCancel} handleConfirm={confirmationModal.handleConfirm} title={confirmationModal.title}/>
+                }
                 <Outlet />
             </div>
         </>
