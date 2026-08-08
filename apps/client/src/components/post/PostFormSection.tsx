@@ -12,14 +12,14 @@ import { usePostForm } from "../../providers/PostFormProvider";
 import useDragAndDrop from "../../hooks/useDragAndDrop";
 import useFileUpload from "../../hooks/useFileUpload";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_ALLOWED_VIDEO_TYPES } from "../../consts/file.const";
-import { ImageCropper } from "../cropper/ImageCropper";
-import { createPortal } from "react-dom";
-import type { FileEditData } from "../../types/file.type";
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
+import { useImageEditor } from "../../providers/ImageEditorProvider";
+import type { FileEditData } from "../../types/file.type";
 
 export const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
 const PostFormSection = () => {
+    const imageEditor = useImageEditor();
     const confirmationModal = useConfirmationModal();
 
     const postForm = usePostForm();
@@ -29,7 +29,6 @@ const PostFormSection = () => {
         type: "post-media",
         maximumFiles: POST_MAX_MEDIA,
     });
-    const croppingTarget = fileUpload.croppingTarget;
 
     const [isCreated, setIsCreated] = useState<boolean>(false);
     const [postPublicId, setPostPublicId] = useState<string | null>(null);
@@ -137,6 +136,20 @@ const PostFormSection = () => {
     //     })
     // };
 
+    // edit image
+    const handleEditImage = async (blob: Blob | undefined | null, editData: FileEditData | undefined, fileIndex: number) => {
+        if(!blob) return;
+
+        const result = await imageEditor.edit(blob, editData, {
+            aspectRatio: MEDIA_ASPECT_RATIO["7:5"],
+            allowAspectRatioChange: true,
+        });
+
+        if(!result) return;
+
+        fileUpload.setImageCroppedBlob(result?.blob || blob, result?.editData, fileIndex);
+    }
+
     // setting
     useEffect(() => {
         setFocus("content");
@@ -144,14 +157,6 @@ const PostFormSection = () => {
 
     return (
         <>
-            {
-                (croppingTarget !== null && fileUpload.fileData && fileUpload.fileData.length > 0) &&
-                createPortal(
-                    <ImageCropper aspectRatio={MEDIA_ASPECT_RATIO["7:5"]} setCroppingTarget={fileUpload.setCroppingTarget} imageUrl={fileUpload.fileData[croppingTarget].url} setImageCroppedBlob={(blob: Blob, editData : FileEditData) => fileUpload.setImageCroppedBlob(blob, editData, croppingTarget)} setIsCropping={fileUpload.setIsCropping} allowAspectRatioChange={true} editData={fileUpload.fileData[croppingTarget]?.editData} />,
-                    document.body
-                )
-            }
-
             <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                 {/* content */}
                 <div className="w-full sm:w-[500px] md:w-[600px] h-full sm:h-fit bg-black sm:bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
@@ -188,7 +193,7 @@ const PostFormSection = () => {
                                                         <div className="absolute top-1 right-1 flex items-center space-x-1">
                                                             {
                                                                 file.type == "image" &&
-                                                                <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer" onClick={() => fileUpload.setCroppingTarget(index)}>
+                                                                <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer" onClick={() => handleEditImage(file.blob?.original, file.editData, index)}>
                                                                     <Crop size={18} />
                                                                 </button>
                                                             }

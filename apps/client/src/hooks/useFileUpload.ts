@@ -21,8 +21,6 @@ const useFileUpload = ({
     maximumFiles = 1,
     type,
 }: UseImageUploadOptions) => {
-    const [isCropping, setIsCropping] = useState<boolean>(false);
-    const [croppingTarget, setCroppingTarget] = useState<number | null>(null);
     const [fileData, setFileData] = useState<FileData[] | null>(null);
 
     const processMultipleFiles = (files: FileList | undefined | null) => {
@@ -88,38 +86,16 @@ const useFileUpload = ({
 
         const url = URL.createObjectURL(file);
 
-        if (maximumFiles === 1) {
-            setFileData((oldData) => {
-                return [
-                    {
-                        ...(oldData && { ...oldData[0] }),
-                        id: crypto.randomUUID(),
-                        url,
-                        blob: {
-                            original: file,
-                        },
-                        type : file.type.split("/")[0] == ALLOWED_MEDIA_TYPES.IMAGE ? ALLOWED_MEDIA_TYPES.IMAGE : ALLOWED_MEDIA_TYPES.VIDEO
-                    }
-                ]
-            })
-
-            setIsCropping(true);
-            setCroppingTarget(0);
-        } else {
-            const data: FileData = {
-                id: crypto.randomUUID(),
-                url,
-                type : file.type.split("/")[0] == ALLOWED_MEDIA_TYPES.IMAGE ? ALLOWED_MEDIA_TYPES.IMAGE : ALLOWED_MEDIA_TYPES.VIDEO,
-                blob: {
-                    original: file,
-                },
-            }
-
-            setFileData((oldData) => [
-                ...(oldData ?? []),
-                data,
-            ])
+        const data: FileData = {
+            id: crypto.randomUUID(),
+            url,
+            blob: {
+                original: file,
+            },
+            type: file.type.split("/")[0] == ALLOWED_MEDIA_TYPES.IMAGE ? ALLOWED_MEDIA_TYPES.IMAGE : ALLOWED_MEDIA_TYPES.VIDEO
         }
+
+        setFileData([data]);
     }
 
     const removeFile = (index: number, fn?: () => void) => {
@@ -160,7 +136,7 @@ const useFileUpload = ({
         }
     };
 
-    const setImageCroppedBlob = (blob: Blob, data : FileEditData, fileIndex: number = 0) => {
+    const setImageCroppedBlob = (blob: Blob, data: FileEditData, fileIndex: number = 0) => {
         if (!blob) return;
 
         setFileData(prev => {
@@ -182,11 +158,11 @@ const useFileUpload = ({
     }
 
     const isMediaNotFull = () => fileData && (fileData?.length < POST_MAX_MEDIA);
-    const getFileDisplayUrl = (index: number) : string | undefined => {
+    const getFileDisplayUrl = (index: number): string | undefined => {
         const blob = fileData?.[index].blob;
-        
-        if(!blob || !blob.original) return undefined;
-        
+
+        if (!blob || !blob.original) return undefined;
+
         return URL.createObjectURL(blob.edited || blob.original)
     };
 
@@ -198,11 +174,6 @@ const useFileUpload = ({
         uploadFile,
         handleImageInput,
         removeFile,
-
-        isCropping,
-        setIsCropping,
-        croppingTarget,
-        setCroppingTarget,
 
         setImageCroppedBlob,
 

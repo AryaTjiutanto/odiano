@@ -1,21 +1,19 @@
 
-import { BIO_LENGTH, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@odiano/shared";
+import { BIO_LENGTH, MEDIA_ASPECT_RATIO, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@odiano/shared";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import ProfileComponent from "../../components/profile/Profile";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { userKeys } from "../../queries/userKeys";
 import { getUserProfile, updateProfile } from "../../services/user.service";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
-import { useEffect } from "react";
+import { useEffect, type ChangeEvent } from "react";
 import EditProfileSkeletonLoading from "../../components/profile/EditProfileSkeletonLoading";
 import { Upload, X } from "lucide-react";
 import useDragAndDrop from "../../hooks/useDragAndDrop";
 import { COVER_MAX_IMAGE_SIZE, DEFAULT_ALLOWED_IMAGE_TYPES } from "../../consts/file.const";
-import { createPortal } from "react-dom";
-import { ImageCropper } from "../../components/cropper/ImageCropper";
 import { notify } from "../../helpers/notification/notify.helper";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import DotsLoader from "../../components/loader/DotsLoader";
@@ -23,8 +21,12 @@ import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import { setCurrentUserProfile } from "../../features/auth/auth.slice";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import useFileUpload from "../../hooks/useFileUpload";
+import { useImageEditor } from "../../providers/ImageEditorProvider";
+import type { FileEditData } from "../../types/file.type";
 
 const EditProfile = () => {
+    const imageEditor = useImageEditor();
+
     const username = useAppSelector(state => state.auth.user?.username);
     const setQueryDataHandler = useSetQueryDataHandler();
     const navigate = useNavigate();
@@ -94,8 +96,8 @@ const EditProfile = () => {
                     return;
                 }
 
-                dataToSend.profileImagePublicId = imageData.publicId;
-                dataToSend.profileImageUrl = imageData.url;
+                dataToSend.profileImagePublicId = imageData.uploaded?.publicId;
+                dataToSend.profileImageUrl = imageData.uploaded?.url;
             }
 
             // upload cover image
@@ -113,8 +115,8 @@ const EditProfile = () => {
                     return;
                 }
 
-                dataToSend.coverImagePublicId = imageData.publicId;
-                dataToSend.coverImageUrl = imageData.url
+                dataToSend.coverImagePublicId = imageData.uploaded?.publicId;
+                dataToSend.coverImageUrl = imageData.uploaded?.url
             }
 
             // update profile
@@ -164,6 +166,22 @@ const EditProfile = () => {
         }
     }
 
+    // handle image editor
+    const handleInputImage = async (e : ChangeEvent<HTMLInputElement>, handleImageInput : (e : ChangeEvent<HTMLInputElement>) => void, setImageCroppedBlob : (blob : Blob, data : FileEditData, fileIndex : number) => void, aspectRatio : number) => {
+        handleImageInput(e);
+
+        const image = e.target?.files?.[0];
+        if (!image) return;
+
+        const editResult = await imageEditor.edit(image, undefined, {
+            aspectRatio: aspectRatio,
+            allowAspectRatioChange: false,
+        });
+
+        if(!editResult) return;
+        setImageCroppedBlob(editResult.blob, editResult.editData, 0);
+    }
+
     // update profile value
     useEffect(() => {
         reset({
@@ -188,24 +206,6 @@ const EditProfile = () => {
         <>
             {/* head */}
             <title>Edit your profile - Odiano</title>
-
-            {/* profile image cropper */}
-            {
-                ((profileImageUpload.isCropping && profileImageUpload.fileData && profileImageUpload.fileData.length > 0 && profileImageUpload.fileData[0].blob?.original)) &&
-                createPortal(
-                    <ImageCropper aspect={1} imageUrl={profileImageUpload.fileData[0].url} setImageCroppedBlob={(blob: Blob) => profileImageUpload.setImageCroppedBlob(blob, 0)} setIsCropping={profileImageUpload.setIsCropping} key={`profile-image-cropper`} />,
-                    document.body
-                )
-            }
-
-            {/* cover image cropper */}
-            {
-                ((coverImageUpload.isCropping && coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.original)) &&
-                createPortal(
-                    <ImageCropper aspect={3/1} imageUrl={coverImageUpload.fileData[0].url} setImageCroppedBlob={(blob: Blob) => coverImageUpload.setImageCroppedBlob(blob, 0)} setIsCropping={coverImageUpload.setIsCropping} key={`profile-image-cropper`} />,
-                    document.body
-                )
-            }
 
             {/* form */}
             <div className={`w-full min-h-screen main-section-padding-top ${isSubmitting && "pointer-events-none"}`}>
@@ -253,7 +253,7 @@ const EditProfile = () => {
                                 <label htmlFor="inputCoverImage" className={`w-14 aspect-square rounded-full duration-100 grid place-content-center cursor-pointer ${coverDragAndDrop.isDrag ? "bg-neutral-950/80" : "bg-neutral-950/60 hover:bg-neutral-900/60 hover:text-neutral-50 "}`}>
                                     <Upload className="w-5" />
                                 </label>
-                                <input id="inputCoverImage" type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" onChange={coverImageUpload.handleImageInput} />
+                                <input id="inputCoverImage" type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" onChange={(e) => handleInputImage(e, coverImageUpload.handleImageInput, coverImageUpload.setImageCroppedBlob, 3/1)} />
 
                                 {/* delete cover */}
                                 {
@@ -283,7 +283,7 @@ const EditProfile = () => {
                                 <Upload />
                             </label>
 
-                            <input type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" id="inputProfileImage" onChange={profileImageUpload.handleImageInput} />
+                            <input type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" id="inputProfileImage" onChange={(e) => handleInputImage(e, profileImageUpload.handleImageInput, profileImageUpload.setImageCroppedBlob, MEDIA_ASPECT_RATIO["1:1"])} />
                         </div>
                     </div>
 

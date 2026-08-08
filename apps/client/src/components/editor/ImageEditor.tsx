@@ -3,61 +3,52 @@ import { getCroppedImage } from "../../utils/cropImage.util";
 import Cropper from "react-easy-crop";
 import DotsLoader from "../loader/DotsLoader";
 import { MEDIA_ASPECT_RATIO } from "@odiano/shared";
-import type { FileEditData } from "../../types/file.type";
+import type { FileEditData, FileEditResult, ImageEditorOptions } from "../../types/file.type";
 
 type Payload = {
-    imageUrl: string,
-    aspectRatio: number,
-    allowAspectRatioChange?: boolean,
-    
-    setIsCropping: React.Dispatch<React.SetStateAction<boolean>>,
-    setCroppingTarget?: React.Dispatch<React.SetStateAction<number | null>>,
-    setImageCroppedBlob: (blob: Blob, editData : FileEditData) => void,
-
+    handleComplete: (result: FileEditResult) => void,
+    handleClose: (result : null) => void,
+    imageBlob: Blob | null,
     editData: FileEditData | undefined,
+    options: ImageEditorOptions,
 }
 
-export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = false, setCroppingTarget, setImageCroppedBlob, setIsCropping, editData }: Payload) => {
+const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose }: Payload) => {
     const [crop, setCrop] = useState(editData?.crop || { x: 0, y: 0 });
     const [zoom, setZoom] = useState(editData?.zoom || 1);
     const [imageCroppedAreaPixels, setImageCroppedAreaPixels] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [selectedAspectRatio, setSelectedAspectRatio] = useState<number>(editData?.aspectRatio || aspectRatio);
+    const [selectedAspectRatio, setSelectedAspectRatio] = useState<number>(editData?.aspectRatio || options.aspectRatio);
 
     const handleCrop = async () => {
-        if (!imageUrl) {
+        if (!imageBlob) {
             setIsLoading(false);
             return;
         }
 
         setIsLoading(true);
 
-        const blob = await getCroppedImage(imageUrl, imageCroppedAreaPixels);
+        const blob = await getCroppedImage(URL.createObjectURL(imageBlob), imageCroppedAreaPixels);
 
         if (!blob) {
             setIsLoading(false);
             return;
         }
 
-        setImageCroppedBlob(blob, {
-            aspectRatio : selectedAspectRatio,
-            zoom,
-            crop,
-        });
-
-        setIsCropping(false);
-        if (setCroppingTarget) {
-            setCroppingTarget(null);
-        }
+        handleComplete({
+            blob,
+            editData: {
+                aspectRatio: selectedAspectRatio,
+                zoom,
+                crop,
+            }
+        })
     }
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key == "Escape") {
-                setIsCropping(false);
-                if (setCroppingTarget) {
-                    setCroppingTarget(null);
-                }
+                handleClose(null);
                 setIsLoading(true);
             } else if (e.key == "Enter") {
                 handleCrop();
@@ -70,6 +61,8 @@ export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = f
             document.removeEventListener("keyup", handleKeyDown);
         }
     })
+
+    if(!imageBlob) return null;
 
     return (
         <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-black z-30">
@@ -106,7 +99,7 @@ export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = f
 
                 {/* aspect ratio */}
                 {
-                    allowAspectRatioChange &&
+                    options.allowAspectRatioChange &&
                     <div className="flex flex-col text-neutral-50">
                         <h1 className="font-bold">
                             Aspect ratio
@@ -137,9 +130,9 @@ export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = f
                         crop={crop}
                         zoom={zoom}
                         aspect={selectedAspectRatio}
-                        onCropChange={isLoading ? () => {} : setCrop}
-                        onZoomChange={isLoading ? () => {} : setZoom}
-                        image={imageUrl}
+                        onCropChange={isLoading ? () => { } : setCrop}
+                        onZoomChange={isLoading ? () => { } : setZoom}
+                        image={URL.createObjectURL(imageBlob)}
                         onCropComplete={(_, croppedAreaPixels) => {
                             setImageCroppedAreaPixels(croppedAreaPixels);
                         }}
@@ -169,3 +162,5 @@ export const ImageCropper = ({ imageUrl, aspectRatio, allowAspectRatioChange = f
         </div>
     )
 }
+
+export default ImageEditor;

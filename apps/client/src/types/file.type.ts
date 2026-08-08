@@ -11,6 +11,11 @@ export type FileEditData = {
     crop: { x: number, y: number },
 }
 
+export type FileEditResult = {
+    blob : Blob,
+    editData : FileEditData,
+}
+
 export type FileData = {
     id: string,
     url: string,
@@ -34,4 +39,9 @@ export type FileData = {
         id: string,
         message: string,
     },
+}
+
+export type ImageEditorOptions = {
+    aspectRatio: number,
+    allowAspectRatioChange?: boolean,
 }

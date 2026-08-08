@@ -1,15 +1,13 @@
 import Footer from "../components/auth/Footer";
-import { useEffect, useState } from "react";
-import { ImageCropper } from "../components/cropper/ImageCropper";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH } from "@odiano/shared";
+import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH, MEDIA_ASPECT_RATIO } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../components/loader/DotsLoader";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Check, RotateCcw, Upload, User, X } from "lucide-react";
 import useDragAndDrop from "../hooks/useDragAndDrop";
-import { createPortal } from 'react-dom';
 import { checkUsername, createUserProfile } from "../services/user.service";
 import useDebounce from "../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
@@ -19,8 +17,11 @@ import DateInputSection from "../components/input/DateInputSection";
 import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 import useFileUpload from "../hooks/useFileUpload";
 import { useNavigate } from "react-router-dom";
+import { useImageEditor } from "../providers/ImageEditorProvider";
 
 const OnBoarding = () => {
+    const imageEditor = useImageEditor();
+
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const dragAndDrop = useDragAndDrop();
@@ -113,8 +114,8 @@ const OnBoarding = () => {
                     throw new Error("Error went uploading the image");
                 }
 
-                dataToSubmit.profileImagePublicId = uploadedImageData.publicId;
-                dataToSubmit.profileImageUrl = uploadedImageData.url;
+                dataToSubmit.profileImagePublicId = uploadedImageData.uploaded?.publicId;
+                dataToSubmit.profileImageUrl = uploadedImageData.uploaded?.url;
             }
 
             // send data
@@ -134,6 +135,22 @@ const OnBoarding = () => {
         }
     }
 
+    // handle image editor
+    const handleInputImage = async (e : ChangeEvent<HTMLInputElement>) => {
+        fileUpload.handleImageInput(e);
+
+        const image = e.target?.files?.[0];
+        if (!image) return;
+
+        const editResult = await imageEditor.edit(image, undefined, {
+            aspectRatio: MEDIA_ASPECT_RATIO["1:1"],
+            allowAspectRatioChange: false,
+        });
+
+        if(!editResult) return;
+        fileUpload.setImageCroppedBlob(editResult.blob, editResult.editData, 0);
+    }
+
     return (
         <>
             {/* head */}
@@ -144,16 +161,6 @@ const OnBoarding = () => {
             />
 
             {/* body */}
-            {/* cropper */}
-            {
-                (fileUpload.isCropping && fileUpload.fileData && fileUpload.fileData.length > 0) && (
-                    createPortal(
-                        <ImageCropper aspect={1} imageUrl={fileUpload.fileData[0].url} setImageCroppedBlob={(blob : Blob) => fileUpload.setImageCroppedBlob(blob, 0)} setIsCropping={fileUpload.setIsCropping} />,
-                        document.body
-                    )
-                )
-            }
-
             {/* content */}
             <div className="bg-black min-h-screen">
                 <div className="w-full text-neutral-100" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
@@ -175,7 +182,7 @@ const OnBoarding = () => {
                                         </div>
                                     </div>
                                 </label>
-                                <input type="file" id="profile-input" className="hidden" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} onChange={fileUpload.handleImageInput}></input>
+                                <input type="file" id="profile-input" className="hidden" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} onChange={handleInputImage}></input>
                                 {
                                     fileUpload.fileData && fileUpload.fileData.length > 0 && fileUpload.fileData[0].error &&
                                     <p className="text-center text-red-500 mt-5">
