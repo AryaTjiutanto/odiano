@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { getCroppedImage } from "../../utils/cropImage.util";
 import Cropper from "react-easy-crop";
 import DotsLoader from "../loader/DotsLoader";
-import { MEDIA_ASPECT_RATIO } from "@odiano/shared";
+import { MEDIA_ASPECT_RATIO, type MediaAspectRatio } from "@odiano/shared";
 import type { FileEditData, FileEditResult, ImageEditorOptions } from "../../types/file.type";
 
 type Payload = {
     handleComplete: (result: FileEditResult) => void,
-    handleClose: (result : null) => void,
+    handleClose: (result: null) => void,
     imageBlob: Blob | null,
     editData: FileEditData | undefined,
     options: ImageEditorOptions,
@@ -18,14 +18,11 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
     const [zoom, setZoom] = useState(editData?.zoom || 1);
     const [imageCroppedAreaPixels, setImageCroppedAreaPixels] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [selectedAspectRatio, setSelectedAspectRatio] = useState<number>(editData?.aspectRatio || options.aspectRatio);
+    const [selectedAspectRatio, setSelectedAspectRatio] = useState<MediaAspectRatio>(editData?.aspectRatio || options.aspectRatio);
+
+    if (!imageBlob) return;
 
     const handleCrop = async () => {
-        if (!imageBlob) {
-            setIsLoading(false);
-            return;
-        }
-
         setIsLoading(true);
 
         const blob = await getCroppedImage(URL.createObjectURL(imageBlob), imageCroppedAreaPixels);
@@ -45,6 +42,22 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
         })
     }
 
+    const handleEditing = () => {
+        if(selectedAspectRatio == "original") {
+            handleComplete({
+                blob: imageBlob,
+                editData: {
+                    aspectRatio: selectedAspectRatio,
+                    zoom,
+                    crop,
+                }
+            })
+            return;
+        }
+
+        handleCrop();
+    }
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key == "Escape") {
@@ -62,11 +75,11 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
         }
     })
 
-    if(!imageBlob) return null;
+    if (!imageBlob) return null;
 
     return (
         <div className="w-full h-screen grid place-content-center py-20 fixed top-0 left-0 bottom-0 right-0 bg-black z-30">
-            {/* setting */}
+            {/* left setting */}
             <div className="absolute top-10 2xl:top-20 left-10 2xl:left-32 flex flex-col space-y-5">
                 {/* shortcut key */}
                 <div className="hidden lg:flex flex-col text-neutral-100 bg-neutral-950 p-5 border border-neutral-700 rounded-lg">
@@ -77,7 +90,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                         <div className="flex items-center space-x-1 xl:space-x-2">
                             <div className="w-48 xl:w-52">
                                 <span className="text-sm text-neutral-300">
-                                    Close the cropping process
+                                    Close the edit process
                                 </span>
                             </div>
                             <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
@@ -87,7 +100,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                         <div className="flex items-center space-x-1 xl:space-x-2">
                             <div className="w-48 xl:w-52">
                                 <span className="text-sm text-neutral-300">
-                                    Finish the cropping process
+                                    Finish the edit process
                                 </span>
                             </div>
                             <kbd className="h-5 px-2 bg-neutral-900 border border-neutral-500 rounded text-xs">
@@ -109,7 +122,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                                 Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => {
                                     return (
                                         <button type="button" onClick={() => setSelectedAspectRatio(value)} className="w-fit flex flex-col items-center space-x-1 xl:space-x-2 cursor-pointer group">
-                                            <div className={`w-20 border grid place-content-center rounded duration-100 ${value == selectedAspectRatio ? "border-sky-500 text-sky-500 border-2" : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"}`} style={{ aspectRatio: value }}>
+                                            <div className={`w-20 ${key == "original" && "h-12"} border grid place-content-center rounded duration-100 ${value == selectedAspectRatio ? "border-sky-500 text-sky-500 border-2" : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"}`} style={{ aspectRatio: key == "original" ? "auto" : value }}>
                                                 <span className="text-sm">
                                                     {key}
                                                 </span>
@@ -125,25 +138,32 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
 
             {/* cropper */}
             <div className="w-[75vw] md:w-[60vw] lg:w-[350px] 2xl:w-[500px] max-h-[70%]">
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-neutral-600">
-                    <Cropper
-                        crop={crop}
-                        zoom={zoom}
-                        aspect={selectedAspectRatio}
-                        onCropChange={isLoading ? () => { } : setCrop}
-                        onZoomChange={isLoading ? () => { } : setZoom}
-                        image={URL.createObjectURL(imageBlob)}
-                        onCropComplete={(_, croppedAreaPixels) => {
-                            setImageCroppedAreaPixels(croppedAreaPixels);
-                        }}
-                    />
+                {
+                    selectedAspectRatio == "original" ?
+                        <div className="relative max-h-[85vh] overflow-y-auto w-full overflow-hidden rounded-xl border border-neutral-600">
+                            <img src={URL.createObjectURL(imageBlob)} className="w-full h-full" />
+                        </div>
+                        :
+                        <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-neutral-600">
+                            <Cropper
+                                crop={crop}
+                                zoom={zoom}
+                                aspect={selectedAspectRatio}
+                                onCropChange={isLoading ? () => { } : setCrop}
+                                onZoomChange={isLoading ? () => { } : setZoom}
+                                image={URL.createObjectURL(imageBlob)}
+                                onCropComplete={(_, croppedAreaPixels) => {
+                                    setImageCroppedAreaPixels(croppedAreaPixels);
+                                }}
+                            />
 
-                    {isLoading && (
-                        <div className="absolute inset-0 z-10 cursor-not-allowed" />
-                    )}
-                </div>
+                            {isLoading && (
+                                <div className="absolute inset-0 z-10 cursor-not-allowed" />
+                            )}
+                        </div>
+                }
                 <button
-                    onClick={handleCrop}
+                    onClick={handleEditing}
                     className={`w-full h-12 bg-white text-neutral-800 rounded-lg duration-150 mt-10 flex items-center justify-center relative ${isLoading ? "cursor-progress" : "hover:bg-neutral-200 cursor-pointer"}`}
                     disabled={isLoading}
                 >

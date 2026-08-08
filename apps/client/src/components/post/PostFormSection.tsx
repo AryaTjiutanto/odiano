@@ -141,7 +141,7 @@ const PostFormSection = () => {
         if(!blob) return;
 
         const result = await imageEditor.edit(blob, editData, {
-            aspectRatio: MEDIA_ASPECT_RATIO["7:5"],
+            aspectRatio: MEDIA_ASPECT_RATIO["original"],
             allowAspectRatioChange: true,
         });
 

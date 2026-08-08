@@ -1,4 +1,4 @@
-import type { AllowedMediaTypes } from "@odiano/shared"
+import type { AllowedMediaTypes, MediaAspectRatio } from "@odiano/shared"
 
 export type UploadedFileData = {
     publicId: string,
@@ -6,7 +6,7 @@ export type UploadedFileData = {
 }
 
 export type FileEditData = {
-    aspectRatio: number,
+    aspectRatio: MediaAspectRatio,
     zoom: number,
     crop: { x: number, y: number },
 }
@@ -42,6 +42,6 @@ export type FileData = {
 }
 
 export type ImageEditorOptions = {
-    aspectRatio: number,
+    aspectRatio: MediaAspectRatio,
     allowAspectRatioChange?: boolean,
 }

@@ -1,5 +1,5 @@
 import { UserSummaryDTO } from "../user"
-import { AllowedMediaProviders, AllowedMediaTypes, PostVisibilities } from "./post.const"
+import { AllowedMediaProviders, AllowedMediaTypes, MediaAspectRatio, PostVisibilities } from "./post.const"
 
 export type MediaSource = {
     url: string,
@@ -7,7 +7,7 @@ export type MediaSource = {
 }
 
 export type PostMedia = {
-    aspectRatio: number,
+    aspectRatio: MediaAspectRatio,
     provider: AllowedMediaProviders,
     type: AllowedMediaTypes
     order: number,

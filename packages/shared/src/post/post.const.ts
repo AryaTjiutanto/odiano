@@ -38,6 +38,7 @@ export type AllowedMediaTypes = typeof ALLOWED_MEDIA_TYPES[keyof typeof ALLOWED_
 
 // media aspect ratio
 export const MEDIA_ASPECT_RATIO = {
+    "original" : "original",
     "1:1": 1,
     "4:5": 4 / 5,
     "16:9": 16 / 9,
