@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ChangeEvent } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, createPostSchema, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, type CreatePostSchema, type PostMedia, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +43,7 @@ const PostFormSection = () => {
         setFocus,
         setError,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors, isSubmitting, isDirty },
     } = useForm<CreatePostSchema>({
         resolver: zodResolver(createPostSchema),
         mode: "onTouched",
@@ -60,10 +60,10 @@ const PostFormSection = () => {
     const onSubmit: SubmitHandler<CreatePostSchema> = async (data) => {
         try {
             // upload media
-            let media : PostMedia[] | null = null;
+            let media: PostMedia[] | null = null;
             if (fileUpload.fileData && fileUpload.fileData.length > 0) {
                 const uploadedFile = await fileUpload.uploadFile();
-                if(!Array.isArray(uploadedFile)) {
+                if (!Array.isArray(uploadedFile)) {
                     throw new Error("Something went wrong");
                 }
 
@@ -90,7 +90,7 @@ const PostFormSection = () => {
                 ...data,
                 media,
             }
-            
+
             const response = await api.post<SuccessResponseData<PostPublicId>>("/post/create", payload);
 
             if (!response.data) {
@@ -111,17 +111,25 @@ const PostFormSection = () => {
         handleCloseForm("You will not be able to recover this post if you cancel it.");
     }
 
-    const handleCloseForm = async (description : string = "You will not be able to recover this post if you cancel it.") => {
-        if((!fileUpload.fileData || fileUpload.fileData.length == 0 ) && watch("content")?.length <= 0) {
+    const handleCloseForm = async (description: string = "You will not be able to recover this post if you cancel it.") => {
+        if(isSubmitting) return;
+
+        if ((!fileUpload.fileData || fileUpload.fileData.length == 0 || isCreated) && watch("content")?.length <= 0) {
             postForm.close();
             return;
         }
 
         const confirmationResult = await confirmationModal.confirm("Are you sure?", description, "Yes, I'm sure", "Cancel");
 
-        if(confirmationResult) {
+        if (confirmationResult) {
             postForm.close();
         }
+    }
+
+    const handleImageInput = (e: ChangeEvent<HTMLInputElement>) => {
+        if (isSubmitting) return;
+
+        fileUpload.handleImageInput(e);
     }
 
     // handle post setting
@@ -138,22 +146,45 @@ const PostFormSection = () => {
 
     // edit image
     const handleEditImage = async (blob: Blob | undefined | null, editData: FileEditData | undefined, fileIndex: number) => {
-        if(!blob) return;
+        if (!blob || isSubmitting) return;
 
         const result = await imageEditor.edit(blob, editData, {
             aspectRatio: MEDIA_ASPECT_RATIO["original"],
             allowAspectRatioChange: true,
         });
 
-        if(!result) return;
+        if (!result) return;
 
         fileUpload.setImageCroppedBlob(result?.blob || blob, result?.editData, fileIndex);
+    }
+
+    const handleRemoveFile = (index : number) => {
+        if (isSubmitting) return;
+
+        fileUpload.removeFile(index);
     }
 
     // setting
     useEffect(() => {
         setFocus("content");
     }, [setFocus])
+
+    // unload effect
+    useEffect(() => {
+        if(!isDirty || !fileUpload.fileData || fileUpload.fileData.length == 0) return;
+
+        const handleBeforeUnload = (e : BeforeUnloadEvent) => {
+            e.preventDefault();
+            return "";
+        }
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+
+    }, [fileUpload.fileData, isDirty])
 
     return (
         <>
@@ -197,7 +228,7 @@ const PostFormSection = () => {
                                                                     <Crop size={18} />
                                                                 </button>
                                                             }
-                                                            <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => fileUpload.removeFile(index)}>
+                                                            <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => handleRemoveFile(index)}>
                                                                 <X size={20} />
                                                             </button>
                                                         </div>
@@ -208,7 +239,7 @@ const PostFormSection = () => {
                                     }
                                     {
                                         fileUpload.isMediaNotFull() &&
-                                        <label htmlFor="media-input" className="w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400">
+                                        <label htmlFor="media-input" className={`w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400 ${isSubmitting && "pointer-events-none cursor-not-allowed"}`} style={{ aspectRatio : MEDIA_ASPECT_RATIO["7:5"] }}>
                                             <div className="w-10 h-10 bg-neutral-900 grid place-content-center rounded-full">
                                                 <Plus />
                                             </div>
@@ -223,7 +254,7 @@ const PostFormSection = () => {
                                     </label>
                                 </div>
                         }
-                        <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={fileUpload.handleImageInput} />
+                        <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={handleImageInput} />
 
                         {/* text input */}
                         <div className="w-full">
@@ -259,9 +290,12 @@ const PostFormSection = () => {
                             <button className={`w-full sm:w-fit px-11 h-14 sm:h-11 border border-white bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-transparent hover:text-neutral-100"} duration-100 cursor-pointer rounded`} disabled={isSubmitting}>
                                 {isSubmitting ? <DotsLoader /> : "Post"}
                             </button>
-                            <button type="button" onClick={handleCancel} className="w-full sm:w-fit px-8 h-14 sm:h-11 border border-white hover:bg-white hover:text-neutral-800 duration-100 cursor-pointer rounded">
-                                Cancel
-                            </button>
+                            {
+                                !isSubmitting &&
+                                <button type="button" onClick={handleCancel} className="w-full sm:w-fit px-8 h-14 sm:h-11 border border-white hover:bg-white hover:text-neutral-800 duration-100 cursor-pointer rounded">
+                                    Cancel
+                                </button>
+                            }
                         </div>
                     </form>
 

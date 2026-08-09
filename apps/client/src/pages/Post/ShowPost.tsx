@@ -22,6 +22,7 @@ import { createLike, deleteLike } from "../../services/post.service";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import FollowingButton from "../../components/social/FollowingButton";
+import PostMedia from "../../components/post/PostMedia";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -229,7 +230,7 @@ const ShowPost = () => {
                                             </div>
                                             :
                                             <>
-                                                <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing? "w-28" : "w-20"}`}>
+                                                <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing ? "w-28" : "w-20"}`}>
                                                     <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={isFollowingQuery.data?.isFollowing} userId={postQuery.data.author?.id} />
                                                 </div>
                                             </>
@@ -242,10 +243,13 @@ const ShowPost = () => {
                         </div>
                     </div>
                     {/* content */}
-                    <div className="mt-6 whitespace-pre-wrap">
-                        {
-                            postQuery.data?.content ?? ""
-                        }
+                    <div className="mt-6 gap-5">
+                        <PostMedia media={postQuery.data?.media} />
+                        <div className="whitespace-pre-wrap">
+                            {
+                                postQuery.data?.content ?? ""
+                            }
+                        </div>
                     </div>
 
                     {/* Post information */}

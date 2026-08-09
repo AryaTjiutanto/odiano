@@ -13,6 +13,7 @@ import { createLike, deleteLike } from "../../services/post.service";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { useAppSelector } from "../../hooks/useRedux";
 import PostMenu from "../floating-menu/PostMenu";
+import PostMedia from "./PostMedia";
 
 type Props = {
     data: PostDTO,
@@ -101,26 +102,7 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
                 </div>
             </div>
             <div className="w-full mt-8 space-y-5">
-                {
-                    (data.media && data.media?.length > 0) &&
-                    <div className="flex space-x-3 mt-8">
-                        {
-                            data.media.map((media, index) => {
-                                return (
-                                    <div key={index} className="w-full relative rounded-xl overflow-hidden" style={{ aspectRatio : media.aspectRatio }}>
-                                        {media.type == "image" &&
-                                            <img src={media.source.url} className="h-full w-full" />
-                                        }
-                                        {
-                                            media.type == "video" &&
-                                            <video src={media.source.url} className="h-full w-full" />
-                                        }
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                }
+                <PostMedia media={data.media} />
                 <p className="text-sm whitespace-pre-wrap">
                     {data.content ?? ""}
                 </p>

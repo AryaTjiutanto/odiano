@@ -27,7 +27,7 @@
 
 @layer components {
   .default-input-text-behaviour {
-    @apply focus:outline-none focus:ring-0 active:outline-none active:ring-0
+    @apply focus: outline-none focus:ring-0 active:outline-none active:ring-0
   }
 
   .cover-image-aspect {
@@ -35,6 +35,31 @@
   }
 
   .main-section-padding-top {
-    @apply pt-6 xl:pt-8
+    @apply pt-6 xl: pt-8
   }
+}
+
+.post-media-swiper .swiper-slide {
+  width: fit-content !important;
+}
+
+.post-media-swiper .swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  opacity: 0.5;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  -webkit-border-radius: 9999px;
+  -moz-border-radius: 9999px;
+  -ms-border-radius: 9999px;
+  -o-border-radius: 9999px;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+}
+
+.post-media-swiper .swiper-pagination-bullet-active {
+  width: 20px;
+  opacity: 1;
 }
