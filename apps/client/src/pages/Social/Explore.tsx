@@ -1,3 +1,5 @@
+import SocialHeader from "../../components/social/SocialHeader";
+
 const Explore = () => {
     return (
         <>
@@ -9,7 +11,7 @@ const Explore = () => {
             />
 
             {/* body */}
-            
+            <SocialHeader mode="search"/>
         </>
     )
 }

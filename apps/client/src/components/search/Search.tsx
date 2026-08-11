@@ -9,6 +9,7 @@ import { getSearchResult } from "../../services/search.service";
 
 type Props = {
     searchIconPosition? : "left" | "right",
+    width? : "full" | "small",
 }
 
 // search overlay - lazy loading
@@ -17,7 +18,7 @@ const SearchOverlay = lazy(() =>
 )
 
 
-const SearchBar = ({searchIconPosition = "left"} : Props) => {
+const SearchBar = ({searchIconPosition = "left", width = "small"} : Props) => {
     const [query, setQuery] = useState<string>("");
     const debounceValue = useDebounce<string>(query);
 
@@ -55,7 +56,7 @@ const SearchBar = ({searchIconPosition = "left"} : Props) => {
             </Suspense>
 
             {/* search input */}
-            <div className={`${isSearchPanelOpen ? 'sm:w-56 md:w-70 lg:w-82' : 'sm:w-50 md:w-64'} h-fit relative duration-100`} ref={refs.setReference} {...getReferenceProps()}>
+            <div className={`${width == "full" ? "w-full" : isSearchPanelOpen ? 'sm:w-56 md:w-70 lg:w-82' : 'sm:w-50 md:w-64'} h-fit relative duration-100`} ref={refs.setReference} {...getReferenceProps()}>
                 <div className={`w-full duration-100 h-11 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center ${searchIconPosition == "right" && "flex-row-reverse"} pr-2`}>
                     <button className="w-10 h-full grid place-content-center text-neutral-300 cursor-pointer">
                         <Search className="w-4" />
