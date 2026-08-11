@@ -8,11 +8,8 @@ import { postKeys } from "../../queries/postKeys";
 import { getPosts } from "../../services/post.service";
 import HomeHeader from "../../components/social/HomeHeader";
 import CreatePostFloatingButton from "../../components/social/CreatePostFloatingButton";
-import { useAppSelector } from "../../hooks/useRedux";
-import { Link } from "react-router-dom";
 
 const Homepage = () => {
-    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const postsQueryKey = postKeys.all;
 
     const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({

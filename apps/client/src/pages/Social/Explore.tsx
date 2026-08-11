@@ -1,18 +1,17 @@
-import NotFound from "../../components/error/NotFound";
-
-const NotFoundPage = () => {
+const Explore = () => {
     return (
         <>
             {/* head */}
-            <title>Not Found - Odiano</title>
+            <title>Explore - Odiano</title>
             <meta
                 name="description"
                 content="odiano with friends, share posts, and explore communities."
             />
 
-            <NotFound/>
+            {/* body */}
+            
         </>
     )
 }
 
-export default NotFoundPage;
+export default Explore;

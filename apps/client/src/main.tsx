@@ -16,7 +16,7 @@ import SocialLayout from './layouts/SocialLayout.tsx'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createIDBPersister } from './libs/persister.ts'
 import ShowPost from './pages/Post/ShowPost.tsx'
-import NotFound from './pages/Error/NotFound.tsx'
+import NotFound from './components/error/NotFound.tsx'
 import NavigationTracker from './components/common/NavigationTracker.tsx'
 import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
@@ -33,6 +33,8 @@ import ScrollToTop from './router/ScrollToTop.tsx'
 import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
 import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
+import Explore from './pages/Social/Explore.tsx'
+import NotFoundPage from './pages/error/NotFound.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -64,6 +66,7 @@ createRoot(document.getElementById('root')!).render(
                         <Route element={<CreatePostLayout />}>
                           <Route element={<NotificationSectionLayout />}>
                             <Route element={<SocialLayout />}>
+                              <Route path='/explore' element={<Explore />} />
                               <Route path='/' element={<Homepage />} />
 
                               {/* post */}
@@ -96,7 +99,7 @@ createRoot(document.getElementById('root')!).render(
                           <Route path='/onboarding' element={<OnBoarding />} />
                         </Route>
                         {/* not fond */}
-                        <Route path='*' element={<NotFound />} />
+                        <Route path='*' element={<NotFoundPage />} />
                       </Route>
                     </Route>
                   </Routes>

@@ -15,7 +15,7 @@ import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/profile/Profile";
 import { useAppSelector } from "../../hooks/useRedux";
 import { postKeys } from "../../queries/postKeys";
-import NotFound from "../Error/NotFound";
+import NotFound from "../../components/error/NotFound";
 import { userKeys } from "../../queries/userKeys";
 import { applyLikeToInfinitePostCache, applyLikeToPostCache, removeLikeFromInfinitePostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
 import { createLike, deleteLike } from "../../services/post.service";

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import ConnectLogo from "../../assets/img/logo/odiano-gradient.svg";
-import { Bell, Home, Pencil, User } from "lucide-react";
+import { Bell, Home, Pencil, Search, User } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import UserMenu from "./UserMenu";
 import { usePostForm } from "../../providers/PostFormProvider";
@@ -47,16 +47,14 @@ const LeftSidebar = () => {
                                             </span>
                                         </Link>
                                     </li>
-                                    {/* comming soon */}
-                                    {/* <li className="w-full">
-                                <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
-                                    <Search />
-                                    <span>
-                                        Explore
-                                    </span>
-                                </Link>
-                            </li> */}
-
+                                    <li className="w-full">
+                                        <Link to={"/explore"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes("explorer/") && "text-white font-semibold"} duration-100`}>
+                                            <Search className="size-7 w-fit xl:size-auto" />
+                                            <span className="hidden xl:inline-block">
+                                                Explore
+                                            </span>
+                                        </Link>
+                                    </li>
                                     <li className="w-full">
                                         <button onClick={handleOpenNotificationSection} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl cursor-pointer">
                                             <Bell className="size-7 xl:size-auto" />
