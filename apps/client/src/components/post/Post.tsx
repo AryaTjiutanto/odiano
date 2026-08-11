@@ -14,6 +14,7 @@ import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper
 import { useAppSelector } from "../../hooks/useRedux";
 import PostMenu from "../floating-menu/PostMenu";
 import PostMedia from "./PostMedia";
+import PostContent from "./PostContent";
 
 type Props = {
     data: PostDTO,
@@ -103,9 +104,7 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
             </div>
             <div className="w-full mt-8 space-y-5">
                 <PostMedia media={data.media} />
-                <p className="text-sm whitespace-pre-wrap">
-                    {data.content ?? ""}
-                </p>
+                <PostContent content={data.content} />
             </div>
             <div className="mt-8 flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-4">

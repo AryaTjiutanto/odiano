@@ -15,6 +15,7 @@ import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_ALLOWED_VIDEO_TYPES } from "../../
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 import { useImageEditor } from "../../providers/ImageEditorProvider";
 import type { FileEditData } from "../../types/file.type";
+import PostContentEditor from "./PostContentEditor";
 
 export const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
@@ -42,6 +43,7 @@ const PostFormSection = () => {
         watch,
         setFocus,
         setError,
+        setValue,
         reset,
         formState: { errors, isSubmitting, isDirty },
     } = useForm<CreatePostSchema>({
@@ -112,7 +114,7 @@ const PostFormSection = () => {
     }
 
     const handleCloseForm = async (description: string = "You will not be able to recover this post if you cancel it.") => {
-        if(isSubmitting) return;
+        if (isSubmitting) return;
 
         if ((!fileUpload.fileData || fileUpload.fileData.length == 0 || isCreated) && watch("content")?.length <= 0) {
             postForm.close();
@@ -158,7 +160,7 @@ const PostFormSection = () => {
         fileUpload.setImageCroppedBlob(result?.blob || blob, result?.editData, fileIndex);
     }
 
-    const handleRemoveFile = (index : number) => {
+    const handleRemoveFile = (index: number) => {
         if (isSubmitting) return;
 
         fileUpload.removeFile(index);
@@ -171,9 +173,9 @@ const PostFormSection = () => {
 
     // unload effect
     useEffect(() => {
-        if(!isDirty || !fileUpload.fileData || fileUpload.fileData.length == 0) return;
+        if (!isDirty || !fileUpload.fileData || fileUpload.fileData.length == 0) return;
 
-        const handleBeforeUnload = (e : BeforeUnloadEvent) => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             e.preventDefault();
             return "";
         }
@@ -213,12 +215,12 @@ const PostFormSection = () => {
                                                     <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
                                                         {file.type == "image" &&
                                                             <>
-                                                                <img src={fileUpload.getFileDisplayUrl(index)} alt="file" className="h-full w-fit" />
+                                                                <img src={fileUpload.fileData?.[index]?.url} alt="file" className="h-full w-fit" />
                                                             </>
                                                         }
                                                         {
                                                             file.type == "video" &&
-                                                            <video src={fileUpload.getFileDisplayUrl(index)} className="h-full w-fit" />
+                                                            <video src={fileUpload.fileData?.[index]?.url} className="h-full w-fit" />
                                                         }
 
                                                         <div className="absolute top-1 right-1 flex items-center space-x-1">
@@ -239,7 +241,7 @@ const PostFormSection = () => {
                                     }
                                     {
                                         fileUpload.isMediaNotFull() &&
-                                        <label htmlFor="media-input" className={`w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400 ${isSubmitting && "pointer-events-none cursor-not-allowed"}`} style={{ aspectRatio : MEDIA_ASPECT_RATIO["7:5"] }}>
+                                        <label htmlFor="media-input" className={`w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400 ${isSubmitting && "pointer-events-none cursor-not-allowed"}`} style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
                                             <div className="w-10 h-10 bg-neutral-900 grid place-content-center rounded-full">
                                                 <Plus />
                                             </div>
@@ -257,18 +259,7 @@ const PostFormSection = () => {
                         <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={handleImageInput} />
 
                         {/* text input */}
-                        <div className="w-full">
-                            <div className="w-full relative">
-                                <textarea className={`mt-4 w-full h-64 sm:h-40 border duration-100 rounded-xl py-4 px-5 default-input-text-behaviour ${errors.content ? "border-red-500 text-red-500" : "border-neutral-600 text-neutral-300"}`} placeholder="What's on your mind?" {...register("content")}></textarea>
-                                <div className={`absolute bottom-3 right-3 text-sm ${watch("content")?.length > POST_CONTENT_LENGTH.MAX ? 'text-red-500' : 'text-neutral-100'}`}>
-                                    {watch("content")?.length}/{POST_CONTENT_LENGTH.MAX}
-                                </div>
-                            </div>
-                            {
-                                errors.content &&
-                                <p className="mt-1 text-xs text-red-500">{errors.content.message}</p>
-                            }
-                        </div>
+                        <PostContentEditor errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content)} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags)} />
 
                         {/* commming soon */}
                         {/* <div className="flex flex-col space-y-2 mt-3">

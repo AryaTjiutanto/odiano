@@ -20,6 +20,7 @@ export type Post = {
     media: PostMedia[] | null,
     commentCount : number,
     likeCount : number,
+    hashtags? : string[] | null,
 
     // setting
     visibility: PostVisibilities,

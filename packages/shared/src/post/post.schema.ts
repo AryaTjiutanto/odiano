@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, MEDIA_ASPECT_RATIO, MEDIA_HEIGHT, MEDIA_WIDTH, POST_CONTENT_LENGTH, POST_MAX_MEDIA, POST_VISIBILITIES } from "./post.const";
+import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, POST_MAX_TAGS, POST_VISIBILITIES } from "./post.const";
 import { MediaSource, Post, PostMedia } from "./post.type";
 
 const mediaSourceSchema = z.object({
@@ -31,7 +31,6 @@ const mediaSchema = z.object({
     source : mediaSourceSchema,
 }) satisfies z.ZodType<PostMedia>;
 
-
 // base create post schema
 export const createPostSchema = z.object({
     content: z.string("Invalid format")
@@ -39,6 +38,10 @@ export const createPostSchema = z.object({
             POST_CONTENT_LENGTH.MAX,
             `Content maximum ${POST_CONTENT_LENGTH.MAX} characters`
         ),
+    hashtags : z.array(z.string())
+        .max(POST_MAX_TAGS, `Maximum ${POST_MAX_TAGS} hashtags allowed`)
+        .nullable()
+        .optional(),
 
     media: z.array(mediaSchema)
         .max(

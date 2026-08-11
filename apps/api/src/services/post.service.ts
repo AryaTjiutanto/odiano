@@ -12,6 +12,7 @@ import { UnauthorizedError } from "../errors/unauthorized.error";
 import { nanoid } from "nanoid";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import logger from "../libs/log/logger";
+import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
 
 export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated
@@ -93,6 +94,12 @@ export const create = async (
 
     try {
         const result = await session.withTransaction(async () => {
+            // create hashtag
+            let hashtags: string[] | null = null;
+            if (data.hashtags) {
+                hashtags = await bulkCreateOrUpdateHashtag(data.hashtags, session);
+            }
+
             // Create post
             const [post] = await Post.create(
                 [
@@ -103,6 +110,7 @@ export const create = async (
                         hideLikeAndViewCount: data.hideLikeAndViewCount,
                         turnOffCommenting: data.turnOffCommenting,
                         isArchive: data.isArchive,
+                        hashtags : hashtags,
                     },
                 ],
                 { session }

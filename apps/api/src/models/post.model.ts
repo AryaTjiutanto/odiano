@@ -64,6 +64,10 @@ const postSchema = new mongoose.Schema<PostSchema>({
         type: String,
         required: false,
     },
+    hashtags: {
+        type: [String],
+        required: false,
+    },
     hideLikeAndViewCount: {
         type: Boolean,
         required: true,

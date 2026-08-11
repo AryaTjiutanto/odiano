@@ -23,6 +23,7 @@ import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import FollowingButton from "../../components/social/FollowingButton";
 import PostMedia from "../../components/post/PostMedia";
+import PostContent from "../../components/post/PostContent";
 
 type IsFollowingQueryData = {
     isFollowing: boolean
@@ -245,10 +246,8 @@ const ShowPost = () => {
                     {/* content */}
                     <div className="mt-6 gap-5">
                         <PostMedia media={postQuery.data?.media} />
-                        <div className="whitespace-pre-wrap">
-                            {
-                                postQuery.data?.content ?? ""
-                            }
+                        <div className="mt-4">
+                            <PostContent content={postQuery.data?.content ?? ""} />
                         </div>
                     </div>
 

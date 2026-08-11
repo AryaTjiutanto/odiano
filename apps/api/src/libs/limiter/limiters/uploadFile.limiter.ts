@@ -7,7 +7,7 @@ export const shortUploadFileLimiter = createLimiter({
 })
 
 export const longUploadFileLimiter = createLimiter({
-    duration : 1 * 24 * 60 * 60 * 1000,
+    duration : 1 * 24 * 60 * 60,
     keyPrefix : "upload:File:1d:",
     points : 40
 })
