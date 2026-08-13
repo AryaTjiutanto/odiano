@@ -4,7 +4,6 @@ import { successResponseData } from "../utils/response.util";
 import { ERROR_RESPONSE_CODE, SearchHistoryDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { AppError } from "../errors/appError.error";
-import logger from "../libs/log/logger";
 
 export const get = async (req: Request, res: Response, next: NextFunction) => {
     const currentUserId = req.userId;

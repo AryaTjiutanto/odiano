@@ -1,19 +1,19 @@
-import { SEARCH_TYPES, type SearchDTO, type SearchHistoryDTO, type SuccessResponseData } from "@odiano/shared";
-import SearchHistory from "./SearchHistory";
+import { type SearchSuggestionDTO, type SearchHistoryDTO, type SuccessResponseData, type UserSummaryDTO } from "@odiano/shared";
 import SearchSkeletonLoading from "./SearchSkeletonLoading";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { api } from "../../libs/api";
 import React, { forwardRef } from "react";
-import SearchResult from "./searchResult/SearchResult";
 import { useAppSelector } from "../../hooks/useRedux";
 import { deleteAllSearchHistory } from "../../services/searchHistory.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { notify } from "../../helpers/notification/notify.helper";
+import SearchHistory from "./searchResult/SearchHistory";
+import SearchResult from "./searchResult/SearchResult";
 
 type Props = {
-    searchQueryData: SearchDTO | null | undefined,
+    searchQueryData: SearchSuggestionDTO[] | null | undefined,
     isSearchPanelOpen: boolean,
     isSearchQueryPending: boolean,
     floatingProps: React.HTMLProps<HTMLDivElement>
@@ -46,7 +46,7 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
     })
 
     const isLoading = (isSearchQueryPending && query.length > 0) || searchHistoryQuery.isPending;
-    const isSearchResultEmpty = !(searchQueryData && searchQueryData.users.length > 0);
+    const isSearchResultEmpty = !(searchQueryData && searchQueryData.length > 0);
     const isSearchHistoryEmpty = !searchHistoryQuery.data || searchHistoryQuery.data.length == 0;
 
     // delete all history
@@ -110,8 +110,8 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
                         {/* search result */}
                         {
                             (query.length > 0 && !isSearchResultEmpty) &&
-                            searchQueryData?.users.map((user) => (
-                                <SearchResult data={user} type={SEARCH_TYPES.USER} />
+                            searchQueryData?.map((data : SearchSuggestionDTO) => (
+                                <SearchResult data={data} />
                             ))
                         }
                         {

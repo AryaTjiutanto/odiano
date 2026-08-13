@@ -1,11 +1,11 @@
 import { type SearchHistoryDTO } from "@odiano/shared"
-import SearchResult from "./searchResult/SearchResult"
+import SearchResult from "./SearchResult"
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { searchKeys } from "../../queries/searchKeys";
-import { deleteSearchHistory } from "../../services/searchHistory.service";
-import { notify } from "../../helpers/notification/notify.helper";
-import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
+import { searchKeys } from "../../../queries/searchKeys";
+import { deleteSearchHistory } from "../../../services/searchHistory.service";
+import { notify } from "../../../helpers/notification/notify.helper";
+import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 
 type Props = {
     data: SearchHistoryDTO,
@@ -41,11 +41,11 @@ const SearchHistory = ({ data }: Props) => {
         }
     }
 
-    if(!data.targetData) return null;
+    if(!data.target) return null;
 
     return (
         <div className="relative group">
-            <SearchResult data={data.targetData} type={data.type} />
+            <SearchResult data={data.target} />
 
             {/* delete button */}
             <button className="absolute top-0 bottom-0 my-auto right-5 w-10 h-10 grid place-content-center rounded-full hover:bg-sky-500/10 hover:text-sky-500 duration-100 cursor-pointer" onClick={deleteSearchHistoryHandler}>

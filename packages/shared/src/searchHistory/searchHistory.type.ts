@@ -1,12 +1,12 @@
-import { SearchTypes } from "../search/search.const"
-import { UserSummaryDTO } from "../user"
+import { HashTagSearchDTO, UserSearchDTO } from "../search/search.type";
+
+export type SearchHistoryTarget = UserSearchDTO | HashTagSearchDTO;
 
 export type SearchHistoryDTO = {
     id : string,
-    targetData ? : UserSummaryDTO,
     targetId : String | null | undefined,
-    type : SearchTypes,
     user : String,
     keyword : String | null,
     updatedAt : Date,
+    target? : SearchHistoryTarget,
 }

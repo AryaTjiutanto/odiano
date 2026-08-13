@@ -48,7 +48,6 @@ const SearchBar = ({searchIconPosition = "left", width = "small"} : Props) => {
 
     const { getFloatingProps, getReferenceProps } = useInteractions([dismiss, focus])
 
-
     return (
         <>
             <Suspense>

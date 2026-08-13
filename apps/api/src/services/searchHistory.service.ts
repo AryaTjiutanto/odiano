@@ -7,6 +7,9 @@ import { toUserSummaryDTO } from "../mappers/user.mapper";
 import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper";
 import { SearchHistory } from "../models/searchHistory.model";
 import mongoose from "mongoose";
+import { HashTagSummaryQuery } from "../types/hashtag.type";
+import HashTag from "../models/hashtag.model";
+import { toHashTagSummaryDTO } from "../mappers/hashtag.mapper";
 
 export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
     const searchHistories = await SearchHistory.find({user : currentUserId})
@@ -16,17 +19,33 @@ export const getSearchHistory = async (currentUserId : string) : Promise<SearchH
 
     // get user summary
     const userHistories = searchHistories.filter((search) => search.type == SEARCH_TYPES.USER);
-    const userIds = userHistories.map(h => h.targetId);
-    const userSummaries = await User.find({ _id : mongoose.trusted({
+    const userIds = userHistories.filter((h) => h.type == SEARCH_TYPES.USER)
+        .map(h => h.targetId);
+    const userSummaries =  userIds.length > 0 ? await User.find({ _id : mongoose.trusted({
         $in : userIds
     }) })
     .select("_id name username profileImage updatedAt")
-    .lean<UserSummaryQuery[]>();
+    .lean<UserSummaryQuery[]>() : [];
     
     const usersMap = new Map(userSummaries.map((user) => [user._id.toString(), toUserSummaryDTO(user)]));
+
+    // get hashtag summary
+    const hashtagHistories = searchHistories.filter((search) => search.type == SEARCH_TYPES.HASHTAG);
+    const hashtagIds = hashtagHistories.filter((h) => h.type == SEARCH_TYPES.HASHTAG)
+        .map(h => h.targetId);
+    const hashtagSummaries = hashtagIds.length > 0 ? await HashTag.find({ _id : mongoose.trusted({
+        $in : hashtagIds
+    }) })
+    .select("_id name totalPost")
+    .lean<HashTagSummaryQuery[]>() : [];
+
+    const hashtagsMap = new Map(hashtagSummaries.map((hashtag) => [hashtag._id.toString(), toHashTagSummaryDTO(hashtag)]));
     
     // organize data
-    const searchHistoriesDTO = searchHistories.map((history) => toSearchHistoryDTO(history, usersMap));
+    const searchHistoriesDTO = searchHistories.map((history) => toSearchHistoryDTO(history, {
+        users : usersMap,
+        hashtags : hashtagsMap,
+    }));
 
     return searchHistoriesDTO
 }
@@ -39,7 +58,6 @@ export const recordHistory = async (currentUserId : string, type : SearchTypes, 
             ...(keyword ? [{keyword}] : []),
         ]
     }).select("_id updatedAt");
-
     
     // create searchHistory
     if(!record) {
