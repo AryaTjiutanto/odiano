@@ -16,18 +16,18 @@ const SearchHistory = ({ data }: Props) => {
 
     // delete single history
     const historyMutation = useMutation({
-        mutationFn : deleteSearchHistory,
+        mutationFn: deleteSearchHistory,
 
-        onMutate : () => setQueryDataHandler<SearchHistoryDTO[]>(searchKeys.history, (oldData) => {
+        onMutate: () => setQueryDataHandler<SearchHistoryDTO[]>(searchKeys.history, (oldData) => {
             return [
                 ...oldData.filter((old) => old.id !== data.id)
             ]
         }),
 
-        onError : () => setQueryDataHandler<SearchHistoryDTO[]>(searchKeys.history, (oldData) => {
+        onError: () => setQueryDataHandler<SearchHistoryDTO[]>(searchKeys.history, (oldData) => {
             const newData = [...oldData, data];
 
-            newData.sort((a, b) => new Date(b.updatedAt).getTime() - new Date (a.updatedAt).getTime());
+            newData.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
             return newData;
         })
@@ -37,11 +37,11 @@ const SearchHistory = ({ data }: Props) => {
         try {
             await historyMutation.mutateAsync(data.id);
         } catch {
-            notify.error({title : "Fail", description : "Something went wrong"});
+            notify.error({ title: "Fail", description: "Something went wrong" });
         }
     }
 
-    if(!data.target) return null;
+    if (!data.target) return null;
 
     return (
         <div className="relative group">
@@ -49,7 +49,7 @@ const SearchHistory = ({ data }: Props) => {
 
             {/* delete button */}
             <button className="absolute top-0 bottom-0 my-auto right-5 w-10 h-10 grid place-content-center rounded-full hover:bg-sky-500/10 hover:text-sky-500 duration-100 cursor-pointer" onClick={deleteSearchHistoryHandler}>
-                <X className="size-6"/>
+                <X className="size-6" />
             </button>
         </div>
     )

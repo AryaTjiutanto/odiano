@@ -13,12 +13,14 @@ import { Link } from "react-router-dom";
 import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
 import { useAppSelector } from "../../../hooks/useRedux";
 import HashTagSearchResult from "./HashtagSearchResult";
+import { useSearchInputContext } from "../../../providers/SearchInputProvider";
 
 type Props = {
     data : UserSearchDTO | HashTagSearchDTO,
 };
 
 const SearchResult = ({ data }: Props) => {
+    const { handleClickSuggestion } = useSearchInputContext();
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
@@ -69,7 +71,7 @@ const SearchResult = ({ data }: Props) => {
     // display data
     if (data.type === SEARCH_TYPES.USER && data.data) {
         return (
-            <Link to={`/profile/${data.data.username}`} onClick={() => handleMutation(SEARCH_TYPES.USER)}>
+            <Link to={`/profile/${data.data.username}`} onClick={() => handleClickSuggestion(data.data?.name || "", () => handleMutation(SEARCH_TYPES.USER))}>
                 <UserSearchResult
                     user={data.data}
                 />
@@ -79,8 +81,11 @@ const SearchResult = ({ data }: Props) => {
 
 
     if (data.type === SEARCH_TYPES.HASHTAG && data.data) {
+        const searchParams = new URLSearchParams({
+            q: `#${data.data.name}`
+        });
         return (
-            <Link to={`/hashtag/${data.data.name}`} onClick={() => handleMutation(SEARCH_TYPES.HASHTAG)}>
+            <Link to={`/search?${searchParams.toString()}`} onClick={() => handleClickSuggestion("#" + data.data?.name, () => handleMutation(SEARCH_TYPES.HASHTAG))}>
                 <HashTagSearchResult
                     hashtag={data.data}
                 />

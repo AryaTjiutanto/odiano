@@ -1,9 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE, SearchSuggestionDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
+import { ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, SearchSuggestionDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import * as searchService from "../services/search.service";
 import { successResponseData } from "../utils/response.util";
-import logger from "../libs/log/logger";
+import { UnauthorizedError } from "../errors/unauthorized.error";
+
+export const getSearchResult = async (req : Request, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+    const {q, cursor} = req.query;
+    
+    try {
+        if(!currentUserId) {
+            throw new UnauthorizedError();
+        }
+
+        const result = await searchService.getSearchResult(String(q), cursor ? String(cursor) : undefined, currentUserId);
+
+        res.status(200).json(successResponseData<InfiniteQuery<PostDTO[]>>(SUCCESS_RESPONSE_CODE.ok, "ok", result));
+    } catch(err) {
+        next(err);
+    }
+}
 
 export const getSuggestions = async (req : Request, res : Response, next : NextFunction) => {
     const {q} = req.query;

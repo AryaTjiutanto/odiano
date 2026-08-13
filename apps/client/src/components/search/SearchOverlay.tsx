@@ -1,4 +1,4 @@
-import { type SearchSuggestionDTO, type SearchHistoryDTO, type SuccessResponseData, type UserSummaryDTO } from "@odiano/shared";
+import { type SearchSuggestionDTO, type SearchHistoryDTO, type SuccessResponseData } from "@odiano/shared";
 import SearchSkeletonLoading from "./SearchSkeletonLoading";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
@@ -11,17 +11,17 @@ import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { notify } from "../../helpers/notification/notify.helper";
 import SearchHistory from "./searchResult/SearchHistory";
 import SearchResult from "./searchResult/SearchResult";
+import { useSearchInputContext } from "../../providers/SearchInputProvider";
 
 type Props = {
     searchQueryData: SearchSuggestionDTO[] | null | undefined,
-    isSearchPanelOpen: boolean,
     isSearchQueryPending: boolean,
     floatingProps: React.HTMLProps<HTMLDivElement>
     floatingStyles: React.CSSProperties
-    query: string,
 }
 
-const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, floatingStyles, floatingProps, isSearchQueryPending, query, searchQueryData }, ref) => {
+const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ floatingStyles, floatingProps, isSearchQueryPending, searchQueryData }, ref) => {
+    const { query, isSearchPanelOpen } = useSearchInputContext();
     const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
@@ -110,7 +110,7 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ isSearchPanelOpen, fl
                         {/* search result */}
                         {
                             (query.length > 0 && !isSearchResultEmpty) &&
-                            searchQueryData?.map((data : SearchSuggestionDTO) => (
+                            searchQueryData?.map((data: SearchSuggestionDTO) => (
                                 <SearchResult data={data} />
                             ))
                         }

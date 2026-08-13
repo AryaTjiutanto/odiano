@@ -35,6 +35,9 @@ import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider
 import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
 import Explore from './pages/Social/Explore.tsx'
 import NotFoundPage from './pages/error/NotFound.tsx'
+import Search from './pages/Social/Search.tsx'
+import ExploreLayout from './layouts/ExploreLayout.tsx'
+import SearchLayout from './layouts/SearchLayout.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -66,8 +69,14 @@ createRoot(document.getElementById('root')!).render(
                         <Route element={<CreatePostLayout />}>
                           <Route element={<NotificationSectionLayout />}>
                             <Route element={<SocialLayout />}>
-                              <Route path='/explore' element={<Explore />} />
-                              <Route path='/' element={<Homepage />} />
+                              <Route element={<SearchLayout />}>
+                                <Route element={<ExploreLayout />}>
+                                  <Route path='/explore' element={<Explore />} />
+                                  <Route path='/search' element={<Search />} />
+                                </Route>
+
+                                <Route path='/' element={<Homepage />} />
+                              </Route>
 
                               {/* post */}
                               <Route path='/:username/post/:postPublicId' element={<ShowPost />} />

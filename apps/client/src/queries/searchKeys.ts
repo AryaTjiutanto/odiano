@@ -1,10 +1,17 @@
 const mainKey = "search";
 
 export const searchKeys = {
-    search : (value : string | undefined) => {
+    search : (query :string | undefined) => {
         const returnKey = [mainKey];
 
-        if(value) returnKey.push(value);
+        if(query) returnKey.push(query);
+
+        return returnKey;
+    },
+    searchSuggestions : (query : string | undefined) => {
+        const returnKey = [mainKey, "suggestions"];
+
+        if(query) returnKey.push(query);
 
         return returnKey;
     },

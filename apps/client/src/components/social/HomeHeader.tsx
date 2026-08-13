@@ -1,4 +1,4 @@
-import SearchBar from "../search/Search";
+import SearchInput from "../search/SearchInput";
 import odiano from "../../assets/img/logo/odiano.svg"
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
@@ -16,7 +16,7 @@ const HomeHeader = () => {
 
                 {
                     (isInitialized && isAuthenticated) &&
-                    <SearchBar searchIconPosition="right" />
+                    <SearchInput searchIconPosition="right" />
                 }
 
                 {

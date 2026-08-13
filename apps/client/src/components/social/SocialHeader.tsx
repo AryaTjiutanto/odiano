@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../hooks/useRedux";
-import SearchBar from "../search/Search";
+import SearchInput from "../search/SearchInput";
 
 type Props = {
     mode: "search" | "all",
@@ -15,7 +15,7 @@ const SocialHeader = ({ mode }: Props) => {
                 (isInitialized && isAuthenticated) &&
                 <>
                     {/* search bar */}
-                    <SearchBar width={mode == "search" ? "full" : "small"}/>
+                    <SearchInput width={mode == "search" ? "full" : "small"}/>
 
                     {/* filter */}
                     {
