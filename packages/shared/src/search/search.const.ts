@@ -1,4 +1,5 @@
 export const SEARCH_TYPES = {
+    GENERAL : "general",
     USER : "user",
     HASHTAG : "hashtag",
     TOPIC : "topic",

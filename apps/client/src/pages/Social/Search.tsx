@@ -8,13 +8,16 @@ import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
 import type { InfiniteQuery, PostDTO } from "@odiano/shared";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
+import { useSearchInputContext } from "../../providers/SearchInputProvider";
 
 const Search = () => {
+    const searchInputContext = useSearchInputContext();
     const [searchParams] = useSearchParams();
     const searchQuery = searchParams.get("q");
 
     useEffect(() => {
         document.title = `${searchQuery || "Search"} - Odiano`;
+        searchInputContext.setQuery(searchQuery || "");
     }, [searchQuery]);
 
     const postsQuery = useInfiniteQuery({

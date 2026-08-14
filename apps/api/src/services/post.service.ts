@@ -11,18 +11,21 @@ import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
+import logger from "../libs/log/logger";
 
 export const listPostsByHashtag = async (currentUserId: string | null | undefined, hashtag: string, cursor: string | undefined | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated
     if (cursor && !currentUserId) {
         throw new UnauthorizedError();
     }
-
+    
     // get posts data
-    const query = cursor ? {
+    const query = {
         hashtags: hashtag,
-        _id: mongoose.trusted({ $lt: cursor }),
-    } : {};
+        ...(cursor ? {
+            _id: mongoose.trusted({ $lt: cursor })
+        } : {})
+    };
 
     let posts = await Post.find(query)
         .sort({ _id: -1 })

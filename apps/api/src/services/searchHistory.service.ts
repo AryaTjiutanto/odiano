@@ -50,7 +50,7 @@ export const getSearchHistory = async (currentUserId : string) : Promise<SearchH
     return searchHistoriesDTO
 }
 
-export const recordHistory = async (currentUserId : string, type : SearchTypes, targetId : string, keyword? : String | undefined | null) => {
+export const recordHistory = async (currentUserId : string, type : SearchTypes, targetId : string | undefined, keyword? : String | undefined | null) => {
     const record = await SearchHistory.findOne({
         user : currentUserId,
         $or : [

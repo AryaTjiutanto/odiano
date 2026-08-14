@@ -2,10 +2,10 @@ import { SearchTypes } from "@odiano/shared"
 import { Types } from "mongoose"
 
 export type SearchHistory = {
-    targetId : Types.ObjectId,
+    targetId? : Types.ObjectId | null,
     type : SearchTypes,
     user : Types.ObjectId,
-    keyword : String, 
+    keyword : String | null, 
 }
 
 export type searchHistoryQuery = SearchHistory & {

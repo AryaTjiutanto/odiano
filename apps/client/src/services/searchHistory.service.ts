@@ -1,13 +1,12 @@
 import type { SearchTypes, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api"
 
-export const recordSearchHistory = async (targetId: string, type: SearchTypes, keyword?: string) => {
+export const recordSearchHistory = async (targetId: string | undefined, type: SearchTypes, keyword?: string | null) => {
     const response = await api.post<SuccessResponseData<{id: string}>>("/search/history/record", {
         targetId,
         type,
         ...(keyword && { keyword })
     });
-
 
     return response.data;
 }

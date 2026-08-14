@@ -7,6 +7,8 @@ import { searchKeys } from "../../queries/searchKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { getSearchSuggestions } from "../../services/search.service";
 import { useSearchInputContext } from "../../providers/SearchInputProvider";
+import { SEARCH_TYPES } from "@odiano/shared";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     searchIconPosition? : "left" | "right",
@@ -19,7 +21,8 @@ const SearchOverlay = lazy(() =>
 )
 
 const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => {
-    const { query, setQuery, isSearchPanelOpen, setIsSearchPanelOpen } = useSearchInputContext();
+    const { query, setQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
+    const navigate = useNavigate();
 
     const debounceValue = useDebounce<string>(query);
 
@@ -48,6 +51,20 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
 
     const { getFloatingProps, getReferenceProps } = useInteractions([dismiss, focus])
 
+    // handle submit
+    const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        handleSearch(query, () => handleMutation({
+            type: SEARCH_TYPES.GENERAL,
+            data: null,
+            keyword: query,
+        }))
+
+        navigate(`/search?${new URLSearchParams({
+            q: query,
+        }).toString()}`);
+    }
+
     return (
         <>
             <Suspense>
@@ -55,14 +72,14 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
             </Suspense>
 
             {/* search input */}
-            <div className={`${width == "full" ? "w-full" : isSearchPanelOpen ? 'sm:w-56 md:w-70 lg:w-82' : 'sm:w-50 md:w-64'} h-fit relative duration-100`} ref={refs.setReference} {...getReferenceProps()}>
+            <form onSubmit={handleSubmit} className={`${width == "full" ? "w-full" : isSearchPanelOpen ? 'sm:w-56 md:w-70 lg:w-82' : 'sm:w-50 md:w-64'} h-fit relative duration-100`} ref={refs.setReference} {...getReferenceProps()}>
                 <div className={`w-full duration-100 h-12 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center ${searchIconPosition == "right" && "flex-row-reverse"} pr-2`}>
-                    <button className="w-10 h-full grid place-content-center text-neutral-300 cursor-pointer">
+                    <button type="submit" className="w-10 h-full grid place-content-center text-neutral-300 cursor-pointer">
                         <Search className="w-4" />
                     </button>
                     <input className={`flex-1 w-full h-full default-input-text-behaviour ${searchIconPosition == "right" && "px-4"}`} placeholder="Search..." value={query} onChange={(e) => setQuery(e.target.value)} />
                 </div>
-            </div>
+            </form>
         </>
     );
 }

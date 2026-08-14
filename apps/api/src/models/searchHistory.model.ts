@@ -5,7 +5,8 @@ import { SearchHistory as SearchHistorySchema } from "../types/searchHistory.typ
 const searchHistorySchema = new Schema<SearchHistorySchema>({
     targetId : {
         type : Types.ObjectId,
-        required : true,
+        required : false,
+        default : null,
     },
     type : {
         type : String,
@@ -19,6 +20,8 @@ const searchHistorySchema = new Schema<SearchHistorySchema>({
     },
     keyword : {
         type : String,
+        required : false,
+        default : null,
     }
 }, {timestamps : true})
 

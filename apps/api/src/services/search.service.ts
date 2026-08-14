@@ -34,6 +34,7 @@ export const getSuggestions = async (query: string): Promise<SearchSuggestionDTO
         const formattedData = hashtags.map((hashtag): SearchSuggestionDTO => ({
             type: SEARCH_TYPES.HASHTAG,
             data: hashtag,
+            keyword : null,
         }));
 
         return formattedData;
@@ -45,6 +46,7 @@ export const getSuggestions = async (query: string): Promise<SearchSuggestionDTO
     const formattedData = users.map((user): SearchSuggestionDTO => ({
         type: SEARCH_TYPES.USER,
         data: user,
+        keyword : null,
     }));
 
     return formattedData;
