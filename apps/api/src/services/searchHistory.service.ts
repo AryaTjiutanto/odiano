@@ -10,6 +10,7 @@ import mongoose from "mongoose";
 import { HashTagSummaryQuery } from "../types/hashtag.type";
 import HashTag from "../models/hashtag.model";
 import { toHashTagSummaryDTO } from "../mappers/hashtag.mapper";
+import logger from "../libs/log/logger";
 
 export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
     const searchHistories = await SearchHistory.find({user : currentUserId})
@@ -50,16 +51,16 @@ export const getSearchHistory = async (currentUserId : string) : Promise<SearchH
     return searchHistoriesDTO
 }
 
-export const recordHistory = async (currentUserId : string, type : SearchTypes, targetId : string | undefined, keyword? : String | undefined | null) => {
+export const recordHistory = async (currentUserId : string, type : SearchTypes, targetId : string | undefined, keyword? : string | undefined | null) => {
     const record = await SearchHistory.findOne({
         user : currentUserId,
         $or : [
-            {targetId},
+            ...(targetId ? [{targetId}] : []),
             ...(keyword ? [{keyword}] : []),
         ]
     }).select("_id updatedAt");
     
-    // create searchHistory
+    // create searchHistory    
     if(!record) {
         const searchHistory = await SearchHistory.create({
             targetId,

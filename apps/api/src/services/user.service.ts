@@ -186,6 +186,12 @@ export const searchUsers = async (query: string): Promise<UserSummaryDTO[]> => {
     const users = await User.aggregate<UserSummaryQuery>([
         {
             $match: {
+                emailVerifiedAt : {
+                    $ne : null
+                },
+                isOnboarded : {
+                    $eq : true
+                },
                 $or: [
                     { username: { $regex: query, $options: 'i' } },
                     { username: { $regex: query, $options: 'i' } }

@@ -5,7 +5,7 @@ type Props = {
     user: UserSummaryDTO,
 }
 
-const UserSearchResult = ({ user }: Props) => {
+const UserSearchSuggestion = ({ user }: Props) => {
     return (
         <article className="w-full flex items-center px-6 py-4 space-x-2 group-hover:bg-neutral-950 hover:bg-neutral-950 duration-100">
             <div className="w-12 h-12 rounded-full overflow-hidden">
@@ -23,4 +23,4 @@ const UserSearchResult = ({ user }: Props) => {
     )
 }
 
-export default UserSearchResult;
+export default UserSearchSuggestion;

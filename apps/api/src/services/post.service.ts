@@ -11,7 +11,6 @@ import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
-import logger from "../libs/log/logger";
 
 export const listPostsByHashtag = async (currentUserId: string | null | undefined, hashtag: string, cursor: string | undefined | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated

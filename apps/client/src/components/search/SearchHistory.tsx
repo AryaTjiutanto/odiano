@@ -1,11 +1,11 @@
 import { type SearchHistoryDTO } from "@odiano/shared"
-import SearchResult from "./SearchResult"
+import SearchResult from "./Suggestion/SearchSuggestion"
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { searchKeys } from "../../../queries/searchKeys";
-import { deleteSearchHistory } from "../../../services/searchHistory.service";
-import { notify } from "../../../helpers/notification/notify.helper";
-import useSetQueryDataHandler from "../../../hooks/useSetQueryDataHandler";
+import { searchKeys } from "../../queries/searchKeys";
+import { deleteSearchHistory } from "../../services/searchHistory.service";
+import { notify } from "../../helpers/notification/notify.helper";
+import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 
 type Props = {
     data: SearchHistoryDTO,
@@ -41,7 +41,9 @@ const SearchHistory = ({ data }: Props) => {
         }
     }
 
-    if (!data.target) return null;
+    if (!data.target) {
+        return null;
+    };
 
     return (
         <div className="relative group">

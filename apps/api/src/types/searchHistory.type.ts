@@ -5,7 +5,7 @@ export type SearchHistory = {
     targetId? : Types.ObjectId | null,
     type : SearchTypes,
     user : Types.ObjectId,
-    keyword : String | null, 
+    keyword : string | null, 
 }
 
 export type searchHistoryQuery = SearchHistory & {

@@ -50,10 +50,14 @@ const SearchInputProvider = ({ children }: any) => {
                 target : data,
             } as SearchHistoryDTO
 
-            return [
+            const newDataSorted = [
                 newData,
-                ...(oldData.filter((old) => old.targetId !== data.data?.id))
+                ...(oldData.filter((old) => !data || old.targetId !== data.data?.id || old.keyword !== data.keyword)),
             ];
+
+            console.log(newDataSorted, newData, oldData);
+
+            return newDataSorted;
         }),
     });
 
