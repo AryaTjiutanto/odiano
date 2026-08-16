@@ -3,10 +3,18 @@ import odiano from "../../assets/img/logo/odiano.svg"
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
 import SocialHeader from "./SocialHeader";
+import { useSearchInputContext } from "../../providers/SearchInputProvider";
+import { useEffect } from "react";
 
 const HomeHeader = () => {
+    const searchInputContext = useSearchInputContext();
+
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
+
+    useEffect(() => {
+        searchInputContext.setQuery("");
+    }, [])
 
     return (
         <>

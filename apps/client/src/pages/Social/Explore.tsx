@@ -45,7 +45,7 @@ const Explore = () => {
     }
 
     return (
-        <>
+        <div className="mt-2 space-y-6 sm:pb-6">
             {
                 data?.pages.map((page) =>
                     page.items.map((item) => (
@@ -54,7 +54,7 @@ const Explore = () => {
                 )
             }
             <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." />
-        </>
+        </div>
     )
 }
 

@@ -1,3 +1,3 @@
 import { createLimiter } from "../core/limiter.factory";
 
-export const searchLimiter = createLimiter({duration : 8, keyPrefix : "search:", points : 8});
+export const searchLimiter = createLimiter({duration : 8, keyPrefix : "search:", points : 6});

@@ -2,9 +2,9 @@ import { ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, SEARCH_TYPES, SearchSugges
 import { searchUsers } from "./user.service"
 import { getHashtags } from "./hashtag.service";
 import { AppError } from "../errors/appError.error";
-import { listPostsByHashtag } from "./post.service";
+import { listPostsByHashtag, searchPosts } from "./post.service";
 
-export const getSearchResult = async (query: string | undefined, cursor: string | undefined, currentUserId: string | null | undefined): Promise<InfiniteQuery<PostDTO[]>> => {
+export const getSearchResult = async (query: string | undefined, cursor: string | undefined, currentUserId: string): Promise<InfiniteQuery<PostDTO[]>> => {
     if (!query) {
         throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Search query is required");
     }
@@ -20,6 +20,8 @@ export const getSearchResult = async (query: string | undefined, cursor: string 
     if (isTag) {
         posts = await listPostsByHashtag(currentUserId, query.substring(1), cursor);
     }
+
+    posts = await searchPosts(currentUserId, query, cursor);
 
     return posts;
 }

@@ -30,7 +30,7 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
     const searchQuery = useQuery({
         queryKey: searchKeys.searchSuggestions(debounceValue),
         queryFn: async () => await getSearchSuggestions(debounceValue),
-        staleTime: 60 * 1000,
+        staleTime: 90 * 1000,
         enabled: !!(debounceValue && debounceValue.length > 0),
         gcTime: DEFAULT_GC_TIME
     });

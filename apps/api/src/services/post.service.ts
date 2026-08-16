@@ -11,13 +11,138 @@ import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
+import logger from "../libs/log/logger";
+
+export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined): Promise<InfiniteQuery<PostFeedItem[]>> => {
+    // get posts
+    let posts = await Post.aggregate<PostQuery>([
+        {
+            $search: {
+                index: "search_posts",
+                compound: {
+                    must: [
+                        {
+                            text: {
+                                query: query,
+                                path: ["content", "hashtags"],
+                            }
+                        }
+                    ],
+
+                    filter: [
+                        {
+                            compound: {
+                                mustNot: [
+                                    {
+                                        equals: {
+                                            path : "author",
+                                            value: new mongoose.Types.ObjectId(currentUserId),
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        ...(cursor ? [
+                            {
+                                range: {
+                                    path : "_id",
+                                    lt: new mongoose.Types.ObjectId(cursor),
+                                }
+                            }
+                        ] : [])
+                    ]
+                }
+            },
+        },
+        {
+            $sort: {
+                _id: -1,
+            }
+        },
+        {
+            $limit: POSTS_PAGE_SIZE + 1,
+        },
+        
+        {
+            $lookup: {
+                from: "users",
+                localField: "author",
+                foreignField: "_id",
+                as: "author",
+                pipeline : [
+                    {
+                        $project : {
+                            _id : 1,
+                            name : 1,
+                            username : 1,
+                            profileImage : 1,
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind : "$author"
+        },
+        {
+            $project: {
+                content: 1,
+                publicId: 1,
+                media: 1,
+                visibility: 1,
+                hideLikeAndViewCount: 1,
+                turnOffCommenting: 1,
+                isArchive: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                commentCount: 1,
+                likeCount: 1,
+                author: 1,
+            },
+        }
+    ]);
+
+    // check if there's a next page
+    let hasNextPage = posts.length > POSTS_PAGE_SIZE;
+    if (hasNextPage) {
+        posts = posts.slice(0, POSTS_PAGE_SIZE);
+    }
+
+    // get likes
+    let likedPostIds = new Set<String>();
+
+    if (currentUserId) {
+        const postIds = posts.map(post => post._id);
+
+        const likedIds = await getLikedIds(currentUserId, LIKE_TYPES.POST, postIds);
+
+        likedIds.forEach((id) => {
+            likedPostIds.add(id);
+        })
+    }
+
+    // organize the data
+    const items = posts.map((post) =>
+        toPostDto(post, {
+            isLiked: currentUserId ? likedPostIds?.has(post._id.toString()) : false
+        })
+    );
+
+    let nextCursor = items[items.length - 1]?.id
+
+    return {
+        nextCursor,
+        hasNextPage,
+        items,
+    }
+}
 
 export const listPostsByHashtag = async (currentUserId: string | null | undefined, hashtag: string, cursor: string | undefined | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated
     if (cursor && !currentUserId) {
         throw new UnauthorizedError();
     }
-    
+
     // get posts data
     const query = {
         hashtags: hashtag,
@@ -163,7 +288,7 @@ export const create = async (
                         hideLikeAndViewCount: data.hideLikeAndViewCount,
                         turnOffCommenting: data.turnOffCommenting,
                         isArchive: data.isArchive,
-                        hashtags : hashtags,
+                        hashtags: hashtags,
                     },
                 ],
                 { session }

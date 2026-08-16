@@ -22,7 +22,7 @@ const Search = () => {
 
     const postsQuery = useInfiniteQuery({
         queryKey: searchKeys.search(searchQuery!),
-        queryFn: async () => await getSearchResult(searchQuery),
+        queryFn: async ({ pageParam }) => await getSearchResult(searchQuery, pageParam),
         staleTime: 60 * 1000,
         enabled: !!(searchQuery && searchQuery.length > 0),
         initialPageParam: null,

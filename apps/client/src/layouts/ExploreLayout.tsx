@@ -14,7 +14,7 @@ const ExploreLayout = () => {
             {/* body */}
             <div>
                 <SocialHeader mode="search" />
-                <main className="mt-5 space-y-6 sm:pb-6">
+                <main className="">
                     <Outlet />
                 </main>
             </div>
