@@ -1,3 +1,4 @@
+
 import { UserSummaryDTO } from "../user"
 import { AllowedMediaProviders, AllowedMediaTypes, MediaAspectRatio, PostVisibilities } from "./post.const"
 
@@ -27,10 +28,6 @@ export type Post = {
     hideLikeAndViewCount: boolean,
     turnOffCommenting: boolean,
     isArchive: boolean,
-}
-
-export type PostPublicId = {
-    publicId: string,
 }
 
 export type PostDTO = Post & {

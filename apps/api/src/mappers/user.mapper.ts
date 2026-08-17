@@ -12,6 +12,7 @@ export const toUserProfileDTO = (data : UserProfileQuery, isFollowing? : boolean
         createdAt : data.createdAt,
         followerCount : data.followerCount,
         followingCount : data.followingCount,
+        totalPosts : data.totalPosts,
         ...(isFollowing ? {isFollowing} : {}),
     }
 }

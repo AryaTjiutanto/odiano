@@ -1,4 +1,4 @@
-import { CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, PostPublicId, type PostDTO as PostFeedItem } from "@odiano/shared";
+import { CreatedDocumentId, CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, type PostDTO as PostFeedItem } from "@odiano/shared";
 import { Post } from "../models/post.model";
 import { toPostDto } from "../mappers/post.mapper";
 import { PostQuery } from "../types/post.type";
@@ -11,7 +11,6 @@ import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
-import logger from "../libs/log/logger";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts
@@ -267,7 +266,7 @@ export const getPost = async (currentUserId: string | null | undefined, publicId
 export const create = async (
     userId: string,
     data: CreatePostSchema
-): Promise<PostPublicId> => {
+): Promise<CreatedDocumentId> => {
     const session = await mongoose.startSession();
 
     try {
@@ -293,6 +292,15 @@ export const create = async (
                 ],
                 { session }
             );
+
+            // update user total posts
+            await User.updateOne({
+                _id : userId
+            }, {
+                $inc : {
+                    totalPosts : 1
+                }
+            }, { session });
 
             // Commit temporary media
             if (data.media?.length) {
@@ -327,6 +335,7 @@ export const create = async (
             }
 
             return {
+                id : post._id.toString(),
                 publicId: post.publicId,
             };
         });
@@ -436,6 +445,15 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
             }
 
             await post.deleteOne({ session });
+
+            // decrese user total posts
+            await User.updateOne({
+                _id : currentUserId
+            }, {
+                $inc : {
+                    totalPosts : -1
+                }
+            }, {session});
         });
     } finally {
         await session.endSession();

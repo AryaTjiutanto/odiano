@@ -6,11 +6,13 @@ import MenuItem from "./MenuItem";
 import { deletePost } from "../../services/post.service";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { useMutation } from "@tanstack/react-query";
-import type { PostDTO } from "@odiano/shared";
+import type { PostDTO, UserProfileDTO } from "@odiano/shared";
 import { postKeys } from "../../queries/postKeys";
 import { removePostFromUserPostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { useState } from "react";
+import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
+import { userKeys } from "../../queries/userKeys";
 
 type Props = {
     post: PostDTO,
@@ -32,12 +34,18 @@ const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
     const [prevData, setPrevData] = useState<InfiniteQueryPostDTO | null>(null);
     const deletePostMutation = useMutation({
         mutationFn: deletePost,
-        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => {
-            setPrevData(oldData)
-            
-            return removePostFromUserPostCache(oldData, post.id)
-        }),
-        onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => prevData || oldData),
+        onMutate: () => {
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => {
+                setPrevData(oldData)
+
+                return removePostFromUserPostCache(oldData, post.id)
+            })
+            setQueryDataHandler<UserProfileDTO>(userKeys.profile(user.username), (oldData) => updateUserTotalPosts(oldData, 1, "decrease"))
+        },
+        onError: () => {
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => prevData || oldData)
+            setQueryDataHandler<UserProfileDTO>(userKeys.profile(user.username), (oldData) => updateUserTotalPosts(oldData, 1, "increase"))
+        },
     })
 
     async function deletePostHandler() {

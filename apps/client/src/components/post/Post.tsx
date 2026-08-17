@@ -86,12 +86,12 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
                         <div className="w-10 aspect-square">
                             <Profile data={dataAuthor?.profileImage} />
                         </div>
-                        <div>
-                            <div className="flex items-center space-x-2 text-xs">
+                        <div className="space-y-1">
+                            <div className="flex items-center space-x-2 text-sm">
                                 <h1 className="text-neutral-100 font-semibold">{dataAuthor?.name ?? ""}</h1>
                                 <h2 className="text-neutral-500">@{dataAuthor?.username ?? ""}</h2>
                             </div>
-                            <h3 className="text-[11px] text-neutral-500">
+                            <h3 className="text-xs text-neutral-500">
                                 {data.createdAt ? formatDistanceToNow(data.createdAt) : '-'}
                             </h3>
                         </div>

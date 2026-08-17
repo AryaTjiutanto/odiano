@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, createPostSchema, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, type CreatePostSchema, type PostMedia, type PostPublicId, type SuccessResponseData } from "@odiano/shared";
+import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, createPostSchema, MEDIA_ASPECT_RATIO, POST_MAX_MEDIA, type CreatedDocumentId, type CreatePostSchema, type PostMedia, type SuccessResponseData, type UserProfileDTO } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
@@ -16,10 +16,18 @@ import { useConfirmationModal } from "../../providers/ConfirmationModalProvider"
 import { useImageEditor } from "../../providers/ImageEditorProvider";
 import type { FileEditData } from "../../types/file.type";
 import PostContentEditor from "./PostContentEditor";
+import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
+import { postKeys } from "../../queries/postKeys";
+import { addPostToUserPostCache } from "../../helpers/cache/postCache.helper";
+import type { InfiniteQueryPostDTO } from "../../types/post.type";
+import { userKeys } from "../../queries/userKeys";
+import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
 
 export const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
 const PostFormSection = () => {
+    const setQueryDataHandler = useSetQueryDataHandler();
+
     const imageEditor = useImageEditor();
     const confirmationModal = useConfirmationModal();
 
@@ -39,7 +47,6 @@ const PostFormSection = () => {
     // handle form
     const {
         handleSubmit,
-        register,
         watch,
         setFocus,
         setError,
@@ -93,15 +100,41 @@ const PostFormSection = () => {
                 media,
             }
 
-            const response = await api.post<SuccessResponseData<PostPublicId>>("/post/create", payload);
+            const response = await api.post<SuccessResponseData<CreatedDocumentId>>("/post/create", payload);
 
-            if (!response.data) {
+            if (!response.data || !response.data.data?.id) {
                 throw Error("Something went wrong");
             }
 
-            setPostPublicId(response.data.data?.publicId || null);
+            setPostPublicId(response.data.data.publicId || null);
             reset();
             setIsCreated(true);
+
+            // add post to cache
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(currentUserUsername || ""), (oldData) => addPostToUserPostCache(oldData, {
+                commentCount: 0,
+                content: data.content,
+                createdAt: new Date(),
+                hashtags: data.hashtags,
+                hideLikeAndViewCount: data.hideLikeAndViewCount,
+                id: response.data.data?.id || "",
+                publicId: response.data.data?.publicId || "",
+                isArchive: data.isArchive,
+                isLiked: false,
+                likeCount: 0,
+                media: media && media.map((data) => ({
+                    ...data,
+                    source: {
+                        publicId: data.source.publicId,
+                        url: data.source.url.replace(/temp\//, ""),
+                    }
+                })),
+                turnOffCommenting: data.turnOffCommenting,
+                visibility: data.visibility,
+            }))
+
+            // increase user total posts
+            setQueryDataHandler<UserProfileDTO>(userKeys.profile(currentUserUsername || ""), (oldData) => updateUserTotalPosts(oldData, 1, "increase"))
         } catch (err: unknown) {
             handleApiErrorNotification<CreatePostSchema>(err, {
                 setValidationError: setError
@@ -116,7 +149,7 @@ const PostFormSection = () => {
     const handleCloseForm = async (description: string = "You will not be able to recover this post if you cancel it.") => {
         if (isSubmitting) return;
 
-        if ((!fileUpload.fileData || fileUpload.fileData.length == 0 || isCreated) && watch("content")?.length <= 0) {
+        if (((!fileUpload.fileData || fileUpload.fileData.length == 0) && watch("content")?.length <= 0) || isCreated) {
             postForm.close();
             return;
         }

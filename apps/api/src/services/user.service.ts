@@ -52,7 +52,7 @@ export const onboarding = async (payload: OnboardingPayload) => {
 
 export const getUserProfile = async (username: string, currentUserId: string | undefined): Promise<UserProfileDTO> => {
     const user = await User.findOne({ username })
-        .select("_id username name bio profileImage coverImage createdAt followerCount followingCount")
+        .select("_id username name bio profileImage coverImage createdAt followerCount followingCount totalPosts")
         .lean<UserProfileQuery>();
 
     if (!user) {

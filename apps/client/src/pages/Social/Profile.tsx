@@ -174,15 +174,14 @@ const Profile = () => {
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
                     <GoBackIconButton />
-                    <div>
-                        <h1 className="font-bold text-white">
+                    <div className="space-y-1">
+                        <h1 className="font-bold text-lg text-white">
                             {profileQuery.data && profileQuery.data.name || ""}
                         </h1>
 
-                        {/* comming soon */}
-                        {/* <h2 className="text-xs text-neutral-400">
-                            0 Post
-                        </h2> */}
+                        <h2 className="text-xs text-neutral-400">
+                            {profileQuery.data && profileQuery.data.totalPosts || 0} Post
+                        </h2>
                     </div>
                 </div>
 

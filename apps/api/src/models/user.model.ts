@@ -23,6 +23,8 @@ type UserSchema = {
     emailVerifiedAt: Date | null,
     profileImage: ImageAsset | null,
     coverImage: ImageAsset | null,
+
+    totalPosts : number,
     followingCount : number,
     followerCount : number
 }
@@ -129,6 +131,10 @@ const userSchema = new mongoose.Schema<UserSchema>({
     followingCount : {
         type : Number,
         default : 0
+    },
+    totalPosts : {
+        type : Number,
+        default : 0,
     }
 }, { timestamps: true, toJSON : {versionKey : false} });
 

@@ -37,5 +37,6 @@ export type UserProfileDTO = {
     profileImage : UserProfileImageDTO | null,
     followerCount : number,
     followingCount : number,
+    totalPosts : number,
     isFollowing? : boolean,
 }

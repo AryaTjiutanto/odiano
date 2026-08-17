@@ -35,4 +35,5 @@ export type FailedAttemptError = {
 
 export type CreatedDocumentId = {
     id : string,
+    publicId? : string,
 }

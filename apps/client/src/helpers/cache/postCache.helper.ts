@@ -12,6 +12,27 @@ export function removePostFromUserPostCache(oldData: InfiniteQueryPostDTO, postI
     }
 }
 
+export function addPostToUserPostCache(oldData: InfiniteQueryPostDTO, postData : PostDTO): InfiniteQueryPostDTO {
+    return {
+        ...oldData,
+        pages: oldData.pages.map((page, index) => {
+            if(index == 0) {
+                return {
+                    ...page,
+                    items: [
+                        postData,
+                        ...page.items,
+                    ]
+                }
+            } 
+
+            return {
+                ...page,
+            }
+        })
+    }
+}
+
 // like
 export function applyLikeToInfinitePostCache(oldData: InfiniteQueryPostDTO, postId: string): InfiniteQueryPostDTO {
     return {
