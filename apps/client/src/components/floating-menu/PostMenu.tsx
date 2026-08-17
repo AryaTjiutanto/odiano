@@ -13,6 +13,8 @@ import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { useState } from "react";
 import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
 import { userKeys } from "../../queries/userKeys";
+import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
+import { notify } from "../../helpers/notification/notify.helper";
 
 type Props = {
     post: PostDTO,
@@ -21,6 +23,7 @@ type Props = {
 }
 
 const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
+    const confirmationModal = useConfirmationModal();
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -49,8 +52,24 @@ const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
     })
 
     async function deletePostHandler() {
+        const confirmationResult = await confirmationModal.confirm(
+            "Delete this post?",
+            "This post will be permanently deleted. You won't be able to recover it.",
+            "Delete",
+            "Cancel"
+        );
+
+        if (!confirmationResult) return;
+
         try {
             await deletePostMutation.mutateAsync(post.id);
+
+            setTimeout(() => {
+                notify.success({
+                    title: "Post removed",
+                    description: "Your post has been removed.",
+                });
+            }, 200);
         } catch (err) {
             handleApiErrorNotification(err);
         }
