@@ -9,6 +9,8 @@ import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import { decreaseCommentCount, increaseCommentCount, removeComment } from "../../helpers/cache/postCache.helper";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
+import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
+import { notify } from "../../helpers/notification/notify.helper";
 
 type Props = {
     postId : string,
@@ -18,6 +20,7 @@ type Props = {
 }
 
 const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
+    const confirmationModal = useConfirmationModal();
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -44,8 +47,24 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
     })
 
     const handleDeleteComment = async () => {
+        const confirmationResult = await confirmationModal.confirm(
+            "Delete this Comment?",
+            "This comment will be permanently deleted. You won't be able to recover it.",
+            "Delete",
+            "Cancel"
+        );
+
+        if(!confirmationResult) return;
+
         try {
-            await deleteCommentMutation.mutateAsync(commentId)
+            await deleteCommentMutation.mutateAsync(commentId);
+
+            setTimeout(() => {
+                notify.success({
+                    title: "Comment removed",
+                    description: "Your comment has been removed.",
+                });
+            }, 200);
         } catch (err: unknown) {
             handleApiErrorNotification(err)
         }
