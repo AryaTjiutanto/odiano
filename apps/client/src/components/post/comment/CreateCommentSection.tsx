@@ -81,15 +81,17 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
                 setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => increaseCommentCount(oldData));
             }
 
-            // add new comment to the list
-            setQueryDataHandler<PostCommentDTO[]>(currentUserCommentQueryKey, (oldData) => addToComment({commentId, data}, oldData, currentUser))
+            // add new comment to the list            
+            setQueryDataHandler<PostCommentDTO[]>(currentUserCommentQueryKey, (oldData) => {
+                return addToComment({ commentId, data }, oldData, currentUser)
+            })
         },
 
         onSuccess: (newId, { commentId }: CreateCommentMutationParams) => setQueryDataHandler<PostCommentDTO[]>(currentUserCommentQueryKey, (oldData) => updateToPostedCommentData(oldData, commentId, newId)),
 
         onError: (_err, { commentId }: CreateCommentMutationParams) => {
             // decrease post comment count
-            if(postQueryKey) {
+            if (postQueryKey) {
                 setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => decreaseCommentCount(oldData))
             }
 
@@ -100,7 +102,7 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
 
 
     const handleMutation = async (data: CreatePostCommentSchema) => {
-        if(!currentUser) return;
+        if (!currentUser) return;
 
         try {
             reset();
@@ -109,9 +111,9 @@ const CreateCommentSection = ({ postId }: CreateCommentProps) => {
             await commentMutation.mutateAsync({ commentId, data });
         } catch (err: unknown) {
             handleApiErrorNotification(err, {
-                notifications : {
-                    [ERROR_RESPONSE_CODE.forbidden] : {
-                        title : "Comment limit reached",
+                notifications: {
+                    [ERROR_RESPONSE_CODE.forbidden]: {
+                        title: "Comment limit reached",
                     }
                 }
             })

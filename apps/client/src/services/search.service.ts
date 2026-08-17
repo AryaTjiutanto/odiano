@@ -2,7 +2,6 @@ import type { InfiniteQuery, PostDTO, SearchSuggestionDTO, SuccessResponseData }
 import { api } from "../libs/api";
 
 export const getSearchResult = async (query : string | undefined | null, cursor? : string | undefined | null) : Promise<InfiniteQuery<PostDTO[]>> => {
-    console.log("query data", {query, cursor});
     const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("search", {
         params: {
             q: query,
@@ -14,8 +13,6 @@ export const getSearchResult = async (query : string | undefined | null, cursor?
         throw new Error("Data is empty");
     }
         
-
-    console.log("response data", response.data.data)
     return response.data.data;
 }
 

@@ -121,8 +121,8 @@ export function updateToPostedCommentData(oldData: PostCommentDTO[], commentId: 
 
 export function addToComment(mutationData: CreateCommentMutationParams, oldData: PostCommentDTO[], currentUser: CurrentUserDTO | null): PostCommentDTO[] | undefined {
     if (!currentUser) return;
-
-    return [
+    
+    const data =  [
         {
             author: {
                 id: currentUser.id,
@@ -140,6 +140,8 @@ export function addToComment(mutationData: CreateCommentMutationParams, oldData:
         },
         ...oldData,
     ]
+
+    return data;
 }
 
 export function removeComment(oldData: PostCommentDTO[], commentId: string) {

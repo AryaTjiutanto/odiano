@@ -19,9 +19,9 @@ export const createComment = async (req: ReqBody<CreatePostCommentSchema>, res: 
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
 
-        const commentId = await postCommentService.create({ content, authorId: currentUserId, postId, parentId, depth });
+        const result = await postCommentService.create({ content, authorId: currentUserId, postId, parentId, depth });
 
-        res.status(200).json(successResponseData<CreatedDocumentId>(SUCCESS_RESPONSE_CODE.created, "created", {"id" : commentId}));
+        res.status(200).json(successResponseData<CreatedDocumentId>(SUCCESS_RESPONSE_CODE.created, "created", result));
     } catch (err) {
         next(err);
     }

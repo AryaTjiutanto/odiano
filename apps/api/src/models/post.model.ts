@@ -1,6 +1,7 @@
 import { type Post as PostType, type PostMedia, ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, POST_VISIBILITIES } from "@odiano/shared"
 import mongoose, { Types } from "mongoose"
 import { nanoid } from "nanoid";
+import logger from "../libs/log/logger";
 
 // type for schema 
 type PostSchema = PostType & {

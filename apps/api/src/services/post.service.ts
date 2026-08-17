@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
+import logger from "../libs/log/logger";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts

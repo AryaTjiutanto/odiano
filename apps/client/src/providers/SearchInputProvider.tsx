@@ -55,8 +55,6 @@ const SearchInputProvider = ({ children }: any) => {
                 ...(oldData.filter((old) => !data || old.targetId !== data.data?.id || old.keyword !== data.keyword)),
             ];
 
-            console.log(newDataSorted, newData, oldData);
-
             return newDataSorted;
         }),
     });

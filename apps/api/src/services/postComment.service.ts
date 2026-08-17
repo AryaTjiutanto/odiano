@@ -1,4 +1,4 @@
-import { ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PostCommentDTO } from "@odiano/shared"
+import { CreatedDocumentId, ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PostCommentDTO } from "@odiano/shared"
 import { toPostCommentDTO } from "../mappers/postComment.mapper"
 import PostComment from "../models/postComment.model"
 import { PostCommentQuery } from "../types/postComment.type"
@@ -7,6 +7,7 @@ import { AppError } from "../errors/appError.error"
 import { Post } from "../models/post.model"
 import { create as createNotification } from "./notification.service";
 import mongoose from "mongoose"
+import { UnauthorizedError } from "../errors/unauthorized.error"
 
 type createPostCommentParams = {
     content: string,
@@ -16,10 +17,10 @@ type createPostCommentParams = {
     depth: number
 }
 
-export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams): Promise<string> => {
+export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams): Promise<CreatedDocumentId> => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
-        .select("visibility isArchive turnOffCommenting commentCount")
+        .select("visibility publicId isArchive turnOffCommenting commentCount")
         .populate("author", "_id");
 
     if (!post) {
@@ -90,7 +91,9 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
             return postComment._id.toString();
         })
 
-        return result;
+        return {
+            id: result,
+        };
     } finally {
         await session.endSession();
     }
@@ -128,7 +131,7 @@ export const deleteComment = async (currentUserId: string, commentId: string) =>
     }
 }
 
-export const get = async (cursor: string | undefined, postId: string, userId: string | undefined): Promise<InfiniteQuery<PostCommentDTO[]>> => {
+export const get = async (cursor: string | undefined, postId: string, currentUserId: string | undefined): Promise<InfiniteQuery<PostCommentDTO[]>> => {
     // check is user authenticated
     if (cursor && !currentUserId) {
         throw new UnauthorizedError();
@@ -137,7 +140,7 @@ export const get = async (cursor: string | undefined, postId: string, userId: st
     // get comment
     const comments = await PostComment.find({
         postId,
-        ...(userId ? { author: mongoose.trusted({ $ne: userId }) } : {}),
+        ...(currentUserId ? { author: mongoose.trusted({ $ne: currentUserId }) } : {}),
         depth: 0,
         ...(cursor ? {
             _id: mongoose.trusted({

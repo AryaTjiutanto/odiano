@@ -8,7 +8,6 @@ import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { postKeys } from "../../../queries/postKeys";
-import { Link } from "react-router-dom";
 
 type Props = {
     postId: string,
@@ -29,7 +28,7 @@ const CommentSection = ({ postId }: Props) => {
     const currentUserCommentQuery = useQuery({
         queryKey: currentUserQueryKey,
         queryFn: getCurrentUserComments,
-        initialData: null,
+        initialData: [],
         staleTime: 30 * 1000,
         enabled: isAuthenticated,
         gcTime: DEFAULT_GC_TIME,
