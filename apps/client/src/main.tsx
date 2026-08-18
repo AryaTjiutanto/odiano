@@ -16,7 +16,6 @@ import SocialLayout from './layouts/SocialLayout.tsx'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createIDBPersister } from './libs/persister.ts'
 import ShowPost from './pages/Post/ShowPost.tsx'
-import NotFound from './components/error/NotFound.tsx'
 import NavigationTracker from './components/common/NavigationTracker.tsx'
 import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
@@ -28,7 +27,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import EmailVerification from './pages/Auth/EmailVerification.tsx'
 import RequireUnVerify from './components/guard/RequireUnVerify.tsx'
 import CreatePostLayout from './layouts/PostFormLayout.tsx'
-import NotificationSectionLayout from './layouts/NotificationSectionLayout.tsx'
 import ScrollToTop from './router/ScrollToTop.tsx'
 import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
@@ -38,6 +36,7 @@ import NotFoundPage from './pages/error/NotFound.tsx'
 import Search from './pages/Social/Search.tsx'
 import ExploreLayout from './layouts/ExploreLayout.tsx'
 import SearchLayout from './layouts/SearchLayout.tsx'
+import Notification from './pages/Social/Notification.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -67,25 +66,26 @@ createRoot(document.getElementById('root')!).render(
                       <Route element={<PageLoader />}>
                         {/* social */}
                         <Route element={<CreatePostLayout />}>
-                          <Route element={<NotificationSectionLayout />}>
-                            <Route element={<SocialLayout />}>
-                              <Route element={<SearchLayout />}>
-                                <Route element={<ExploreLayout />}>
-                                  <Route path='/explore' element={<Explore />} />
-                                  <Route path='/search' element={<Search />} />
-                                </Route>
-
-                                <Route path='/' element={<Homepage />} />
+                          <Route element={<SocialLayout />}>
+                            <Route element={<SearchLayout />}>
+                              <Route element={<ExploreLayout />}>
+                                <Route path='/explore' element={<Explore />} />
+                                <Route path='/search' element={<Search />} />
                               </Route>
 
-                              {/* post */}
-                              <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+                              <Route path='/' element={<Homepage />} />
+                            </Route>
 
-                              {/* profile */}
-                              <Route path='/profile/:username' element={<Profile />} />
-                              <Route element={<RequireAuthGuard />}>
-                                <Route path='/edit-profile' element={<EditProfile />} />
-                              </Route>
+                            {/* post */}
+                            <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+
+                            {/* notification */}
+                            <Route path='/notification' element={<Notification />} />
+
+                            {/* profile */}
+                            <Route path='/profile/:username' element={<Profile />} />
+                            <Route element={<RequireAuthGuard />}>
+                              <Route path='/edit-profile' element={<EditProfile />} />
                             </Route>
                           </Route>
                         </Route>

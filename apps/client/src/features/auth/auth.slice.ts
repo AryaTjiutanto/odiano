@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import { intitializeAuth, logout, refreshAccessToken } from "./auth.thunk";
 import type { CurrentUserDTO } from "@odiano/shared";
-import type { UploadedImageData } from "../../types/file.type";
+import type { UploadedFileData } from "../../types/file.type";
 
 type AuthState = {
     isAuthLoading: boolean,
@@ -27,7 +27,7 @@ const authSlice = createSlice({
             state.accessToken = action.payload;
             state.isAuthLoading = false;
         },
-        setCurrentUserProfile(state, action : PayloadAction<UploadedImageData>) {
+        setCurrentUserProfile(state, action : PayloadAction<UploadedFileData>) {
             if(!state.user) return;
 
             state.user.profileImage = {

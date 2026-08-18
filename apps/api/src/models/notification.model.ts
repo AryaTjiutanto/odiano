@@ -1,4 +1,4 @@
-import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType } from "@odiano/shared";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType, NotificationData, NotificationPostData } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
 
 type NotificationSchema = {
@@ -10,8 +10,46 @@ type NotificationSchema = {
     targetType : NotificationTargetType,
     targetId : Types.ObjectId,
 
-    isRead : boolean
+    data? : NotificationData,
+
+    isRead : boolean,
 }
+
+const notificationPostDataSchema = new Schema<NotificationPostData>({
+    id : {
+        type : String,
+        required : true,
+    },
+    publicId : {
+        type : String,
+        required : true,
+    },
+    content : {
+        type : String,
+        required : true,
+    },
+    firstMedia : {
+        url : {
+            type : String,
+            required : false,
+        },
+        publicId : {
+            type : String,
+            required : false,
+        }
+    }
+})
+
+const notificationDataSchema = new Schema<NotificationData>({
+    message : {
+        type : String,
+        required : false,
+    },
+    post : {
+        type : notificationPostDataSchema,
+        required : true,
+    }
+})
 
 const notificationSchema = new Schema<NotificationSchema>({
     recepient : {
@@ -42,6 +80,10 @@ const notificationSchema = new Schema<NotificationSchema>({
         type : Boolean,
         default : false,
         index : true,
+    },
+    data : {
+        type : notificationDataSchema,
+        required : false,
     }
 }, {timestamps : true});
 

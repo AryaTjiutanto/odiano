@@ -1,23 +1,24 @@
 import { Outlet } from "react-router-dom";
 import LeftSidebar from "../components/sidebar/LeftSidebar";
 import { lazy, Suspense, useEffect } from "react";
-import NotificationSection from "../components/sidebar/NotificationSection";
 import { registerNotificationListeners, unregisterNotificationListeners } from "../features/notification/notification.socket";
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
-import { useNotificationSection } from "../providers/NotificationSectionProvider";
 import RightSidebar from "../components/sidebar/RightSidebar";
+import { useAppDispatch } from "../hooks/useRedux";
+import { getUnreadNotificationCount } from "../features/notification/notification.thunk";
 
 const PostFormSection = lazy(() =>
     import("../components/post/PostFormSection")
 )
 
 const SocialLayout = () => {
+    const dispatch = useAppDispatch();
     const postForm = usePostForm();
-    const notificationSection = useNotificationSection();
 
     // register socket listener
     useEffect(() => {
+        dispatch(getUnreadNotificationCount());
         registerNotificationListeners();
 
         return () => {
@@ -41,21 +42,11 @@ const SocialLayout = () => {
                         <div className="w-full h-full px-3">
                             <LeftSidebar/>
                         </div>
-
-                        {/* notification */}
-                        <div className={`hidden 2xl:inline-block h-screen bg-black py-10 absolute top-0 left-0 overflow-hidden z-30 ${notificationSection.isOpen ? "lg:w-72 xl:w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
-                            <NotificationSection/>
-                        </div>
                     </aside>
 
                     {/* main */}
                     <main className="sm:col-span-8 md:col-span-5 lg:col-span-6 xl:col-span-7 2xl:col-span-5 pb-16 sm:pb-0">
                         <Outlet />
-
-                        {/* notification Section */}
-                        <div className={`w-full h-screen sm:hidden fixed top-0 left-0 bg-black z-24 ${notificationSection.isOpen ? "w-full opacity-100" : "opacity-0 w-0 touch-none hidden"}`}>
-                            <NotificationSection hasCloseButton={false}/>
-                        </div>
                     </main>
 
                     {/* right sidebar */}

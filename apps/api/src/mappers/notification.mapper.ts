@@ -1,5 +1,5 @@
 import { NotificationDTO } from "@odiano/shared";
-import { notificationQuery } from "../consts/notification.const";
+import { notificationQuery } from "../types/notification.type";
 
 export const toNotificationDTO = (data : notificationQuery) : NotificationDTO => {
     return {
@@ -16,5 +16,8 @@ export const toNotificationDTO = (data : notificationQuery) : NotificationDTO =>
         targetId : data.targetId.toString(),
         targetType : data.targetType,
         type : data.type,
+        ...(data.data && {
+            data : data.data
+        })
     }
 }

@@ -2,11 +2,13 @@ import type { InfiniteQuery, NotificationDTO } from "@odiano/shared";
 import { socket } from "../../libs/socket"
 import { queryClient } from "../../libs/react-query/queryClient";
 import type { InfiniteData } from "@tanstack/react-query";
-import { NOTIFICATION_KEY } from "../../consts/notification.const";
+import { notificationKeys } from "../../queries/notificationKeys";
+import { incrementUnreadCount } from "./notification.slice";
+import { store } from "../../app/store";
 
 export const registerNotificationListeners = () => {
     socket.on("notification:new", (notification: NotificationDTO) => {
-        queryClient.setQueryData(NOTIFICATION_KEY.UNREAD, (oldData : InfiniteData<InfiniteQuery<NotificationDTO[]>>) => {
+        queryClient.setQueryData(notificationKeys.unread, (oldData : InfiniteData<InfiniteQuery<NotificationDTO[]>>) => {
             if(!oldData) return oldData;
 
             return {
@@ -24,6 +26,8 @@ export const registerNotificationListeners = () => {
                 pageParams : oldData.pageParams
             }
         })
+
+        store.dispatch(incrementUnreadCount());
     })
 }
 

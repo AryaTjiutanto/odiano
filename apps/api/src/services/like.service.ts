@@ -32,8 +32,8 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
     
     try {
         await session.withTransaction(async () => {
-            const post = await Post.findById(postId, null, {session}).select("author visibility hideLikeAndViewCount isArchive turnOffCommething likeCount");
-        
+            const post = await Post.findById(postId, null, {session}).select("publicId author visibility hideLikeAndViewCount isArchive turnOffCommething likeCount content media");
+
             if (!post) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post is not foun");
             }
@@ -68,7 +68,21 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
                     recepientId : post.author.toString(),
                     targetId : post._id.toString(),
                     targetType : NOTIFICATION_TARGET_TYPE.POST,
-                    type : NOTIFICATION_TYPE.LIKE_YOUR_POST
+                    type : NOTIFICATION_TYPE.LIKE_YOUR_POST,
+                    data : {
+                        post : {
+                            id : post._id.toString(),
+                            publicId : post.publicId,
+                            content : post.content,
+                            ...(post.media && {
+                                firstMedia : {
+                                    aspectRatio : post.media[0].aspectRatio,
+                                    url : post.media[0].source.url,
+                                    publicId : post.media[0].source.publicId,
+                                }
+                            })
+                        }
+                    }
                 })
             }
         })

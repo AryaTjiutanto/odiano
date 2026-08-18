@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { api } from "../../libs/api";
-import React, { forwardRef, useEffect } from "react";
+import React, { forwardRef } from "react";
 import { useAppSelector } from "../../hooks/useRedux";
 import { deleteAllSearchHistory } from "../../services/searchHistory.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
@@ -94,8 +94,8 @@ const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ floatingStyles, float
                                         </button>
                                     </div>
                                     {
-                                        searchHistoryQuery.data.map((history) => (
-                                            <SearchHistory data={history} key={`history-${history.targetId}`} />
+                                        searchHistoryQuery.data.map((history, index) => (
+                                            <SearchHistory data={history} key={`history-${history.targetId || index}`} />
                                         ))
                                     }
                                 </>

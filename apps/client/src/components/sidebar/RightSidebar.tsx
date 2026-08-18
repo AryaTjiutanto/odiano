@@ -1,16 +1,13 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
-import { useNotificationSection } from "../../providers/NotificationSectionProvider";
 import GoogleLoginButton from "../auth/GoogleLoginButton";
 import UserSuggestions from "../user-suggestions/UserSuggestions";
-import NotificationSection from "./NotificationSection";
 import RightSidebarFooter from "./RightSidebarFooter";
 import { User } from "lucide-react";
 
 const RightSidebar = () => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
-    const notificationSection = useNotificationSection();
 
     if (!isInitialized) return;
 
@@ -47,11 +44,6 @@ const RightSidebar = () => {
 
     return (
         <>
-            {/* notification */}
-            <div className={`2xl:hidden h-screen bg-black py-5 xl:py-10 absolute top-0 left-0 overflow-hidden z-30 2xl:px-5 ${notificationSection.isOpen ? "w-full opacity-100" : "opacity-0 w-0 touch-none"}`}>
-                <NotificationSection />
-            </div>
-
             {/* user suggestions */}
             <UserSuggestions />
 

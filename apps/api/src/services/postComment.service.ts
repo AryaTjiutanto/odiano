@@ -20,7 +20,7 @@ type createPostCommentParams = {
 export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams): Promise<CreatedDocumentId> => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
-        .select("visibility publicId isArchive turnOffCommenting commentCount")
+        .select("publicId content media visibility publicId isArchive turnOffCommenting commentCount")
         .populate("author", "_id");
 
     if (!post) {
@@ -84,7 +84,22 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
                     recepientId: postAuthorId,
                     targetId: postId,
                     targetType: NOTIFICATION_TARGET_TYPE.POST,
-                    type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST
+                    type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST,
+                    data: {
+                        message: content,
+                        post: {
+                            id: post._id.toString(),
+                            publicId: post.publicId,
+                            content: post.content,
+                            ...(post.media && {
+                                firstMedia: {
+                                    aspectRatio: post.media[0].aspectRatio,
+                                    url: post.media[0].source.url,
+                                    publicId: post.media[0].source.publicId,
+                                }
+                            })
+                        }
+                    }
                 }, session);
             }
 

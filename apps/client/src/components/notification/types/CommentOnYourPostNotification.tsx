@@ -1,6 +1,7 @@
 import type { NotificationDTO } from "@odiano/shared"
 import { formatRelativeShort } from "../../../utils/dateFormater.util"
 import Profile from "../../profile/Profile"
+import { MessageCircle } from "lucide-react"
 
 type Props = {
     item: NotificationDTO
@@ -9,17 +10,42 @@ type Props = {
 const CommentOnYourPostNotification = ({ item }: Props) => {
     return (
         <div className="w-full flex items-center space-x-3" key={`notification-${item.id}`}>
-            <div className="w-12 h-12">
-                <Profile data={item.actor.profileImage} />
+            <div className="relative">
+                <div className="w-12 h-12">
+                    <Profile data={item.actor.profileImage} />
+                </div>
+
+                <div className="absolute bottom-0 -right-1">
+                    <MessageCircle className="text-white fill-white w-5"/>
+                </div>
             </div>
 
-            <div className="flex-1 w-full flex space-x-2 space-y-2 flex-wrap">
+            <div className="flex-1 min-w-0 flex flex-col space-x-2 flex-wrap">
                 <p className="space-x-2 space-y-2">
                     <b className="font-bold">{item.actor.username}</b>
                     <span>Comment on your post.</span>
                     <span className="text-neutral-500">{formatRelativeShort(item.createdAt)}</span>
                 </p>
+                {
+                    item.data?.post &&
+                    <p className="max-w-[60%] truncate text-[15px] text-neutral-500">
+                        {item.data.post.content}
+                    </p>
+                }
+                {
+                    item.data?.message &&
+                    <p className="max-w-[45%] truncate text-base text-neutral-100 mt-0.5">
+                        {item.data.message}
+                    </p>
+                }
             </div>
+
+            {
+                (item.data?.post && item.data.post.firstMedia) &&
+                <div className="max-h-24 max-w-16 rounded-md overflow-hidden">
+                    <img src={item.data.post.firstMedia.url} className="w-full" style={{ aspectRatio : item.data.post.firstMedia.aspectRatio }} />
+                </div>
+            }
         </div>
     )
 }

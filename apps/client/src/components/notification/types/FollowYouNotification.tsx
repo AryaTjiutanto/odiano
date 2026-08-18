@@ -1,6 +1,7 @@
 import type { NotificationDTO } from "@odiano/shared";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import Profile from "../../profile/Profile";
+import { User } from "lucide-react";
 
 type Props = {
     item: NotificationDTO
@@ -9,8 +10,14 @@ type Props = {
 const FollowYouNotification = ({ item }: Props) => {
     return (
         <div className={`w-full flex items-center space-x-3`} key={`notification-${item.id}`}>
-            <div className="w-12 aspect-square">
-                <Profile data={item.actor.profileImage} />
+            <div className="relative">
+                <div className="w-12 aspect-square">
+                    <Profile data={item.actor.profileImage} />
+                </div>
+
+                <div className="absolute bottom-0 -right-1">
+                    <User className="text-sky-500 fill-sky-500 w-5"/>
+                </div>
             </div>
 
             <div className="flex-1 w-full flex space-x-2 space-y-2 flex-wrap">
@@ -21,7 +28,7 @@ const FollowYouNotification = ({ item }: Props) => {
                 </p>
             </div>
 
-            <button className="w-28 h-10 bg-blue-500 text-white text-sm border border-blue-500 hover:bg-transparent duration-100 cursor-pointer rounded-lg">
+            <button className="w-28 h-10 bg-sky-500 text-white text-sm border border-sky-500 hover:bg-transparent duration-100 cursor-pointer rounded-lg">
                 Follow back
             </button>
         </div>
