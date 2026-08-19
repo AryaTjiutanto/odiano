@@ -10,6 +10,7 @@ import { notificationKeys } from "../../queries/notificationKeys";
 import Notifications from "./Notifications";
 
 const NotificationContainer = () => {
+    const username = useAppSelector((state) => state.auth.user?.username);
     const isAuth = useAppSelector((state) => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
 
@@ -103,6 +104,23 @@ const NotificationContainer = () => {
             case NOTIFICATION_TYPE.FOLLOW_YOU:
                 navigate(`/profile/${item.actor.username}`);
                 break;
+            case NOTIFICATION_TYPE.LIKE_YOUR_POST:
+                if(!item.data?.post) {
+                    break;
+                }
+
+                navigate(`/${username}/post/${item.data.post.publicId}`);   
+                break;
+            case NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST:
+                if(!item.data?.comment?.id || !item.data?.post) {
+                    break;
+                }
+
+                const queryParams = new URLSearchParams({
+                    commentId: item.data.comment.id,
+                });
+
+                navigate(`/${username}/post/${item.data.post.publicId}?${queryParams.toString()}`);
         }
 
         if (!item.isRead) {

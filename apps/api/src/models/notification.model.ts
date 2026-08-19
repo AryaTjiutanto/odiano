@@ -1,4 +1,4 @@
-import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType, NotificationData, NotificationPostData } from "@odiano/shared";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationTargetType, NotificationType, NotificationData, NotificationPostData, MEDIA_ASPECT_RATIO, NotificationCommentData } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
 
 type NotificationSchema = {
@@ -26,9 +26,14 @@ const notificationPostDataSchema = new Schema<NotificationPostData>({
     },
     content : {
         type : String,
-        required : true,
+        required : false,
     },
     firstMedia : {
+        aspectRatio : {
+            type : String,
+            enum : Object.values(MEDIA_ASPECT_RATIO),
+            required : false,
+        },
         url : {
             type : String,
             required : false,
@@ -40,14 +45,25 @@ const notificationPostDataSchema = new Schema<NotificationPostData>({
     }
 })
 
-const notificationDataSchema = new Schema<NotificationData>({
+const notificationCommentDataSchema = new Schema<NotificationCommentData>({
+    id : {
+        type : String,
+        required : true,
+    },
     message : {
         type : String,
+        required : true,
+    }
+})
+
+const notificationDataSchema = new Schema<NotificationData>({
+    comment: {
+        type : notificationCommentDataSchema,
         required : false,
     },
     post : {
         type : notificationPostDataSchema,
-        required : true,
+        required : false,
     }
 })
 

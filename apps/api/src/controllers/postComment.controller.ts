@@ -48,17 +48,33 @@ export const deleteComment = async(req : Request, res : Response, next : NextFun
     }
 }
 
+export const getComment = async (req: Request, res: Response, next: NextFunction) => {
+    const { commentId, postId } = req.params;
+
+    try {
+        if (!commentId || !postId) {
+            throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
+        }
+
+        const comment = await postCommentService.getOne(String(commentId), String(postId));
+
+        res.status(200).json(successResponseData<PostCommentDTO>(SUCCESS_RESPONSE_CODE.success, "success", comment));
+    } catch (err) {
+        next(err);
+    }
+}
+
 export const getComments = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const userId = req.userId;
-    const { cursor } = req.query;
+    const { cursor, exclude } = req.query;
 
     try {
         if (!postId) {
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
               
-        const comments = await postCommentService.get(cursor && String(cursor), String(postId), userId && String(userId));
+        const comments = await postCommentService.get(cursor && String(cursor), String(postId), userId && String(userId), exclude && String(exclude));
 
         res.status(200).json(successResponseData<InfiniteQuery<PostCommentDTO[]>>(SUCCESS_RESPONSE_CODE.success, "success", comments));
     } catch (err) {

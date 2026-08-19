@@ -27,10 +27,6 @@ const FollowYouNotification = ({ item }: Props) => {
                     <span className="text-neutral-500">{formatRelativeShort(item.createdAt)}</span>
                 </p>
             </div>
-
-            <button className="w-28 h-10 bg-sky-500 text-white text-sm border border-sky-500 hover:bg-transparent duration-100 cursor-pointer rounded-lg">
-                Follow back
-            </button>
         </div>
 
     )

@@ -18,7 +18,7 @@ export type NotificationDTO = {
 export type NotificationPostData = {
     id: string,
     publicId: string,
-    content: string,
+    content?: string,
     firstMedia?: {
         aspectRatio: MediaAspectRatio,
         url: string,
@@ -26,7 +26,12 @@ export type NotificationPostData = {
     }
 }
 
+export type NotificationCommentData = {
+    id: string,
+    message: string,
+}
+
 export type NotificationData = {
-    message?: string,
+    comment?: NotificationCommentData,
     post?: NotificationPostData,
 }

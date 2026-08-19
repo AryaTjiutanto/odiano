@@ -297,7 +297,7 @@ const ShowPost = () => {
 
                 {/* comment */}
                 {postQuery.data?.id &&
-                    <CommentSection postId={postQuery.data.id} />
+                    <CommentSection postId={postQuery.data.id} shouldGettingComments={postQuery.data.commentCount > 0}/>
                 }
             </div>
         </>

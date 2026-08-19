@@ -4,6 +4,7 @@ import { toUserSummaryDTO } from "./user.mapper";
 
 export const toPostCommentDTO = (data : PostCommentQuery) : PostCommentDTO => {
     const userSummaryDTO = {author : toUserSummaryDTO(data.author)};
+
     return {
         id : data._id.toString(),
         depth : data.depth,

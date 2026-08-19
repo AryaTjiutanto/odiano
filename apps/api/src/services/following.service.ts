@@ -4,6 +4,7 @@ import { Following } from "../models/following.model";
 import { User } from "../models/user.model";
 import mongoose, { Types } from "mongoose";
 import { create as createNotification, deleteNotificationWithRecepient } from "./notification.service";
+import { Notification } from "../models/notification.model";
 
 export const createFollowing = async (currentUserId: string, targetUserId: string) => {
     if (currentUserId == targetUserId) {
@@ -39,13 +40,23 @@ export const createFollowing = async (currentUserId: string, targetUserId: strin
             await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: 1 } }, { session });
             await User.updateOne({ _id: targetUserId }, { $inc: { followerCount: 1 } }, { session });
 
-            // create notification
-            await createNotification(currentUserId, {
-                recepientId: targetUserId,
+            // check is this following notification exists
+            const isNotificationExists = await Notification.exists({
+                recepient: targetUserId,
                 targetId: targetUserId,
                 targetType: NOTIFICATION_TARGET_TYPE.USER,
                 type: NOTIFICATION_TYPE.FOLLOW_YOU,
-            }, session)
+            }).session(session);
+
+            // create notification
+            if(!isNotificationExists) {
+                await createNotification(currentUserId, {
+                    recepientId: targetUserId,
+                    targetId: targetUserId,
+                    targetType: NOTIFICATION_TARGET_TYPE.USER,
+                    type: NOTIFICATION_TYPE.FOLLOW_YOU,
+                }, session)
+            }
         })
     } finally {
         await session.endSession();
@@ -73,8 +84,6 @@ export const deleteFollowing = async (currentUserId: string, followUserId: strin
             await Following.deleteOne({ userId: currentUserId, followUserId }, { session });
             await User.updateOne({ _id: currentUserId }, { $inc: { followingCount: -1 } }, { session });
             await User.updateOne({ _id: followUserId }, { $inc: { followerCount: -1 } }, { session });
-
-            await deleteNotificationWithRecepient(followUserId, NOTIFICATION_TYPE.FOLLOW_YOU, session);
         });
     } finally {
         await session.endSession();
@@ -91,7 +100,7 @@ export const getFollowingIds = async (currentUserId: string): Promise<Types.Obje
     const following = await Following.find({
         userId: currentUserId,
     }).select("followUserId").lean();
-    
+
     const followingIds = following.map((data) => data.followUserId);
 
     return followingIds;

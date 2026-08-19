@@ -1,64 +1,75 @@
-import { useInfiniteQuery, useQuery, type QueryFunctionContext } from "@tanstack/react-query";
-import { type SuccessResponseData, type InfiniteQuery, type PostCommentDTO } from "@odiano/shared";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { type InfiniteQuery, type PostCommentDTO } from "@odiano/shared";
 import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
-import { api } from "../../../libs/api";
 import CommentSkeletonLoading from "./CommentSkeletonLoading";
 import InfiniteScrollSentinel from "../../common/InfiniteScrollSentinel";
 import CreateCommentSection from "./CreateCommentSection";
 import Comment from "./Comment";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { postKeys } from "../../../queries/postKeys";
+import { useSearchParams } from "react-router-dom";
+import { getComment, getComments, getCurrentUserComments } from "../../../services/postComment.service";
+import { useLayoutEffect, useRef } from "react";
 
 type Props = {
     postId: string,
+    shouldGettingComments?: boolean,
 }
 
-const CommentSection = ({ postId }: Props) => {
+const CommentSection = ({ postId, shouldGettingComments = true }: Props) => {
+    const [searchParams] = useSearchParams();
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+
+    // get hightlight comment
+    const hightlightedCommentId = searchParams.get("commentId");
+    const hightlightedCommentQuery = useQuery({
+        queryKey: postKeys.comment(hightlightedCommentId!),
+        queryFn: () => getComment(hightlightedCommentId!, postId),
+        enabled: (!!hightlightedCommentId && shouldGettingComments),
+        staleTime: 30 * 1000,
+        initialData: null,
+    });
 
     // current user comment
     const currentUserQueryKey = postKeys.currentUserComments(postId);
 
-    const getCurrentUserComments = async () => {
-        const response = await api.get<SuccessResponseData<PostCommentDTO[]>>(`post/${postId}/comments/me`);
-
-        return response.data.data;
-    }
-
     const currentUserCommentQuery = useQuery({
         queryKey: currentUserQueryKey,
-        queryFn: getCurrentUserComments,
+        queryFn: () => getCurrentUserComments(postId),
         initialData: [],
         staleTime: 30 * 1000,
-        enabled: isAuthenticated,
+        enabled: (isAuthenticated && shouldGettingComments),
         gcTime: DEFAULT_GC_TIME,
     })
 
     // comments
-    const commentQueryKey = postKeys.comments(postId);
-
-    const getComments = async ({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<PostCommentDTO[]>> => {
-        const response = await api.get<SuccessResponseData<InfiniteQuery<PostCommentDTO[]>>>(`post/${postId}/comments`, {
-            params: {
-                cursor: pageParam
-            }
-        })
-
-        if (!response.data.data?.items) throw new Error("Data is empty")
-
-        return response.data.data;
-    }
+    const commentQueryKey = postKeys.comments(postId, hightlightedCommentId);
 
     const commentQuery = useInfiniteQuery({
-        queryFn: getComments,
+        queryFn: ({ pageParam }) => getComments(postId, pageParam, hightlightedCommentId),
         queryKey: commentQueryKey,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
+        enabled: (shouldGettingComments),
         getNextPageParam: (lastPage: InfiniteQuery<PostCommentDTO[]>) => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
     });
+
+    // handle hightlight comment
+    const highlightedCommentRef = useRef<HTMLDivElement | null>(null);
+
+    useLayoutEffect(() => {
+        if (!hightlightedCommentId || !hightlightedCommentQuery.data) return;
+
+        highlightedCommentRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+
+    }, [hightlightedCommentId, hightlightedCommentQuery.data])
+
 
     return (
         <>
@@ -68,7 +79,7 @@ const CommentSection = ({ postId }: Props) => {
             {/* comments */}
             <div className="w-full space-y-8 mt-10 pb-6">
                 {
-                    (commentQuery.isPending || (isAuthenticated && currentUserCommentQuery.isPending)) ?
+                    ((commentQuery.isPending || (isAuthenticated && currentUserCommentQuery.isPending)) && shouldGettingComments) ?
                         <>
                             {
                                 Array.from({ length: 3 }).map((_item, index) => (
@@ -78,6 +89,14 @@ const CommentSection = ({ postId }: Props) => {
                         </>
                         :
                         <>
+                            {/* hightlight comment */}
+                            {
+                                hightlightedCommentQuery.data &&
+                                <div className="w-full" ref={highlightedCommentRef}>
+                                    <Comment data={hightlightedCommentQuery.data} postId={postId} isHightlighted={true}/>
+                                </div>
+                            }
+
                             {/* current user comments */}
                             {
                                 currentUserCommentQuery.data?.map(data => <Comment data={data} postId={postId} />)
@@ -92,7 +111,7 @@ const CommentSection = ({ postId }: Props) => {
                             }
 
                             {/* sentinel */}
-                            <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage} textForGuest="to view more comments."/>
+                            <InfiniteScrollSentinel fetchNextPage={commentQuery.fetchNextPage} hasNextPage={commentQuery.hasNextPage} isFetchingNextPage={commentQuery.isFetchingNextPage} textForGuest="to view more comments." />
                         </>
                 }
             </div>

@@ -6,6 +6,13 @@ export const postKeys = {
     
     userPosts : (username : string) => [mainKey, "user" , username],
 
-    comments: (postId: string) => [mainKey, postId, "comments"],
+    comment : (commentId : string) => [mainKey, "comment", commentId],
+    comments: (postId: string, exclude?: string | undefined | null) => {
+        if(exclude) {
+            return [mainKey, postId, "comments", exclude];
+        }
+
+        return [mainKey, postId, "comments"];
+    },
     currentUserComments: (postId: string) => [mainKey, postId, "comments", "me"],
 };

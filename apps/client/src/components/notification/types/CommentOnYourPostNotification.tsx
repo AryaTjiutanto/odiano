@@ -33,9 +33,9 @@ const CommentOnYourPostNotification = ({ item }: Props) => {
                     </p>
                 }
                 {
-                    item.data?.message &&
+                    item.data?.comment &&
                     <p className="max-w-[45%] truncate text-base text-neutral-100 mt-0.5">
-                        {item.data.message}
+                        {item.data.comment.message}
                     </p>
                 }
             </div>

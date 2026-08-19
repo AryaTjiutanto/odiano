@@ -7,15 +7,16 @@ import CommentMenu from "../../floating-menu/CommentMenu";
 type Props = {
     data: PostCommentDTO,
     postId : string,
+    isHightlighted?: boolean,
 }
 
-const Comment = ({ data, postId }: Props) => {
+const Comment = ({ data, postId, isHightlighted }: Props) => {
     const { postPublicId } = useParams();
 
     return (
         <>
             {/* comment */}
-            <div className="w-full flex space-x-3">
+            <div className={`w-full flex space-x-3 ${isHightlighted && "bg-sky-500/10 border-l-4 border-sky-400 p-5"}`}>
                 <div className="w-12 h-12">
                     <Profile data={data?.author.profileImage} />
                 </div>

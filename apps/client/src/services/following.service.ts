@@ -12,7 +12,7 @@ export const createFollowing = async (followUserId: string | undefined) => {
         }
     });
 
-return true;
+    return true;
 }
 
 export const deleteFollowing = async (followUserId: string | undefined) => {

@@ -86,11 +86,14 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
                     targetType: NOTIFICATION_TARGET_TYPE.POST,
                     type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST,
                     data: {
-                        message: content,
+                        comment : {
+                            id: postComment._id.toString(),
+                            message: content,
+                        },
                         post: {
                             id: post._id.toString(),
                             publicId: post.publicId,
-                            content: post.content,
+                            ...(post.content && { content: post.content }),
                             ...(post.media && {
                                 firstMedia: {
                                     aspectRatio: post.media[0].aspectRatio,
@@ -146,7 +149,20 @@ export const deleteComment = async (currentUserId: string, commentId: string) =>
     }
 }
 
-export const get = async (cursor: string | undefined, postId: string, currentUserId: string | undefined): Promise<InfiniteQuery<PostCommentDTO[]>> => {
+export const getOne = async (commentId: string, postId: string): Promise<PostCommentDTO> => {
+    const comment = await PostComment.findOne({ _id: commentId, postId })
+    .select("_id parentId content depth replyCount createdAt")
+    .populate("author", "_id name username profileImage")
+    .lean<PostCommentQuery>();
+
+    if (!comment) {
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Comment not found");
+    }
+
+    return toPostCommentDTO(comment);
+}
+
+export const get = async (cursor: string | undefined, postId: string, currentUserId: string | undefined, exclude: string | undefined | null): Promise<InfiniteQuery<PostCommentDTO[]>> => {
     // check is user authenticated
     if (cursor && !currentUserId) {
         throw new UnauthorizedError();
@@ -157,11 +173,16 @@ export const get = async (cursor: string | undefined, postId: string, currentUse
         postId,
         ...(currentUserId ? { author: mongoose.trusted({ $ne: currentUserId }) } : {}),
         depth: 0,
-        ...(cursor ? {
+        ...(cursor && {
             _id: mongoose.trusted({
                 mongoose$lt: cursor
             })
-        } : {})
+        }),
+        ...(exclude && {
+            _id: mongoose.trusted({
+                $ne: exclude
+            })
+        })
     })
         .sort({ _id: -1 })
         .select("_id parentId content depth replyCount createdAt")
