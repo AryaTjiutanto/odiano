@@ -10,7 +10,6 @@ import type { PostDTO, UserProfileDTO } from "@odiano/shared";
 import { postKeys } from "../../queries/postKeys";
 import { removePostFromUserPostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
-import { useState } from "react";
 import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
 import { userKeys } from "../../queries/userKeys";
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
@@ -34,19 +33,24 @@ const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
     if (authorUsername !== user?.username) return;
 
     // delete handler
-    const [prevData, setPrevData] = useState<InfiniteQueryPostDTO | null>(null);
     const deletePostMutation = useMutation({
         mutationFn: deletePost,
         onMutate: () => {
+            let prevData : InfiniteQueryPostDTO | null = null;
+
             setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => {
-                setPrevData(oldData)
+                prevData = oldData;
 
                 return removePostFromUserPostCache(oldData, post.id)
             })
             setQueryDataHandler<UserProfileDTO>(userKeys.profile(user.username), (oldData) => updateUserTotalPosts(oldData, 1, "decrease"))
+
+            return {
+                prevData,
+            }
         },
-        onError: () => {
-            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => prevData || oldData)
+        onError: (_error, _variables, context) => {
+            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => context?.prevData || oldData)
             setQueryDataHandler<UserProfileDTO>(userKeys.profile(user.username), (oldData) => updateUserTotalPosts(oldData, 1, "increase"))
         },
     })

@@ -32,22 +32,26 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
     if (user.id !== authorId) return;
 
     // delete comment
-    const [prevData, setPrevData] = useState<PostCommentDTO[] | null>(null);
     const deleteCommentMutation = useMutation({
         mutationFn: deleteComment,
 
         onMutate: () => {
+            let prevData : PostCommentDTO[] | null = null;
             setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => {
-                setPrevData(oldData)
+                prevData = oldData;
 
                 return removeComment(oldData, commentId)
             });
 
             setQueryDataHandler<PostDTO>(postKeys.detail(postPublicId), (oldData) => decreaseCommentCount(oldData));
+
+            return {
+                prevData,
+            }
         },
 
-        onError: () => {
-            setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => prevData || oldData);
+        onError: (_error, _variables, context) => {
+            setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => context?.prevData || oldData);
 
             setQueryDataHandler<PostDTO>(postKeys.detail(postPublicId), (oldData) => increaseCommentCount(oldData));
         }

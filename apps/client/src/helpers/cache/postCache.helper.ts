@@ -12,11 +12,11 @@ export function removePostFromUserPostCache(oldData: InfiniteQueryPostDTO, postI
     }
 }
 
-export function addPostToUserPostCache(oldData: InfiniteQueryPostDTO, postData : PostDTO): InfiniteQueryPostDTO {
+export function addPostToUserPostCache(oldData: InfiniteQueryPostDTO, postData: PostDTO): InfiniteQueryPostDTO {
     return {
         ...oldData,
         pages: oldData.pages.map((page, index) => {
-            if(index == 0) {
+            if (index == 0) {
                 return {
                     ...page,
                     items: [
@@ -24,7 +24,7 @@ export function addPostToUserPostCache(oldData: InfiniteQueryPostDTO, postData :
                         ...page.items,
                     ]
                 }
-            } 
+            }
 
             return {
                 ...page,
@@ -121,8 +121,8 @@ export function updateToPostedCommentData(oldData: PostCommentDTO[], commentId: 
 
 export function addToComment(mutationData: CreateCommentMutationParams, oldData: PostCommentDTO[], currentUser: CurrentUserDTO | null): PostCommentDTO[] | undefined {
     if (!currentUser) return;
-    
-    const data =  [
+
+    const data = [
         {
             author: {
                 id: currentUser.id,

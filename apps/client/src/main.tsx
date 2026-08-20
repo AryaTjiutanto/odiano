@@ -79,12 +79,14 @@ createRoot(document.getElementById('root')!).render(
                             {/* post */}
                             <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
 
-                            {/* notification */}
-                            <Route path='/notification' element={<Notification />} />
 
                             {/* profile */}
                             <Route path='/profile/:username' element={<Profile />} />
+
+                            {/* require auth */}
                             <Route element={<RequireAuthGuard />}>
+                              <Route path='/notification' element={<Notification />} />
+
                               <Route path='/edit-profile' element={<EditProfile />} />
                             </Route>
                           </Route>

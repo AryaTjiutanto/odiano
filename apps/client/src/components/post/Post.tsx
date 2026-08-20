@@ -3,11 +3,11 @@ import { Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "../profile/Profile";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { type MouseEvent } from "react";
-import { applyLikeToInfinitePostCache, removeLikeFromInfinitePostCache } from "../../helpers/cache/postCache.helper";
+import { applyLikeToInfinitePostCache, applyLikeToPostCache, removeLikeFromInfinitePostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { createLike, deleteLike } from "../../services/post.service";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
@@ -30,32 +30,49 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const dataAuthor = data.author ?? author;
-    const postQueryKey = postKeys.all;
+
+    // mutation handler
+    function likeMutationHandler() {
+        setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (old) => applyLikeToInfinitePostCache(old, data.id))
+
+        // set post data
+        setQueryDataHandler<PostDTO>(postKeys.detail(data.publicId), (old) => applyLikeToPostCache(old));
+        
+        // set user posts
+        if (!dataAuthor?.username) return;
+        setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(dataAuthor?.username), (old) => applyLikeToInfinitePostCache(old, data.id))
+    }
+
+    function unlikeMutationHandler() {
+        setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (old) => removeLikeFromInfinitePostCache(old, data.id))
+
+        // set post data
+        setQueryDataHandler<PostDTO>(postKeys.detail(data.publicId), (old) => removeLikeFromPostCache(old));
+
+        // set user posts
+        if (!dataAuthor?.username) return;
+        setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(dataAuthor?.username), (old) => removeLikeFromInfinitePostCache(old, data.id));
+    }
 
     // like post mutation
     const applylikeMutation = useMutation({
         mutationFn: createLike,
-        mutationKey: postQueryKey,
-
-        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => applyLikeToInfinitePostCache(old, data.id)),
-
-        onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => removeLikeFromInfinitePostCache(old, data.id)),
+        onMutate: likeMutationHandler,
+        onError: unlikeMutationHandler,
     })
 
     // unlike postMutation
     const removeLikeMutation = useMutation({
         mutationFn: deleteLike,
-        mutationKey: postQueryKey,
-
-        onMutate: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => removeLikeFromInfinitePostCache(old, data.id)),
-        onError: () => setQueryDataHandler<InfiniteQueryPostDTO>(postQueryKey, (old) => applyLikeToInfinitePostCache(old, data.id)),
+        onMutate: unlikeMutationHandler,
+        onError: likeMutationHandler,
     })
 
     // handle like
     const handleLike = async (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
 
-        if (!isInitialized) return;
+        if (!isInitialized || removeLikeMutation.isPending || applylikeMutation.isPending) return;
 
         if (!isAuthenticated) {
             return navigate("/signin");
