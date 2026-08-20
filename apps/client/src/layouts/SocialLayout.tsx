@@ -45,7 +45,7 @@ const SocialLayout = () => {
                     </aside>
 
                     {/* main */}
-                    <main className="sm:col-span-8 md:col-span-5 lg:col-span-6 xl:col-span-7 2xl:col-span-5 pb-16 sm:pb-0">
+                    <main className="sm:col-span-8 md:col-span-5 lg:col-span-6 xl:col-span-7 2xl:col-span-5 pb-16 sm:pb-0 min-w-0">
                         <Outlet />
                     </main>
 

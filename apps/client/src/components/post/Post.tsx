@@ -96,7 +96,7 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
     }
 
     return (
-        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 sm:p-7 sm:rounded-lg sm:bg-neutral-950 cursor-pointer border-b last:border-0 border-neutral-900 sm:border-0">
+        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 sm:p-7 sm:rounded-lg sm:bg-neutral-950 cursor-pointer border-b last:border-0 border-neutral-900 sm:border-0 relative overflow-hidden">
             <div className="flex items-center justify-between">
                 <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
                     <div className="flex items-center space-x-3">

@@ -1,4 +1,4 @@
-import type { PostMedia as PostMediaType } from "@odiano/shared";
+import { MEDIA_ASPECT_RATIO, type PostMedia as PostMediaType } from "@odiano/shared";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -20,26 +20,30 @@ const PostMedia = ({ media }: Props) => {
         const item = media[0];
 
         return (
-            <div
-                className="relative min-w-[50%] max-h-140 overflow-hidden rounded-xl"
-                style={{ aspectRatio: item.aspectRatio }}
-                onClick={(e: any) => e.stopPropagation()}
-            >
-                {item.type === "image" && (
-                    <img
-                        src={item.source.url}
-                        alt=""
-                        className="h-full w-full object-cover"
-                    />
-                )}
+            <div className="w-full min-w-0 overflow-hidden">
+                <div
+                    className="min-w-[30%] max-w-full max-h-140 overflow-hidden rounded-xl"
+                    style={{  
+                        ...(item.aspectRatio !== MEDIA_ASPECT_RATIO["original"] && { aspectRatio: item.aspectRatio }),
+                    }}
+                    onClick={(e: any) => e.stopPropagation()}
+                >
+                    {item.type === "image" && (
+                        <img
+                            src={item.source.url}
+                            alt=""
+                            className="h-full w-full object-cover"
+                        />
+                    )}
 
-                {item.type === "video" && (
-                    <video
-                        src={item.source.url}
-                        className="h-full w-full object-cover"
-                        controls
-                    />
-                )}
+                    {item.type === "video" && (
+                        <video
+                            src={item.source.url}
+                            className="h-full w-full object-cover"
+                            controls
+                        />
+                    )}
+                </div>
             </div>
         );
     }
@@ -57,7 +61,7 @@ const PostMedia = ({ media }: Props) => {
 
     return (
 
-        <div className="mt-8 w-full relative h-fit" onClick={(e: any) => e.stopPropagation()}>
+        <div className="mt-8 w-full min-w-0 overflow-hidden relative" onClick={(e: any) => e.stopPropagation()}>
             <Swiper
                 modules={[Navigation, Pagination]}
                 slidesPerView="auto"
@@ -87,7 +91,7 @@ const PostMedia = ({ media }: Props) => {
                         width: "auto"
                     }}>
                         <div
-                            className="relative h-95 overflow-hidden rounded-xl"
+                            className="relative h-70 md:h-95 overflow-hidden rounded-xl"
                             style={{
                                 aspectRatio: item.aspectRatio,
                             }}
