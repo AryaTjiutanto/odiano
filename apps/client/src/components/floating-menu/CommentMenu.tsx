@@ -11,7 +11,6 @@ import { decreaseCommentCount, increaseCommentCount, removeComment } from "../..
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 import { notify } from "../../helpers/notification/notify.helper";
-import { useState } from "react";
 
 type Props = {
     postId: string,
