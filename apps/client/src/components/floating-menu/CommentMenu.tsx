@@ -11,12 +11,13 @@ import { decreaseCommentCount, increaseCommentCount, removeComment } from "../..
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 import { notify } from "../../helpers/notification/notify.helper";
+import { useState } from "react";
 
 type Props = {
-    postId : string,
-    postPublicId : string | undefined,
-    authorId : string,
-    commentId : string
+    postId: string,
+    postPublicId: string | undefined,
+    authorId: string,
+    commentId: string
 }
 
 const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
@@ -31,17 +32,23 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
     if (user.id !== authorId) return;
 
     // delete comment
+    const [prevData, setPrevData] = useState<PostCommentDTO[] | null>(null);
     const deleteCommentMutation = useMutation({
         mutationFn: deleteComment,
 
         onMutate: () => {
-            setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => removeComment(oldData, commentId));
+            setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => {
+                setPrevData(oldData)
+
+                return removeComment(oldData, commentId)
+            });
 
             setQueryDataHandler<PostDTO>(postKeys.detail(postPublicId), (oldData) => decreaseCommentCount(oldData));
         },
 
         onError: () => {
-            setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => removeComment(oldData, commentId));
+            setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => prevData || oldData);
+
             setQueryDataHandler<PostDTO>(postKeys.detail(postPublicId), (oldData) => increaseCommentCount(oldData));
         }
     })
@@ -54,7 +61,7 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
             "Cancel"
         );
 
-        if(!confirmationResult) return;
+        if (!confirmationResult) return;
 
         try {
             await deleteCommentMutation.mutateAsync(commentId);

@@ -1,6 +1,5 @@
-import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO, type NotificationReadStatus, type SuccessResponseData } from "@odiano/shared";
-import { useInfiniteQuery, useMutation, type InfiniteData, type QueryFunctionContext } from "@tanstack/react-query";
-import { api } from "../../libs/api";
+import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@odiano/shared";
+import { useInfiniteQuery, useMutation, type InfiniteData } from "@tanstack/react-query";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import NotificationSkeletonLoading from "./NotificationSkeletonLoading";
 import { useAppSelector } from "../../hooks/useRedux";
@@ -8,6 +7,9 @@ import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { useNavigate } from "react-router-dom";
 import { notificationKeys } from "../../queries/notificationKeys";
 import Notifications from "./Notifications";
+import { getNotifications, updateNotificationReadStatus } from "../../services/notification.service";
+import { markNotificationAsRead, markNotificationAsUnread } from "../../helpers/cache/notificationCache.helper";
+import type { InfiniteQueryNotificationDTO } from "../../types/notification.type";
 
 const NotificationContainer = () => {
     const username = useAppSelector((state) => state.auth.user?.username);
@@ -16,27 +18,23 @@ const NotificationContainer = () => {
 
     const navigate = useNavigate();
 
-    // get notification functions
-    const createNotificationQueryFn = (readStatus: NotificationReadStatus) => {
-        return async ({ pageParam }: QueryFunctionContext): Promise<InfiniteQuery<NotificationDTO[]>> => {
-            const response = await api.get<SuccessResponseData<InfiniteQuery<NotificationDTO[]>>>(`/notification`, {
-                params: {
-                    cursor: pageParam,
-                    readStatus: readStatus,
-                }
-            });
+    // get read notifications
+    const readNotificationQuery = useInfiniteQuery({
+        queryFn: ({pageParam}) => getNotifications(NOTIFICATION_READ_STATUS.READ, pageParam),
+        queryKey: notificationKeys.read,
+        staleTime: 30 * 1000,
+        gcTime: DEFAULT_GC_TIME,
+        initialPageParam: null,
+        enabled: isAuth,
+        getNextPageParam: (lastPage: InfiniteQuery<NotificationDTO[]>) => {
+            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+        },
+    })
 
-            if (!response.data.data) {
-                throw new Error("Notification is empty");
-            }
-
-            return response.data.data;
-        }
-    }
-
-    const notificationsInfiniteQueryFactory = (notificationKey: string[], fn: (data: QueryFunctionContext) => any) => useInfiniteQuery({
-        queryFn: fn,
-        queryKey: notificationKey,
+    // get unread notifications
+    const unreadNotificationQuery = useInfiniteQuery({
+        queryFn: ({pageParam}) => getNotifications(NOTIFICATION_READ_STATUS.UNREAD, pageParam),
+        queryKey: notificationKeys.unread,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
@@ -46,57 +44,13 @@ const NotificationContainer = () => {
         },
     });
 
-    // get read notifications
-    const getReadNotifications = createNotificationQueryFn(NOTIFICATION_READ_STATUS.READ);
-    const readNotificationQuery = notificationsInfiniteQueryFactory(notificationKeys.read, getReadNotifications);
-
-    // get unread notifications
-    const getUnreadNotifications = createNotificationQueryFn(NOTIFICATION_READ_STATUS.UNREAD);
-    const unreadNotificationQuery = notificationsInfiniteQueryFactory(notificationKeys.unread, getUnreadNotifications);
-
     // mutation
-    const updateNotificationReadStatus = async (notificationId: string): Promise<boolean> => {
-        await api.put<SuccessResponseData>(`/notification/update/read-status/${notificationId}`);
-
-        return true;
-    }
-
     const notificationReadStatusMutation = useMutation({
         mutationFn: updateNotificationReadStatus,
 
-        onMutate: (notificationId: string) => setQueryDataHandler<InfiniteData<InfiniteQuery<NotificationDTO[]>>>(notificationKeys.unread, (oldData) => {
-            return {
-                ...oldData,
-                pageParams: oldData.pageParams,
-                pages: oldData.pages.map((page) => ({
-                    ...page,
-                    items: page.items.map(item => {
-                        return item.id == notificationId ?
-                            {
-                                ...item,
-                                isRead: true,
-                            } : item
-                    })
-                }))
-            }
-        }),
+        onMutate: (notificationId: string) => setQueryDataHandler<InfiniteQueryNotificationDTO>(notificationKeys.unread, (oldData) => markNotificationAsRead(oldData, notificationId)),
 
-        onError: (notificationId: string) => setQueryDataHandler<InfiniteData<InfiniteQuery<NotificationDTO[]>>>(notificationKeys.unread, (oldData) => {
-            return {
-                ...oldData,
-                pageParams: oldData.pageParams,
-                pages: oldData.pages.map((page) => ({
-                    ...page,
-                    items: page.items.map(item => {
-                        return item.id == notificationId ?
-                            {
-                                ...item,
-                                isRead: false,
-                            } : item
-                    })
-                }))
-            }
-        })
+        onError: (notificationId: string) => setQueryDataHandler<InfiniteQueryNotificationDTO>(notificationKeys.unread, (oldData) => markNotificationAsUnread(oldData, notificationId)),
     })
 
     const handleUpdateReadStatus = async (item: NotificationDTO) => {

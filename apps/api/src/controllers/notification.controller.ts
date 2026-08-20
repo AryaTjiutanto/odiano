@@ -41,6 +41,22 @@ export const getUnreadCount = async (req : Request, res : Response, next : NextF
     }
 }
 
+export const updateAllReadStatus = async (req : Request, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+
+    try {
+        if(!currentUserId) {
+            throw new UnauthorizedError();
+        }
+
+        await notificationService.updateAllReadStatus(currentUserId);
+
+        res.status(207).json(successResponseData(SUCCESS_RESPONSE_CODE.updated, "Update successfully"))
+    } catch (err) {
+        next(err)
+    }
+}
+
 export const updateReadStatus = async (req : Request, res : Response, next : NextFunction) => {
     const currentUserId = req.userId;
     const notificationId = req.params.notificationId;

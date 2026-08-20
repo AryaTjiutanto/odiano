@@ -1,12 +1,12 @@
-import type { InfiniteData } from "@tanstack/react-query"
 import CommentOnYourPostNotification from "./types/CommentOnYourPostNotification"
-import { NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@odiano/shared"
+import { NOTIFICATION_TYPE, type NotificationDTO } from "@odiano/shared"
 import FollowYouNotification from "./types/FollowYouNotification"
 import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel"
 import LikeYourPost from "./types/LikeYourPost"
+import type { InfiniteQueryNotificationDTO } from "../../types/notification.type"
 
 type Props = {
-    data: InfiniteData<InfiniteQuery<NotificationDTO[]>> | null | undefined,
+    data: InfiniteQueryNotificationDTO | null | undefined,
     fetchNextPage: () => Promise<unknown>,
     hasNextPage: boolean,
     isFetchingNextPage: boolean,

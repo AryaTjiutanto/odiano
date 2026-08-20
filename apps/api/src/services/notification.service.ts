@@ -63,6 +63,15 @@ export const updateReadStatus = async (currentUserId: string, notificationId: st
     notification.save();
 }
 
+export const updateAllReadStatus = async (currentUserId: string) => {
+    await Notification.updateMany({
+        recepient: currentUserId,
+        isRead: false,
+    }, {
+        isRead: true,
+    })
+}
+
 export const create = async (authorId: string, params: createNotificationParams, session?: ClientSession) => {
     await Notification.create([
         {

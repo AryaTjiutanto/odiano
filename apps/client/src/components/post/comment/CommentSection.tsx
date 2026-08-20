@@ -27,6 +27,7 @@ const CommentSection = ({ postId, shouldGettingComments = true }: Props) => {
         queryFn: () => getComment(hightlightedCommentId!, postId),
         enabled: (!!hightlightedCommentId && shouldGettingComments),
         staleTime: 30 * 1000,
+        gcTime: DEFAULT_GC_TIME,
         initialData: null,
     });
 
