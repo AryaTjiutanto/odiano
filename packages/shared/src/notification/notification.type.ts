@@ -1,4 +1,4 @@
-import { MediaAspectRatio } from "../post";
+import { AllowedMediaTypes, MediaAspectRatio } from "../post";
 import { UserSummaryDTO } from "../user";
 import { NotificationTargetType, NotificationType } from "./notification.const";
 
@@ -20,6 +20,7 @@ export type NotificationPostData = {
     publicId: string,
     content?: string,
     firstMedia?: {
+        type : AllowedMediaTypes,
         aspectRatio: MediaAspectRatio,
         url: string,
         publicId: string,

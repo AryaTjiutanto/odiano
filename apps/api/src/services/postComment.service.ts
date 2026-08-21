@@ -96,6 +96,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
                             ...(post.content && { content: post.content }),
                             ...(post.media && {
                                 firstMedia: {
+                                    type : post.media[0].type,
                                     aspectRatio: post.media[0].aspectRatio,
                                     url: post.media[0].source.url,
                                     publicId: post.media[0].source.publicId,

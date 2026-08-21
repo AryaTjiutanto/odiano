@@ -1,7 +1,8 @@
-import type { NotificationDTO } from "@odiano/shared"
+import { ALLOWED_MEDIA_TYPES, type NotificationDTO } from "@odiano/shared"
 import { formatRelativeShort } from "../../../utils/dateFormater.util"
 import Profile from "../../profile/Profile"
 import { MessageCircle } from "lucide-react"
+import NotificationMedia from "../NotificationMedia"
 
 type Props = {
     item: NotificationDTO
@@ -16,7 +17,7 @@ const CommentOnYourPostNotification = ({ item }: Props) => {
                 </div>
 
                 <div className="absolute bottom-0 -right-1">
-                    <MessageCircle className="text-white fill-white w-5"/>
+                    <MessageCircle className="text-white fill-white w-5" />
                 </div>
             </div>
 
@@ -40,12 +41,7 @@ const CommentOnYourPostNotification = ({ item }: Props) => {
                 }
             </div>
 
-            {
-                (item.data?.post && item.data.post.firstMedia) &&
-                <div className="max-h-24 max-w-16 rounded-md overflow-hidden">
-                    <img src={item.data.post.firstMedia.url} className="w-full" style={{ aspectRatio : item.data.post.firstMedia.aspectRatio }} />
-                </div>
-            }
+            <NotificationMedia mediaType={item.data?.post?.firstMedia?.type} mediaUrl={item.data?.post?.firstMedia?.url} mediaAspectRatio={item.data?.post?.firstMedia?.aspectRatio} />
         </div>
     )
 }
