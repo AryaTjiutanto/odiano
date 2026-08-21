@@ -3,7 +3,7 @@ import { Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "../profile/Profile";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { postKeys } from "../../queries/postKeys";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { type MouseEvent } from "react";

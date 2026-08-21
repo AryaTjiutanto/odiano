@@ -1,12 +1,13 @@
+import { ALLOWED_MEDIA_TYPES, AllowedMediaTypes } from "@odiano/shared";
 import cloudinary from "../config/cloudinary.config";
 import { removeTemp } from "../utils/path";
 
 type CloudinaryNewDataResult = {
     publicId : string,
-    url : string
+    url : string,
 }
 
-export const commitTempImage = async (tempPublicId : string, oldPublicId? : string | null | undefined) : Promise<CloudinaryNewDataResult | null> => {
+export const commitTempImage = async (tempPublicId : string, oldPublicId? : string | null | undefined, resourceType : AllowedMediaTypes = ALLOWED_MEDIA_TYPES.IMAGE) : Promise<CloudinaryNewDataResult | null> => {
     // delete old image
     if (oldPublicId) {
         await cloudinary.api.delete_resources([oldPublicId]);
@@ -15,7 +16,7 @@ export const commitTempImage = async (tempPublicId : string, oldPublicId? : stri
     // moved new image from temp
     const newPublicId = removeTemp(tempPublicId);
 
-    const result = await cloudinary.uploader.rename(tempPublicId, newPublicId);
+    const result = await cloudinary.uploader.rename(tempPublicId, newPublicId, { resource_type : resourceType });
 
     if(!result) {
         return null;

@@ -308,7 +308,9 @@ export const create = async (
                 const committedPostMedia = await Promise.all(
                     data.media.map(async (media) => {
                         const committedData = await commitTempImage(
-                            media.source.publicId
+                            media.source.publicId,
+                            undefined,
+                            media.type
                         );
 
                         if (!committedData) {

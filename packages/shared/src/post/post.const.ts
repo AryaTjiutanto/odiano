@@ -32,8 +32,8 @@ export type AllowedMediaProviders = typeof ALLOWED_MEDIA_PROVIDERS[keyof typeof 
 
 // media types
 export const ALLOWED_MEDIA_TYPES = {
-    IMAGE : 'image',
-    VIDEO : 'video',
+    IMAGE : 'image' as const,
+    VIDEO : 'video' as const,
 }
 export type AllowedMediaTypes = typeof ALLOWED_MEDIA_TYPES[keyof typeof ALLOWED_MEDIA_TYPES];
 

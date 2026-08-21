@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, createPostSchema, MEDIA_ASPECT_RATIO, POST_MAX_MEDIA, type CreatedDocumentId, type CreatePostSchema, type PostMedia, type SuccessResponseData, type UserProfileDTO } from "@odiano/shared";
+import { ALLOWED_MEDIA_PROVIDERS, createPostSchema, MEDIA_ASPECT_RATIO, POST_MAX_MEDIA, type CreatedDocumentId, type CreatePostSchema, type PostMedia, type SuccessResponseData, type UserProfileDTO } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
@@ -23,7 +23,7 @@ import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { userKeys } from "../../queries/userKeys";
 import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
 
-export const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
+const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
 const PostFormSection = () => {
     const setQueryDataHandler = useSetQueryDataHandler();
@@ -82,7 +82,7 @@ const PostFormSection = () => {
                     return {
                         aspectRatio: file.editData?.aspectRatio || MEDIA_ASPECT_RATIO["7:5"],
                         provider: ALLOWED_MEDIA_PROVIDERS.CLOUDINARY,
-                        type: ALLOWED_MEDIA_TYPES.IMAGE,
+                        type: file.type,
                         order: index,
                         source: {
                             url: file.uploaded.url,
@@ -266,6 +266,10 @@ const PostFormSection = () => {
                                                             <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => handleRemoveFile(index)}>
                                                                 <X size={20} />
                                                             </button>
+                                                        </div>
+
+                                                        <div className="p-1 px-2 text-[13px] rounded-md bg-black/60 absolute top-2 left-2 duration-100">
+                                                            10%
                                                         </div>
                                                     </div>
                                                 )

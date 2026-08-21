@@ -1,5 +1,4 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import SocialHeader from "../../components/social/SocialHeader";
 import { postKeys } from "../../queries/postKeys";
 import { getPosts } from "../../services/post.service";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";

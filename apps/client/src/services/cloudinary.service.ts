@@ -1,9 +1,8 @@
-import type { CloudinarySignaturePayload } from "@odiano/shared";
-import { getCloudinarySignedUrl } from "../utils/cloudinary.util";
+import { ALLOWED_MEDIA_TYPES, type AllowedMediaTypes, type CloudinarySignaturePayload } from "@odiano/shared";
 import axios from "axios";
 import type { UploadedFileData } from "../types/file.type";
 
-export const uploadFileToCloudinary = async (blob : Blob, fileName : string, signaturePayload : CloudinarySignaturePayload) : Promise<UploadedFileData> => {
+export const uploadFileToCloudinary = async (blob : Blob, fileName : string, signaturePayload : CloudinarySignaturePayload, resourceType : AllowedMediaTypes = ALLOWED_MEDIA_TYPES.IMAGE) : Promise<UploadedFileData> => {
     // upload to cloudinary
     const file = new File([blob], `${fileName}`, { type: blob.type });
 
@@ -15,7 +14,7 @@ export const uploadFileToCloudinary = async (blob : Blob, fileName : string, sig
     formData.append("folder", signaturePayload.folder);
     formData.append("api_key", signaturePayload.apiKey);
 
-    const cloudinaryResponse = await axios.post(getCloudinarySignedUrl(signaturePayload.cloudName), formData);
+    const cloudinaryResponse = await axios.post(`https://api.cloudinary.com/v1_1/${signaturePayload.cloudName}/${resourceType}/upload`, formData);
 
     // return url and publicId
     const publicId = cloudinaryResponse.data.public_id;
