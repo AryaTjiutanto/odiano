@@ -41,6 +41,8 @@ export type FileData = {
     },
 }
 
+export type FileUploadProgress = Record<string, number>;
+
 export type ImageEditorOptions = {
     aspectRatio: MediaAspectRatio,
     allowAspectRatioChange?: boolean,

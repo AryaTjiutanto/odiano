@@ -1,7 +1,7 @@
 import type { CloudinarySignaturePayload, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 import { uploadFileToCloudinary } from "./cloudinary.service";
-import type { FileData, UploadedFileData } from "../types/file.type";
+import type { FileData, FileUploadProgress, UploadedFileData } from "../types/file.type";
 import type React from "react";
 
 export const uploadProfileImage = async (blob: Blob): Promise<UploadedFileData> => {
@@ -38,7 +38,8 @@ export const uploadCoverImage = async (blob: Blob): Promise<UploadedFileData> =>
 
 export const uploadPostAssets = async (
     fileData: FileData[],
-    setFileData: React.Dispatch<React.SetStateAction<FileData[] | null>>
+    setFileData: React.Dispatch<React.SetStateAction<FileData[] | null>>,
+    setUploadProgress?: React.Dispatch<React.SetStateAction<FileUploadProgress>>
 ): Promise<(FileData | null)[]> => {
     // get signatures
     const response = await api.get<
@@ -81,7 +82,13 @@ export const uploadPostAssets = async (
                         file.blob.edited || file.blob.original,
                         `asset-${index}`,
                         signaturePayload[index],
-                        file.type
+                        file.type,
+                        setUploadProgress ? (progress) => {
+                            setUploadProgress(prev => ({
+                                ...prev,
+                                [file.id]: progress,
+                            }));
+                        } : undefined
                     );
 
                     const newData: FileData = {

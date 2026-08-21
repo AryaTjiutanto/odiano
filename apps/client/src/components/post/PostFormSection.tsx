@@ -206,7 +206,7 @@ const PostFormSection = () => {
 
     // unload effect
     useEffect(() => {
-        if (!isDirty || !fileUpload.fileData || fileUpload.fileData.length == 0) return;
+        if (!isDirty && (!fileUpload.fileData || fileUpload.fileData.length == 0)) return;
 
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             e.preventDefault();
@@ -268,9 +268,17 @@ const PostFormSection = () => {
                                                             </button>
                                                         </div>
 
-                                                        <div className="p-1 px-2 text-[13px] rounded-md bg-black/60 absolute top-2 left-2 duration-100">
-                                                            10%
-                                                        </div>
+                                                        {
+                                                            fileUpload.uploadProgress[file.id] &&
+                                                            <div className="p-1 px-2 text-[13px] rounded-md bg-black/60 absolute top-2 left-2 duration-100">
+                                                                {
+                                                                    fileUpload.uploadProgress[file.id] == 100 ?
+                                                                    "Uploaded"
+                                                                    :
+                                                                    `${fileUpload.uploadProgress[file.id]}%`
+                                                                }
+                                                            </div>
+                                                        }
                                                     </div>
                                                 )
                                             }
@@ -296,7 +304,13 @@ const PostFormSection = () => {
                         <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={handleImageInput} />
 
                         {/* text input */}
-                        <PostContentEditor errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content)} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags)} />
+                        <PostContentEditor errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                        })} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                        })} />
 
                         {/* commming soon */}
                         {/* <div className="flex flex-col space-y-2 mt-3">

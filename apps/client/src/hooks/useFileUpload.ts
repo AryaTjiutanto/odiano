@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE, DEFAULT_MAX_VIDEO_SIZE } from "../consts/file.const";
-import type { FileEditData, FileData } from "../types/file.type";
+import type { FileEditData, FileData, FileUploadProgress } from "../types/file.type";
 import { notify } from "../helpers/notification/notify.helper";
 import { uploadCoverImage, uploadPostAssets, uploadProfileImage } from "../services/upload.service";
 import { uploadSingleFile } from "../helpers/uploadFile.helper";
@@ -22,6 +22,7 @@ const useFileUpload = ({
     type,
 }: UseImageUploadOptions) => {
     const [fileData, setFileData] = useState<FileData[] | null>(null);
+    const [uploadProgress, setUploadProgress] = useState<FileUploadProgress>({});
 
     const processMultipleFiles = (files: FileList | undefined | null) => {
         if (!files) {
@@ -150,7 +151,7 @@ const useFileUpload = ({
             }
 
             case "post-media": {
-                return await uploadPostAssets(fileData, setFileData);
+                return await uploadPostAssets(fileData, setFileData, setUploadProgress);
             }
         }
     };
@@ -197,7 +198,9 @@ const useFileUpload = ({
         setImageCroppedBlob,
 
         getFileDisplayUrl,
-        isMediaNotFull
+        isMediaNotFull,
+
+        uploadProgress,
     }
 }
 
