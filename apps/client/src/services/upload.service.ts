@@ -76,12 +76,14 @@ export const uploadPostAssets = async (
                 if (!file.blob?.original) return null;
 
                 // upload to cloudinary
+                console.log("file : ", file);
                 try {
                     const result = await uploadFileToCloudinary(
                         file.blob.edited || file.blob.original,
                         `asset-${index}`,
                         signaturePayload[index]
                     );
+                    console.log("result : ", result)
 
                     const newData: FileData = {
                         ...fileData[index],
@@ -107,7 +109,8 @@ export const uploadPostAssets = async (
                     });
 
                     return newData;
-                } catch (error) {
+                } catch (error : any) {
+                    console.log("errror : ", error.response);
                     return null;
                 }
             }
