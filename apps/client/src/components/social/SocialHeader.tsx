@@ -10,7 +10,7 @@ const SocialHeader = ({ mode }: Props) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 
     return (
-        <section className={`w-full sticky sm:top-0 pt-6 sm:pt-6 lg:pt-5 xl:pt-9 hidden sm:flex justify-between items-center bg-black/10 backdrop-blur-2xl z-23 ${isAuthenticated ? " pb-6" : "pb-0"}`}>
+        <section className={`w-full sticky sm:top-0 pt-6 sm:pt-6 lg:pt-5 xl:pt-9 hidden sm:flex justify-between items-center bg-black z-23 ${isAuthenticated ? " pb-6" : "pb-0"}`}>
             {
                 (isInitialized && isAuthenticated) &&
                 <>

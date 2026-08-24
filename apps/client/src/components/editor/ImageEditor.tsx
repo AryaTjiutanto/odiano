@@ -43,7 +43,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
     }
 
     const handleEditing = () => {
-        if(selectedAspectRatio == "original") {
+        if (selectedAspectRatio == "original") {
             handleComplete({
                 blob: imageBlob,
                 editData: {
@@ -82,7 +82,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
             {/* left setting */}
             <div className="absolute top-10 2xl:top-20 left-10 2xl:left-32 flex flex-col space-y-5">
                 {/* shortcut key */}
-                <div className="hidden lg:flex flex-col text-neutral-100 bg-neutral-950 p-5 border border-neutral-700 rounded-lg">
+                <div className="hidden xl:flex flex-col text-neutral-100 bg-neutral-950 p-5 border border-neutral-700 rounded-lg">
                     <h1 className="font-bold">
                         Shortcut key
                     </h1>
@@ -117,20 +117,38 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                         <h1 className="font-bold">
                             Aspect ratio
                         </h1>
-                        <div className="flex flex-col space-y-4 mt-5">
-                            {
-                                Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => {
-                                    return (
-                                        <button type="button" onClick={() => setSelectedAspectRatio(value)} className="w-fit flex flex-col items-center space-x-1 xl:space-x-2 cursor-pointer group">
-                                            <div className={`w-20 ${key == "original" && "h-12"} border grid place-content-center rounded duration-100 ${value == selectedAspectRatio ? "border-sky-500 text-sky-500 border-2" : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"}`} style={{ aspectRatio: key == "original" ? "auto" : value }}>
-                                                <span className="text-sm">
-                                                    {key}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    )
-                                })
-                            }
+
+                        <div className="h-16 lg:h-fit flex flex-row md:flex-col items-stretch gap-4 mt-5">
+                            {Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => setSelectedAspectRatio(value)}
+                                    className="h-full md:h-fit w-fit cursor-pointer group"
+                                >
+                                    <div
+                                        className={`
+                        h-full w-fit md:w-16 2xl:w-20
+                        ${key === "original" ? "p-3" : ""}
+                        border grid place-content-center rounded
+                        duration-100
+                        ${value === selectedAspectRatio
+                                                ? "border-2 border-sky-500 text-sky-500"
+                                                : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"
+                                            }
+                    `}
+                                        style={{
+                                            ...(key !== "original" && {
+                                                aspectRatio: value,
+                                            }),
+                                        }}
+                                    >
+                                        <span className="text-sm">
+                                            {key}
+                                        </span>
+                                    </div>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 }
@@ -162,22 +180,30 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                             )}
                         </div>
                 }
-                <button
-                    onClick={handleEditing}
-                    className={`w-full h-12 bg-white text-neutral-800 rounded-lg duration-150 mt-10 flex items-center justify-center relative ${isLoading ? "cursor-progress" : "hover:bg-neutral-200 cursor-pointer"}`}
-                    disabled={isLoading}
-                >
-                    {
-                        isLoading ?
-                            <div className="flex items-center text-black">
-                                <DotsLoader />
-                            </div>
-                            :
-                            <p>
-                                Done
-                            </p>
-                    }
-                </button>
+                <div className="mt-10 space-y-3">
+                    <button
+                        onClick={handleEditing}
+                        className={`w-full h-12 bg-white text-neutral-800 rounded-lg duration-150 flex items-center justify-center relative ${isLoading ? "cursor-progress" : "hover:bg-neutral-200 cursor-pointer"}`}
+                        disabled={isLoading}
+                    >
+                        {
+                            isLoading ?
+                                <div className="flex items-center text-black">
+                                    <DotsLoader />
+                                </div>
+                                :
+                                <p>
+                                    Done
+                                </p>
+                        }
+                    </button>
+                    <button
+                        onClick={() => handleClose(null)}
+                        className={`w-full h-12 bg-red-500 md:hidden text-neutral-200 rounded-lg duration-150 flex items-center justify-center relative cursor-pointer ${isLoading ? "hidden" : ""}`}
+                        disabled={isLoading}>
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
     )

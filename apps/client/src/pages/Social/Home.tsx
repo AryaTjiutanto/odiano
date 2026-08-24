@@ -47,7 +47,7 @@ const Homepage = () => {
                 {/* <StoryList /> */}
 
                 {/* posts */}
-                <div className="w-full mt-2 space-y-6 sm:pb-6">
+                <div className="w-full mt-2 sm:pb-6">
                     {
                         isPending &&
                         Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)

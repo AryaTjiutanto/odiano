@@ -23,7 +23,7 @@ const PostMedia = ({ media }: Props) => {
             <div className="w-full min-w-0 overflow-hidden">
                 <div
                     className="min-w-[30%] max-w-full max-h-140 overflow-hidden rounded-xl"
-                    style={{  
+                    style={{
                         ...(item.aspectRatio !== MEDIA_ASPECT_RATIO["original"] && { aspectRatio: item.aspectRatio }),
                     }}
                     onClick={(e: any) => e.stopPropagation()}
@@ -41,6 +41,9 @@ const PostMedia = ({ media }: Props) => {
                             src={item.source.url}
                             className="h-full w-full object-cover"
                             controls
+                            controlsList="nodownload nopictureinpicture"
+                            disablePictureInPicture
+                            onContextMenu={(e: any) => e.preventDefault()}
                         />
                     )}
                 </div>
@@ -51,7 +54,7 @@ const PostMedia = ({ media }: Props) => {
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
 
-    const updateSwiperState = (swiper : SwiperType) => {
+    const updateSwiperState = (swiper: SwiperType) => {
         setIsBeginning(swiper.isBeginning);
         setIsEnd(swiper.isEnd);
     };
@@ -109,6 +112,8 @@ const PostMedia = ({ media }: Props) => {
                                     src={item.source.url}
                                     className="h-full w-full object-cover"
                                     controls
+                                    controlsList="nodownload noplaybackrate"
+                                    disablePictureInPicture
                                 />
                             )}
                         </div>

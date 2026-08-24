@@ -17,7 +17,7 @@ const NotificationMedia = ({mediaType, mediaUrl, mediaAspectRatio = MEDIA_ASPECT
             }
             {
                 mediaType === ALLOWED_MEDIA_TYPES.VIDEO &&
-                <video src={mediaUrl} className="w-full" />
+                <video src={mediaUrl} className="w-full" controlsList="nodownload"/>
             }
         </div>
     )

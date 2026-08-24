@@ -248,7 +248,7 @@ const PostFormSection = () => {
                                                     <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
                                                         {file.type == "image" &&
                                                             <>
-                                                                <img src={fileUpload.fileData?.[index]?.url} alt="file" className="h-full w-fit" />
+                                                                <img src={URL.createObjectURL( file.blob.edited || file.blob.original)} alt="file" className="h-full w-fit" />
                                                             </>
                                                         }
                                                         {
@@ -295,7 +295,7 @@ const PostFormSection = () => {
                                 </div>
                                 :
                                 <div className={`w-full h-24`}>
-                                    <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 ${dragAndDrop.isDrag ? "border-sky-500" : "border-neutral-500"}`} htmlFor="media-input">
+                                    <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 p-5 text-center ${dragAndDrop.isDrag ? "border-sky-500" : "border-neutral-500"}`} htmlFor="media-input">
                                         <span className={`${dragAndDrop.isDrag && "hidden"}`}>Drag and drop photos or videos here, or click to select files. (optional)</span>
                                         <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500`}>Drop your Files</span>
                                     </label>
