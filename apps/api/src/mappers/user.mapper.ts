@@ -23,6 +23,7 @@ export const toUserSummaryDTO = (data : UserSummaryQuery, isFollowing? : boolean
         name : data.name,
         username : data.username,
         profileImage : data.profileImage,
-        ...(isFollowing ? {isFollowing} : {}),
+        ...(data.bio && {bio : data.bio}),
+        ...(isFollowing && {isFollowing}),
     }
 }

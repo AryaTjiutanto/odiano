@@ -8,17 +8,17 @@ import { AppError } from "../errors/appError.error";
 export const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const currentUserId = req.userId;
-        const { followUserId } = req.body.data;
+        const { targetUserId } = req.body.data;
 
         if (!currentUserId) {
             throw new UnauthorizedError();
         }
 
-        if(!followUserId) {
+        if(!targetUserId) {
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
 
-        await followingServices.createFollowing(currentUserId, followUserId);
+        await followingServices.createFollowing(currentUserId, targetUserId);
 
         res.status(201).json(successResponseData(SUCCESS_RESPONSE_CODE.created, "Created"));
     } catch (err) {
@@ -29,17 +29,17 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 export const deleteFollowing = async(req : Request, res: Response, next : NextFunction) => {
     try {
         const currentUserId = req.userId;
-        const {followUserId} = req.body;
+        const {targetUserId} = req.body;
 
         if(!currentUserId) {
             throw new UnauthorizedError();
         }
 
-        if(!followUserId) {
+        if(!targetUserId) {
             throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
         }
 
-        await followingServices.deleteFollowing(currentUserId, followUserId);
+        await followingServices.deleteFollowing(currentUserId, targetUserId);
         
         res.status(204).json(successResponseData(SUCCESS_RESPONSE_CODE.deleted, "Deleted"));
     } catch(err) {
@@ -50,13 +50,13 @@ export const deleteFollowing = async(req : Request, res: Response, next : NextFu
 export const checkFollowing = async (req : Request, res : Response, next : NextFunction) => {
     try {
         const currentUserId = req.userId;
-        const followUserId = String(req.params.userId);
+        const targetUserId = String(req.params.userId);
 
         if(!currentUserId) {
             throw new UnauthorizedError();
         }
 
-        const isFollowing = await followingServices.isFollowing(currentUserId, followUserId);
+        const isFollowing = await followingServices.isFollowing(currentUserId, targetUserId);
 
         res.status(200).json(successResponseData(SUCCESS_RESPONSE_CODE.ok,"ok", {isFollowing}));
     } catch (err) {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
 import GoogleLoginButton from "../auth/GoogleLoginButton";
-import UserSuggestions from "../user-suggestions/UserSuggestions";
+import SmallUserSuggestions from "../user-suggestions/Small/SmallUserSuggestions";
 import RightSidebarFooter from "./RightSidebarFooter";
 import { User } from "lucide-react";
 
@@ -45,7 +45,7 @@ const RightSidebar = () => {
     return (
         <>
             {/* user suggestions */}
-            <UserSuggestions />
+            <SmallUserSuggestions />
 
             {/* footer */}
             <RightSidebarFooter />

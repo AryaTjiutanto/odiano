@@ -1,80 +1,20 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import Profile from "../profile/Profile";
-import { userKeys } from "../../queries/userKeys";
-import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
-import { api } from "../../libs/api";
-import type { SuccessResponseData, UserSummaryDTO } from "@odiano/shared";
-import UserSuggestionsSkeletonLoading from "./UserSuggestionsSkeletonLoading";
-import { createFollowing, deleteFollowing } from "../../services/following.service";
-import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
+import { useQuery } from "@tanstack/react-query";
+import Profile from "../../profile/Profile";
+import { userKeys } from "../../../queries/userKeys";
+import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
+import SmallUserSuggestionsSkeletonLoading from "./SmallUserSuggestionsSkeletonLoading";
 import { Link } from "react-router-dom";
-import FollowingButton from "../social/FollowingButton";
+import FollowingButton from "../../social/FollowingButton";
+import { getSuggestedUsers } from "../../../services/user.service";
 
-const UserSuggestions = () => {
-    const setQueryDataHandler = useSetQueryDataHandler();
-
+const SmallUserSuggestions = () => {
     // query
-    async function getSuggestedUsers(): Promise<UserSummaryDTO[]> {
-        const response = await api.get<SuccessResponseData<UserSummaryDTO[]>>("/users/suggestions");
-
-        if (!response.data.data) {
-            throw new Error("Data is missing");
-        }
-
-        return response.data.data;
-    }
-
     const userQuery = useQuery({
-        queryKey: userKeys.suggestions,
+        queryKey: userKeys.sidebarSuggestions,
         queryFn: getSuggestedUsers,
         initialData: null,
         gcTime: DEFAULT_GC_TIME,
-        staleTime: 30 * 1000,
-    })
-
-    // handle mutation
-    function addFollowing(oldData: UserSummaryDTO[], userId: string | undefined) {
-        return oldData.map((data) => {
-            if (data.id == userId) {
-                return {
-                    ...data,
-                    isFollowing: true,
-                }
-            }
-
-            return data
-        })
-    }
-
-    function removeFollowing(oldData: UserSummaryDTO[], userId: string | undefined) {
-        return oldData.map((data) => {
-            if (data.id == userId) {
-                return {
-                    ...data,
-                    isFollowing: false,
-                }
-            }
-
-            return data;
-        })
-    }
-
-    // follow mutation
-    const followMutation = useMutation({
-        mutationFn: createFollowing,
-
-        onMutate: (userId) => setQueryDataHandler<UserSummaryDTO[]>(userKeys.suggestions, (oldData) => addFollowing(oldData, userId)),
-
-        onError: (_, userId) => setQueryDataHandler<UserSummaryDTO[]>(userKeys.suggestions, (oldData) => removeFollowing(oldData, userId))
-    })
-
-    // unfollow mutation
-    const unfollowMutation = useMutation({
-        mutationFn: deleteFollowing,
-
-        onMutate: (userId) => setQueryDataHandler<UserSummaryDTO[]>(userKeys.suggestions, (oldData) => removeFollowing(oldData, userId)),
-
-        onError: (_, userId) => setQueryDataHandler<UserSummaryDTO[]>(userKeys.suggestions, (oldData) => addFollowing(oldData, userId))
+        staleTime: 1 * 60 * 1000,
     })
 
     return (
@@ -86,7 +26,7 @@ const UserSuggestions = () => {
                 {
                     userQuery.isPending ?
                         <>
-                            <UserSuggestionsSkeletonLoading />
+                            <SmallUserSuggestionsSkeletonLoading />
                         </>
                         :
                         <>
@@ -111,7 +51,7 @@ const UserSuggestions = () => {
                                                     </Link>
 
                                                     <div role="button" className={`h-9  duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
-                                                        <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={data.isFollowing} userId={data.id}/>
+                                                        <FollowingButton isFollowing={data.isFollowing} userId={data.id} username={data.username}/>
                                                     </div>
                                                 </article>
                                             ))
@@ -129,4 +69,4 @@ const UserSuggestions = () => {
     )
 }
 
-export default UserSuggestions;
+export default SmallUserSuggestions;

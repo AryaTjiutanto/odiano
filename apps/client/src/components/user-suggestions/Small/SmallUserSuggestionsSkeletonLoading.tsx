@@ -1,4 +1,4 @@
-const UserSuggestionsSkeletonLoading = () => {
+const SmallUserSuggestionsSkeletonLoading = () => {
     return (
         <>
             {
@@ -17,4 +17,4 @@ const UserSuggestionsSkeletonLoading = () => {
     )
 };
 
-export default UserSuggestionsSkeletonLoading;
+export default SmallUserSuggestionsSkeletonLoading;

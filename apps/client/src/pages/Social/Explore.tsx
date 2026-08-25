@@ -7,7 +7,7 @@ import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { Link } from "react-router-dom";
-import Profile from "../../components/profile/Profile";
+import LargeUserSuggestions from "../../components/user-suggestions/large/LargeUserSuggestions";
 
 const Explore = () => {
     const postsQueryKey = postKeys.all;
@@ -72,55 +72,22 @@ const Explore = () => {
                 </div>
             </section>
             {/* user suggestions */}
-            <section className="mt-6 mb-16 space-y-6">
-                <div className="rounded-lg">
-                    <h1 className="text-2xl font-bold text-neutral-200">
-                        People to follow
-                    </h1>
-                    <div className="grid grid-cols-1 gap-6 gap-x-10 mt-8">
-                        {
-                            Array.from({ length: 4 }).map((_, i) => (
-                                <Link to={`/`} className="">
-                                    <div className="w-full flex items-start space-x-3" key={`user-suggestion-${0}`}>
-                                        <div className="w-12 h-12">
-                                            <Profile data={null} />
-                                        </div>
-                                        <div className="flex flex-1 flex-col items-center">
-                                            <div className="w-full flex justify-between">
-                                                <div>
-                                                    <h1 className="text-base font-bold truncate">
-                                                        John Does
-                                                    </h1>
-                                                    <h2 className="text-sm text-neutral-500 truncate">
-                                                        @johndoes
-                                                    </h2>
-                                                </div>
-                                                <div role="button" className={`h-9 duration-100 w-24 bg-white rounded-xl text-neutral-600 grid place-content-center text-sm font-semibold`}>
-                                                    Follow
-                                                </div>
-                                            </div>
-                                            <p className="text-neutral-300 whitespace-pre-line">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet molestias quibusdam esse rem, deleniti veniam reiciendis.
-                                            </p>
-                                        </div>
+            <LargeUserSuggestions />
 
-                                    </div>
-                                </Link>
+            <section className="mt-6">
+                <h1 className="text-2xl font-bold text-neutral-200">
+                    Posts for you
+                </h1>
+                <div className="w-full mt-6">
+                    {
+                        data?.pages.map((page) =>
+                            page.items.map((item) => (
+                                <Post data={item} key={`post-${item.publicId}`} />
                             ))
-                        }
-                    </div>
+                        )
+                    }
+                    <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." />
                 </div>
-            </section>
-
-            <section className="mt-6 space-y-6">
-                {
-                    data?.pages.map((page) =>
-                        page.items.map((item) => (
-                            <Post data={item} key={`post-${item.publicId}`} />
-                        ))
-                    )
-                }
-                <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." />
             </section>
         </div>
     )

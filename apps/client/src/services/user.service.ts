@@ -1,4 +1,4 @@
-import type { CreateUserProfileSchema, SuccessResponseData, UpdateUserProfile, UserProfileDTO } from "@odiano/shared";
+import type { CreateUserProfileSchema, SuccessResponseData, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { api } from "../libs/api";
 
 export const getUserProfile = async (username: string): Promise<UserProfileDTO> => {
@@ -21,22 +21,32 @@ export const createUserProfile = async (data: CreateUserProfileSchema): Promise<
     return response.data;
 }
 
-export const checkUsername = async (username : string) : Promise<boolean> => {
+export const checkUsername = async (username: string): Promise<boolean> => {
     const response = await api.get<SuccessResponseData<{ available: boolean }>>("/users/check-username", {
         params: {
             username,
         }
     });
 
-    if(!response.data.data) {
+    if (!response.data.data) {
         throw new Error("Data is missing");
     }
 
     return response.data.data?.available;
 }
 
-export const updateProfile = async (data : UpdateUserProfile) : Promise<SuccessResponseData> => {
+export const updateProfile = async (data: UpdateUserProfile): Promise<SuccessResponseData> => {
     const response = await api.put<SuccessResponseData>(`/users/profile/update`, data);
 
     return response.data;
+}
+
+export const getSuggestedUsers = async (): Promise<UserSummaryDTO[]> => {
+    const response = await api.get<SuccessResponseData<UserSummaryDTO[]>>("/users/suggestions");
+
+    if (!response.data.data) {
+        throw new Error("Data is missing");
+    }
+
+    return response.data.data;
 }

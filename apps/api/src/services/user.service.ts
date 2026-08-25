@@ -172,6 +172,7 @@ export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSu
                 name : 1,
                 username : 1,
                 profileImage : 1,
+                bio : 1,
             }
         }
     ]);

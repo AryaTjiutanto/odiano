@@ -9,7 +9,7 @@ import ErrorState from "../../components/common/ErrorState";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import DotsLoader from "../../components/loader/DotsLoader";
-import { createFollowing, deleteFollowing } from "../../services/following.service";
+import { createFollowing, deleteFollowing, getIsFollowingInformation } from "../../services/following.service";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/profile/Profile";
@@ -24,10 +24,7 @@ import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper
 import FollowingButton from "../../components/social/FollowingButton";
 import PostMedia from "../../components/post/PostMedia";
 import PostContent from "../../components/post/PostContent";
-
-type IsFollowingQueryData = {
-    isFollowing: boolean
-}
+import type { IsFollowingData } from "../../types/following.type";
 
 const ShowPost = () => {
     const navigate = useNavigate();
@@ -69,16 +66,10 @@ const ShowPost = () => {
     }, [postPublicId, navigate])
 
     // get is following handler
-    const isFollowingQueryKey = userKeys.isFollowing(postQuery.data?.author?.id || "");
-
-    const getIsFollowingInformation = async () => {
-        const response = await api.get<SuccessResponseData<IsFollowingQueryData>>(`/following/check/${postQuery.data?.author?.id}`);
-
-        return response.data.data;
-    }
+    const isFollowingQueryKey = userKeys.isFollowing(postQuery.data?.author?.username || "");
 
     const isFollowingQuery = useQuery({
-        queryFn: getIsFollowingInformation,
+        queryFn: () => getIsFollowingInformation(postQuery.data?.author?.username),
         queryKey: isFollowingQueryKey,
         enabled: (!!postQuery?.data && isAuthenticated),
         initialData: null,
@@ -90,12 +81,12 @@ const ShowPost = () => {
     const followMutation = useMutation({
         mutationFn: createFollowing,
 
-        onMutate: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => {
+        onMutate: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => {
             return {
                 isFollowing: true,
             }
         }),
-        onError: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => {
+        onError: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => {
             return {
                 isFollowing: false,
             }
@@ -105,11 +96,11 @@ const ShowPost = () => {
     const unfollowMutation = useMutation({
         mutationFn: deleteFollowing,
 
-        onMutate: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => ({
+        onMutate: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => ({
             isFollowing: false,
         })),
 
-        onError: () => setQueryDataHandler<IsFollowingQueryData>(isFollowingQueryKey, () => ({
+        onError: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => ({
             isFollowing: true,
         }))
     })
@@ -232,7 +223,7 @@ const ShowPost = () => {
                                             :
                                             <>
                                                 <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing ? "w-28" : "w-20"}`}>
-                                                    <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={isFollowingQuery.data?.isFollowing} userId={postQuery.data.author?.id} />
+                                                    <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={isFollowingQuery.data?.isFollowing} username={postQuery.data.author?.username} />
                                                 </div>
                                             </>
                                     }

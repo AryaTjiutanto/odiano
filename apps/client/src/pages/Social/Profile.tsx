@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { CalendarDays } from "lucide-react";
 import ProfileComponent from "../../components/profile/Profile";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@odiano/shared";
 import ErrorState from "../../components/common/ErrorState";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
@@ -10,9 +10,7 @@ import Post from "../../components/post/Post";
 import type { AxiosError } from "axios";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { useAppSelector } from "../../hooks/useRedux";
-import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
-import { createFollowing, deleteFollowing } from "../../services/following.service";
 import { getUserProfile } from "../../services/user.service";
 import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
@@ -22,7 +20,6 @@ import FollowingButton from "../../components/social/FollowingButton";
 const Profile = () => {
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserData = useAppSelector((state) => state.auth.user);
-    const setQueryDataHandler = useSetQueryDataHandler();
 
     const { username } = useParams();
 
@@ -51,44 +48,6 @@ const Profile = () => {
     });
 
     const isPostsEmpty = (postsQuery.data?.pages[0].items.length == 0 && postsQuery.data?.pages.length <= 1);
-
-    // create following handler
-    const followMutation = useMutation({
-        mutationFn: createFollowing,
-
-        onMutate: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
-            return {
-                ...oldData,
-                followerCount: oldData.followerCount + 1,
-                isFollowing: true,
-            }
-        }),
-
-        onError: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => {
-            return {
-                ...oldData,
-                followerCount: oldData.followerCount - 1,
-                isFollowing: false,
-            }
-        })
-    })
-
-    // delete following handler
-    const unfollowMutation = useMutation({
-        mutationFn: deleteFollowing,
-
-        onMutate: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
-            ...oldData,
-            followerCount: oldData.followerCount - 1,
-            isFollowing: false,
-        })),
-
-        onError: () => setQueryDataHandler<UserProfileDTO>(profileQueryKey, (oldData) => ({
-            ...oldData,
-            followerCount: oldData.followerCount + 1,
-            isFollowing: true,
-        }))
-    })
 
     // display the data
     if (profileQuery.isPending) {
@@ -211,7 +170,7 @@ const Profile = () => {
                         (!isAuthenticated || username != currentUserData?.username) &&
                         <>
                             <div role="button" className={`duration-100 h-11 ${profileQuery.data?.isFollowing ? "w-32" : "w-24"}`}>
-                                <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={profileQuery.data?.isFollowing} userId={profileQuery.data?.id} />
+                                <FollowingButton isFollowing={profileQuery.data?.isFollowing} userId={profileQuery.data?.id} username={profileQuery.data?.username}/>
                             </div>
                         </>
 
