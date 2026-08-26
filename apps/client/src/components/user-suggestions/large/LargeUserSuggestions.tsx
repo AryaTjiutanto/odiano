@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getSuggestedUsers } from "../../../services/user.service";
 import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
 import FollowingButton from "../../social/FollowingButton";
-import LargeUserSuggestionSkeletonLoading from "./LargeUserSuggestionSkeletonLoading";
+import UserSummarySkeletonLoading from "../../user/UserSummarySkeletonLoading";
+import UserSummary from "../../user/UserSummary";
 
 const LargeUserSuggestions = () => {
     const navigate = useNavigate();
@@ -28,37 +29,17 @@ const LargeUserSuggestions = () => {
                 <div className="grid grid-cols-1 gap-6 gap-x-10 mt-8">
                     {
                         userQuery.isPending ?
-                            <LargeUserSuggestionSkeletonLoading />
+                            Array.from({ length: 4 }).map((_, i) => {
+                                return (
+                                    <UserSummarySkeletonLoading key={`large-user-suggestion-loading-${i}`}/>
+                                )
+                            })
                             :
                             (userQuery.data && userQuery.data.length > 0) ?
                                 <>
                                     {
                                         userQuery.data?.map((data) => (
-                                            <article onClick={() => navigate(`/profile/${data.username}`)} className="w-full flex items-start space-x-3 cursor-pointer" key={`explore-user-suggestion-${data.id}`}>
-                                                <div className="w-full flex items-start space-x-3">
-                                                    <div className="w-12 h-12">
-                                                        <Profile data={data.profileImage} />
-                                                    </div>
-                                                    <div className="flex flex-1 flex-col">
-                                                        <div className="w-full flex justify-between">
-                                                            <div>
-                                                                <h1 className="text-base font-bold truncate">
-                                                                    {data.name}
-                                                                </h1>
-                                                                <h2 className="text-sm text-neutral-500 truncate">
-                                                                    @{data.username}
-                                                                </h2>
-                                                            </div>
-                                                            <div role="button" className={`h-9  duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
-                                                                <FollowingButton isFollowing={data.isFollowing} userId={data.id} username={data.username} />
-                                                            </div>
-                                                        </div>
-                                                        <p className="text-neutral-300 whitespace-pre-line text-left">
-                                                            {data.bio}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </article>
+                                            <UserSummary data={data} key={`explore-user-suggestion-${data.id}`}/>
                                         ))
                                     }
                                 </>

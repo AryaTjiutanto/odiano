@@ -1,12 +1,12 @@
 import { type Post as PostType, type PostMedia, ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, POST_VISIBILITIES } from "@odiano/shared"
 import mongoose, { Types } from "mongoose"
 import { nanoid } from "nanoid";
-import logger from "../libs/log/logger";
 
 // type for schema 
 type PostSchema = PostType & {
     publicId: string,
     author: Types.ObjectId,
+    hasMedia : boolean,
 }
 
 // post media schema
@@ -90,6 +90,10 @@ const postSchema = new mongoose.Schema<PostSchema>({
         type: [postMediaSchema],
         required: false,
         default: null,
+    },
+    hasMedia : {
+        type : Boolean,
+        default : false,
     },
     commentCount: {
         type: Number,

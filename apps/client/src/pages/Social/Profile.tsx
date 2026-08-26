@@ -160,7 +160,7 @@ const Profile = () => {
                 <div className="w-full mt-8 flex justify-end space-x-3">
                     {
                         (isAuthenticated && username == currentUserData?.username) &&
-                        <Link to={`/edit-profile`}>
+                        <Link to={`/profile/edit`}>
                             <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
                                 Edit profile
                             </button>

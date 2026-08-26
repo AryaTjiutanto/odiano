@@ -182,7 +182,7 @@ export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSu
     return formmatedUsers;
 }
 
-export const searchUsers = async (query: string): Promise<UserSummaryDTO[]> => {
+export const searchUsers = async (query: string, limit : number = 5) : Promise<UserSummaryDTO[]> => {
     const users = await User.aggregate<UserSummaryQuery>([
         {
             $match: {
@@ -256,7 +256,7 @@ export const searchUsers = async (query: string): Promise<UserSummaryDTO[]> => {
             }
         },
         {
-            $limit: 5,
+            $limit: limit,
         },
         {
             $project: {

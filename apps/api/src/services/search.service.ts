@@ -1,10 +1,11 @@
-import { ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, SEARCH_TYPES, SearchSuggestionDTO } from "@odiano/shared";
-import { searchUsers } from "./user.service"
+import { ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, SEARCH_TYPES, SearchSuggestionDTO, UserSummaryDTO } from "@odiano/shared";
 import { getHashtags } from "./hashtag.service";
 import { AppError } from "../errors/appError.error";
 import { listPostsByHashtag, searchPosts } from "./post.service";
+import { searchUsers } from "./user.service";
+import { searchOptions } from "../types/search.type";
 
-export const getSearchResult = async (query: string | undefined, cursor: string | undefined, currentUserId: string): Promise<InfiniteQuery<PostDTO[]>> => {
+export const getPostsSearchResult = async (query: string | undefined, cursor: string | undefined, currentUserId: string, options : searchOptions): Promise<InfiniteQuery<PostDTO[]>> => {
     if (!query) {
         throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Search query is required");
     }
@@ -18,12 +19,22 @@ export const getSearchResult = async (query: string | undefined, cursor: string 
 
     // get post by tag
     if (isTag) {
-        posts = await listPostsByHashtag(currentUserId, query.substring(1), cursor);
+        posts = await listPostsByHashtag(currentUserId, query.substring(1), cursor, options);
     }
 
-    posts = await searchPosts(currentUserId, query, cursor);
+    posts = await searchPosts(currentUserId, query, cursor, options);
 
     return posts;
+}
+
+export const getUsersSearchResult = async (query: string | undefined): Promise<UserSummaryDTO[]> => {
+    if (!query) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Search query is required");
+    }
+
+    const users = await searchUsers(query, 20);
+
+    return users;
 }
 
 export const getSuggestions = async (query: string): Promise<SearchSuggestionDTO[]> => {

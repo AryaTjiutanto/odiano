@@ -54,6 +54,9 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
     // handle submit
     const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if(!query || query.length <= 0) return;
+
         handleSearch(query, () => handleMutation({
             type: SEARCH_TYPES.GENERAL,
             data: null,

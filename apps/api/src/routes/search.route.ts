@@ -4,11 +4,13 @@ import { apiLimiter, consume, searchLimiter } from "../libs/limiter";
 import { validateData } from "../middlewares/validateData.middleware";
 import { searchQuerySchema } from "../validations/search.validation";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
-import { getSearchResult, getSuggestions } from "../controllers/search.controller";
+import { getPostsSearchResult, getSuggestions, getUsersSearchResult } from "../controllers/search.controller";
 
 const router = express.Router();
 
-router.get("/", consume(searchLimiter), requireAccessToken, validateData(searchQuerySchema, "query"), getSearchResult);
+router.get("/posts", consume(searchLimiter), requireAccessToken, validateData(searchQuerySchema, "query"), getPostsSearchResult);
+router.get("/users", consume(searchLimiter), requireAccessToken, validateData(searchQuerySchema, "query"), getUsersSearchResult);
+
 router.get("/suggestions", consume(searchLimiter), requireAccessToken, validateData(searchQuerySchema, "query"), getSuggestions);
 router.get("/history", consume(apiLimiter), requireAccessToken, getSearchHistory);
 router.post("/history/record", consume(apiLimiter), requireAccessToken, record);

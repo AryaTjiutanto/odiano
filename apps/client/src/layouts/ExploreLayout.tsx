@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
-import SocialHeader from "../components/social/SocialHeader";
+import { ExploreHeader } from "../components/social/ExploreHeader";
+import { SearchSectionProvider } from "../providers/SearchSectionProvider";
 
 const ExploreLayout = () => {
     return (
@@ -12,12 +13,14 @@ const ExploreLayout = () => {
             />
 
             {/* body */}
-            <div>
-                <SocialHeader mode="search" />
-                <main className="">
-                    <Outlet />
-                </main>
-            </div>
+            <SearchSectionProvider>
+                <div>
+                    <ExploreHeader />
+                    <main className="">
+                        <Outlet />
+                    </main>
+                </div>
+            </SearchSectionProvider>
         </>
     )
 }

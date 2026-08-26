@@ -11,8 +11,9 @@ import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
+import { searchOptions } from "../types/search.type";
 
-export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined): Promise<InfiniteQuery<PostFeedItem[]>> => {
+export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts
     let posts = await Post.aggregate<PostQuery>([
         {
@@ -25,7 +26,7 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
                                 query: query,
                                 path: ["content", "hashtags"],
                             }
-                        }
+                        },
                     ],
 
                     filter: [
@@ -34,17 +35,23 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
                                 mustNot: [
                                     {
                                         equals: {
-                                            path : "author",
+                                            path: "author",
                                             value: new mongoose.Types.ObjectId(currentUserId),
                                         }
                                     },
-                                ]
+                                ],
                             }
                         },
+                        ...(searchOptions?.onlyMedia ? [{
+                            equals: {
+                                path: "hasMedia",
+                                value : true
+                            }
+                        }] : []),
                         ...(cursor ? [
                             {
                                 range: {
-                                    path : "_id",
+                                    path: "_id",
                                     lt: new mongoose.Types.ObjectId(cursor),
                                 }
                             }
@@ -61,27 +68,27 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
         {
             $limit: POSTS_PAGE_SIZE + 1,
         },
-        
+
         {
             $lookup: {
                 from: "users",
                 localField: "author",
                 foreignField: "_id",
                 as: "author",
-                pipeline : [
+                pipeline: [
                     {
-                        $project : {
-                            _id : 1,
-                            name : 1,
-                            username : 1,
-                            profileImage : 1,
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            username: 1,
+                            profileImage: 1,
                         }
                     }
                 ]
             }
         },
         {
-            $unwind : "$author"
+            $unwind: "$author"
         },
         {
             $project: {
@@ -136,7 +143,7 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
     }
 }
 
-export const listPostsByHashtag = async (currentUserId: string | null | undefined, hashtag: string, cursor: string | undefined | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
+export const listPostsByHashtag = async (currentUserId: string | null | undefined, hashtag: string, cursor: string | undefined | null, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated
     if (cursor && !currentUserId) {
         throw new UnauthorizedError();
@@ -147,7 +154,8 @@ export const listPostsByHashtag = async (currentUserId: string | null | undefine
         hashtags: hashtag,
         ...(cursor ? {
             _id: mongoose.trusted({ $lt: cursor })
-        } : {})
+        } : {}),
+        ...(searchOptions?.onlyMedia && { media: { $exists: true } })
     };
 
     let posts = await Post.find(query)
@@ -199,7 +207,7 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
 
     // get posts data
     const query = cursor ? {
-        _id: mongoose.trusted({ $lt: cursor })
+        _id: mongoose.trusted({ $lt: cursor }),
     } : {};
 
     let posts = await Post.find(query)
@@ -295,10 +303,10 @@ export const create = async (
 
             // update user total posts
             await User.updateOne({
-                _id : userId
+                _id: userId
             }, {
-                $inc : {
-                    totalPosts : 1
+                $inc: {
+                    totalPosts: 1
                 }
             }, { session });
 
@@ -330,6 +338,7 @@ export const create = async (
                     {
                         $set: {
                             media: committedPostMedia,
+                            hasMedia : true,
                         },
                     },
                     { session }
@@ -337,7 +346,7 @@ export const create = async (
             }
 
             return {
-                id : post._id.toString(),
+                id: post._id.toString(),
                 publicId: post.publicId,
             };
         });
@@ -450,12 +459,12 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
 
             // decrese user total posts
             await User.updateOne({
-                _id : currentUserId
+                _id: currentUserId
             }, {
-                $inc : {
-                    totalPosts : -1
+                $inc: {
+                    totalPosts: -1
                 }
-            }, {session});
+            }, { session });
         });
     } finally {
         await session.endSession();

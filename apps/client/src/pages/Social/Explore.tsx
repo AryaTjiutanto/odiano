@@ -6,7 +6,6 @@ import type { InfiniteQuery, PostDTO } from "@odiano/shared";
 import PostSkeletonLoading from "../../components/post/PostSkeletonLoading";
 import Post from "../../components/post/Post";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
-import { Link } from "react-router-dom";
 import LargeUserSuggestions from "../../components/user-suggestions/large/LargeUserSuggestions";
 
 const Explore = () => {
@@ -48,7 +47,7 @@ const Explore = () => {
     return (
         <div className="sm:pb-6">
             {/* trending this week */}
-            <section className="w-full py-6">
+            {/* <section className="w-full py-6">
                 <div className="w-full rounded-lg">
                     <h1 className="text-2xl font-bold text-neutral-200">
                         Trending this week
@@ -70,7 +69,7 @@ const Explore = () => {
                         }
                     </div>
                 </div>
-            </section>
+            </section> */}
             {/* user suggestions */}
             <LargeUserSuggestions />
 

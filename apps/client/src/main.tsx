@@ -87,7 +87,7 @@ createRoot(document.getElementById('root')!).render(
                             <Route element={<RequireAuthGuard />}>
                               <Route path='/notification' element={<Notification />} />
 
-                              <Route path='/edit-profile' element={<EditProfile />} />
+                              <Route path='/profile/edit' element={<EditProfile />} />
                             </Route>
                           </Route>
                         </Route>
