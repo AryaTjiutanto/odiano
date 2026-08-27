@@ -30,6 +30,14 @@ export const bulkCreateOrUpdateHashtag = async (hashtag: string[], session: Clie
     return formattedHashtag;
 }
 
+export const bulkDecreseHashtagsCount = async (hashtags: string[], session: ClientSession) => {
+    await HashTag.updateMany(
+        { name: mongoose.trusted({ $in: hashtags }) },
+        { $inc: { totalPost: -1 } },
+        { session }
+    );
+}
+
 export const getHashtags = async (name : string): Promise<HashTagSummaryDTO[]> => {
     const hashtags = await HashTag.find({
         name : mongoose.trusted({

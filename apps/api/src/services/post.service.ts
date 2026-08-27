@@ -9,9 +9,11 @@ import { LIKE_TYPES } from "../consts/like.const";
 import { getIsLiked, getLikedIds } from "./like.service";
 import mongoose from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error";
-import { commitTempImage } from "../helpers/cloudinary.helper";
-import { bulkCreateOrUpdateHashtag } from "./hashtag.service";
+import { commitTempImage, deleteImages } from "../helpers/cloudinary.helper";
+import { bulkCreateOrUpdateHashtag, bulkDecreseHashtagsCount } from "./hashtag.service";
 import { searchOptions } from "../types/search.type";
+import cloudinary from "../config/cloudinary.config";
+import logger from "../libs/log/logger";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts
@@ -45,7 +47,7 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
                         ...(searchOptions?.onlyMedia ? [{
                             equals: {
                                 path: "hasMedia",
-                                value : true
+                                value: true
                             }
                         }] : []),
                         ...(cursor ? [
@@ -338,7 +340,7 @@ export const create = async (
                     {
                         $set: {
                             media: committedPostMedia,
-                            hasMedia : true,
+                            hasMedia: true,
                         },
                     },
                     { session }
@@ -445,7 +447,7 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
                 _id: postId,
             })
                 .session(session)
-                .select("_id author");
+                .select("_id author media hashtags");
 
             if (!post) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post Not found")
@@ -454,6 +456,8 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
             if (post.author.toString() != currentUserId) {
                 throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You dont have permission to delete this post");
             }
+
+            const postMedia = post.media;
 
             await post.deleteOne({ session });
 
@@ -465,6 +469,16 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
                     totalPosts: -1
                 }
             }, { session });
+
+            // decrese hashtags
+            if (post.hashtags) {
+                await bulkDecreseHashtagsCount(post.hashtags, session);
+            }
+
+            // delete media
+            if (postMedia) {
+                await deleteImages(postMedia);
+            }
         });
     } finally {
         await session.endSession();

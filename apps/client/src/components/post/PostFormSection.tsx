@@ -99,7 +99,7 @@ const PostFormSection = () => {
                 ...data,
                 media,
             }
-
+            
             const response = await api.post<SuccessResponseData<CreatedDocumentId>>("/post/create", payload);
 
             if (!response.data || !response.data.data?.id) {

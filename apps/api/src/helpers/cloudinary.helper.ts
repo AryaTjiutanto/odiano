@@ -1,4 +1,4 @@
-import { ALLOWED_MEDIA_TYPES, AllowedMediaTypes } from "@odiano/shared";
+import { ALLOWED_MEDIA_TYPES, AllowedMediaTypes, PostMedia } from "@odiano/shared";
 import cloudinary from "../config/cloudinary.config";
 import { removeTemp } from "../utils/path";
 
@@ -27,4 +27,21 @@ export const commitTempImage = async (tempPublicId : string, oldPublicId? : stri
         publicId: result.public_id,
         url: result.secure_url,
     };
+}
+
+export const deleteImages = async (postsMedia : PostMedia[]) => {
+    const images = postsMedia.filter(media => media.type === ALLOWED_MEDIA_TYPES.IMAGE);
+    const videos = postsMedia.filter(media => media.type === ALLOWED_MEDIA_TYPES.VIDEO);
+
+    if(images.length > 0) {
+        await cloudinary.api.delete_resources(images.map(media => media.source.publicId), {
+            resource_type: ALLOWED_MEDIA_TYPES.IMAGE,
+        });
+    }
+
+    if(videos.length > 0) {
+        await cloudinary.api.delete_resources(videos.map(media => media.source.publicId), {
+            resource_type: ALLOWED_MEDIA_TYPES.VIDEO,
+        });
+    }
 }
