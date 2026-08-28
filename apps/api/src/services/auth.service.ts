@@ -1,4 +1,4 @@
-import { AUTH_CACHE_KEYS, AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES } from "@odiano/shared";
+import { AUTH_CACHE_KEYS, AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES, ROLES } from "@odiano/shared";
 import { AppError } from "../errors/appError.error";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
 import { User } from "../models/user.model";
@@ -133,7 +133,7 @@ export const createAuthSession = async (userId: Types.ObjectId): Promise<AuthTok
 
 export const me = async (userId: string): Promise<CurrentUserDTO> => {
     const user = await User.findById(userId)
-        .select("_id email username isOnboarded name profileImage dateOfBirth emailVerifiedAt")
+        .select("_id email username isOnboarded name profileImage dateOfBirth emailVerifiedAt role")
         .lean();
 
     if (!user) {
@@ -149,6 +149,7 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         profileImage: user?.profileImage,
         dateOfBirth: user?.dateOfBirth,
         isEmailVerified: !!user?.emailVerifiedAt,
+        role : user?.role || ROLES.USER,
     }
 }
 

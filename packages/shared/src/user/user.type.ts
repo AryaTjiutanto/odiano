@@ -1,3 +1,5 @@
+import { Role } from "../authorization"
+
 export type UserProfileImageDTO = {
     url: string,
     publicId: string | null,
@@ -26,6 +28,7 @@ export type CurrentUserDTO = {
     isOnboarded: boolean,
     dateOfBirth:string | null,
     isEmailVerified: boolean,
+    role : Role,
 }
 
 export type UserProfileDTO = {

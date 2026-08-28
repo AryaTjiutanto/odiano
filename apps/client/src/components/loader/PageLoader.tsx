@@ -1,11 +1,11 @@
 import { Lock } from "lucide-react";
 import connectLogo from "../../assets/img/logo/odiano-full.webp";
 import { useEffect, useRef, useState } from "react";
-import useRequireAuth from "../../guard/useRequireAuth.guard";
 import { Outlet } from "react-router-dom";
+import { useAppSelector } from "../../hooks/useRedux";
 
 const PageLoader = () => {
-    const result = useRequireAuth();
+    const { isAuthLoading, isInitialized } = useAppSelector(state => state.auth);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoaderVisible, setIsLoaderVisible] = useState<boolean>(true);
@@ -13,7 +13,7 @@ const PageLoader = () => {
     const startRef = useRef(0);
 
     useEffect(() => {
-        if (result.isLoading) return;
+        if (isAuthLoading && !isInitialized) return;
 
         const elapsed = Date.now() - startRef.current;
         const remaining = 700 - elapsed;
@@ -32,7 +32,7 @@ const PageLoader = () => {
         return () => {
             clearTimeout(timeout1);
         }
-    }, [result.isLoading]);
+    }, [isAuthLoading, isInitialized]);
 
     if (isLoading) {
         return (

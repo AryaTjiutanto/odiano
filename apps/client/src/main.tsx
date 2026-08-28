@@ -8,8 +8,6 @@ import AuthLayout from './layouts/AuthLayout.tsx'
 import OnBoarding from './pages/OnBoarding.tsx'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
-import RequireGuestGuard from './components/guard/RequireGuestGuard.tsx'
-import RequireUnOnboarded from './components/guard/RequireUnOnboarded.tsx'
 import Homepage from './pages/Social/Home.tsx'
 import AppLayout from './layouts/AppLayout.tsx'
 import SocialLayout from './layouts/SocialLayout.tsx'
@@ -21,11 +19,9 @@ import PageLoader from './components/loader/PageLoader.tsx'
 import Profile from './pages/Social/Profile.tsx'
 import SocketProvider from './providers/SocketProvider.tsx'
 import { queryClient } from './libs/react-query/queryClient.ts'
-import RequireAuthGuard from './components/guard/RequireAuthGuard.tsx'
 import EditProfile from './pages/Social/EditProfile.tsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import EmailVerification from './pages/Auth/EmailVerification.tsx'
-import RequireUnVerify from './components/guard/RequireUnVerify.tsx'
 import CreatePostLayout from './layouts/PostFormLayout.tsx'
 import ScrollToTop from './router/ScrollToTop.tsx'
 import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
@@ -39,6 +35,12 @@ import SearchLayout from './layouts/SearchLayout.tsx'
 import Notification from './pages/Social/Notification.tsx'
 import HomeAdminDashboard from './pages/admin/Dashboard/Home.tsx'
 import DashboardLayout from './layouts/DashboardLayout.tsx'
+import RequireAuthGuard from './guard/RequireAuthGuard.tsx'
+import RequireGuestGuard from './guard/RequireGuestGuard.tsx'
+import RequireUnVerify from './guard/RequireUnVerify.tsx'
+import RequireUnOnboarded from './guard/RequireUnOnboarded.tsx'
+import RequireRoleGuard from './guard/RequireRoleGuard.tsx'
+import { ROLES } from '@odiano/shared'
 
 const IDBPersister = createIDBPersister();
 
@@ -114,8 +116,10 @@ createRoot(document.getElementById('root')!).render(
 
                         {/* admin dashboard */}
                         <Route element={<RequireAuthGuard />}>
-                          <Route element={<DashboardLayout />}>
-                            <Route path='/admin/dashboard' element={<HomeAdminDashboard />} />
+                          <Route element={<RequireRoleGuard role={ROLES.ADMIN} />}>
+                            <Route element={<DashboardLayout />}>
+                              <Route path='/admin/dashboard' element={<HomeAdminDashboard />} />
+                            </Route>
                           </Route>
                         </Route>
 
