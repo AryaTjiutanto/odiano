@@ -8,6 +8,8 @@ import type { UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { markProfileAsFollowed, markProfileAsUnfollowed, markUserAsFollowedInList, markUserAsUnfollowedInList } from "../../helpers/cache/userCache.helper";
 import { userKeys } from "../../queries/userKeys";
 import { createFollowing, deleteFollowing } from "../../services/following.service";
+import type { IsFollowingData } from "../../types/following.type";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     isFollowing: boolean | undefined,
@@ -22,6 +24,8 @@ export type FollowingMutationData = {
 
 const FollowingButton = ({ isFollowing, userId, username }: Props) => {
     const setQueryDataHandler = useSetQueryDataHandler();
+    const navigate = useNavigate();
+    const currentUserData = useAppSelector(state => state.auth.user);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 
     const followingHandler = (userId: string | undefined, username: string | undefined) => {
@@ -30,6 +34,10 @@ const FollowingButton = ({ isFollowing, userId, username }: Props) => {
         setQueryDataHandler<UserSummaryDTO[]>(userKeys.exploreSuggestions, (oldData) => markUserAsFollowedInList(oldData, userId));
         setQueryDataHandler<UserSummaryDTO[]>(userKeys.sidebarSuggestions, (oldData) => markUserAsFollowedInList(oldData, userId));
         setQueryDataHandler<UserProfileDTO>(userKeys.profile(username), (oldData) => markProfileAsFollowed(oldData));
+        setQueryDataHandler<IsFollowingData>(userKeys.isFollowing(username), (oldData) => ({
+            ...oldData,
+            isFollowing: true,
+        }));
     }
 
     const unfollowingHandler = (userId: string | undefined, username: string | undefined) => {
@@ -38,6 +46,10 @@ const FollowingButton = ({ isFollowing, userId, username }: Props) => {
         setQueryDataHandler<UserSummaryDTO[]>(userKeys.exploreSuggestions, (oldData) => markUserAsUnfollowedInList(oldData, userId));
         setQueryDataHandler<UserSummaryDTO[]>(userKeys.sidebarSuggestions, (oldData) => markUserAsUnfollowedInList(oldData, userId));
         setQueryDataHandler<UserProfileDTO>(userKeys.profile(username), (oldData) => markProfileAsUnfollowed(oldData));
+        setQueryDataHandler<IsFollowingData>(userKeys.isFollowing(username), (oldData) => ({
+            ...oldData,
+            isFollowing: false,
+        }));
     }
 
     // mutation
@@ -76,6 +88,10 @@ const FollowingButton = ({ isFollowing, userId, username }: Props) => {
     // handle following
     const handleFollowing = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+
+        if(!currentUserData?.isEmailVerified || !currentUserData?.isOnboarded) {
+            return navigate("/onboarding");
+        }
 
         if (!userId) return;
         if (followMutation.isPending || unfollowMutation.isPending) return;

@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import LeftSidebar from "../components/sidebar/LeftSidebar";
+import LeftSidebar from "../components/social/sidebar/LeftSidebar";
 import { lazy, Suspense, useEffect } from "react";
 import { registerNotificationListeners, unregisterNotificationListeners } from "../features/notification/notification.socket";
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
-import RightSidebar from "../components/sidebar/RightSidebar";
+import RightSidebar from "../components/social/sidebar/RightSidebar";
 import { useAppDispatch } from "../hooks/useRedux";
 import { getUnreadNotificationCount } from "../features/notification/notification.thunk";
 

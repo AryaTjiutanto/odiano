@@ -1,4 +1,4 @@
-export * from "./auth/index";
+export * from "./authentication/index";
 export * from "./response/index";
 export * from "./user/index";
 export * from "./cloudinary/index";
@@ -10,3 +10,4 @@ export * from "./searchHistory";
 export * from "./otp/otp.const";
 export * from "./cacheKeys";
 export * from "./hashtag";
+export * from "./authorization";

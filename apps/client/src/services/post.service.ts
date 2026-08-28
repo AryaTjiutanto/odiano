@@ -40,6 +40,16 @@ export const getUserPosts = async (cursor: string | undefined | null, username: 
 }
 
 // get posts
+export const getPost = async (publicId : string) => {
+    const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${publicId}`);
+
+    if (!response.data.data) {
+        throw new Error("Data is missing");
+    }
+
+    return response.data.data;
+}
+
 export const getPosts = async (cursor: string | undefined | null): Promise<InfiniteQuery<PostDTO[]>> => {
     const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
         params: {

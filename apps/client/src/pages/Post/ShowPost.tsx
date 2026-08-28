@@ -1,58 +1,38 @@
 import { Heart, MessageCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { type SuccessResponseData, type PostDTO } from "@odiano/shared";
-import { api } from "../../libs/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import PostDetailSkeletonLoading from "../../components/post/PostDetailSkeletonLoading";
 import ErrorState from "../../components/common/ErrorState";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import DotsLoader from "../../components/loader/DotsLoader";
-import { createFollowing, deleteFollowing, getIsFollowingInformation } from "../../services/following.service";
-import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
+import { getIsFollowingInformation } from "../../services/following.service";
 import CommentSection from "../../components/post/comment/CommentSection";
 import Profile from "../../components/profile/Profile";
 import { useAppSelector } from "../../hooks/useRedux";
 import { postKeys } from "../../queries/postKeys";
 import NotFound from "../../components/error/NotFound";
 import { userKeys } from "../../queries/userKeys";
-import { applyLikeToInfinitePostCache, applyLikeToPostCache, removeLikeFromInfinitePostCache, removeLikeFromPostCache } from "../../helpers/cache/postCache.helper";
-import { createLike, deleteLike } from "../../services/post.service";
-import type { InfiniteQueryPostDTO } from "../../types/post.type";
-import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import FollowingButton from "../../components/social/FollowingButton";
 import PostMedia from "../../components/post/PostMedia";
 import PostContent from "../../components/post/PostContent";
-import type { IsFollowingData } from "../../types/following.type";
+import usePostHandler from "../../hooks/usePostHandler";
+import { getPost } from "../../services/post.service";
 
 const ShowPost = () => {
     const navigate = useNavigate();
-
+    
     const { username, postPublicId } = useParams();
-    const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
-    const setQueryDataHandler = useSetQueryDataHandler();
-
-
     // get post data
-    const postQueryKey = postKeys.detail(postPublicId!);
-
-    const getPost = async () => {
-        const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${postPublicId}`);
-
-        if (!response.data.data) {
-            throw new Error("Data is missing");
-        }
-
-        return response.data.data;
-    }
+    const {handleLike} = usePostHandler(postPublicId!);
 
     const postQuery = useQuery({
-        queryKey: postQueryKey,
-        queryFn: getPost,
+        queryKey: postKeys.detail(postPublicId!),
+        queryFn: () => getPost(postPublicId!),
         enabled: !!postPublicId,
         staleTime: 10 * 1000,
         initialData: undefined,
@@ -69,95 +49,13 @@ const ShowPost = () => {
     const isFollowingQueryKey = userKeys.isFollowing(postQuery.data?.author?.username || "");
 
     const isFollowingQuery = useQuery({
-        queryFn: () => getIsFollowingInformation(postQuery.data?.author?.username),
+        queryFn: () => getIsFollowingInformation(postQuery.data?.author?.id),
         queryKey: isFollowingQueryKey,
-        enabled: (!!postQuery?.data && isAuthenticated),
+        enabled: (!!postQuery?.data && isAuthenticated && currentUserId !== postQuery.data?.author?.id),
         initialData: null,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
     });
-
-    // handle follow mutation
-    const followMutation = useMutation({
-        mutationFn: createFollowing,
-
-        onMutate: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => {
-            return {
-                isFollowing: true,
-            }
-        }),
-        onError: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => {
-            return {
-                isFollowing: false,
-            }
-        }),
-    })
-
-    const unfollowMutation = useMutation({
-        mutationFn: deleteFollowing,
-
-        onMutate: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => ({
-            isFollowing: false,
-        })),
-
-        onError: () => setQueryDataHandler<IsFollowingData>(isFollowingQueryKey, () => ({
-            isFollowing: true,
-        }))
-    })
-
-    // like mutation
-    const likeMutation = useMutation({
-        mutationFn: createLike,
-
-        onMutate: (postId: string) => {
-            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData))
-
-            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => applyLikeToInfinitePostCache(oldData, postId))
-        },
-        onError: (postId: string) => {
-            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData))
-
-            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => removeLikeFromInfinitePostCache(oldData, postId))
-        },
-    })
-
-    // delete like mutation
-    const unlikeMutation = useMutation({
-        mutationFn: deleteLike,
-
-        onMutate: (postId: string) => {
-            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => removeLikeFromPostCache(oldData))
-
-            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => removeLikeFromInfinitePostCache(oldData, postId))
-        },
-        onError: (postId: string) => {
-            setQueryDataHandler<PostDTO>(postQueryKey, (oldData) => applyLikeToPostCache(oldData))
-
-            setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.all, (oldData) => applyLikeToInfinitePostCache(oldData, postId))
-        },
-    })
-
-    // handle like 
-    const handleLike = async () => {
-        if (!postQuery.data) return;
-
-        if (!isInitialized) return;
-
-        if (!isAuthenticated) {
-            return navigate("/signin")
-        }
-
-        try {
-            if (postQuery.data?.isLiked) {
-                await unlikeMutation.mutateAsync(postQuery.data?.id);
-            } else {
-                await likeMutation.mutateAsync(postQuery.data?.id);
-            }
-        } catch (err: unknown) {
-            handleApiErrorNotification(err);
-        }
-    }
-
 
     // display
     if (postQuery.isPending) {
@@ -221,11 +119,10 @@ const ShowPost = () => {
                                                 <DotsLoader />
                                             </div>
                                             :
-                                            <>
-                                                <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing ? "w-28" : "w-20"}`}>
-                                                    <FollowingButton followMutation={followMutation} unfollowMutation={unfollowMutation} isFollowing={isFollowingQuery.data?.isFollowing} username={postQuery.data.author?.username} />
-                                                </div>
-                                            </>
+                                            (currentUserId != postQuery.data?.author?.id) &&
+                                            <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing ? "w-28" : "w-20"}`}>
+                                                <FollowingButton userId={postQuery.data?.author?.id} isFollowing={isFollowingQuery.data?.isFollowing} username={postQuery.data.author?.username} />
+                                            </div>
                                     }
                                 </>
                             }
@@ -260,7 +157,7 @@ const ShowPost = () => {
 
                     <div className="flex items-center justify-between mt-10">
                         <div className="flex items-center space-x-10">
-                            <button className={`flex items-center space-x-2 cursor-pointer ${postQuery?.data?.isLiked && "text-rose-500"}`} onClick={handleLike}>
+                            <button className={`flex items-center space-x-2 cursor-pointer ${postQuery?.data?.isLiked && "text-rose-500"}`} onClick={() => handleLike(postQuery.data?.isLiked, postQuery.data?.id, postQuery.data?.author?.username)}>
                                 <Heart className={`${postQuery?.data?.isLiked && "fill-rose-500"}`} />
                                 <p>
                                     {postQuery.data?.likeCount ?? 0}
@@ -288,7 +185,7 @@ const ShowPost = () => {
 
                 {/* comment */}
                 {postQuery.data?.id &&
-                    <CommentSection postId={postQuery.data.id} shouldGettingComments={postQuery.data.commentCount > 0}/>
+                    <CommentSection postId={postQuery.data.id} shouldGettingComments={postQuery.data.commentCount > 0} />
                 }
             </div>
         </>

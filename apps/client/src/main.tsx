@@ -37,6 +37,8 @@ import Search from './pages/Social/Search.tsx'
 import ExploreLayout from './layouts/ExploreLayout.tsx'
 import SearchLayout from './layouts/SearchLayout.tsx'
 import Notification from './pages/Social/Notification.tsx'
+import HomeAdminDashboard from './pages/admin/Dashboard/Home.tsx'
+import DashboardLayout from './layouts/DashboardLayout.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -109,6 +111,14 @@ createRoot(document.getElementById('root')!).render(
                         <Route element={<RequireUnOnboarded />}>
                           <Route path='/onboarding' element={<OnBoarding />} />
                         </Route>
+
+                        {/* admin dashboard */}
+                        <Route element={<RequireAuthGuard />}>
+                          <Route element={<DashboardLayout />}>
+                            <Route path='/admin/dashboard' element={<HomeAdminDashboard />} />
+                          </Route>
+                        </Route>
+
                         {/* not fond */}
                         <Route path='*' element={<NotFoundPage />} />
                       </Route>

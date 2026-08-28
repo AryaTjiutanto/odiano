@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { ImageAsset } from "../types/user.type";
 import { AUTH_PROVIDERS, AuthProviders } from "../consts/user.const";
+import { Role, ROLES } from "@odiano/shared";
 
 // types for schema
 type AuthenticationSchema = {
@@ -12,6 +13,7 @@ type AuthenticationSchema = {
 type UserSchema = {
     email: string,
     username: string,
+    role : Role,
     
     password: string | null,
     authentication : AuthenticationSchema,
@@ -74,6 +76,12 @@ const userSchema = new mongoose.Schema<UserSchema>({
         required: true,
         type: String,
         index : true,
+    },
+    role : {
+        type :  String,
+        enum : Object.values(ROLES),
+        required : true,
+        default : ROLES.USER,
     },
 
     password: {

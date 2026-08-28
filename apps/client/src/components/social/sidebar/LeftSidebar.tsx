@@ -1,9 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
-import ConnectLogo from "../../assets/img/logo/odiano-gradient.svg";
+import ConnectLogo from "../../../assets/img/logo/odiano-gradient.svg";
 import { Bell, Home, Pencil, Search, User } from "lucide-react";
-import { useAppSelector } from "../../hooks/useRedux";
 import UserMenu from "./UserMenu";
-import { usePostForm } from "../../providers/PostFormProvider";
+import { usePostForm } from "../../../providers/PostFormProvider";
+import { useAppSelector } from "../../../hooks/useRedux";
 
 const LeftSidebar = () => {
     const postForm = usePostForm();

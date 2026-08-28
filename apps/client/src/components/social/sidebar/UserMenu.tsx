@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
-import { logout } from "../../features/auth/auth.thunk";
-import Profile from "../profile/Profile";
+import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
+import { logout } from "../../../features/auth/auth.thunk";
+import Profile from "../../profile/Profile";
 import { EllipsisVertical, FilePenLine, MailWarning } from "lucide-react";
 import { Link } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";

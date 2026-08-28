@@ -10,6 +10,12 @@ importers:
 
   apps/api:
     dependencies:
+      '@casl/ability':
+        specifier: ^7.0.1
+        version: 7.0.1
+      '@casl/mongoose':
+        specifier: ^9.0.2
+        version: 9.0.2(@casl/ability@7.0.1)(mongoose@9.4.1)
       '@odiano/queue':
         specifier: workspace:*
         version: link:../../packages/queue
@@ -372,6 +378,15 @@ packages:
   '@babel/types@7.29.0':
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
+
+  '@casl/ability@7.0.1':
+    resolution: {integrity: sha512-krOW1zQGEie5lH6fpryrcsPvc5r2pe5Vn5xbthuzc5X9gwzHIyZgGGgw9dMoSLHXdjB4BIVxGG/HBkG+1NuyZQ==}
+
+  '@casl/mongoose@9.0.2':
+    resolution: {integrity: sha512-xsL5vRuEUUCrBpLlnQa7hc6xWCb0pMYmEyoGyUjGKofoTSDjxKXbBvObxR/ssnfM5sDBNhRZMrGyrNtaEBT34A==}
+    peerDependencies:
+      '@casl/ability': ^7.0.0
+      mongoose: ^6.0.13 || ^7.0.0 || ^8.0.0 || ^9.0.0
 
   '@emnapi/core@1.9.2':
     resolution: {integrity: sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==}
@@ -1441,6 +1456,18 @@ packages:
     resolution: {integrity: sha512-f1WO2Lx8a9t8DARmcWAUPJbu0G20bJlj8L4z72K00TMeJAoyLr/tHhI/pzYBLrR4dXWkcxO1cWYZEOX8DKHTqA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@ucast/core@2.0.0':
+    resolution: {integrity: sha512-4XVx6LzPXZGvnZO5jp39cm/G4UvuwvEdtmg+9+4+zl6uFkCcB7UJacvtMYeBE56GJVT99Zqy6Pii7dGJq3Kz9Q==}
+
+  '@ucast/js@4.0.1':
+    resolution: {integrity: sha512-9O5xPBvwEWQk2WvO69Eh2WJB8QljVZ2vRVdFvfnKjlZwWXcYxp1lqLBhwXBU1AtuSgCvKhJPkXdjKJggUmAmQQ==}
+
+  '@ucast/mongo2js@2.0.0':
+    resolution: {integrity: sha512-vNBZzRnsfLr/TSxEoxz6W6hHQ5tmWsfEeC0nCq5z8RezC1AqIRy3cfHm8AGvlGtcn+cTSFQcZremfqnz6wm+nQ==}
+
+  '@ucast/mongo@3.0.0':
+    resolution: {integrity: sha512-kwuSH+kdB4GCR0LGhy/PEDm4PCflur89AlK82kNiYD0FvsA8A/p+0sx7m+/R8mMFAlmlkAd3VXp7sM/cLLYWYg==}
+
   '@vitejs/plugin-react@6.0.1':
     resolution: {integrity: sha512-l9X/E3cDb+xY3SWzlG1MOGt2usfEHGMNIaegaUGFsLkb3RCn/k8/TOXBcab+OndDI4TBtktT8/9BwwW8Vi9KUQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -1816,6 +1843,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -3116,6 +3144,15 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
+  '@casl/ability@7.0.1':
+    dependencies:
+      '@ucast/mongo2js': 2.0.0
+
+  '@casl/mongoose@9.0.2(@casl/ability@7.0.1)(mongoose@9.4.1)':
+    dependencies:
+      '@casl/ability': 7.0.1
+      mongoose: 9.4.1
+
   '@emnapi/core@1.9.2':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
@@ -4074,6 +4111,22 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.58.2
       eslint-visitor-keys: 5.0.1
+
+  '@ucast/core@2.0.0': {}
+
+  '@ucast/js@4.0.1':
+    dependencies:
+      '@ucast/core': 2.0.0
+
+  '@ucast/mongo2js@2.0.0':
+    dependencies:
+      '@ucast/core': 2.0.0
+      '@ucast/js': 4.0.1
+      '@ucast/mongo': 3.0.0
+
+  '@ucast/mongo@3.0.0':
+    dependencies:
+      '@ucast/core': 2.0.0
 
   '@vitejs/plugin-react@6.0.1(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))':
     dependencies:
