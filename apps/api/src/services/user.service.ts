@@ -1,4 +1,4 @@
-import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, ROLES, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";
@@ -158,6 +158,9 @@ export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSu
                 _id : {
                     $nin : followingIds,
                     $ne : new mongoose.Types.ObjectId(currentUserId)
+                },
+                role : {
+                    $eq : ROLES.USER
                 }
             },
         },
@@ -191,6 +194,9 @@ export const searchUsers = async (query: string, limit : number = 5) : Promise<U
                 },
                 isOnboarded : {
                     $eq : true
+                },
+                role : {
+                    $eq : ROLES.USER
                 },
                 $or: [
                     { username: { $regex: query, $options: 'i' } },

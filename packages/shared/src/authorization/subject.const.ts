@@ -5,6 +5,6 @@ export const SUBJECTS = {
     NOTIFICATION : "notification",
     SEARCH : "search",
     SEARCH_HISTORY : "searchHistory",
-}
+} as const
 
 export type Subject = typeof SUBJECTS[keyof typeof SUBJECTS]

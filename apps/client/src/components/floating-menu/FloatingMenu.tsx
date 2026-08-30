@@ -37,7 +37,7 @@ const FloatingMenu = ({ trigger, children }: Props) => {
             {
                 isOpen &&
                 <FloatingPortal>
-                    <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()} className="w-60 py-2 bg-neutral-900 rounded-xl text-neutral-100 overflow-hidden z-25">
+                    <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()} className="w-60 py-2 bg-neutral-900 rounded-xl text-neutral-100 overflow-hidden z-25 space-y-2" onClick={() => setIsOpen(false)}>
                         {children}
                     </div>
                 </FloatingPortal>

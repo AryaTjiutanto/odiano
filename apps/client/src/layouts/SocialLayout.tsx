@@ -7,14 +7,16 @@ import { usePostForm } from "../providers/PostFormProvider";
 import RightSidebar from "../components/social/sidebar/RightSidebar";
 import { useAppDispatch } from "../hooks/useRedux";
 import { getUnreadNotificationCount } from "../features/notification/notification.thunk";
+import { useReportForm } from "../providers/ReportFormProvider";
 
-const PostFormSection = lazy(() =>
-    import("../components/post/PostFormSection")
-)
+const PostFormSection = lazy(() => import("../components/post/PostFormSection"))
+
+const ReportForm = lazy(() => import("../components/report/ReportForm"));
 
 const SocialLayout = () => {
     const dispatch = useAppDispatch();
     const postForm = usePostForm();
+    const reportForm = useReportForm();
 
     // register socket listener
     useEffect(() => {
@@ -31,8 +33,14 @@ const SocialLayout = () => {
             <div className="w-full min-h-screen px-5 sm:px-2 xl:px-10 2xl:px-40">
                 {
                     postForm.isOpen &&
-                    <Suspense fallback={<div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-20"></div>}>
+                    <Suspense fallback={<div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25"></div>}>
                         <PostFormSection/>
+                    </Suspense>
+                }
+                {
+                    reportForm.isOpen &&
+                    <Suspense fallback={<div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25"></div>}>
+                        <ReportForm/>
                     </Suspense>
                 }
 

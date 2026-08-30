@@ -1,4 +1,4 @@
-import { EllipsisVertical, Trash2 } from "lucide-react";
+import { CheckCircle, EllipsisVertical, Flag, Link2, Trash2 } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import FloatingMenu from "./FloatingMenu";
@@ -6,7 +6,7 @@ import MenuItem from "./MenuItem";
 import { deletePost } from "../../services/post.service";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import { useMutation } from "@tanstack/react-query";
-import type { PostDTO, UserProfileDTO } from "@odiano/shared";
+import { ACTIONS, REPORT_TYPE, SUBJECTS, type PostDTO, type UserProfileDTO } from "@odiano/shared";
 import { postKeys } from "../../queries/postKeys";
 import { removePostFromUserPostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
@@ -14,29 +14,37 @@ import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
 import { userKeys } from "../../queries/userKeys";
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 import { notify } from "../../helpers/notification/notify.helper";
+import { useAbility } from "@casl/react";
+import type { AppAbility } from "../../helpers/ability.helper";
+import { subject } from "@casl/ability";
+import { useReportForm } from "../../providers/ReportFormProvider";
 
 type Props = {
     post: PostDTO,
-    authorUsername: string | undefined,
-    canDeletePost?: boolean
+    authorId: string | undefined,
 }
 
-const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
+const PostMenu = ({ post, authorId }: Props) => {
+    const reportForm = useReportForm();
+    const ability = useAbility<AppAbility>();
     const confirmationModal = useConfirmationModal();
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const user = useAppSelector(state => state.auth.user);
 
-    if (!isAuthenticated || !canDeletePost || !authorUsername) return;
+    if (!isAuthenticated || !authorId || !user) return;
 
-    if (authorUsername !== user?.username) return;
+    // define ability
+    const canDeletePost = ability.can(ACTIONS.DELETE, subject(SUBJECTS.POST, {
+        author: authorId,
+    }));
 
     // delete handler
     const deletePostMutation = useMutation({
         mutationFn: deletePost,
         onMutate: () => {
-            let prevData : InfiniteQueryPostDTO | null = null;
+            let prevData: InfiniteQueryPostDTO | null = null;
 
             setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => {
                 prevData = oldData;
@@ -79,6 +87,22 @@ const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
         }
     }
 
+    // copy link handler
+    const copyLinkHandler = () => {
+        const url = `${window.location.origin}/${post.author?.username}/post/${post.publicId}`;
+        navigator.clipboard.writeText(url);
+
+        notify.success({
+            title: "Link copied",
+            description: url,
+        });
+    }
+
+    // report handler
+    const reportHandler = async () => {
+        reportForm.open(post.publicId, REPORT_TYPE.POST);
+    }
+
     return (
         <FloatingMenu trigger={
             <button className="relative group hover:text-sky-500">
@@ -89,11 +113,31 @@ const PostMenu = ({ post, authorUsername, canDeletePost = false }: Props) => {
                 </div>
             </button>
         }>
-            <MenuItem handler={deletePostHandler}>
-                <div className="w-full h-full flex items-center space-x-3 hover:text-rose-500 duration-100">
-                    <Trash2 />
+            {
+                canDeletePost ?
+                    <MenuItem handler={deletePostHandler}>
+                        <div className="w-full h-full flex items-center space-x-3 hover:text-rose-500 duration-100">
+                            <Trash2 />
+                            <span>
+                                Delete
+                            </span>
+                        </div>
+                    </MenuItem>
+                    :
+                    <MenuItem handler={reportHandler}>
+                        <div className="w-full h-full flex items-center space-x-3 hover:text-rose-500 duration-100">
+                            <Flag />
+                            <span>
+                                Report
+                            </span>
+                        </div>
+                    </MenuItem>
+            }
+            <MenuItem handler={copyLinkHandler}>
+                <div className="w-full h-full flex items-center space-x-3 hover:text-sky-500 duration-100">
+                    <Link2 />
                     <span>
-                        Delete
+                        Copy link
                     </span>
                 </div>
             </MenuItem>

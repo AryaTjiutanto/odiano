@@ -84,7 +84,7 @@ const LeftSidebar = () => {
                                     {
                                         userData?.isOnboarded &&
                                         <li className="w-full">
-                                            <Link to={`profile/${userData && userData?.username}`} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes("profile/") && "text-white font-semibold"} duration-100`}>
+                                            <Link to={`profile/${userData && userData?.username}`} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
                                                 <User className="size-7 xl:size-auto" />
                                                 <span className="hidden xl:inline-block">
                                                     Profile

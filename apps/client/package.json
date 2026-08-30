@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@casl/ability": "^7.0.1",
+    "@casl/react": "^7.0.1",
     "@floating-ui/react": "^0.27.19",
     "@hookform/resolvers": "^5.2.2",
     "@lexical/hashtag": "^0.49.0",

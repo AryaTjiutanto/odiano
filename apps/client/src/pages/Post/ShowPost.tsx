@@ -19,6 +19,7 @@ import PostMedia from "../../components/post/PostMedia";
 import PostContent from "../../components/post/PostContent";
 import usePostHandler from "../../hooks/usePostHandler";
 import { getPost } from "../../services/post.service";
+import PostMenu from "../../components/floating-menu/PostMenu";
 
 const ShowPost = () => {
     const navigate = useNavigate();
@@ -128,7 +129,7 @@ const ShowPost = () => {
                             }
 
                             {/* comming soon */}
-                            {/* <EllipsisVertical className="w-4 duration-100 cursor-pointer" /> */}
+                            <PostMenu authorId={postQuery.data?.author?.id} post={postQuery.data}/>
                         </div>
                     </div>
                     {/* content */}

@@ -128,6 +128,12 @@ importers:
 
   apps/client:
     dependencies:
+      '@casl/ability':
+        specifier: ^7.0.1
+        version: 7.0.1
+      '@casl/react':
+        specifier: ^7.0.1
+        version: 7.0.1(@casl/ability@7.0.1)(react@19.2.5)
       '@floating-ui/react':
         specifier: ^0.27.19
         version: 0.27.19(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -387,6 +393,12 @@ packages:
     peerDependencies:
       '@casl/ability': ^7.0.0
       mongoose: ^6.0.13 || ^7.0.0 || ^8.0.0 || ^9.0.0
+
+  '@casl/react@7.0.1':
+    resolution: {integrity: sha512-HFfBxQD5wFUIyd9gAPa5LDqMbB7CIOqRcocxzwMC589d8vLMzaz/OAdFLglGiBz9pAcumC0ULp5QLFiYZ46mUw==}
+    peerDependencies:
+      '@casl/ability': ^4.0.0 || ^5.1.0 || ^6.0.0 || ^7.0.0
+      react: ^18.0.0 || ^19.0.0
 
   '@emnapi/core@1.9.2':
     resolution: {integrity: sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==}
@@ -3152,6 +3164,11 @@ snapshots:
     dependencies:
       '@casl/ability': 7.0.1
       mongoose: 9.4.1
+
+  '@casl/react@7.0.1(@casl/ability@7.0.1)(react@19.2.5)':
+    dependencies:
+      '@casl/ability': 7.0.1
+      react: 19.2.5
 
   '@emnapi/core@1.9.2':
     dependencies:

@@ -252,7 +252,7 @@ const Profile = () => {
                                 {
                                     postsQuery.data.pages.map(page => page.items.map((item) => {
                                         return (
-                                            <Post data={item} author={profileQuery.data} key={`post-${item.id}`} canDeletePost={true}/>
+                                            <Post data={item} author={profileQuery.data} key={`post-${item.id}`}/>
                                         )
                                     }))
                                 }

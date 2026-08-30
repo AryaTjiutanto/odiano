@@ -11,17 +11,16 @@ import usePostHandler from "../../hooks/usePostHandler";
 type Props = {
     data: PostDTO,
     author?: UserSummaryDTO,
-    canDeletePost?: boolean,
 }
 
-const Post = ({ data, author, canDeletePost = false }: Props) => {
+const Post = ({ data, author }: Props) => {
     const { handleLike } = usePostHandler(data.publicId);
     const navigate = useNavigate();
 
     const dataAuthor = data.author ?? author;
 
     return (
-        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 sm:py-7 lg:py-10 first:pt-4 sm:rounded-lg cursor-pointer border-b last:border-0 border-neutral-900 relative overflow-hidden">
+        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 sm:py-7 lg:py-10 first:pt-4 sm:rounded-lg cursor-pointer border-b last:border-0 border-neutral-900 relative">
             <div className="flex items-center justify-between">
                 <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
                     <div className="flex items-center space-x-3">
@@ -41,7 +40,7 @@ const Post = ({ data, author, canDeletePost = false }: Props) => {
                 </Link>
 
                 <div onClick={(e) => e.stopPropagation()}>
-                    <PostMenu authorUsername={author?.username} post={data} canDeletePost={canDeletePost} />
+                    <PostMenu authorId={dataAuthor?.id} post={data}/>
                 </div>
             </div>
             <div className="w-full mt-8 space-y-5">
