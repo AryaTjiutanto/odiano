@@ -36,6 +36,13 @@ const reportSchema = new Schema<ReportSchema>({
     }
 }, { timestamps: true });
 
+reportSchema.index({
+    reporter: 1,
+    target: 1,
+    reason: 1,
+    type: 1,
+}, {unique: true});
+
 const Report = model<ReportSchema>("Report", reportSchema);
 
 export default Report;
