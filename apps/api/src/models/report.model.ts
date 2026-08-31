@@ -1,16 +1,16 @@
 import { REPORT_REASON_CODES, REPORT_STATUS, REPORT_TYPE, ReportReasonCode, ReportStatus, ReportType } from "@odiano/shared";
-import { model, ObjectId, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 
 type ReportSchema = {
-    Reason: ReportReasonCode,
+    reason: ReportReasonCode,
     type: ReportType,
     status: ReportStatus,
-    reporter: ObjectId,
-    target: ObjectId,
+    reporter: Types.ObjectId,
+    target: Types.ObjectId,
 }
 
 const reportSchema = new Schema<ReportSchema>({
-    Reason: {
+    reason: {
         type: String,
         enum: Object.values(REPORT_REASON_CODES),
         required: true,
@@ -27,6 +27,7 @@ const reportSchema = new Schema<ReportSchema>({
     },
     reporter: {
         type: Schema.Types.ObjectId,
+        ref : "User",
         required: true,
     },
     target: {

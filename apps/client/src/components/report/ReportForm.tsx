@@ -2,6 +2,7 @@ import { REPORT_REASONS, REPORT_TYPE, type ReportReasonCode } from "@odiano/shar
 import { ChevronRight, X } from "lucide-react";
 import { useState } from "react";
 import { useReportForm } from "../../providers/ReportFormProvider";
+import DotsLoader from "../loader/DotsLoader";
 
 type ReportReason = {
     code: ReportReasonCode,
@@ -18,20 +19,35 @@ const ReportForm = () => {
         setStep(2);
     }
 
+    async function handleSubmit() {
+        if (!selectedReason) return;
+
+        await reportForm.submit(selectedReason.code, () => setStep(3));
+    }
+
     return (
         <section className="w-full h-full fixed top-0 left-0 z-25 flex items-center justify-center">
             <form className="w-[550px] rounded-2xl bg-neutral-950 overflow-hidden z-26">
                 <div className="w-full">
                     {/* header */}
                     <div className="px-6">
-                        <div className="py-6 flex items-center space-x-6 border-b border-neutral-800">
-                            <button className="relative group cursor-pointer" onClick={reportForm.close}>
-                                <div className="w-10 h-10 rounded-full absolute top-0 bottom-0 my-auto -left-1/2 m-auto bg-neutral-800/50 z-1 opacity-0 group-hover:opacity-100 duration-100"></div>
-                                <X className="w-5 text-neutral-300 group-hover:text-white z-1 relative" />
-                            </button>
-                            <h1 className="text-lg font-semibold text-neutral-300">
-                                Report
-                            </h1>
+                        <div className={`py-6 flex items-center space-x-6 border-b border-neutral-800`}>
+                            {
+                                step < 3 ?
+                                    <>
+                                        <button className="relative group cursor-pointer" onClick={reportForm.close}>
+                                            <div className="w-10 h-10 rounded-full absolute top-0 bottom-0 my-auto -left-1/2 m-auto bg-neutral-800/50 z-1 opacity-0 group-hover:opacity-100 duration-100"></div>
+                                            <X className="w-5 text-neutral-300 group-hover:text-white z-1 relative" />
+                                        </button>
+                                        <h1 className="text-lg font-semibold text-neutral-300">
+                                            Report
+                                        </h1>
+                                    </>
+                                    :
+                                    <h1 className="text-lg font-bold text-neutral-300">
+                                        Submitted
+                                    </h1>
+                            }
                         </div>
                     </div>
 
@@ -100,14 +116,44 @@ const ReportForm = () => {
                                         </button>
 
                                         <button
-                                            type="submit"
-                                            className="w-full rounded-lg h-11 text-sm font-medium text-neutral-900 bg-neutral-300 hover:bg-neutral-100 cursor-pointer"
+                                            type="button"
+                                            className="w-full rounded-lg h-11 text-sm font-medium text-neutral-900 bg-neutral-300 hover:bg-neutral-100 cursor-pointer flex items-center justify-center" onClick={handleSubmit} disabled={reportForm.isSubmitting}
                                         >
-                                            Submit report
+                                            {
+                                                reportForm.isSubmitting ?
+                                                    <DotsLoader />
+                                                    :
+                                                    "Submit report"
+                                            }
                                         </button>
                                     </div>
                                 </div>
                             }
+                        </div>
+                    }
+
+                    {/* step 3 - submitted */}
+                    {
+                        step == 3 &&
+                        <div className="px-6 w-full h-full py-5 text-neutral-300">
+                            <h1 className="text-2xl font-bold">
+                                Thanks for your feedback
+                            </h1>
+                            <p className="text-[15px] text-neutral-400 mt-1">
+                                We appreciate you taking the time to report this. Your feedback helps us keep the community safe and welcoming for everyone.
+                            </p>
+
+
+                            <h2 className="text-lg font-bold mt-5">
+                                What’s next?
+                            </h2>
+                            <p className="text-[15px] text-neutral-400 mt-1">
+                                Our team will review your report and take appropriate action if we find a violation of our guidelines. We’ll notify you when the review is complete and let you know if any action was taken.
+                            </p>
+
+                            <button className="w-full rounded-lg h-11 text-sm font-medium text-neutral-900 bg-neutral-100 hover:bg-neutral-300 cursor-pointer mt-7" onClick={reportForm.close}>
+                                Done
+                            </button>
                         </div>
                     }
                 </div>

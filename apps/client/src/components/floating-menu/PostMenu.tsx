@@ -100,7 +100,7 @@ const PostMenu = ({ post, authorId }: Props) => {
 
     // report handler
     const reportHandler = async () => {
-        reportForm.open(post.publicId, REPORT_TYPE.POST);
+        reportForm.open(post.id, REPORT_TYPE.POST);
     }
 
     return (
