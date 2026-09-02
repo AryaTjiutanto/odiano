@@ -24,6 +24,7 @@ const reportSchema = new Schema<ReportSchema>({
         type: String,
         required: true,
         enum: Object.values(REPORT_STATUS),
+        index : true,
     },
     reporter: {
         type: Schema.Types.ObjectId,

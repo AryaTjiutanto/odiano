@@ -8,10 +8,10 @@ const Sidebar = () => {
 
     const navigation = [
         { name: 'Dashboard', id: 'dashboard', icon: LayoutDashboard },
-        { name: 'Users', id: 'users', icon: Users },
-        { name: 'Products', id: 'products', icon: ShoppingBag },
-        { name: 'Analytics', id: 'analytics', icon: BarChart3 },
-        { name: 'Settings', id: 'settings', icon: Settings },
+        // { name: 'Users', id: 'users', icon: Users },
+        // { name: 'Products', id: 'products', icon: ShoppingBag },
+        // { name: 'Analytics', id: 'analytics', icon: BarChart3 },
+        // { name: 'Settings', id: 'settings', icon: Settings },
     ];
 
     return (

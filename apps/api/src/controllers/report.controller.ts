@@ -1,9 +1,21 @@
-import { Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ReqBody } from "../types/request.type";
 import { CreateReport, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import { createReport } from "../services/report.service";
+import { createReport, getReports } from "../services/report.service";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { successResponseData } from "../utils/response.util";
+
+export const getAll = async(req : Request, res : Response, next : NextFunction) => {
+    const { status, page } = req.query;
+
+    try {
+        const reports = await getReports(status && String(status), page ? Number(page) : 1);
+
+        res.status(200).json(reports);
+    } catch (err) {
+        next(err);
+    }
+}
 
 export const create = async (req : ReqBody<CreateReport>, res : Response, next : NextFunction) => {
     const currentUserId = req.userId;

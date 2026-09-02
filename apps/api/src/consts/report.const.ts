@@ -1,0 +1,1 @@
+export const REPORTS_PAGE_SIZE = 16 as const;

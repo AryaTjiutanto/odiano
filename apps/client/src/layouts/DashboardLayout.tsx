@@ -5,7 +5,7 @@ import Sidebar from "../components/admin/Dashboard/Sidebar";
 const DashboardLayout = () => {
     return (
         <DashboardProvider>
-            <div className="flex h-screen bg-neutral-50 dark:bg-neutral-950 font-sans text-neutral-900 dark:text-neutral-100">
+            <div className="flex h-screen bg-black font-sans text-neutral-100">
                 {/* Main Content Area */}
                 <Sidebar />
                 <div className="flex flex-1 flex-col overflow-hidden">
@@ -15,7 +15,6 @@ const DashboardLayout = () => {
                     </main>
                 </div>
             </div>
-            <Outlet />
         </DashboardProvider>
     )
 }

@@ -22,5 +22,5 @@ export type UserSummaryQuery = {
     name: string,
     username: string,
     profileImage: UserProfileImageDTO
-    bio : string,
+    bio? : string,
 }
