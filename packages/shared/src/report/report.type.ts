@@ -9,8 +9,8 @@ export type ReportPostTarget = {
     data : {
         id : string,
         publicId : string,
-        content : string,
-        firstMedia? : PostMedia,
+        content : string | null,
+        firstMedia : PostMedia | null,
     },
 }
 
@@ -19,7 +19,8 @@ export type ReportUserTarget = {
     data : {
         id : string,
         username : string,
-        profileImage : UserProfileImageDTO
+        profileImage : UserProfileImageDTO,
+        name : string,
     },
 }
 

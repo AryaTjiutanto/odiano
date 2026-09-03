@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { ReqBody } from "../types/request.type";
-import { CreateReport, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
+import { CreateReport, PaginationQuery, ReportDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { createReport, getReports } from "../services/report.service";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { successResponseData } from "../utils/response.util";
 
 export const getAll = async(req : Request, res : Response, next : NextFunction) => {
-    const { status, page } = req.query;
+    const { status, page, withPagination } = req.query;
 
     try {
-        const reports = await getReports(status && String(status), page ? Number(page) : 1);
+        const reports = await getReports(status && String(status), page ? Number(page) : 1, String(withPagination) === "true");
 
-        res.status(200).json(reports);
+        res.status(200).json(successResponseData<PaginationQuery<ReportDTO[]>>(SUCCESS_RESPONSE_CODE.ok, "ok", reports));
     } catch (err) {
         next(err);
     }

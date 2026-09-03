@@ -1,18 +1,76 @@
-import { REPORT_STATUS, type ReportStatus } from "@odiano/shared";
-import { useQuery } from "@tanstack/react-query";
+import { MEDIA_ASPECT_RATIO, REPORT_STATUS, REPORT_TYPE, type PaginationData, type ReportDTO, type ReportStatus } from "@odiano/shared";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { reportKeys } from "../../../../queries/reportKeys";
 import { getReportList } from "../../../../services/report.service";
 import { DEFAULT_GC_TIME } from "../../../../consts/queryTime.const";
+import Profile from "../../../profile/Profile";
+import { formatDistance } from "date-fns";
+import { StickyNote } from "lucide-react";
+import DotsLoader from "../../../loader/DotsLoader";
 
 const ReportTable = () => {
+    const setQueryClient = useQueryClient();
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<ReportStatus>(REPORT_STATUS.PENDING);
 
+    // report query
+    async function reportQueryFn(): Promise<ReportDTO[]> {
+        const cachedPagination = queryClient.getQueryData<PaginationData | undefined>(reportKeys.pagination(activeTab));
+
+        const data = await getReportList({
+            status: activeTab,
+            page: 1,
+            withPagination: !cachedPagination,
+        });
+
+        if (data.pagination) {
+            queryClient.setQueryData(reportKeys.pagination(activeTab), data.pagination);
+        }
+
+        return data.data;
+    }
+
     const reportQuery = useQuery({
-        queryKey : reportKeys.list(activeTab),
-        queryFn : () => getReportList(activeTab),
-        staleTime : 30 * 1000,
-        gcTime : DEFAULT_GC_TIME,
+        queryKey: reportKeys.list(activeTab),
+        queryFn: reportQueryFn,
+        staleTime: 60 * 1000,
+        gcTime: DEFAULT_GC_TIME,
+    })
+
+    // pagination query
+    const reportPaginationQuery = useQuery<PaginationData | undefined>({
+        queryKey: reportKeys.list(activeTab),
+        queryFn: () => {
+            return queryClient.getQueryData(reportKeys.pagination(activeTab));
+        },
+        staleTime: 60 * 1000,
+        gcTime: DEFAULT_GC_TIME,
+    });
+
+    // process report
+    const processMutation = useMutation<void, Error, ReportDTO>({
+        mutationFn: (report) => console.log("hello"),
+        onMutate: (report) => {
+            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(REPORT_STATUS.PENDING), (oldData) => {
+                return oldData?.filter(report => report.id !== report.id);
+            });
+
+            setQueryClient.setQueryData<PaginationData | undefined>(reportKeys.pagination(REPORT_STATUS.PENDING), (oldData) => {
+                if(!oldData) return;
+                return oldData?.totalItem > 0 ? {
+                    ...oldData,
+                    totalItem: oldData.totalItem - 1,
+                } : undefined;
+            });
+
+            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(REPORT_STATUS.REVIEWED), (oldData) => {
+                return [...(oldData || []), report];
+            });
+        },
+        onError: () => {
+            
+        },
     })
 
     return (
@@ -39,8 +97,8 @@ const ReportTable = () => {
                                 </div>
                             </button>
                         )
-                })
-            }
+                    })
+                }
             </div>
             <div className="mt-4 rounded-xl border shadow-sm border-neutral-800 bg-black">
                 <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-neutral-900">
@@ -49,43 +107,112 @@ const ReportTable = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="text-neutral-400">
-                            <tr>
-                                <th className="px-6 py-4 font-medium">Type</th>
-                                <th className="px-6 py-4 font-medium">Target</th>
-                                <th className="px-6 py-4 font-medium">Reason</th>
-                                <th className="px-6 py-4 font-medium">Reporter</th>
-                                <th className="px-6 py-4 font-medium">Status</th>
-                                <th className="px-6 py-4 font-medium">Created At</th>
-                                <th className="w-[10%] px-6 py-4 font-medium">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                            {/* {mockUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50">
-                                    <td className="px-6 py-4">
-                                        <div className="font-medium text-neutral-900 dark:text-white">{user.name}</div>
-                                        <div className="text-xs text-neutral-500 dark:text-neutral-400">{user.email}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400">{user.role}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user.status === 'Active' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400' :
-                                            user.status === 'Pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400' :
-                                                'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400'
-                                            }`}>
-                                            {user.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400">Edit</button>
-                                    </td>
+                {
+                    reportQuery.isPending &&
+                    <div>
+                        <div className="h-76 flex items-center justify-center w-full">
+                            <DotsLoader />
+                        </div>
+                    </div>
+                }
+                {
+                    (reportQuery.data && !reportQuery.isPending) &&
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead className="text-neutral-400">
+                                <tr>
+                                    <th className="px-6 py-4 font-medium">Reporter</th>
+                                    <th className="px-6 py-4 font-medium">Type</th>
+                                    <th className="px-6 py-4 font-medium">Reason</th>
+                                    <th className="px-6 py-4 font-medium">Target</th>
+                                    <th className="px-6 py-4 font-medium">Created At</th>
+                                    <th className="w-[10%] px-6 py-4 font-medium">Action</th>
                                 </tr>
-                            ))} */}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+                                {reportQuery.data && reportQuery.data.map((report) => (
+                                    <tr key={`report-${report.id}`} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center space-x-2">
+                                                <div className="w-10 h-10">
+                                                    <Profile data={report.reporter.profileImage} />
+                                                </div>
+                                                <div>
+                                                    <div className="font-medium text-neutral-900 dark:text-white">{report.reporter.name}</div>
+                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400">@{report.reporter.username}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400">
+                                            {
+                                                report.target.type == REPORT_TYPE.POST &&
+                                                <div className="w-[60%] flex px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-500 space-x-2 items-center text-neutral-100">
+                                                    <StickyNote className="w-5" />
+                                                    <span>
+                                                        Post
+                                                    </span>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td className="px-6 py-4 font-semibold text-neutral-100">
+                                            {report.reason}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {
+                                                report.target.type == REPORT_TYPE.USER &&
+                                                <div className="flex items-center space-x-2">
+                                                    <div className="w-10 h-10">
+                                                        <Profile data={report.target.data.profileImage} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium text-neutral-900 dark:text-white">{report.target.data.name}</div>
+                                                        <div className="text-xs text-neutral-500 dark:text-neutral-400">@{report.target.data.username}</div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            {
+                                                report.target.type == REPORT_TYPE.POST &&
+                                                <div className="flex items-center space-x-2">
+                                                    {
+                                                        report.target.data.content &&
+                                                        <div className="flex-1 truncate">
+                                                            {report.target.data.content}
+                                                        </div>
+                                                    }
+                                                    {
+                                                        report.target.data.firstMedia &&
+                                                        <img className="max-h-10 rounded-lg" src={report.target.data.firstMedia.source.url} style={{ ...(report.target.data.firstMedia.aspectRatio !== MEDIA_ASPECT_RATIO.original && { aspectRatio: report.target.data.firstMedia.aspectRatio }) }} />
+                                                    }
+                                                </div>
+                                            }
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {formatDistance(new Date(report.createdAt), new Date(), {
+                                                addSuffix: true,
+                                            })}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {
+                                                report.status == REPORT_STATUS.PENDING &&
+                                                <button className="font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 cursor-pointer">
+                                                    Process
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                {
+                    (!reportQuery.data && !reportQuery.isPending) &&
+                    <div className="h-76 flex items-center justify-center w-full">
+                        <div className="text-center text-neutral-500 dark:text-neutral-400">
+                            No report found
+                        </div>                        
+                    </div>
+                }
             </div>
         </section>
     )
