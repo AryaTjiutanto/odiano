@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cors({
     origin: ALLOWED_ORIGINS?.split(",").map((o) => o.trim()),
     credentials: true,
-    methods: ["POST", "GET", "DELETE", "PUT"]
+    methods: ["POST", "GET", "DELETE", "PUT", "PATCH"]
 }));
 app.use(cookieParser());
 app.use(helmet());

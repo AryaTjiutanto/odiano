@@ -1,6 +1,6 @@
 export const REPORT_STATUS = {
     PENDING : "pending",
-    REVIEWED : "reviewed",
+    REVIEWING : "reviewing",
     RESOLVED : "resolved",
     REJECTED : "rejected",
 }

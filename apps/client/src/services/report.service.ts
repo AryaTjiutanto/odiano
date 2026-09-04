@@ -18,7 +18,6 @@ export const createReport = async (reasonCode : ReportReasonCode, targetId : str
 }
 
 export const getReportList = async (options : ReportOptions) : Promise<PaginationQuery<ReportDTO[]>> => {
-    console.log("hello");
     const response = await api.get<SuccessResponseData<PaginationQuery<ReportDTO[]>>>(`/report`, {
         params : {
             status : options.status,
@@ -32,4 +31,14 @@ export const getReportList = async (options : ReportOptions) : Promise<Paginatio
     }
 
     return response.data.data;
+}
+
+export const processReport = async (reportId : string) => {
+    const response = await api.patch<SuccessResponseData>(`/report/${reportId}/process`);
+    return response.data.success;
+}
+
+export const takeAction = async (reportId : string) => {
+    const response = await api.patch<SuccessResponseData>(`/report/${reportId}/take-action`);
+    return response.data.success;
 }

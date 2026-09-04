@@ -2,12 +2,21 @@ import { MEDIA_ASPECT_RATIO, REPORT_STATUS, REPORT_TYPE, type PaginationData, ty
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { reportKeys } from "../../../../queries/reportKeys";
-import { getReportList } from "../../../../services/report.service";
+import { getReportList, processReport, takeAction } from "../../../../services/report.service";
 import { DEFAULT_GC_TIME } from "../../../../consts/queryTime.const";
 import Profile from "../../../profile/Profile";
 import { formatDistance } from "date-fns";
 import { StickyNote } from "lucide-react";
 import DotsLoader from "../../../loader/DotsLoader";
+import { notify } from "../../../../helpers/notification/notify.helper";
+import { Link } from "react-router-dom";
+
+type ProccessReportMutationData = {
+    pendingReportsPrevData: ReportDTO[] | undefined,
+    reviewedReportsPrevData: ReportDTO[] | undefined,
+    pendingReportsPaginationPrevData: PaginationData | undefined,
+    reviewedReportsPaginationPrevData: PaginationData | undefined,
+}
 
 const ReportTable = () => {
     const setQueryClient = useQueryClient();
@@ -48,30 +57,94 @@ const ReportTable = () => {
         gcTime: DEFAULT_GC_TIME,
     });
 
-    // process report
-    const processMutation = useMutation<void, Error, ReportDTO>({
-        mutationFn: (report) => console.log("hello"),
+    // mutation contructor
+    const updateReportStatusMutation = (currentStatus : ReportStatus, targetStatus : ReportStatus, mutationFn : (report : string) => Promise<boolean>) => useMutation<boolean, Error, ReportDTO, ProccessReportMutationData>({
+        mutationFn: (report) => mutationFn(report.id),
         onMutate: (report) => {
-            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(REPORT_STATUS.PENDING), (oldData) => {
-                return oldData?.filter(report => report.id !== report.id);
+            let pendingReportsPrevData;
+            let reviewedReportsPrevData;
+            let pendingReportsPaginationPrevData;
+            let reviewedReportsPaginationPrevData;
+
+            // update current report
+            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(currentStatus), (oldData) => {
+                pendingReportsPrevData = oldData;
+                return oldData?.filter(oldReport => oldReport.id !== report.id);
             });
 
-            setQueryClient.setQueryData<PaginationData | undefined>(reportKeys.pagination(REPORT_STATUS.PENDING), (oldData) => {
-                if(!oldData) return;
+            // update current pagination
+            setQueryClient.setQueryData<PaginationData | undefined>(reportKeys.pagination(currentStatus), (oldData) => {
+                pendingReportsPaginationPrevData = oldData;
+                if (!oldData) return;
                 return oldData?.totalItem > 0 ? {
                     ...oldData,
                     totalItem: oldData.totalItem - 1,
                 } : undefined;
             });
 
-            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(REPORT_STATUS.REVIEWED), (oldData) => {
-                return [...(oldData || []), report];
+            // update target report
+            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(targetStatus), (oldData) => {
+                reviewedReportsPrevData = oldData;
+                return [...(oldData || []), {
+                    ...report,
+                    status: targetStatus,
+                }];
             });
+
+            // update target pagination
+            setQueryClient.setQueryData<PaginationData | undefined>(reportKeys.pagination(targetStatus), (oldData) => {
+                pendingReportsPaginationPrevData = oldData;
+                if (!oldData) return;
+
+                return oldData?.totalItem > 0 ? {
+                    ...oldData,
+                    totalItem: oldData.totalItem + 1,
+                } : undefined;
+            });
+
+            return {
+                pendingReportsPrevData,
+                reviewedReportsPrevData,
+                pendingReportsPaginationPrevData,
+                reviewedReportsPaginationPrevData,
+            }
         },
-        onError: () => {
-            
+        onError: (_error, _variable, context) => {
+            // reset current report
+            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(currentStatus), () => context?.pendingReportsPrevData);
+
+            // reset current pagination
+            setQueryClient.setQueryData<PaginationData | undefined>(reportKeys.pagination(currentStatus), () => context?.pendingReportsPaginationPrevData);
+
+            // reset target report
+            setQueryClient.setQueryData<ReportDTO[]>(reportKeys.list(targetStatus), () => context?.reviewedReportsPrevData);
+
+            // reset target pagination
+            setQueryClient.setQueryData<PaginationData | undefined>(reportKeys.pagination(targetStatus), () => context?.reviewedReportsPaginationPrevData);
         },
     })
+
+    // process report
+    const processMutation = updateReportStatusMutation(REPORT_STATUS.PENDING, REPORT_STATUS.REVIEWING, processReport);
+
+    const processReportHandler = async (report: ReportDTO) => {
+        try {
+            await processMutation.mutateAsync(report);
+        } catch (err) {
+            notify.error({ title: "Error", description: "Failed to process report" });
+        }
+    }
+
+    // delete content
+    const takeActionMutation = updateReportStatusMutation(REPORT_STATUS.REVIEWING, REPORT_STATUS.RESOLVED, takeAction);
+
+    const takeActionHandler = async (report: ReportDTO) => {
+        try {
+            await takeActionMutation.mutateAsync(report);
+        } catch (err) {
+            notify.error({ title: "Error", description: "Failed to delete content" });
+        }
+    }
 
     return (
         <section className="">
@@ -172,18 +245,20 @@ const ReportTable = () => {
                                             }
                                             {
                                                 report.target.type == REPORT_TYPE.POST &&
-                                                <div className="flex items-center space-x-2">
-                                                    {
-                                                        report.target.data.content &&
-                                                        <div className="flex-1 truncate">
-                                                            {report.target.data.content}
-                                                        </div>
-                                                    }
-                                                    {
-                                                        report.target.data.firstMedia &&
-                                                        <img className="max-h-10 rounded-lg" src={report.target.data.firstMedia.source.url} style={{ ...(report.target.data.firstMedia.aspectRatio !== MEDIA_ASPECT_RATIO.original && { aspectRatio: report.target.data.firstMedia.aspectRatio }) }} />
-                                                    }
-                                                </div>
+                                                <Link to={`/author/post/${report.target.data.publicId}`} className="hover:text-neutral-400" target="_blank">
+                                                    <div className="flex items-center space-x-2 cursor-pointer">
+                                                        {
+                                                            report.target.data.content &&
+                                                            <div className="flex-1 truncate">
+                                                                {report.target.data.content}
+                                                            </div>
+                                                        }
+                                                        {
+                                                            report.target.data.firstMedia &&
+                                                            <img className="max-h-10 rounded-lg" src={report.target.data.firstMedia.source.url} style={{ ...(report.target.data.firstMedia.aspectRatio !== MEDIA_ASPECT_RATIO.original && { aspectRatio: report.target.data.firstMedia.aspectRatio }) }} />
+                                                        }
+                                                    </div>
+                                                </Link>
                                             }
                                         </td>
                                         <td className="px-6 py-4">
@@ -194,8 +269,14 @@ const ReportTable = () => {
                                         <td className="px-6 py-4">
                                             {
                                                 report.status == REPORT_STATUS.PENDING &&
-                                                <button className="font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 cursor-pointer">
+                                                <button className="font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 cursor-pointer" onClick={() => processReportHandler(report)}>
                                                     Process
+                                                </button>
+                                            }
+                                            {
+                                                report.status == REPORT_STATUS.REVIEWING &&
+                                                <button className="font-medium text-red-500 hover:text-red-700 cursor-pointer" onClick={() => takeActionHandler(report)}>
+                                                    Delete content
                                                 </button>
                                             }
                                         </td>
@@ -210,7 +291,7 @@ const ReportTable = () => {
                     <div className="h-76 flex items-center justify-center w-full">
                         <div className="text-center text-neutral-500 dark:text-neutral-400">
                             No report found
-                        </div>                        
+                        </div>
                     </div>
                 }
             </div>
