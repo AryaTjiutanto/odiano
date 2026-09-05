@@ -16,8 +16,8 @@ export type PostReportTargetSchema = {
     snapshot : {
         publicId: string,
         content: string,
-        Media: PostMedia[],
-        hashTags : string[],
+        media: PostMedia[] | null,
+        hashTags : string[] | null,
         author : Types.ObjectId,
     }
 }
@@ -27,8 +27,8 @@ export type UserReportTargetSchema = {
     id : Types.ObjectId,
     snapshot : {
         username: string,
-        profileImage: ImageAsset,
-        name : string,
+        profileImage: ImageAsset | null,
+        name : string | null,
         email : string
     }
 }
@@ -38,40 +38,23 @@ export type PostCommentReportTargetSchema = {
     id : Types.ObjectId,
     snapshot : {
         author : Types.ObjectId,
-        parentId : Types.ObjectId,
+        parentId : Types.ObjectId | null,
         content: string,
         depth?: number,
     }
 }
 
 // query
-type PostReportTarget = {
-    type: typeof REPORT_TYPE.POST,
-    data: {
-        _id: string,
-        publicId: string,
-        content: string,
-        media: PostMedia[],
-    },
+type PostReportTarget = PostReportTargetSchema & {
+    isExists : boolean
 }
 
-type UserReportTarget = {
-    type: typeof REPORT_TYPE.USER,
-    data: {
-        _id: string,
-        username: string,
-        profileImage: ImageAsset,
-        name : string,
-    },
+type UserReportTarget = UserReportTargetSchema & {
+    isExists : boolean
 }
 
-type PostCommentReportTarget = {
-    type: typeof REPORT_TYPE.COMMENT,
-    data: {
-        _id: string,
-        content: string,
-        depth?: number,
-    },
+type PostCommentReportTarget = PostCommentReportTargetSchema & {
+    isExists : boolean
 }
 
 export type ReportAggregationData = {

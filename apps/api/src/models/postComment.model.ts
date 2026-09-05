@@ -6,7 +6,7 @@ type PostCommentSchema = {
     parentId : Types.ObjectId | null,
     depth : number,
     replyCount : number,
-    content : String,
+    content : string,
 }
 
 const postCommentSchema = new Schema<PostCommentSchema>({

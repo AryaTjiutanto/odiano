@@ -1,52 +1,58 @@
 import { REPORT_TYPE, ReportDTO } from "@odiano/shared";
 import { ReportAggregationData } from "../types/report.type";
 
-export const toReportDTO = (data : ReportAggregationData) : ReportDTO => {
-    const target = (() => {
+export const toReportDTO = (data: ReportAggregationData): ReportDTO => {
+    const targetData = (() => {
         switch (data.target.type) {
             case REPORT_TYPE.USER:
                 return {
-                    type : REPORT_TYPE.USER,
-                    data : {
-                        id : data.target.data._id.toString(),
-                        username : data.target.data.username,
-                        profileImage : data.target.data.profileImage,
-                        name : data.target.data.name,
+                    type: REPORT_TYPE.USER,
+                    snapshot: {
+                        username: data.target.snapshot.username,
+                        profileImage: data.target.snapshot.profileImage,
+                        name: data.target.snapshot.name,
+                        email: data.target.snapshot.email,
                     }
                 }
             case REPORT_TYPE.POST:
                 return {
-                    type : REPORT_TYPE.POST,
-                    data : {
-                        id : data.target.data._id.toString(),
-                        publicId : data.target.data.publicId,
-                        content : data.target.data.content || null,
-                        firstMedia : data.target.data.media?.[0] || null,
+                    type: REPORT_TYPE.POST,
+                    snapshot: {
+                        publicId: data.target.snapshot.publicId,
+                        content: data.target.snapshot.content || null,
+                        media: data.target.snapshot.media || null,
+                        hashTags: data.target.snapshot.hashTags,
+                        author: data.target.snapshot.author.toString(),
                     }
                 }
             case REPORT_TYPE.COMMENT:
                 return {
-                    type : REPORT_TYPE.COMMENT,
-                    data : {
-                        id : data.target.data._id.toString(),
-                        content : data.target.data.content,
-                        depth : data.target.data.depth,
+                    type: REPORT_TYPE.COMMENT,
+                    snapshot: {
+                        parentId : data.target.snapshot.parentId ? data.target.snapshot.parentId.toString() : null,
+                        author : data.target.snapshot.author.toString(),
+                        content: data.target.snapshot.content,
+                        depth: data.target.snapshot.depth,
                     }
                 }
         }
     })();
 
     return {
-        id : data._id,
-        reporter : {
-            id : data.reporter._id.toString(),
-            name : data.reporter.name,
-            username : data.reporter.username,
-            profileImage : data.reporter.profileImage,
+        id: data._id,
+        reporter: {
+            id: data.reporter._id.toString(),
+            name: data.reporter.name,
+            username: data.reporter.username,
+            profileImage: data.reporter.profileImage,
         },
-        reason : data.reason,
-        target,
-        status : data.status,
-        createdAt : data.createdAt, 
+        reason: data.reason,
+        target : {
+            exists : data.target.isExists,
+            id : data.target.id.toString(),
+            ...targetData
+        },
+        status: data.status,
+        createdAt: data.createdAt,
     }
 }

@@ -2,27 +2,91 @@ import { ACTIONS, PaginationQuery, REPORT_STATUS, REPORT_TYPE, ReportDTO, Report
 import Report from "../models/report.model";
 import mongoose, { Types } from "mongoose";
 import { REPORTS_PAGE_SIZE } from "../consts/report.const";
-import { ReportAggregationQueryResult } from "../types/report.type";
+import { PostCommentReportTargetSchema, PostReportTargetSchema, ReportAggregationQueryResult, UserReportTargetSchema } from "../types/report.type";
 import { toReportDTO } from "../mappers/report.mapper";
 import { User } from "../models/user.model";
 import { defineAbilityFor } from "../helpers/ability.helper";
 import { Post } from "../models/post.model";
 import PostComment from "../models/postComment.model";
-import logger from "../libs/log/logger";
 
 export const createReport = async (currentUserId: string, reason: ReportReasonCode, type: ReportType, targetId: string) => {
-    await Report.updateOne({
+    const report = await Report.findOne({
         reason,
-        type,
-        target: new Types.ObjectId(targetId),
+        "target.type": type,
+        "target.id": new Types.ObjectId(targetId),
         reporter: new Types.ObjectId(currentUserId),
-    }, {
-        $setOnInsert: {
-            status: REPORT_STATUS.PENDING,
+    }).select("_id").lean();
+
+    if (report) return;
+
+    // get target data
+    let target : PostReportTargetSchema | UserReportTargetSchema | PostCommentReportTargetSchema | null = null;
+
+    if (type === REPORT_TYPE.POST) {
+        const post = await Post.findById(targetId).select("publicId content media hashTags author").lean();
+
+        if (!post) {
+            throw new Error("Post not found");
         }
-    }, {
-        upsert: true,
-    });
+
+        target = {
+            type: REPORT_TYPE.POST,
+            id: post._id,
+            snapshot: {
+                publicId: post.publicId,
+                content: post.content,
+                media: post.media,
+                hashTags: post.hashtags || null,
+                author: post.author,
+            }
+        }
+    } else if (type === REPORT_TYPE.USER) {
+        const user = await User.findById(targetId).select("username profileImage name email").lean();
+
+        if (!user ) {
+            throw new Error("User not found");
+        }
+
+        target = {
+            type: REPORT_TYPE.USER,
+            id: user._id,
+            snapshot: {
+                username: user.username,
+                profileImage: user.profileImage,
+                name: user.name,
+                email: user.email,
+            }
+        }
+    } else if (type === REPORT_TYPE.COMMENT) {
+        const comment = await PostComment.findById(targetId).select("content depth").lean();
+
+        if (!comment) {
+            throw new Error("Comment not found");
+        }
+
+        target = {
+            type: REPORT_TYPE.COMMENT,
+            id: comment._id,
+            snapshot: {
+                author : comment.author,
+                parentId : comment.parentId || null,
+                content: comment.content,
+                depth: comment.depth,
+            }
+        }
+    }
+
+    if (!target) {
+        throw new Error("Target not found");
+    }
+
+    // create report
+    await Report.create({
+        reason,
+        status: REPORT_STATUS.PENDING,
+        reporter: new Types.ObjectId(currentUserId),
+        target,
+    })
 }
 
 export const processReport = async (currentUserId: string, reportId: string) => {
@@ -71,20 +135,20 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
                 throw new Error("You don't have permission to take action");
             }
 
-            
+
             // get report
             const report = await Report.findById(reportId)
-            .session(session)
-            .select("_id status reason type reporter target");
+                .session(session)
+                .select("_id status reason type reporter target");
 
             if (!report) {
                 throw new Error("Report not found");
             }
-            
+
             if (report.status !== REPORT_STATUS.REVIEWING) {
                 throw new Error("Report is not in reviewing status");
             }
-            
+
             // update report status
             await report.updateOne({
                 $set: {
@@ -94,13 +158,13 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
             report.save();
 
             // delete report content
-            if (report.type === REPORT_TYPE.USER) {
+            if (report.target.type === REPORT_TYPE.USER) {
                 await User.findByIdAndDelete(report.target)
                     .session(session);
-            } else if (report.type === REPORT_TYPE.POST) {
+            } else if (report.target.type === REPORT_TYPE.POST) {
                 await Post.findByIdAndDelete(report.target)
                     .session(session);
-            } else if (report.type === REPORT_TYPE.COMMENT) {
+            } else if (report.target.type === REPORT_TYPE.COMMENT) {
                 await PostComment.findByIdAndDelete(report.target)
                     .session(session);
             }
@@ -170,10 +234,9 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                     {
                         $lookup: {
                             from: "users",
-
                             let: {
-                                type: "$type",
-                                targetId: "$target",
+                                type: "$target.type",
+                                targetId: "$target.id",
                             },
 
                             pipeline: [
@@ -190,9 +253,6 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                                 {
                                     $project: {
                                         _id: 1,
-                                        username: 1,
-                                        profileImage: 1,
-                                        name: 1,
                                     }
                                 }
                             ],
@@ -205,8 +265,8 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                             from: "posts",
 
                             let: {
-                                type: "$type",
-                                targetId: "$target",
+                                type: "$target.type",
+                                targetId: "$target.id",
                             },
 
                             pipeline: [
@@ -223,9 +283,6 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                                 {
                                     $project: {
                                         _id: 1,
-                                        publicId: 1,
-                                        content: 1,
-                                        media: 1
                                     }
                                 }
                             ],
@@ -238,8 +295,8 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                             from: "postComments",
 
                             let: {
-                                type: "$type",
-                                targetId: "$target",
+                                type: "$target.type",
+                                targetId: "$target.id",
                             },
 
                             pipeline: [
@@ -256,8 +313,6 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                                 {
                                     $project: {
                                         _id: 1,
-                                        content: 1,
-                                        depth: 1,
                                     }
                                 }
                             ],
@@ -269,37 +324,15 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                     {
                         $set: {
                             target: {
-                                type: "$type",
-                                data: {
-                                    $switch: {
-                                        branches: [
-                                            {
-                                                case: {
-                                                    $eq: ["$type", REPORT_TYPE.USER]
-                                                },
-                                                then: {
-                                                    $arrayElemAt: ["$userTarget", 0]
-                                                }
-                                            },
-                                            {
-                                                case: {
-                                                    $eq: ["$type", REPORT_TYPE.POST]
-                                                },
-                                                then: {
-                                                    $arrayElemAt: ["$postTarget", 0]
-                                                }
-                                            },
-                                            {
-                                                case: {
-                                                    $eq: ["$type", REPORT_TYPE.COMMENT]
-                                                },
-                                                then: {
-                                                    $arrayElemAt: ["$postCommentTarget", 0]
-                                                }
-                                            },
-                                        ],
-                                        default: null
-                                    }
+                                type: "$target.type",
+                                id: "$target.id",
+                                snapshot: "$target.snapshot",
+                                exists: {
+                                    $or: [
+                                        { $gt: [{ size: "$userTarget" }, 0] },
+                                        { $gt: [{ size: "$postTarget" }, 0] },
+                                        { $gt: [{ size: "$postCommentTarget" }, 0] },
+                                    ]
                                 }
                             }
                         }

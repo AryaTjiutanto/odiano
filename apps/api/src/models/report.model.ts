@@ -1,4 +1,4 @@
-import { REPORT_REASON_CODES, REPORT_STATUS, REPORT_TYPE } from "@odiano/shared";
+import { REPORT_REASON_CODES, REPORT_STATUS } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
 import { ReportSchema } from "../types/report.type";
 
@@ -27,9 +27,9 @@ const reportSchema = new Schema<ReportSchema>({
 
 reportSchema.index({
     reporter: 1,
-    target: 1,
     reason: 1,
-    type: 1,
+    "target.id": 1,
+    "target.type": 1,
 }, {unique: true});
 
 const Report = model<ReportSchema>("Report", reportSchema);

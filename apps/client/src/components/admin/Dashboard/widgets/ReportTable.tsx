@@ -130,7 +130,7 @@ const ReportTable = () => {
     const processReportHandler = async (report: ReportDTO) => {
         try {
             await processMutation.mutateAsync(report);
-        } catch (err) {
+        } catch {
             notify.error({ title: "Error", description: "Failed to process report" });
         }
     }
@@ -141,7 +141,7 @@ const ReportTable = () => {
     const takeActionHandler = async (report: ReportDTO) => {
         try {
             await takeActionMutation.mutateAsync(report);
-        } catch (err) {
+        } catch {
             notify.error({ title: "Error", description: "Failed to delete content" });
         }
     }
@@ -235,27 +235,27 @@ const ReportTable = () => {
                                                 report.target.type == REPORT_TYPE.USER &&
                                                 <div className="flex items-center space-x-2">
                                                     <div className="w-10 h-10">
-                                                        <Profile data={report.target.data.profileImage} />
+                                                        <Profile data={report.target.snapshot.profileImage} />
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium text-neutral-900 dark:text-white">{report.target.data.name}</div>
-                                                        <div className="text-xs text-neutral-500 dark:text-neutral-400">@{report.target.data.username}</div>
+                                                        <div className="font-medium text-neutral-900 dark:text-white">{report.target.snapshot.name}</div>
+                                                        <div className="text-xs text-neutral-500 dark:text-neutral-400">@{report.target.snapshot.username}</div>
                                                     </div>
                                                 </div>
                                             }
                                             {
                                                 report.target.type == REPORT_TYPE.POST &&
-                                                <Link to={`/author/post/${report.target.data.publicId}`} className="hover:text-neutral-400" target="_blank">
+                                                <Link to={`/author/post/${report.target.snapshot.publicId}`} className="hover:text-neutral-400" target="_blank">
                                                     <div className="flex items-center space-x-2 cursor-pointer">
                                                         {
-                                                            report.target.data.content &&
+                                                            report.target.snapshot.content &&
                                                             <div className="flex-1 truncate">
-                                                                {report.target.data.content}
+                                                                {report.target.snapshot.content}
                                                             </div>
                                                         }
                                                         {
-                                                            report.target.data.firstMedia &&
-                                                            <img className="max-h-10 rounded-lg" src={report.target.data.firstMedia.source.url} style={{ ...(report.target.data.firstMedia.aspectRatio !== MEDIA_ASPECT_RATIO.original && { aspectRatio: report.target.data.firstMedia.aspectRatio }) }} />
+                                                            (report.target.snapshot.media && report.target.snapshot.media.length > 0) &&
+                                                            <img className="max-h-10 rounded-lg" src={report.target.snapshot.media[0].source.url} style={{ ...(report.target.snapshot.media[0].aspectRatio !== MEDIA_ASPECT_RATIO.original && { aspectRatio: report.target.snapshot.media[0].aspectRatio }) }} />
                                                         }
                                                     </div>
                                                 </Link>
