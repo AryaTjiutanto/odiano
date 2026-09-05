@@ -42,7 +42,7 @@ export const processReport = async (currentUserId: string, reportId: string) => 
 
     // update report
     await Report.updateOne({
-        _id: new Types.ObjectId(reportId),
+        _id: reportId,
     }, {
         $set: {
             status: REPORT_STATUS.REVIEWING
@@ -314,9 +314,6 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
                             target: 1,
                             status: 1,
                             createdAt: 1,
-                            userTarget: 1,
-                            postTarget: 1,
-                            postCommentTarget: 1
                         }
                     }
                 ]

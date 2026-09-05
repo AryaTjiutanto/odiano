@@ -1,8 +1,50 @@
-import { PostMedia, REPORT_TYPE, ReportReasonCode, ReportStatus } from "@odiano/shared";
+import { PostMedia, REPORT_TYPE, ReportReasonCode, ReportStatus, ReportType } from "@odiano/shared";
 import { ImageAsset, UserSummaryQuery } from "./user.type";
+import { Types } from "mongoose";
 
-// get reporter data
+// report schema
+export type ReportSchema = {
+    reason: ReportReasonCode,
+    status: ReportStatus,
+    reporter: Types.ObjectId,
+    target: PostReportTargetSchema | UserReportTargetSchema | PostCommentReportTargetSchema,
+}
 
+export type PostReportTargetSchema = {
+    type : typeof REPORT_TYPE.POST,
+    id : Types.ObjectId,
+    snapshot : {
+        publicId: string,
+        content: string,
+        Media: PostMedia[],
+        hashTags : string[],
+        author : Types.ObjectId,
+    }
+}
+
+export type UserReportTargetSchema = {
+    type : typeof REPORT_TYPE.USER,
+    id : Types.ObjectId,
+    snapshot : {
+        username: string,
+        profileImage: ImageAsset,
+        name : string,
+        email : string
+    }
+}
+
+export type PostCommentReportTargetSchema = {
+    type : typeof REPORT_TYPE.COMMENT,
+    id : Types.ObjectId,
+    snapshot : {
+        author : Types.ObjectId,
+        parentId : Types.ObjectId,
+        content: string,
+        depth?: number,
+    }
+}
+
+// query
 type PostReportTarget = {
     type: typeof REPORT_TYPE.POST,
     data: {

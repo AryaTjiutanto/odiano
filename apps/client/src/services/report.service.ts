@@ -18,6 +18,8 @@ export const createReport = async (reasonCode : ReportReasonCode, targetId : str
 }
 
 export const getReportList = async (options : ReportOptions) : Promise<PaginationQuery<ReportDTO[]>> => {
+    console.log(options);
+
     const response = await api.get<SuccessResponseData<PaginationQuery<ReportDTO[]>>>(`/report`, {
         params : {
             status : options.status,

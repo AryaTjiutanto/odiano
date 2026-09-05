@@ -10,7 +10,7 @@ type PostSchema = PostType & {
 }
 
 // post media schema
-const postMediaSchema = new mongoose.Schema<PostMedia>({
+export const postMediaSchema = new mongoose.Schema<PostMedia>({
     aspectRatio: {
         type: mongoose.Schema.Types.Mixed,
         required: true,
