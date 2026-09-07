@@ -7,10 +7,18 @@ export const POST_CONTENT_LENGTH = {
 export const POST_MAX_MEDIA = 6 as const;
 export const POST_MAX_TAGS = 20 as const;
 
+export const POST_STATUS = {
+    ACTIVE : "active",
+    SUSPENDED : "suspended",
+    ARCHIVED : "archived",
+} as const;
+
 export const POST_VISIBILITIES = {
     PUBLIC : "public",
     FOLLOWERS : "followers"
 } as const;
+
+export type PostStatus = typeof POST_STATUS[keyof typeof POST_STATUS];
 export type PostVisibilities = typeof POST_VISIBILITIES[keyof typeof POST_VISIBILITIES];
 
 // media property

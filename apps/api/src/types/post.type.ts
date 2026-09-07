@@ -10,7 +10,6 @@ export type PostQuery = {
     visibility : PostVisibilities,
     hideLikeAndViewCount : boolean,
     turnOffCommenting : boolean,
-    isArchive : boolean,
     createdAt : Date,
     updatedAt : Date,
     commentCount : number,

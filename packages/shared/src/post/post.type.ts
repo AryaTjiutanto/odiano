@@ -27,7 +27,6 @@ export type Post = {
     visibility: PostVisibilities,
     hideLikeAndViewCount: boolean,
     turnOffCommenting: boolean,
-    isArchive: boolean,
 }
 
 export type PostDTO = Post & {

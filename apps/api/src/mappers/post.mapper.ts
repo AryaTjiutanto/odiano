@@ -12,7 +12,6 @@ export const toPostDto = (post: PostQuery, {isLiked} : AdditionalData): PostDTO 
     return {
         content: post.content,
         hideLikeAndViewCount: post.hideLikeAndViewCount,
-        isArchive: post.isArchive,
         media: post.media,
         id: post._id.toString(),
         publicId: post.publicId,

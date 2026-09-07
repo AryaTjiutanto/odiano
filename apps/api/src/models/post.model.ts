@@ -1,4 +1,4 @@
-import { type Post as PostType, type PostMedia, ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, POST_VISIBILITIES } from "@odiano/shared"
+import { type Post as PostType, type PostMedia, ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, POST_VISIBILITIES, PostStatus, POST_STATUS } from "@odiano/shared"
 import mongoose, { Types } from "mongoose"
 import { nanoid } from "nanoid";
 
@@ -7,6 +7,7 @@ type PostSchema = PostType & {
     publicId: string,
     author: Types.ObjectId,
     hasMedia : boolean,
+    status : PostStatus,
 }
 
 // post media schema
@@ -73,10 +74,6 @@ const postSchema = new mongoose.Schema<PostSchema>({
         type: Boolean,
         required: true,
     },
-    isArchive: {
-        type: Boolean,
-        required: true,
-    },
     turnOffCommenting: {
         type: Boolean,
         required: true
@@ -85,6 +82,13 @@ const postSchema = new mongoose.Schema<PostSchema>({
         type: String,
         enum: Object.values(POST_VISIBILITIES),
         required: true,
+    },
+    status : {
+        type : String,
+        enum : Object.values(POST_STATUS),
+        required : true,
+        default : POST_STATUS.ACTIVE,
+        index : true,
     },
     media: {
         type: [postMediaSchema],

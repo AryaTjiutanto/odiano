@@ -3,7 +3,7 @@ import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
 import Like from "../models/like.model";
 import { Post } from "../models/post.model";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@odiano/shared";
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_STATUS } from "@odiano/shared";
 import { create as createNotification } from "./notification.service";
 
 export const getLikedIds = async (currentUserId: string, type: LikeTypes, targetIds: string[] | Types.ObjectId[]) => {
@@ -32,14 +32,14 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
     
     try {
         await session.withTransaction(async () => {
-            const post = await Post.findById(postId, null, {session}).select("publicId author visibility hideLikeAndViewCount isArchive turnOffCommething likeCount content media");
+            const post = await Post.findById(postId, null, {session}).select("publicId author visibility hideLikeAndViewCount turnOffCommething likeCount status content media");
 
             if (!post) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post is not foun");
             }
         
-            if (post?.isArchive) {
-                throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "This post is archived and can no longer receive likes.");
+            if (post.status !== POST_STATUS.ACTIVE) {
+                throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "This post can't be liked");
             }
 
             // create like

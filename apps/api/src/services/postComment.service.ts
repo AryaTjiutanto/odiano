@@ -1,4 +1,4 @@
-import { CreatedDocumentId, ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PostCommentDTO } from "@odiano/shared"
+import { CreatedDocumentId, ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_STATUS, PostCommentDTO } from "@odiano/shared"
 import { toPostCommentDTO } from "../mappers/postComment.mapper"
 import PostComment from "../models/postComment.model"
 import { PostCommentQuery } from "../types/postComment.type"
@@ -20,7 +20,7 @@ type createPostCommentParams = {
 export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams): Promise<CreatedDocumentId> => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
-        .select("publicId content media visibility publicId isArchive turnOffCommenting commentCount")
+        .select("publicId content media visibility publicId status turnOffCommenting commentCount")
         .populate("author", "_id");
 
     if (!post) {
@@ -31,11 +31,11 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
         )
     }
 
-    if (post?.isArchive) {
+    if (post.status !== POST_STATUS.ACTIVE) {
         throw new AppError(
             409,
             ERROR_RESPONSE_CODE.conflict,
-            "Comments cannot be added to an archived post."
+            "Comments cannot be added to this post."
         );
     }
 

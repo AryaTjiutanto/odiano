@@ -59,7 +59,6 @@ const PostFormSection = () => {
 
         defaultValues: {
             media: null,
-            isArchive: false,
             hideLikeAndViewCount: false,
             turnOffCommenting: false,
             visibility: "public",
@@ -119,7 +118,6 @@ const PostFormSection = () => {
                 hideLikeAndViewCount: data.hideLikeAndViewCount,
                 id: response.data.data?.id || "",
                 publicId: response.data.data?.publicId || "",
-                isArchive: data.isArchive,
                 isLiked: false,
                 likeCount: 0,
                 media: media && media.map((data) => ({

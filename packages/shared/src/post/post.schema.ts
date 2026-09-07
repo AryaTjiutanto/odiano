@@ -49,8 +49,6 @@ export const createPostSchema = z.object({
             `Maximum ${POST_MAX_MEDIA} media allowed`
         )
         .nullable(),
-
-    isArchive: z.boolean("Invalid format"),
     hideLikeAndViewCount: z.boolean("Invalid format"),
     turnOffCommenting: z.boolean("Invalid format"),
     visibility: z.nativeEnum(POST_VISIBILITIES, "Invalid visibilities"),

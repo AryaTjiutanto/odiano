@@ -1,4 +1,4 @@
-import { CreatedDocumentId, CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, type PostDTO as PostFeedItem } from "@odiano/shared";
+import { CreatedDocumentId, CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, POST_STATUS, PostDTO, type PostDTO as PostFeedItem } from "@odiano/shared";
 import { Post } from "../models/post.model";
 import { toPostDto } from "../mappers/post.mapper";
 import { PostQuery } from "../types/post.type";
@@ -12,8 +12,6 @@ import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage, deleteImages } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag, bulkDecreseHashtagsCount } from "./hashtag.service";
 import { searchOptions } from "../types/search.type";
-import cloudinary from "../config/cloudinary.config";
-import logger from "../libs/log/logger";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts
@@ -30,8 +28,13 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
                             }
                         },
                     ],
-
                     filter: [
+                        {
+                            equals: {
+                                path: "status",
+                                value: POST_STATUS.ACTIVE,
+                            }
+                        },
                         {
                             compound: {
                                 mustNot: [
@@ -100,7 +103,6 @@ export const searchPosts = async (currentUserId: string, query: string, cursor: 
                 visibility: 1,
                 hideLikeAndViewCount: 1,
                 turnOffCommenting: 1,
-                isArchive: 1,
                 createdAt: 1,
                 updatedAt: 1,
                 commentCount: 1,
@@ -157,12 +159,13 @@ export const listPostsByHashtag = async (currentUserId: string | null | undefine
         ...(cursor ? {
             _id: mongoose.trusted({ $lt: cursor })
         } : {}),
-        ...(searchOptions?.onlyMedia && { media: { $exists: true } })
+        ...(searchOptions?.onlyMedia && { media: { $exists: true } }),
+        status : POST_STATUS.ACTIVE,
     };
 
     let posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt commentCount likeCount")
+        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount")
         .populate("author", "name username profileImage")
         .limit(POSTS_PAGE_SIZE + 1).lean<PostQuery[]>();
 
@@ -210,11 +213,12 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
     // get posts data
     const query = cursor ? {
         _id: mongoose.trusted({ $lt: cursor }),
+        status : POST_STATUS.ACTIVE,
     } : {};
 
     let posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt commentCount likeCount")
+        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount")
         .populate("author", "name username profileImage")
         .limit(POSTS_PAGE_SIZE + 1).lean<PostQuery[]>();
 
@@ -254,8 +258,8 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
 }
 
 export const getPost = async (currentUserId: string | null | undefined, publicId: string): Promise<PostDTO | null> => {
-    const post = await Post.findOne({ publicId })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment isArchive createdAt updatedAt commentCount likeCount")
+    const post = await Post.findOne({ publicId, status : POST_STATUS.ACTIVE })
+        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount")
         .populate("author", "name username profileImage")
         .lean<PostQuery>();
 
@@ -296,7 +300,6 @@ export const create = async (
                         visibility: data.visibility,
                         hideLikeAndViewCount: data.hideLikeAndViewCount,
                         turnOffCommenting: data.turnOffCommenting,
-                        isArchive: data.isArchive,
                         hashtags: hashtags,
                     },
                 ],
@@ -394,7 +397,7 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
     // get posts
     let posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("_id publicId content media visibility hideLikeAndViewCount turnOffCommenting isArchive createdAt updatedAt commentCount likeCount")
+        .select("_id publicId content media visibility hideLikeAndViewCount turnOffCommenting  createdAt updatedAt commentCount likeCount")
         .limit(POSTS_PAGE_SIZE + 1)
         .lean<PostQuery[]>();
 
