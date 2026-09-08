@@ -3,7 +3,7 @@ import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
 import Like from "../models/like.model";
 import { Post } from "../models/post.model";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_STATUS } from "@odiano/shared";
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TYPE, POST_STATUS } from "@odiano/shared";
 import { create as createNotification } from "./notification.service";
 
 export const getLikedIds = async (currentUserId: string, type: LikeTypes, targetIds: string[] | Types.ObjectId[]) => {
@@ -64,27 +64,23 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
 
             // create notification
             if(currentUserId !== post.author.toString()) {
-                await createNotification(currentUserId, {
-                    recepientId : post.author.toString(),
-                    targetId : post._id.toString(),
-                    targetType : NOTIFICATION_TARGET_TYPE.POST,
+                await createNotification(post.author.toString(), {
                     type : NOTIFICATION_TYPE.LIKE_YOUR_POST,
-                    data : {
-                        post : {
-                            id : post._id.toString(),
-                            publicId : post.publicId,
-                            content : post.content,
-                            ...(post.media && {
-                                firstMedia : {
-                                    type : post.media[0].type,
-                                    aspectRatio : post.media[0].aspectRatio,
-                                    url : post.media[0].source.url,
-                                    publicId : post.media[0].source.publicId,
-                                }
-                            })
-                        }
+                    actor : new Types.ObjectId(currentUserId),
+                    target : {
+                        id : post._id.toString(),
+                        publicId : post.publicId,
+                        content : post.content,
+                        ...(post.media && {
+                            firstMedia : {
+                                type : post.media[0].type,
+                                aspectRatio : post.media[0].aspectRatio,
+                                url : post.media[0].source.url,
+                                publicId : post.media[0].source.publicId,
+                            }
+                        })
                     }
-                })
+                }, session)
             }
         })
     } finally {

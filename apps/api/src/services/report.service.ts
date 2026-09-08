@@ -1,4 +1,4 @@
-import { ACTIONS, PaginationQuery, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS } from "@odiano/shared";
+import { ACTIONS, PaginationQuery, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS } from "@odiano/shared";
 import Report from "../models/report.model";
 import mongoose, { Types } from "mongoose";
 import { REPORTS_PAGE_SIZE } from "../consts/report.const";
@@ -157,16 +157,15 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
             }).session(session);
             report.save();
 
-            // delete report content
-            if (report.target.type === REPORT_TYPE.USER) {
-                await User.findByIdAndDelete(report.target)
-                    .session(session);
-            } else if (report.target.type === REPORT_TYPE.POST) {
-                await Post.findByIdAndDelete(report.target)
-                    .session(session);
-            } else if (report.target.type === REPORT_TYPE.COMMENT) {
-                await PostComment.findByIdAndDelete(report.target)
-                    .session(session);
+            // take action
+            if (report.target.type === REPORT_TYPE.POST) {
+                await Post.updateOne({
+                    _id: report.target.id,
+                }, {
+                    $set : {
+                        status : POST_STATUS.SUSPENDED,
+                    }
+                }, {session});
             }
         })
     } finally {

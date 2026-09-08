@@ -1,4 +1,4 @@
-import { ALLOWED_MEDIA_TYPES, type NotificationDTO } from "@odiano/shared";
+import { NOTIFICATION_TYPE, type NotificationDTO } from "@odiano/shared";
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import Profile from "../../profile/Profile";
 import { Heart } from "lucide-react";
@@ -9,11 +9,13 @@ type Props = {
 }
 
 const LikeYourPost = ({ item }: Props) => {
+    if(item.data.type !== NOTIFICATION_TYPE.LIKE_YOUR_POST) return;
+    
     return (
         <div className={`w-full flex items-center space-x-3`} key={`notification-${item.id}`}>
             <div className="relative">
                 <div className="w-12 aspect-square">
-                    <Profile data={item.actor.profileImage} />
+                    <Profile data={item.data.actor.profileImage} />
                 </div>
 
                 <div className="absolute bottom-0 -right-1">
@@ -23,19 +25,19 @@ const LikeYourPost = ({ item }: Props) => {
 
             <div className="flex-1 min-w-0 flex flex-col space-x-2 flex-wrap">
                 <p className="space-x-2 space-y-2">
-                    <b className="font-bold">{item.actor.username}</b>
+                    <b className="font-bold">{item.data.actor.username}</b>
                     <span className="text-neutral-300">Liked your Post</span>
                     <span className="text-neutral-500">{formatRelativeShort(item.createdAt)}</span>
                 </p>
                 {
-                    item.data?.post &&
+                    item.data?.target &&
                     <p className="text-[15px] max-w-[60%] truncate text-neutral-500">
-                        {item.data.post.content}
+                        {item.data.target.content}
                     </p>
                 }
             </div>
 
-            <NotificationMedia mediaType={item.data?.post?.firstMedia?.type} mediaUrl={item.data?.post?.firstMedia?.url} mediaAspectRatio={item.data?.post?.firstMedia?.aspectRatio} />
+            <NotificationMedia mediaType={item.data?.target?.firstMedia?.type} mediaUrl={item.data?.target?.firstMedia?.url} mediaAspectRatio={item.data?.target?.firstMedia?.aspectRatio} />
         </div>
     )
 }

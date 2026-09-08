@@ -3,6 +3,8 @@ export const NOTIFICATION_TYPE = {
     COMMENT_ON_YOUR_COMMENT : "commentOnYourComment",
     LIKE_YOUR_POST : "likeYourPost",
     FOLLOW_YOU : "followYou",
+
+    YOUR_POST_SUSPENDED : "yourPostSuspended",
 } as const;
 
 export const NOTIFICATION_TARGET_TYPE = {

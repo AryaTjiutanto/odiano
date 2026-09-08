@@ -1,5 +1,5 @@
 import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@odiano/shared";
-import { useInfiniteQuery, useMutation, type InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import NotificationSkeletonLoading from "./NotificationSkeletonLoading";
 import { useAppSelector } from "../../hooks/useRedux";
@@ -54,27 +54,27 @@ const NotificationContainer = () => {
     })
 
     const handleUpdateReadStatus = async (item: NotificationDTO) => {
-        switch (item.type) {
+        switch (item.data.type) {
             case NOTIFICATION_TYPE.FOLLOW_YOU:
-                navigate(`/profile/${item.actor.username}`);
+                navigate(`/profile/${item.data.actor.username}`);
                 break;
             case NOTIFICATION_TYPE.LIKE_YOUR_POST:
-                if(!item.data?.post) {
+                if(!item.data?.target) {
                     break;
                 }
 
-                navigate(`/${username}/post/${item.data.post.publicId}`);   
+                navigate(`/${username}/post/${item.data.target.publicId}`);   
                 break;
             case NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST:
-                if(!item.data?.comment?.id || !item.data?.post) {
+                if(!item.data?.target.comment?.id || !item.data?.target.post) {
                     break;
                 }
 
                 const queryParams = new URLSearchParams({
-                    commentId: item.data.comment.id,
+                    commentId: item.data.target.comment.id,
                 });
 
-                navigate(`/${username}/post/${item.data.post.publicId}?${queryParams.toString()}`);
+                navigate(`/${username}/post/${item.data.target.post.publicId}?${queryParams.toString()}`);
         }
 
         if (!item.isRead) {
@@ -95,8 +95,8 @@ const NotificationContainer = () => {
 
     if(!(unreadNotificationQuery.data && unreadNotificationQuery.data.pages[0].items.length > 0) && !(readNotificationQuery.data && readNotificationQuery.data.pages[0].items.length > 0)) {
         return (
-            <div className="w-full text-left px-3">
-                <h1 className="text-2xl font-bold">
+            <div className="w-full text-center h-50 p-6 border border-dashed border-neutral-500 rounded-lg flex flex-col items-center justify-center">
+                <h1 className="text-2xl font-bold text-neutral-300">
                     There are no notifications yet.
                 </h1>
                 <h2 className="mt-2 text-neutral-400">

@@ -22,15 +22,15 @@ const Notifications = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, h
                         return (
                             <article className={`w-full ${!item.isRead && 'bg-[#141414]'} rounded-xl px-5 sm:px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)}>
                                 {
-                                    (item.type == NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST) &&
+                                    (item.data.type == NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST) &&
                                     <CommentOnYourPostNotification item={item} />
                                 }
                                 {
-                                    item.type == NOTIFICATION_TYPE.FOLLOW_YOU &&
+                                    item.data.type == NOTIFICATION_TYPE.FOLLOW_YOU &&
                                     <FollowYouNotification item={item} />
                                 }
                                 {
-                                    item.type == NOTIFICATION_TYPE.LIKE_YOUR_POST &&
+                                    item.data.type == NOTIFICATION_TYPE.LIKE_YOUR_POST &&
                                     <LikeYourPost item={item} />
                                 }
                             </article>

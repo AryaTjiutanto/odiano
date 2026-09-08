@@ -1,23 +1,18 @@
 import { NotificationDTO } from "@odiano/shared";
-import { notificationQuery } from "../types/notification.type";
+import { NotificationQuery } from "../types/notification.type";
+import { toUserSummaryDTO } from "./user.mapper";
 
-export const toNotificationDTO = (data : notificationQuery) : NotificationDTO => {
+export const toNotificationDTO = (data: NotificationQuery): NotificationDTO => {
+    const notificationData = data.data;
+
     return {
-        id : data._id.toString(),
-        actor : {
-            id : data.actor._id.toString(),
-            name : data.actor.name,
-            profileImage : data.actor.profileImage,
-            username : data.actor.username
-        },
+        id: data._id.toString(),
+        recepient: data.recepient.toString(),
+        isRead: data.isRead,
+        data: ("actor" in notificationData) ? {
+            ...notificationData,
+            actor : toUserSummaryDTO(notificationData.actor),
+        } : notificationData,
         createdAt : data.createdAt,
-        isRead : data.isRead,
-        recepient : data.recepient.toString(),
-        targetId : data.targetId.toString(),
-        targetType : data.targetType,
-        type : data.type,
-        ...(data.data && {
-            data : data.data
-        })
     }
 }

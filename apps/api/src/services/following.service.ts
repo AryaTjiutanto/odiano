@@ -1,9 +1,9 @@
-import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationDTO } from "@odiano/shared"
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@odiano/shared"
 import { AppError } from "../errors/appError.error"
 import { Following } from "../models/following.model";
 import { User } from "../models/user.model";
 import mongoose, { Types } from "mongoose";
-import { create as createNotification, deleteNotificationWithRecepient } from "./notification.service";
+import { create as createNotification } from "./notification.service";
 import { Notification } from "../models/notification.model";
 
 export const createFollowing = async (currentUserId: string, targetUserId: string) => {
@@ -49,12 +49,10 @@ export const createFollowing = async (currentUserId: string, targetUserId: strin
             }).session(session);
 
             // create notification
-            if(!isNotificationExists) {
-                await createNotification(currentUserId, {
-                    recepientId: targetUserId,
-                    targetId: targetUserId,
-                    targetType: NOTIFICATION_TARGET_TYPE.USER,
+            if (!isNotificationExists) {
+                await createNotification(targetUserId, {
                     type: NOTIFICATION_TYPE.FOLLOW_YOU,
+                    actor: new Types.ObjectId(currentUserId),
                 }, session)
             }
         })

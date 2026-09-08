@@ -6,18 +6,18 @@ import { MAX_TOP_LEVEL_POSTCOMMENT, POSTCOMMENT_PAGE_SIZE } from "../consts/post
 import { AppError } from "../errors/appError.error"
 import { Post } from "../models/post.model"
 import { create as createNotification } from "./notification.service";
-import mongoose from "mongoose"
+import mongoose, { Types } from "mongoose"
 import { UnauthorizedError } from "../errors/unauthorized.error"
 
 type createPostCommentParams = {
     content: string,
-    authorId: string,
+    currentUserId: string,
     postId: string,
     parentId: string | null | undefined,
     depth: number
 }
 
-export const create = async ({ content, authorId, postId, parentId, depth }: createPostCommentParams): Promise<CreatedDocumentId> => {
+export const create = async ({ content, currentUserId, postId, parentId, depth }: createPostCommentParams): Promise<CreatedDocumentId> => {
     // get post and post owner
     const post = await Post.findOne({ _id: postId })
         .select("publicId content media visibility publicId status turnOffCommenting commentCount")
@@ -50,7 +50,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
 
     // increase totalComment when the depth is 0
     if (depth == 0) {
-        const totalComment = await PostComment.countDocuments({ postId, author: authorId, depth: 0 });
+        const totalComment = await PostComment.countDocuments({ postId, author: currentUserId, depth: 0 });
 
         if (totalComment > MAX_TOP_LEVEL_POSTCOMMENT) {
             throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, `You have reached the maximum number of comments allowed for this post.`);
@@ -65,7 +65,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
             const [postComment] = await PostComment.create([
                 {
                     content,
-                    author: authorId,
+                    author: currentUserId,
                     postId,
                     parentId,
                     depth,
@@ -79,16 +79,15 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
             // create notification
             const postAuthorId = post.author._id.toString();
 
-            if (authorId !== postAuthorId) {
-                await createNotification(authorId, {
-                    recepientId: postAuthorId,
-                    targetId: postId,
-                    targetType: NOTIFICATION_TARGET_TYPE.POST,
+            if (currentUserId !== postAuthorId) {
+                await createNotification(postAuthorId, {
                     type: NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST,
-                    data: {
-                        comment : {
+                    actor: new Types.ObjectId(currentUserId),
+                    target: {
+                        comment: {
                             id: postComment._id.toString(),
-                            message: content,
+                            content: postComment.content,
+                            depth: postComment.depth,
                         },
                         post: {
                             id: post._id.toString(),
@@ -96,7 +95,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
                             ...(post.content && { content: post.content }),
                             ...(post.media && {
                                 firstMedia: {
-                                    type : post.media[0].type,
+                                    type: post.media[0].type,
                                     aspectRatio: post.media[0].aspectRatio,
                                     url: post.media[0].source.url,
                                     publicId: post.media[0].source.publicId,
@@ -104,7 +103,7 @@ export const create = async ({ content, authorId, postId, parentId, depth }: cre
                             })
                         }
                     }
-                }, session);
+                }, session)
             }
 
             return postComment._id.toString();
@@ -152,9 +151,9 @@ export const deleteComment = async (currentUserId: string, commentId: string) =>
 
 export const getOne = async (commentId: string, postId: string): Promise<PostCommentDTO> => {
     const comment = await PostComment.findOne({ _id: commentId, postId })
-    .select("_id parentId content depth replyCount createdAt")
-    .populate("author", "_id name username profileImage")
-    .lean<PostCommentQuery>();
+        .select("_id parentId content depth replyCount createdAt")
+        .populate("author", "_id name username profileImage")
+        .lean<PostCommentQuery>();
 
     if (!comment) {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Comment not found");
