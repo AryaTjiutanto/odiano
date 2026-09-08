@@ -7,7 +7,7 @@ type Props = {
     item: NotificationDTO
 }
 
-const FollowYouNotification = ({ item }: Props) => {
+const FollowYou = ({ item }: Props) => {
     if(item.data.type !== NOTIFICATION_TYPE.FOLLOW_YOU) return;
 
     return (
@@ -34,4 +34,4 @@ const FollowYouNotification = ({ item }: Props) => {
     )
 }
 
-export default FollowYouNotification;
+export default FollowYou;

@@ -276,7 +276,7 @@ const ReportTable = () => {
                                             {
                                                 report.status == REPORT_STATUS.REVIEWING &&
                                                 <button className="font-medium text-red-500 hover:text-red-700 cursor-pointer" onClick={() => takeActionHandler(report)}>
-                                                    Delete content
+                                                    Take Action
                                                 </button>
                                             }
                                         </td>

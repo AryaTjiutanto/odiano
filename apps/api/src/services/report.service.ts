@@ -1,4 +1,4 @@
-import { ACTIONS, PaginationQuery, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS } from "@odiano/shared";
+import { ACTIONS, NOTIFICATION_TYPE, PaginationQuery, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS } from "@odiano/shared";
 import Report from "../models/report.model";
 import mongoose, { Types } from "mongoose";
 import { REPORTS_PAGE_SIZE } from "../consts/report.const";
@@ -8,6 +8,7 @@ import { User } from "../models/user.model";
 import { defineAbilityFor } from "../helpers/ability.helper";
 import { Post } from "../models/post.model";
 import PostComment from "../models/postComment.model";
+import { create as createNotification } from "./notification.service";
 
 export const createReport = async (currentUserId: string, reason: ReportReasonCode, type: ReportType, targetId: string) => {
     const report = await Report.findOne({
@@ -20,7 +21,7 @@ export const createReport = async (currentUserId: string, reason: ReportReasonCo
     if (report) return;
 
     // get target data
-    let target : PostReportTargetSchema | UserReportTargetSchema | PostCommentReportTargetSchema | null = null;
+    let target: PostReportTargetSchema | UserReportTargetSchema | PostCommentReportTargetSchema | null = null;
 
     if (type === REPORT_TYPE.POST) {
         const post = await Post.findById(targetId).select("publicId content media hashTags author").lean();
@@ -43,7 +44,7 @@ export const createReport = async (currentUserId: string, reason: ReportReasonCo
     } else if (type === REPORT_TYPE.USER) {
         const user = await User.findById(targetId).select("username profileImage name email").lean();
 
-        if (!user ) {
+        if (!user) {
             throw new Error("User not found");
         }
 
@@ -68,8 +69,8 @@ export const createReport = async (currentUserId: string, reason: ReportReasonCo
             type: REPORT_TYPE.COMMENT,
             id: comment._id,
             snapshot: {
-                author : comment.author,
-                parentId : comment.parentId || null,
+                author: comment.author,
+                parentId: comment.parentId || null,
                 content: comment.content,
                 depth: comment.depth,
             }
@@ -159,13 +160,42 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
 
             // take action
             if (report.target.type === REPORT_TYPE.POST) {
+                // suspend post
                 await Post.updateOne({
                     _id: report.target.id,
                 }, {
-                    $set : {
-                        status : POST_STATUS.SUSPENDED,
+                    $set: {
+                        status: POST_STATUS.SUSPENDED,
                     }
-                }, {session});
+                }, { session });
+
+
+                // create notification
+                const targetSnapshot = report.target.snapshot;
+
+                await createNotification(report.target.snapshot.author.toString(), {
+                    type: NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
+                    target: {
+                        id : report.target.id.toString(),
+                        publicId : targetSnapshot.publicId,
+                        ...(targetSnapshot.content && {
+                            content : targetSnapshot.content,
+                        }),
+                        ...(targetSnapshot.media && {
+                            firstMedia : {
+                                type : targetSnapshot.media[0].type,
+                                aspectRatio : targetSnapshot.media[0].aspectRatio,
+                                url : targetSnapshot.media[0].source.url,
+                                publicId : targetSnapshot.media[0].source.publicId,
+                            }
+                        }),
+                    },
+                    description : "This post has been suspended due to a reported violation of our community guidelines.",
+                    report : {
+                        id : report._id.toString(),
+                        code : report.reason,
+                    }
+                }, session)
             }
         })
     } finally {

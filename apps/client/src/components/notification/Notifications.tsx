@@ -1,9 +1,10 @@
-import CommentOnYourPostNotification from "./types/CommentOnYourPostNotification"
+import CommentOnYourPost from "./types/CommentOnYourPost"
 import { NOTIFICATION_TYPE, type NotificationDTO } from "@odiano/shared"
-import FollowYouNotification from "./types/FollowYouNotification"
+import FollowYou from "./types/FollowYou"
 import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel"
 import LikeYourPost from "./types/LikeYourPost"
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type"
+import YourPostSuspended from "./types/YourPostSuspended"
 
 type Props = {
     data: InfiniteQueryNotificationDTO | null | undefined,
@@ -23,15 +24,19 @@ const Notifications = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, h
                             <article className={`w-full ${!item.isRead && 'bg-[#141414]'} rounded-xl px-5 sm:px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)}>
                                 {
                                     (item.data.type == NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST) &&
-                                    <CommentOnYourPostNotification item={item} />
+                                    <CommentOnYourPost item={item} />
                                 }
                                 {
                                     item.data.type == NOTIFICATION_TYPE.FOLLOW_YOU &&
-                                    <FollowYouNotification item={item} />
+                                    <FollowYou item={item} />
                                 }
                                 {
                                     item.data.type == NOTIFICATION_TYPE.LIKE_YOUR_POST &&
                                     <LikeYourPost item={item} />
+                                }
+                                {
+                                    item.data.type == NOTIFICATION_TYPE.YOUR_POST_SUSPENDED && 
+                                    <YourPostSuspended item={item}/>
                                 }
                             </article>
                         )

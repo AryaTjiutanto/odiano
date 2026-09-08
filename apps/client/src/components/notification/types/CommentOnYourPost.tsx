@@ -8,7 +8,7 @@ type Props = {
     item: NotificationDTO
 }
 
-const CommentOnYourPostNotification = ({ item }: Props) => {
+const CommentOnYourPost = ({ item }: Props) => {
     if(item.data.type !==  NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST) return;
 
     return (
@@ -48,4 +48,4 @@ const CommentOnYourPostNotification = ({ item }: Props) => {
     )
 }
 
-export default CommentOnYourPostNotification;
+export default CommentOnYourPost;
