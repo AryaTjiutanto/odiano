@@ -8,6 +8,7 @@ export type ReportSchema = {
     status: ReportStatus,
     reporter: Types.ObjectId,
     target: PostReportTargetSchema | UserReportTargetSchema | PostCommentReportTargetSchema,
+    createdAt : Date,
 }
 
 export type PostReportTargetSchema = {

@@ -5,6 +5,7 @@ export const NOTIFICATION_TYPE = {
     FOLLOW_YOU : "followYou",
 
     YOUR_POST_SUSPENDED : "yourPostSuspended",
+    YOUR_REPORT_RESOLVED : "yourReportResolved",
 } as const;
 
 export const NOTIFICATION_TARGET_TYPE = {

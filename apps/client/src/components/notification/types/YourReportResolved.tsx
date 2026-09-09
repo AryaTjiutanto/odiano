@@ -1,21 +1,22 @@
 import { NOTIFICATION_TYPE, type NotificationDTO } from "@odiano/shared"
-import { TriangleAlert } from "lucide-react"
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
-import NotificationMedia from "../NotificationMedia";
+import { BadgeInfo } from "lucide-react";
+import { useResolvedReportModal } from "../../../providers/ResolvedReportModalProvider";
 
 type Props = {
     item : NotificationDTO,
 };
 
-const YourPostSuspended = ({ item } : Props) => {
-    if(item.data.type !== NOTIFICATION_TYPE.YOUR_POST_SUSPENDED) return;
+const YourReportResolved = ({ item } : Props) => {
+    const resolvedReportModal = useResolvedReportModal();
+    if(item.data.type !== NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED) return;
 
-    const target = item.data.target;
+    const report = item.data.report;
     return (
-        <div className="w-full flex gap-3">
+        <div className="w-full flex gap-3" onClick={() => {resolvedReportModal.open(item)}}>
             {/* Icon */}
-            <div className="w-11 h-11 shrink-0 rounded-full bg-red-500/10 border border-red-500/30 grid place-content-center text-red-500">
-                <TriangleAlert className="w-5 h-5"/>
+            <div className="w-11 h-11 shrink-0 rounded-full bg-sky-500/10 border border-sky-500/30 grid place-content-center text-sky-500">
+                <BadgeInfo className="w-5 h-5"/>
             </div>
 
             <div className="flex-1 min-w-0">
@@ -24,7 +25,7 @@ const YourPostSuspended = ({ item } : Props) => {
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                             <h1 className="font-semibold">
-                                Your post has been suspended
+                                Your report has been resolved
                             </h1>
 
                             <span className="text-neutral-500">
@@ -33,16 +34,13 @@ const YourPostSuspended = ({ item } : Props) => {
                         </div>
 
                         <p className="mt-0.5 text-sm text-neutral-500">
-                            {target.content}
+                            Post you reported for <b className="font-semibold text-neutral-400">#{report.code}</b>
                         </p>
                     </div>
-
-                    {/* Post thumbnail */}
-                    <NotificationMedia mediaType={target.firstMedia?.type} mediaUrl={target.firstMedia?.url} mediaAspectRatio={target.firstMedia?.aspectRatio} />
                 </div>
             </div>
         </div>
     )
 }
 
-export default YourPostSuspended
+export default YourReportResolved

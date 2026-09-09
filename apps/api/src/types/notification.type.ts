@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { CommentOnYourPostData, FollowYouData, LikeYourPostData, YourPostSuspendedData } from "@odiano/shared";
+import { CommentOnYourPostData, FollowYouData, LikeYourPostData, YourPostSuspendedData, YourReportResolvedData } from "@odiano/shared";
 import { UserSummaryQuery } from "./user.type";
 
 // ============================  notification schema
@@ -16,7 +16,7 @@ type FollowYouDataSchema = Omit<FollowYouData, "actor"> & {
     actor: Types.ObjectId,
 }
 
-export type NotificationDataSchema = CommentOnYourPostDataSchema | LikeYourPostDataSchema | FollowYouDataSchema | YourPostSuspendedData
+export type NotificationDataSchema = CommentOnYourPostDataSchema | LikeYourPostDataSchema | FollowYouDataSchema | YourPostSuspendedData | YourReportResolvedData
 
 // notification schema
 export type NotificationSchema = {
@@ -39,7 +39,7 @@ type FollowYouDataQuery = Omit<FollowYouData, "actor"> & {
     actor: UserSummaryQuery,
 }
 
-export type NotificationDataQuery = CommentOnYourPostDataQuery | LikeYourPostDataQuery | FollowYouDataQuery | YourPostSuspendedData
+export type NotificationDataQuery = CommentOnYourPostDataQuery | LikeYourPostDataQuery | FollowYouDataQuery | YourPostSuspendedData | YourReportResolvedData
 
 // query
 export type NotificationQuery = Omit<NotificationSchema, "data"> & {

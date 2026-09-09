@@ -140,7 +140,7 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
             // get report
             const report = await Report.findById(reportId)
                 .session(session)
-                .select("_id status reason type reporter target");
+                .select("_id status reason type reporter target createdAt");
 
             if (!report) {
                 throw new Error("Report not found");
@@ -171,31 +171,45 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
 
 
                 // create notification
-                const targetSnapshot = report.target.snapshot;
+                const target = report.target.snapshot;
 
-                await createNotification(report.target.snapshot.author.toString(), {
-                    type: NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
-                    target: {
-                        id : report.target.id.toString(),
-                        publicId : targetSnapshot.publicId,
-                        ...(targetSnapshot.content && {
-                            content : targetSnapshot.content,
+                const targetSnapshot = {
+                    id : report.target.id.toString(),
+                        publicId : target.publicId,
+                        ...(target.content && {
+                            content : target.content,
                         }),
-                        ...(targetSnapshot.media && {
+                        ...(target.media && {
                             firstMedia : {
-                                type : targetSnapshot.media[0].type,
-                                aspectRatio : targetSnapshot.media[0].aspectRatio,
-                                url : targetSnapshot.media[0].source.url,
-                                publicId : targetSnapshot.media[0].source.publicId,
+                                type : target.media[0].type,
+                                aspectRatio : target.media[0].aspectRatio,
+                                url : target.media[0].source.url,
+                                publicId : target.media[0].source.publicId,
                             }
                         }),
-                    },
-                    description : "This post has been suspended due to a reported violation of our community guidelines.",
-                    report : {
+                };
+
+                const reportSnapshot = {
                         id : report._id.toString(),
                         code : report.reason,
                     }
+
+                await createNotification(report.target.snapshot.author.toString(), {
+                    type: NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
+                    target: targetSnapshot,
+                    description : "This post has been suspended due to a reported violation of our community guidelines.",
+                    report : reportSnapshot
                 }, session)
+
+                await createNotification(report.reporter.toString(), {
+                    type : NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
+                    target : targetSnapshot,
+                    description : "Your report has been resolved.",
+                    report : {
+                        ...reportSnapshot,
+                        createdAt : report.createdAt,
+                    }
+                })
             }
         })
     } finally {

@@ -8,12 +8,17 @@ import { markAllUnreadNotificationCacheAsRead, markAllUnreadNotificationCacheAsU
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type";
 import { setUnreadCount } from "../../features/notification/notification.slice";
 import { notify } from "../../helpers/notification/notify.helper";
+import { useResolvedReportModal } from "../../providers/ResolvedReportModalProvider";
+import { lazy, Suspense } from "react";
+
+const ResolvedReportModal = lazy(() => import("../../components/modal/ResolvedReportModal"));
 
 const Notification = () => {
     const unreadNotificationCount = useAppSelector(state => state.notification.unreadCount);
     const dispatch = useAppDispatch();
     const setQueryDataHandler = useSetQueryDataHandler();
     const unreadCount = useAppSelector(state => state.notification.unreadCount);
+    const resolvedReportModal = useResolvedReportModal();
 
     // mutation
     const notificationReadStatusMutation = useMutation({
@@ -54,6 +59,13 @@ const Notification = () => {
             <title>
                 Notification - Odiano
             </title>
+
+            {
+                resolvedReportModal.isOpen &&
+                <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
+                    <ResolvedReportModal/>
+                </Suspense>
+            }
 
             <div className="main-section-padding-top">
                 <section className="flex items-center justify-between">

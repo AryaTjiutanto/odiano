@@ -41,6 +41,7 @@ import RequireUnVerify from './guard/RequireUnVerify.tsx'
 import RequireUnOnboarded from './guard/RequireUnOnboarded.tsx'
 import RequireRoleGuard from './guard/RequireRoleGuard.tsx'
 import { ROLES } from '@odiano/shared'
+import NotificationModalWrapper from './layouts/NotificationModalWrapper.tsx'
 
 const IDBPersister = createIDBPersister();
 
@@ -89,7 +90,9 @@ createRoot(document.getElementById('root')!).render(
 
                             {/* require auth */}
                             <Route element={<RequireAuthGuard />}>
-                              <Route path='/notification' element={<Notification />} />
+                              <Route element={<NotificationModalWrapper/>}>
+                                <Route path='/notification' element={<Notification />} />
+                              </Route>
 
                               <Route path='/profile/edit' element={<EditProfile />} />
                             </Route>

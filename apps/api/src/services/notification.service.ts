@@ -7,7 +7,6 @@ import { toNotificationDTO } from "../mappers/notification.mapper";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import mongoose, { ClientSession, Types } from "mongoose";
 import { NotificationDataSchema, NotificationQuery } from "../types/notification.type";
-import logger from "../libs/log/logger";
 
 export const get = async (currentUserId: string, cursor: string | undefined | null, isRead: boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications

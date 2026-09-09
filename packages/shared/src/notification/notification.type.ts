@@ -53,7 +53,18 @@ export type YourPostSuspendedData = {
     }
 }
 
-export type NotificationData = CommentOnYourPostData | LikeYourPostData | FollowYouData | YourPostSuspendedData
+export type YourReportResolvedData = {
+    type : typeof NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
+    target : NotificationTargetPostData,
+    description : string,
+    report : {
+        id : string,
+        code : ReportReasonCode,
+        createdAt : Date,
+    }
+}
+
+export type NotificationData = CommentOnYourPostData | LikeYourPostData | FollowYouData | YourPostSuspendedData | YourReportResolvedData
 
 // notification
 export type NotificationDTO = {

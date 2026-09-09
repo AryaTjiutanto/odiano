@@ -165,7 +165,7 @@ export const listPostsByHashtag = async (currentUserId: string | null | undefine
 
     let posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount")
+        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount status")
         .populate("author", "name username profileImage")
         .limit(POSTS_PAGE_SIZE + 1).lean<PostQuery[]>();
 
@@ -211,14 +211,16 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
     }
 
     // get posts data
-    const query = cursor ? {
-        _id: mongoose.trusted({ $lt: cursor }),
+    const query = {
+        ...(cursor && {
+            _id: mongoose.trusted({ $lt: cursor }),
+        }),
         status : POST_STATUS.ACTIVE,
-    } : {};
+    };
 
     let posts = await Post.find(query)
         .sort({ _id: -1 })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount")
+        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount status")
         .populate("author", "name username profileImage")
         .limit(POSTS_PAGE_SIZE + 1).lean<PostQuery[]>();
 
@@ -383,6 +385,7 @@ export const getUserPosts = async (currentUserId: string | null | undefined, use
 
     const query = {
         author: user._id,
+        status: POST_STATUS.ACTIVE,
         ...(cursor ?
             {
                 _id: mongoose.trusted({

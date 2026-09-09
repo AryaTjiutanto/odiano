@@ -5,6 +5,7 @@ import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel"
 import LikeYourPost from "./types/LikeYourPost"
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type"
 import YourPostSuspended from "./types/YourPostSuspended"
+import YourReportResolved from "./types/YourReportResolved"
 
 type Props = {
     data: InfiniteQueryNotificationDTO | null | undefined,
@@ -37,6 +38,10 @@ const Notifications = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, h
                                 {
                                     item.data.type == NOTIFICATION_TYPE.YOUR_POST_SUSPENDED && 
                                     <YourPostSuspended item={item}/>
+                                }
+                                {
+                                    item.data.type == NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED && 
+                                    <YourReportResolved item={item}/>
                                 }
                             </article>
                         )
