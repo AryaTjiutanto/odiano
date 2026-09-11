@@ -2,7 +2,7 @@ import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type N
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import NotificationSkeletonLoading from "./NotificationSkeletonLoading";
-import { useAppSelector } from "../../hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { useNavigate } from "react-router-dom";
 import { notificationKeys } from "../../queries/notificationKeys";
@@ -10,11 +10,13 @@ import Notifications from "./Notifications";
 import { getNotifications, updateNotificationReadStatus } from "../../services/notification.service";
 import { markNotificationAsRead, markNotificationAsUnread } from "../../helpers/cache/notificationCache.helper";
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type";
+import { decrementUnreadCount } from "../../features/notification/notification.slice";
 
 const NotificationContainer = () => {
     const username = useAppSelector((state) => state.auth.user?.username);
     const isAuth = useAppSelector((state) => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
+    const dispatch = useAppDispatch();
 
     const navigate = useNavigate();
 
@@ -79,6 +81,7 @@ const NotificationContainer = () => {
 
         if (!item.isRead) {
             await notificationReadStatusMutation.mutateAsync(item.id);
+            dispatch(decrementUnreadCount());
         }
     }
 

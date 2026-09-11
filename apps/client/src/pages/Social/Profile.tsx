@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, EllipsisVertical } from "lucide-react";
 import ProfileComponent from "../../components/profile/Profile";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@odiano/shared";
@@ -16,6 +16,7 @@ import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
 import { postKeys } from "../../queries/postKeys";
 import FollowingButton from "../../components/social/FollowingButton";
+import UserMenu from "../../components/floating-menu/UserMenu";
 
 const Profile = () => {
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -176,12 +177,9 @@ const Profile = () => {
 
                     }
 
-                    {/* comming soon */}
                     {/* {
                         isAuthenticated &&
-                        <button className="w-11 h-11 grid place-content-center duration-100 border border-white rounded-lg hover:bg-white hover:text-neutral-900 cursor-pointer">
-                            <EllipsisVertical />
-                        </button>
+                        <UserMenu userId={profileQuery.data?.id} username={profileQuery.data?.username} />
                     } */}
                 </div>
 

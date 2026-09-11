@@ -1,4 +1,4 @@
-import { CheckCircle, EllipsisVertical, Flag, Link2, Trash2 } from "lucide-react";
+import { EllipsisVertical, Flag, Link2, Trash2 } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import FloatingMenu from "./FloatingMenu";

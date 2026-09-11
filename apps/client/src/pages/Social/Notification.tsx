@@ -10,8 +10,10 @@ import { setUnreadCount } from "../../features/notification/notification.slice";
 import { notify } from "../../helpers/notification/notify.helper";
 import { useResolvedReportModal } from "../../providers/ResolvedReportModalProvider";
 import { lazy, Suspense } from "react";
+import { useSuspendedPostModal } from "../../providers/SuspendedPostModalProvider";
 
 const ResolvedReportModal = lazy(() => import("../../components/modal/ResolvedReportModal"));
+const SuspendedPostModal = lazy(() => import("../../components/modal/SuspendedPostModal"));
 
 const Notification = () => {
     const unreadNotificationCount = useAppSelector(state => state.notification.unreadCount);
@@ -19,6 +21,7 @@ const Notification = () => {
     const setQueryDataHandler = useSetQueryDataHandler();
     const unreadCount = useAppSelector(state => state.notification.unreadCount);
     const resolvedReportModal = useResolvedReportModal();
+    const suspendePostModal = useSuspendedPostModal();
 
     // mutation
     const notificationReadStatusMutation = useMutation({
@@ -64,6 +67,13 @@ const Notification = () => {
                 resolvedReportModal.isOpen &&
                 <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
                     <ResolvedReportModal/>
+                </Suspense>
+            }
+
+            {
+                suspendePostModal.isOpen &&
+                <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
+                    <SuspendedPostModal/>
                 </Suspense>
             }
 

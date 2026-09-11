@@ -1,3 +1,4 @@
+import { POST_COMMENT_STATUS, PostCommentStatus } from "@odiano/shared";
 import mongoose, { Schema, Types } from "mongoose";
 
 type PostCommentSchema = {
@@ -7,6 +8,7 @@ type PostCommentSchema = {
     depth : number,
     replyCount : number,
     content : string,
+    status : PostCommentStatus,
 }
 
 const postCommentSchema = new Schema<PostCommentSchema>({
@@ -40,6 +42,11 @@ const postCommentSchema = new Schema<PostCommentSchema>({
         type : Number,
         default : 0,
     },
+    status : {
+        type : String,
+        enum : Object.values(POST_COMMENT_STATUS),
+        default : POST_COMMENT_STATUS.ACTIVE,
+    }
 }, {timestamps : true});
 
 const PostComment = mongoose.model("PostComment", postCommentSchema);

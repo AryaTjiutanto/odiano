@@ -1,5 +1,6 @@
 import { REPORT_TYPE, ReportDTO } from "@odiano/shared";
 import { ReportAggregationData } from "../types/report.type";
+import logger from "../libs/log/logger";
 
 export const toReportDTO = (data: ReportAggregationData): ReportDTO => {
     const targetData = (() => {
@@ -29,6 +30,7 @@ export const toReportDTO = (data: ReportAggregationData): ReportDTO => {
                 return {
                     type: REPORT_TYPE.COMMENT,
                     snapshot: {
+                        postId : data.target.snapshot.postId.toString(),
                         parentId : data.target.snapshot.parentId ? data.target.snapshot.parentId.toString() : null,
                         author : data.target.snapshot.author.toString(),
                         content: data.target.snapshot.content,

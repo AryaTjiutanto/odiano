@@ -1,12 +1,12 @@
 import { MEDIA_ASPECT_RATIO, REPORT_STATUS, REPORT_TYPE, type PaginationData, type ReportDTO, type ReportStatus } from "@odiano/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { reportKeys } from "../../../../queries/reportKeys";
 import { getReportList, processReport, takeAction } from "../../../../services/report.service";
 import { DEFAULT_GC_TIME } from "../../../../consts/queryTime.const";
 import Profile from "../../../profile/Profile";
 import { formatDistance } from "date-fns";
-import { StickyNote } from "lucide-react";
+import { MessageCircle, StickyNote, User } from "lucide-react";
 import DotsLoader from "../../../loader/DotsLoader";
 import { notify } from "../../../../helpers/notification/notify.helper";
 import { Link } from "react-router-dom";
@@ -47,6 +47,10 @@ const ReportTable = () => {
         gcTime: DEFAULT_GC_TIME,
     })
 
+    useEffect(() => {
+        console.log(reportQuery.data)
+    }, [reportQuery.data])
+
     // pagination query
     const reportPaginationQuery = useQuery<PaginationData | undefined>({
         queryKey: reportKeys.list(activeTab),
@@ -58,7 +62,7 @@ const ReportTable = () => {
     });
 
     // mutation contructor
-    const updateReportStatusMutation = (currentStatus : ReportStatus, targetStatus : ReportStatus, mutationFn : (report : string) => Promise<boolean>) => useMutation<boolean, Error, ReportDTO, ProccessReportMutationData>({
+    const updateReportStatusMutation = (currentStatus: ReportStatus, targetStatus: ReportStatus, mutationFn: (report: string) => Promise<boolean>) => useMutation<boolean, Error, ReportDTO, ProccessReportMutationData>({
         mutationFn: (report) => mutationFn(report.id),
         onMutate: (report) => {
             let pendingReportsPrevData;
@@ -226,6 +230,24 @@ const ReportTable = () => {
                                                     </span>
                                                 </div>
                                             }
+                                            {
+                                                report.target.type == REPORT_TYPE.COMMENT &&
+                                                <div className="w-[60%] flex px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-500 space-x-2 items-center text-neutral-100">
+                                                    <MessageCircle className="w-5" />
+                                                    <span>
+                                                        Comment
+                                                    </span>
+                                                </div>
+                                            }
+                                            {
+                                                report.target.type == REPORT_TYPE.USER &&
+                                                <div className="w-[60%] flex px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-500 space-x-2 items-center text-neutral-100">
+                                                    <User className="w-5" />
+                                                    <span>
+                                                        User
+                                                    </span>
+                                                </div>
+                                            }
                                         </td>
                                         <td className="px-6 py-4 font-semibold text-neutral-100">
                                             {report.reason}
@@ -259,6 +281,19 @@ const ReportTable = () => {
                                                         }
                                                     </div>
                                                 </Link>
+                                            }
+                                            {
+                                                report.target.type == REPORT_TYPE.COMMENT &&
+                                                <div>
+                                                    <h1>
+                                                        Comment :
+                                                    </h1>
+                                                    <div className="text-neutral-500 font-medium truncate">
+                                                        <p>
+                                                            {report.target.snapshot.content}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             }
                                         </td>
                                         <td className="px-6 py-4">

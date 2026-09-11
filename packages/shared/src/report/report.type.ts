@@ -34,6 +34,7 @@ export type PostCommentReportTarget = {
     id : string,
     exists : boolean,
     snapshot: {
+        postId : string,
         author : string,
         parentId : string | null,
         content: string,

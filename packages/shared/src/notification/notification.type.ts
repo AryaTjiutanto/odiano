@@ -1,4 +1,4 @@
-import { AllowedMediaTypes, MediaAspectRatio } from "../post";
+import { AllowedMediaTypes, MediaAspectRatio, PostDTO } from "../post";
 import { ReportReasonCode } from "../report";
 import { UserSummaryDTO } from "../user";
 import { NOTIFICATION_TYPE } from "./notification.const";
@@ -13,7 +13,9 @@ export type NotificationTargetPostData = {
         aspectRatio: MediaAspectRatio,
         url: string,
         publicId: string,
-    }
+    },
+    author? : UserSummaryDTO,
+    createdAt : Date,
 }
 
 export type NotificationTargetCommentData = {
@@ -23,6 +25,12 @@ export type NotificationTargetCommentData = {
         content: string,
         depth: number,
     }
+}
+
+export type NotificationTargetReportData = {
+    id : string,
+    code : ReportReasonCode,
+    createdAt? : Date,
 }
 
 // notification data
@@ -46,22 +54,13 @@ export type FollowYouData = {
 export type YourPostSuspendedData = {
     type : typeof NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
     target : NotificationTargetPostData,
-    description : string,
-    report : {
-        id : string,
-        code : ReportReasonCode
-    }
+    report : NotificationTargetReportData
 }
 
 export type YourReportResolvedData = {
     type : typeof NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
-    target : NotificationTargetPostData,
-    description : string,
-    report : {
-        id : string,
-        code : ReportReasonCode,
-        createdAt : Date,
-    }
+    target : NotificationTargetPostData,    
+    report : NotificationTargetReportData
 }
 
 export type NotificationData = CommentOnYourPostData | LikeYourPostData | FollowYouData | YourPostSuspendedData | YourReportResolvedData

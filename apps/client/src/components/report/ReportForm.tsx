@@ -60,7 +60,7 @@ const ReportForm = () => {
                             </h1>
                             <div className="mt-4 w-full max-h-[40vh] overflow-auto px-4">
                                 {
-                                    REPORT_REASONS[REPORT_TYPE.POST].map((reason) => {
+                                    reportForm.targetType && REPORT_REASONS[reportForm.targetType].map((reason) => {
                                         return (
                                             <button key={`reason-${reason.code}`} className="flex items-center w-full justify-between py-3 text-neutral-400 cursor-pointer hover:text-neutral-300 group" onClick={() => selectReason(reason)}>
                                                 <span>

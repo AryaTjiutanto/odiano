@@ -1,4 +1,4 @@
-import { ACTIONS, NOTIFICATION_TYPE, PaginationQuery, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS } from "@odiano/shared";
+import { ACTIONS, NOTIFICATION_TYPE, PaginationQuery, POST_COMMENT_STATUS, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS, UserSummaryDTO } from "@odiano/shared";
 import Report from "../models/report.model";
 import mongoose, { Types } from "mongoose";
 import { REPORTS_PAGE_SIZE } from "../consts/report.const";
@@ -59,7 +59,7 @@ export const createReport = async (currentUserId: string, reason: ReportReasonCo
             }
         }
     } else if (type === REPORT_TYPE.COMMENT) {
-        const comment = await PostComment.findById(targetId).select("content depth").lean();
+        const comment = await PostComment.findById(targetId).select("content depth author postId").lean();
 
         if (!comment) {
             throw new Error("Comment not found");
@@ -69,6 +69,7 @@ export const createReport = async (currentUserId: string, reason: ReportReasonCo
             type: REPORT_TYPE.COMMENT,
             id: comment._id,
             snapshot: {
+                postId : comment.postId,
                 author: comment.author,
                 parentId: comment.parentId || null,
                 content: comment.content,
@@ -172,44 +173,69 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
 
                 // create notification
                 const target = report.target.snapshot;
+                const author = await User.findById(report.target.snapshot.author).select("username profileImage name email").lean();
+                const authorData : UserSummaryDTO | null = author ? {
+                    username : author?.username,
+                    profileImage : author?.profileImage,
+                    name : author?.name,
+                    id : author?._id.toString(),
+                } : null;
 
                 const targetSnapshot = {
-                    id : report.target.id.toString(),
-                        publicId : target.publicId,
-                        ...(target.content && {
-                            content : target.content,
-                        }),
-                        ...(target.media && {
-                            firstMedia : {
-                                type : target.media[0].type,
-                                aspectRatio : target.media[0].aspectRatio,
-                                url : target.media[0].source.url,
-                                publicId : target.media[0].source.publicId,
-                            }
-                        }),
+                    id: report.target.id.toString(),
+                    createdAt : report.createdAt,
+                    publicId: target.publicId,
+                    ...(target.content && {
+                        content: target.content,
+                    }),
+                    ...(target.media && {
+                        firstMedia: {
+                            type: target.media[0].type,
+                            aspectRatio: target.media[0].aspectRatio,
+                            url: target.media[0].source.url,
+                            publicId: target.media[0].source.publicId,
+                        }
+                    }),
+                    ...(authorData && {author : authorData}),
                 };
 
                 const reportSnapshot = {
-                        id : report._id.toString(),
-                        code : report.reason,
-                    }
+                    id: report._id.toString(),
+                    code: report.reason,
+                }
 
                 await createNotification(report.target.snapshot.author.toString(), {
                     type: NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
                     target: targetSnapshot,
-                    description : "This post has been suspended due to a reported violation of our community guidelines.",
-                    report : reportSnapshot
+                    report: reportSnapshot
                 }, session)
 
                 await createNotification(report.reporter.toString(), {
-                    type : NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
-                    target : targetSnapshot,
-                    description : "Your report has been resolved.",
-                    report : {
+                    type: NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
+                    target: targetSnapshot,
+                    report: {
                         ...reportSnapshot,
-                        createdAt : report.createdAt,
+                        createdAt: report.createdAt,
                     }
                 })
+            } else if(report.target.type === REPORT_TYPE.COMMENT) {
+                // suspend comment
+                await PostComment.updateOne({
+                    _id : report.target.id,
+                }, {
+                    $set : {
+                        status : POST_COMMENT_STATUS.SUSPENDED,
+                    }
+                }, {session})
+
+                // reduce post comment count
+                await Post.updateOne({
+                    _id : report.target.snapshot.postId,
+                }, {
+                    $inc : {
+                        commentCount : -1,
+                    }
+                }, {session});
             }
         })
     } finally {
@@ -396,7 +422,7 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
             }
         }
     ]);
-
+    
     const reportDTOs = reports[0].data.map(report => toReportDTO(report));
 
     return {

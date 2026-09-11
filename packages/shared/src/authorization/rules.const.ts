@@ -20,6 +20,11 @@ export const getRules = (userId: string, role: Role) => {
                 subject: SUBJECTS.POST,
                 conditions: { author: userId },
             },
+            {
+                action : ACTIONS.DELETE,
+                subject : SUBJECTS.COMMENT,
+                conditions : { author : userId },
+            }
         )
     } else if (role === ROLES.ADMIN) {
         baseRules.push(

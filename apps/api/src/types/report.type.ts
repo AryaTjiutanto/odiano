@@ -1,4 +1,4 @@
-import { PostMedia, REPORT_TYPE, ReportReasonCode, ReportStatus, ReportType } from "@odiano/shared";
+import { PostMedia, REPORT_TYPE, ReportReasonCode, ReportStatus } from "@odiano/shared";
 import { ImageAsset, UserSummaryQuery } from "./user.type";
 import { Types } from "mongoose";
 
@@ -38,6 +38,7 @@ export type PostCommentReportTargetSchema = {
     type : typeof REPORT_TYPE.COMMENT,
     id : Types.ObjectId,
     snapshot : {
+        postId : Types.ObjectId,
         author : Types.ObjectId,
         parentId : Types.ObjectId | null,
         content: string,

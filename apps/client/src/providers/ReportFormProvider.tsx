@@ -8,6 +8,7 @@ type ReportFormContextType = {
     close: () => void,
     open: (targetId : string | null, targetType : ReportType) => void,
     submit: (reasonCode : ReportReasonCode, fn? : () => void) => Promise<void>,
+    targetType : ReportType | null,
     isSubmitting: boolean,
 }
 
@@ -50,7 +51,8 @@ const ReportFormProvider = ({ children }: any) => {
             close,
             open,
             submit,
-            isSubmitting
+            isSubmitting,
+            targetType
         }}>
             {children}
         </ReportFormContext.Provider>

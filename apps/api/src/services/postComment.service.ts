@@ -1,4 +1,4 @@
-import { CreatedDocumentId, ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_STATUS, PostCommentDTO } from "@odiano/shared"
+import { CreatedDocumentId, ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TYPE, POST_COMMENT_STATUS, POST_STATUS, PostCommentDTO } from "@odiano/shared"
 import { toPostCommentDTO } from "../mappers/postComment.mapper"
 import PostComment from "../models/postComment.model"
 import { PostCommentQuery } from "../types/postComment.type"
@@ -100,7 +100,8 @@ export const create = async ({ content, currentUserId, postId, parentId, depth }
                                     url: post.media[0].source.url,
                                     publicId: post.media[0].source.publicId,
                                 }
-                            })
+                            }),
+                            createdAt: new Date(),
                         }
                     }
                 }, session)
@@ -150,7 +151,7 @@ export const deleteComment = async (currentUserId: string, commentId: string) =>
 }
 
 export const getOne = async (commentId: string, postId: string): Promise<PostCommentDTO> => {
-    const comment = await PostComment.findOne({ _id: commentId, postId })
+    const comment = await PostComment.findOne({ _id: commentId, postId, status : POST_COMMENT_STATUS.ACTIVE })
         .select("_id parentId content depth replyCount createdAt")
         .populate("author", "_id name username profileImage")
         .lean<PostCommentQuery>();
@@ -171,6 +172,7 @@ export const get = async (cursor: string | undefined, postId: string, currentUse
     // get comment
     const comments = await PostComment.find({
         postId,
+        status : POST_COMMENT_STATUS.ACTIVE,
         ...(currentUserId ? { author: mongoose.trusted({ $ne: currentUserId }) } : {}),
         depth: 0,
         ...(cursor && {
@@ -185,7 +187,7 @@ export const get = async (cursor: string | undefined, postId: string, currentUse
         })
     })
         .sort({ _id: -1 })
-        .select("_id parentId content depth replyCount createdAt")
+        .select("_id parentId content depth replyCount createdAt status")
         .populate("author", "_id name username profileImage")
         .limit(POSTCOMMENT_PAGE_SIZE + 1)
         .lean<PostCommentQuery[]>();
@@ -216,6 +218,7 @@ export const getCurrentUserComments = async (userId: string, postId: string): Pr
         postId,
         author: userId,
         depth: 0,
+        status : POST_COMMENT_STATUS.ACTIVE
     })
         .sort({ _id: -1 })
         .select("_id parentId content depth replyCount createdAt")

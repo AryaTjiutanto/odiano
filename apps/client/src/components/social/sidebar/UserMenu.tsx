@@ -6,13 +6,13 @@ import { EllipsisVertical, FilePenLine, MailWarning } from "lucide-react";
 import { Link } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
 
-const UserMenu = () => {
+const SidebarUserMenu = () => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const userData = useAppSelector((state) => state.auth.user);
     const dispatch = useAppDispatch();
 
-
+    // profile link
     const profileLink = !isAuthenticated
         ? "/signin"
         : !userData?.isEmailVerified
@@ -132,4 +132,4 @@ const UserMenu = () => {
     )
 }
 
-export default UserMenu;
+export default SidebarUserMenu;

@@ -2,17 +2,19 @@ import { NOTIFICATION_TYPE, type NotificationDTO } from "@odiano/shared"
 import { TriangleAlert } from "lucide-react"
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import NotificationMedia from "../NotificationMedia";
+import { useSuspendedPostModal } from "../../../providers/SuspendedPostModalProvider";
 
 type Props = {
     item : NotificationDTO,
 };
 
 const YourPostSuspended = ({ item } : Props) => {
+    const suspendedPostModal = useSuspendedPostModal();
     if(item.data.type !== NOTIFICATION_TYPE.YOUR_POST_SUSPENDED) return;
 
     const target = item.data.target;
     return (
-        <div className="w-full flex gap-3">
+        <div className="w-full flex gap-3" onClick={() => suspendedPostModal.open(item)}>
             {/* Icon */}
             <div className="w-11 h-11 shrink-0 rounded-full bg-red-500/10 border border-red-500/30 grid place-content-center text-red-500">
                 <TriangleAlert className="w-5 h-5"/>
