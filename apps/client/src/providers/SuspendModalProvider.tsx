@@ -1,16 +1,16 @@
 import type { NotificationDTO } from "@odiano/shared";
 import { createContext, useContext, useState } from "react";
 
-type SuspendedPostModalType = {
+type SuspendModalType = {
     isOpen : boolean,
     open : (data : NotificationDTO) => void,
     close : () => void,
     data : NotificationDTO | null,
 }
 
-const SuspendedPostModal = createContext<SuspendedPostModalType | null>(null);
+const SuspendModalContext = createContext<SuspendModalType | null>(null);
 
-export const SuspendedPostModalProvider = ({ children } : { children : React.ReactNode }) => {
+export const SuspendModalProvider = ({ children } : { children : React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<NotificationDTO | null>(null);
 
@@ -20,19 +20,19 @@ export const SuspendedPostModalProvider = ({ children } : { children : React.Rea
     }
 
     return (
-        <SuspendedPostModal.Provider value={{
+        <SuspendModalContext.Provider value={{
             isOpen,
             open,    
             close: () => setIsOpen(false),
             data,
         }}>
             {children}
-        </SuspendedPostModal.Provider>
+        </SuspendModalContext.Provider>
     )
 }
 
-export const useSuspendedPostModal = () => {
-    const context = useContext(SuspendedPostModal);
+export const useSuspendModal = () => {
+    const context = useContext(SuspendModalContext);
 
     if (!context) {
         throw new Error("useNotificationModal must be used within a NotificationModalProvider");

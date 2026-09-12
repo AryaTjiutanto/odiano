@@ -1,14 +1,14 @@
 import { NOTIFICATION_TYPE, REPORT_STATUS, type NotificationDTO } from "@odiano/shared"
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import { BadgeInfo } from "lucide-react";
-import { useResolvedReportModal } from "../../../providers/ResolvedReportModalProvider";
+import { useReportModal } from "../../../providers/ReportModalProvider";
 
 type Props = {
     item : NotificationDTO,
 };
 
 const ReportNotification = ({ item } : Props) => {
-    const resolvedReportModal = useResolvedReportModal();
+    const reportModal = useReportModal();
     if(item.data.type !== NOTIFICATION_TYPE.REPORT) return;
 
 
@@ -16,7 +16,7 @@ const ReportNotification = ({ item } : Props) => {
 
     if(item.data.status == REPORT_STATUS.RESOLVED) {
         return (
-            <div className="w-full flex gap-3" onClick={() => {resolvedReportModal.open(item)}}>
+            <div className="w-full flex gap-3" onClick={() => {reportModal.open(item)}}>
                 {/* Icon */}
                 <div className="w-11 h-11 shrink-0 rounded-full bg-sky-500/10 border border-sky-500/30 grid place-content-center text-sky-500">
                     <BadgeInfo className="w-5 h-5"/>

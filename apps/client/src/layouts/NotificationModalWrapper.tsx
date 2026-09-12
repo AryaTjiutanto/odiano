@@ -1,15 +1,15 @@
 import { Outlet } from "react-router-dom"
-import { ResolvedReportModalProvider } from "../providers/ResolvedReportModalProvider";
-import { SuspendedPostModalProvider } from "../providers/SuspendedPostModalProvider";
+import { ReportModalProvider } from "../providers/ReportModalProvider";
+import { SuspendModalProvider } from "../providers/SuspendModalProvider";
 
 const NotificationModalWrapper = () => {
     return (
         <>
-            <ResolvedReportModalProvider>
-                <SuspendedPostModalProvider>
+            <ReportModalProvider>
+                <SuspendModalProvider>
                     <Outlet />
-                </SuspendedPostModalProvider>
-            </ResolvedReportModalProvider>
+                </SuspendModalProvider>
+            </ReportModalProvider>
         </>
     )
 }

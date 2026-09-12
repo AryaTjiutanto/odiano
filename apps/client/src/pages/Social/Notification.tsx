@@ -8,20 +8,20 @@ import { markAllUnreadNotificationCacheAsRead, markAllUnreadNotificationCacheAsU
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type";
 import { setUnreadCount } from "../../features/notification/notification.slice";
 import { notify } from "../../helpers/notification/notify.helper";
-import { useResolvedReportModal } from "../../providers/ResolvedReportModalProvider";
 import { lazy, Suspense } from "react";
-import { useSuspendedPostModal } from "../../providers/SuspendedPostModalProvider";
+import { useReportModal } from "../../providers/ReportModalProvider";
+import { useSuspendModal } from "../../providers/SuspendModalProvider";
 
-const ResolvedReportModal = lazy(() => import("../../components/modal/ResolvedReportModal"));
-const SuspendedPostModal = lazy(() => import("../../components/modal/SuspendedPostModal"));
+const ReportModal = lazy(() => import("../../components/modal/ReportModal"));
+const SuspendModal = lazy(() => import("../../components/modal/SuspendModal"));
 
 const Notification = () => {
     const unreadNotificationCount = useAppSelector(state => state.notification.unreadCount);
     const dispatch = useAppDispatch();
     const setQueryDataHandler = useSetQueryDataHandler();
     const unreadCount = useAppSelector(state => state.notification.unreadCount);
-    const resolvedReportModal = useResolvedReportModal();
-    const suspendePostModal = useSuspendedPostModal();
+    const reportModal = useReportModal();
+    const suspendModal = useSuspendModal();
 
     // mutation
     const notificationReadStatusMutation = useMutation({
@@ -64,16 +64,16 @@ const Notification = () => {
             </title>
 
             {
-                resolvedReportModal.isOpen &&
+                reportModal.isOpen &&
                 <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
-                    <ResolvedReportModal/>
+                    <ReportModal/>
                 </Suspense>
             }
 
             {
-                suspendePostModal.isOpen &&
+                suspendModal.isOpen &&
                 <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
-                    <SuspendedPostModal/>
+                    <SuspendModal/>
                 </Suspense>
             }
 

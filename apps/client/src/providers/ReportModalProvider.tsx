@@ -1,16 +1,16 @@
 import type { NotificationDTO } from "@odiano/shared";
 import { createContext, useContext, useState } from "react";
 
-type ResolvedReportModalType = {
+type ReportModalType = {
     isOpen : boolean,
     open : (data : NotificationDTO) => void,
     close : () => void,
     data : NotificationDTO | null,
 }
 
-const ResolvedReportModal = createContext<ResolvedReportModalType | null>(null);
+const ReportModalContext = createContext<ReportModalType | null>(null);
 
-export const ResolvedReportModalProvider = ({ children } : { children : React.ReactNode }) => {
+export const ReportModalProvider = ({ children } : { children : React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<NotificationDTO | null>(null);
 
@@ -20,19 +20,19 @@ export const ResolvedReportModalProvider = ({ children } : { children : React.Re
     }
 
     return (
-        <ResolvedReportModal.Provider value={{
+        <ReportModalContext.Provider value={{
             isOpen,
             open,    
             close: () => setIsOpen(false),
             data,
         }}>
             {children}
-        </ResolvedReportModal.Provider>
+        </ReportModalContext.Provider>
     )
 }
 
-export const useResolvedReportModal = () => {
-    const context = useContext(ResolvedReportModal);
+export const useReportModal = () => {
+    const context = useContext(ReportModalContext);
 
     if (!context) {
         throw new Error("useNotificationModal must be used within a NotificationModalProvider");
