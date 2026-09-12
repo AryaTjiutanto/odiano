@@ -1,75 +1,76 @@
-import { AllowedMediaTypes, MediaAspectRatio, PostDTO } from "../post";
-import { ReportReasonCode } from "../report";
+import { AllowedMediaTypes, MediaAspectRatio } from "../post";
+import { ReportReasonCode, ReportStatus } from "../report";
 import { UserSummaryDTO } from "../user";
-import { NOTIFICATION_TYPE } from "./notification.const";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "./notification.const";
 
 // notification target data
-export type NotificationTargetPostData = {
+export type NotificationPostTarget = {
+    type: typeof NOTIFICATION_TARGET_TYPE.POST,
     id: string,
     publicId: string,
     content?: string,
     firstMedia?: {
-        type : AllowedMediaTypes,
+        type: AllowedMediaTypes,
         aspectRatio: MediaAspectRatio,
         url: string,
         publicId: string,
     },
-    author? : UserSummaryDTO,
-    createdAt : Date,
+    author?: UserSummaryDTO,
+    createdAt: Date,
 }
 
-export type NotificationTargetCommentData = {
-    post : NotificationTargetPostData,
-    comment : {
-        id: string,
-        content: string,
-        depth: number,
-    }
-}
-
-export type NotificationTargetReportData = {
-    id : string,
-    code : ReportReasonCode,
-    createdAt? : Date,
+export type NotificationReportTarget = {
+    type: typeof NOTIFICATION_TARGET_TYPE.REPORT,
+    id: string,
+    reason: ReportReasonCode,
+    createdAt?: Date,
 }
 
 // notification data
-export type CommentOnYourPostData = {
-    type : typeof NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST,
-    target : NotificationTargetCommentData,
-    actor : UserSummaryDTO,
+export type NotificationCommentData = {
+    type: typeof NOTIFICATION_TYPE.COMMENT,
+    target: NotificationPostTarget,
+    comment: {
+        id: string,
+        content: string,
+        depth: number,
+    },
+};
+
+export type NotificationLikeData = {
+    type: typeof NOTIFICATION_TYPE.LIKE,
+    target: NotificationPostTarget,
 }
 
-export type LikeYourPostData = {
-    type : typeof NOTIFICATION_TYPE.LIKE_YOUR_POST,
-    target : NotificationTargetPostData,
-    actor : UserSummaryDTO,
+export type NotificationFollowData = {
+    type: typeof NOTIFICATION_TYPE.FOLLOW,
 }
 
-export type FollowYouData = {
-    type : typeof NOTIFICATION_TYPE.FOLLOW_YOU,
-    actor : UserSummaryDTO,
+export type NotificationSuspendData = {
+    type: typeof NOTIFICATION_TYPE.SUSPEND,
+    target: NotificationPostTarget | NotificationCommentData,
+    report: NotificationReportTarget
 }
 
-export type YourPostSuspendedData = {
-    type : typeof NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
-    target : NotificationTargetPostData,
-    report : NotificationTargetReportData
+export type NotificationReportData = {
+    type: typeof NOTIFICATION_TYPE.REPORT,
+    target: NotificationPostTarget | NotificationCommentData,
+    report: NotificationReportTarget
+    status : ReportStatus
 }
 
-export type YourReportResolvedData = {
-    type : typeof NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
-    target : NotificationTargetPostData,    
-    report : NotificationTargetReportData
-}
-
-export type NotificationData = CommentOnYourPostData | LikeYourPostData | FollowYouData | YourPostSuspendedData | YourReportResolvedData
+export type NotificationData = NotificationCommentData | NotificationLikeData | NotificationFollowData | NotificationSuspendData | NotificationReportData;
 
 // notification
-export type NotificationDTO = {
-    id : string,
-    recepient : string,
-    isRead : boolean,
-    data : NotificationData,
-    createdAt : Date,
+export type Notification = {
+    id: string,
+    recepient: string,
+    isRead: boolean,
+    createdAt: Date,
+    data: NotificationData,
+}
+
+// notification dto
+export type NotificationDTO = Notification & {
+    actor : UserSummaryDTO | null,
 }

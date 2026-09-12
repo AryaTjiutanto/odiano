@@ -1,6 +1,5 @@
 import { REPORT_TYPE, ReportDTO } from "@odiano/shared";
 import { ReportAggregationData } from "../types/report.type";
-import logger from "../libs/log/logger";
 
 export const toReportDTO = (data: ReportAggregationData): ReportDTO => {
     const targetData = (() => {

@@ -1,11 +1,11 @@
-import CommentOnYourPost from "./types/CommentOnYourPost"
 import { NOTIFICATION_TYPE, type NotificationDTO } from "@odiano/shared"
-import FollowYou from "./types/FollowYou"
 import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel"
-import LikeYourPost from "./types/LikeYourPost"
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type"
-import YourPostSuspended from "./types/YourPostSuspended"
-import YourReportResolved from "./types/YourReportResolved"
+import CommentNotification from "./types/Comment"
+import FollowNotification from "./types/Follow"
+import LikeNotification from "./types/Like"
+import SuspendNotification from "./types/Suspend"
+import ReportNotification from "./types/Report"
 
 type Props = {
     data: InfiniteQueryNotificationDTO | null | undefined,
@@ -22,26 +22,26 @@ const Notifications = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, h
                 <div className="w-full space-y-2">
                     {data.pages.map((page) => page.items.map(item => {
                         return (
-                            <article className={`w-full ${!item.isRead && 'bg-[#141414]'} rounded-xl px-5 sm:px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)}>
+                            <article className={`w-full ${!item.isRead && 'bg-[#141414]'} rounded-xl px-5 sm:px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)} key={`notification-${item.id}`}>
                                 {
-                                    (item.data.type == NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST) &&
-                                    <CommentOnYourPost item={item} />
+                                    (item.data.type == NOTIFICATION_TYPE.COMMENT) &&
+                                    <CommentNotification item={item} />
                                 }
                                 {
-                                    item.data.type == NOTIFICATION_TYPE.FOLLOW_YOU &&
-                                    <FollowYou item={item} />
+                                    item.data.type == NOTIFICATION_TYPE.FOLLOW &&
+                                    <FollowNotification item={item} />
                                 }
                                 {
-                                    item.data.type == NOTIFICATION_TYPE.LIKE_YOUR_POST &&
-                                    <LikeYourPost item={item} />
+                                    item.data.type == NOTIFICATION_TYPE.LIKE &&
+                                    <LikeNotification item={item} />
                                 }
                                 {
-                                    item.data.type == NOTIFICATION_TYPE.YOUR_POST_SUSPENDED && 
-                                    <YourPostSuspended item={item}/>
+                                    item.data.type == NOTIFICATION_TYPE.SUSPEND && 
+                                    <SuspendNotification item={item}/>
                                 }
                                 {
-                                    item.data.type == NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED && 
-                                    <YourReportResolved item={item}/>
+                                    item.data.type == NOTIFICATION_TYPE.REPORT && 
+                                    <ReportNotification item={item}/>
                                 }
                             </article>
                         )

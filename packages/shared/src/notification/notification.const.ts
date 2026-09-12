@@ -1,16 +1,26 @@
-export const NOTIFICATION_TYPE = {
-    COMMENT_ON_YOUR_POST : "commentOnYourPost",
-    COMMENT_ON_YOUR_COMMENT : "commentOnYourComment",
-    LIKE_YOUR_POST : "likeYourPost",
-    FOLLOW_YOU : "followYou",
+// export const NOTIFICATION_TYPE = {
+//     COMMENT_ON_YOUR_POST : "commentOnYourPost",
+//     COMMENT_ON_YOUR_COMMENT : "commentOnYourComment",
+//     LIKE_YOUR_POST : "likeYourPost",
+//     FOLLOW_YOU : "followYou",
 
-    YOUR_POST_SUSPENDED : "yourPostSuspended",
-    YOUR_REPORT_RESOLVED : "yourReportResolved",
+//     YOUR_POST_SUSPENDED : "yourPostSuspended",
+//     YOUR_REPORT_RESOLVED : "yourReportResolved",
+// } as const;
+
+export const NOTIFICATION_TYPE = {
+    COMMENT : "comment",
+    LIKE : "like",
+    FOLLOW : "follow",
+    SUSPEND : "suspend",
+    REPORT : "report",
 } as const;
 
 export const NOTIFICATION_TARGET_TYPE = {
     POST : "post",
-    USER : "user"
+    USER : "user",
+    REPORT : "report",
+    COMMENT : "comment",
 } as const;
 
 export const NOTIFICATION_READ_STATUS = {

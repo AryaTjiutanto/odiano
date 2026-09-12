@@ -3,15 +3,16 @@ import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
 import Like from "../models/like.model";
 import { Post } from "../models/post.model";
 import { AppError } from "../errors/appError.error";
-import { ERROR_RESPONSE_CODE, NOTIFICATION_TYPE, POST_STATUS } from "@odiano/shared";
+import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_STATUS } from "@odiano/shared";
 import { create as createNotification } from "./notification.service";
+import { Notification } from "../models/notification.model";
 
 export const getLikedIds = async (currentUserId: string, type: LikeTypes, targetIds: string[] | Types.ObjectId[]) => {
     const likes = await Like.find({
         user: currentUserId,
         type,
-        targetId: mongoose.trusted({ 
-            $in: targetIds 
+        targetId: mongoose.trusted({
+            $in: targetIds
         })
     }).select("targetId").lean();
 
@@ -29,15 +30,15 @@ export const getIsLiked = async (currentUserId: string, type: LikeTypes, targetI
 
 export const createPostLike = async (currentUserId: string, postId: string) => {
     const session = await mongoose.startSession();
-    
+
     try {
         await session.withTransaction(async () => {
-            const post = await Post.findById(postId, null, {session}).select("publicId author visibility hideLikeAndViewCount turnOffCommething likeCount status content media");
+            const post = await Post.findById(postId, null, { session }).select("publicId author visibility hideLikeAndViewCount turnOffCommething likeCount status content media");
 
             if (!post) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post is not foun");
             }
-        
+
             if (post.status !== POST_STATUS.ACTIVE) {
                 throw new AppError(409, ERROR_RESPONSE_CODE.conflict, "This post can't be liked");
             }
@@ -53,32 +54,45 @@ export const createPostLike = async (currentUserId: string, postId: string) => {
 
             // increase post like count
             await Post.updateOne(
-                {_id : postId},
+                { _id: postId },
                 {
-                    $inc : {
-                        likeCount : 1,
+                    $inc: {
+                        likeCount: 1,
                     }
                 },
-                {session}
+                { session }
             )
 
+            // check is an author
+            if (post.author.toString() === currentUserId) return;
+            
+            // check is this notification exists
+            const isNotificationExists = await Notification.exists({
+                recepient: post.author,
+                actor: currentUserId,
+                "data.type" : NOTIFICATION_TYPE.LIKE,
+                "data.target.type" : NOTIFICATION_TARGET_TYPE.POST,
+                "data.target.id" : post._id.toString(),
+            }).session(session);
+
             // create notification
-            if(currentUserId !== post.author.toString()) {
-                await createNotification(post.author.toString(), {
-                    type : NOTIFICATION_TYPE.LIKE_YOUR_POST,
-                    actor : new Types.ObjectId(currentUserId),
-                    target : {
-                        id : post._id.toString(),
-                        publicId : post.publicId,
-                        content : post.content,
+            if (!isNotificationExists) {
+                await createNotification(post.author.toString(), currentUserId, {
+                    type: NOTIFICATION_TYPE.LIKE,
+                    target: {
+                        type : NOTIFICATION_TARGET_TYPE.POST,
+                        id: post._id.toString(),
+                        publicId: post.publicId,
+                        content: post.content,
                         ...(post.media && {
-                            firstMedia : {
-                                type : post.media[0].type,
-                                aspectRatio : post.media[0].aspectRatio,
-                                url : post.media[0].source.url,
-                                publicId : post.media[0].source.publicId,
+                            firstMedia: {
+                                type: post.media[0].type,
+                                aspectRatio: post.media[0].aspectRatio,
+                                url: post.media[0].source.url,
+                                publicId: post.media[0].source.publicId,
                             }
-                        })
+                        }),
+                        createdAt: new Date(),
                     }
                 }, session)
             }
@@ -97,7 +111,7 @@ export const deletePostLike = async (currentUserId: string, postId: string) => {
                 user: currentUserId,
                 type: LIKE_TYPES.POST,
                 targetId: postId,
-            }, null, {session});
+            }, null, { session });
 
             if (!like) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "You have not liked this post yet");
@@ -108,9 +122,9 @@ export const deletePostLike = async (currentUserId: string, postId: string) => {
 
             // decrese post likeCount
             await Post.updateOne({ _id: postId }, {
-                $inc : {
-                    likeCount : -1
-                }                
+                $inc: {
+                    likeCount: -1
+                }
             }, { session })
         })
     } finally {

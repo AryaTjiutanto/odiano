@@ -11,8 +11,8 @@ export const toNotificationDTO = (data: NotificationQuery): NotificationDTO => {
         isRead: data.isRead,
         data: ("actor" in notificationData) ? {
             ...notificationData,
-            actor : toUserSummaryDTO(notificationData.actor),
         } : notificationData,
-        createdAt : data.createdAt,
+        actor: data.actor ? toUserSummaryDTO(data.actor) : null,
+        createdAt: data.createdAt,
     }
 }

@@ -15,7 +15,13 @@ const notificationSchema = new Schema<NotificationSchema>({
     data : {
         type : Schema.Types.Mixed,
         required : true,
-    }
+    },
+    actor : {
+        type : Types.ObjectId,
+        ref : "User",
+        required : false,
+        default : null,
+    },
 }, {timestamps : true});
 
 export const Notification = model('Notification', notificationSchema);

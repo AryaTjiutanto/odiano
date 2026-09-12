@@ -1,4 +1,4 @@
-import { NOTIFICATION_READ_STATUS, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@odiano/shared";
+import { NOTIFICATION_READ_STATUS, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, type InfiniteQuery, type NotificationDTO } from "@odiano/shared";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import NotificationSkeletonLoading from "./NotificationSkeletonLoading";
@@ -22,7 +22,7 @@ const NotificationContainer = () => {
 
     // get read notifications
     const readNotificationQuery = useInfiniteQuery({
-        queryFn: ({pageParam}) => getNotifications(NOTIFICATION_READ_STATUS.READ, pageParam),
+        queryFn: ({ pageParam }) => getNotifications(NOTIFICATION_READ_STATUS.READ, pageParam),
         queryKey: notificationKeys.read,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
@@ -35,7 +35,7 @@ const NotificationContainer = () => {
 
     // get unread notifications
     const unreadNotificationQuery = useInfiniteQuery({
-        queryFn: ({pageParam}) => getNotifications(NOTIFICATION_READ_STATUS.UNREAD, pageParam),
+        queryFn: ({ pageParam }) => getNotifications(NOTIFICATION_READ_STATUS.UNREAD, pageParam),
         queryKey: notificationKeys.unread,
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
@@ -56,27 +56,25 @@ const NotificationContainer = () => {
     })
 
     const handleUpdateReadStatus = async (item: NotificationDTO) => {
-        switch (item.data.type) {
-            case NOTIFICATION_TYPE.FOLLOW_YOU:
-                navigate(`/profile/${item.data.actor.username}`);
-                break;
-            case NOTIFICATION_TYPE.LIKE_YOUR_POST:
-                if(!item.data?.target) {
-                    break;
-                }
+        if (item.data.type === NOTIFICATION_TYPE.FOLLOW) {
+            navigate(`/profile/${item.actor?.username}`);
+        } else if (item.data.type === NOTIFICATION_TYPE.LIKE) {
+            const target = item.data.target;
+            if (!target) return;
 
-                navigate(`/${username}/post/${item.data.target.publicId}`);   
-                break;
-            case NOTIFICATION_TYPE.COMMENT_ON_YOUR_POST:
-                if(!item.data?.target.comment?.id || !item.data?.target.post) {
-                    break;
-                }
+            if (target.type === NOTIFICATION_TARGET_TYPE.POST) {
+                navigate(`/${username}/post/${item.data.target.publicId}`);
+            }
+        } else if (item.data.type === NOTIFICATION_TYPE.COMMENT) {
+            const target = item.data.target;
 
-                const queryParams = new URLSearchParams({
-                    commentId: item.data.target.comment.id,
-                });
+            const queryParams = new URLSearchParams({
+                commentId: item.data.comment.id,
+            });
 
-                navigate(`/${username}/post/${item.data.target.post.publicId}?${queryParams.toString()}`);
+            if (target.type === NOTIFICATION_TARGET_TYPE.POST) {
+                navigate(`/${username}/post/${target.publicId}?${queryParams.toString()}`);
+            }
         }
 
         if (!item.isRead) {
@@ -96,7 +94,7 @@ const NotificationContainer = () => {
         )
     }
 
-    if(!(unreadNotificationQuery.data && unreadNotificationQuery.data.pages[0].items.length > 0) && !(readNotificationQuery.data && readNotificationQuery.data.pages[0].items.length > 0)) {
+    if (!(unreadNotificationQuery.data && unreadNotificationQuery.data.pages[0].items.length > 0) && !(readNotificationQuery.data && readNotificationQuery.data.pages[0].items.length > 0)) {
         return (
             <div className="w-full text-center h-50 p-6 border border-dashed border-neutral-500 rounded-lg flex flex-col items-center justify-center">
                 <h1 className="text-2xl font-bold text-neutral-300">

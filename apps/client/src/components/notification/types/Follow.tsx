@@ -7,14 +7,14 @@ type Props = {
     item: NotificationDTO
 }
 
-const FollowYou = ({ item }: Props) => {
-    if(item.data.type !== NOTIFICATION_TYPE.FOLLOW_YOU) return;
+const FollowNotification = ({ item }: Props) => {
+    if(item.data.type !== NOTIFICATION_TYPE.FOLLOW) return;
 
     return (
         <div className={`w-full flex items-center space-x-3`} key={`notification-${item.id}`}>
             <div className="relative">
                 <div className="w-12 aspect-square">
-                    <Profile data={item.data.actor.profileImage} />
+                    <Profile data={item.actor?.profileImage} />
                 </div>
 
                 <div className="absolute bottom-0 -right-1">
@@ -24,7 +24,7 @@ const FollowYou = ({ item }: Props) => {
 
             <div className="flex-1 w-full flex space-x-2 space-y-2 flex-wrap">
                 <p className="space-x-2 space-y-2">
-                    <b className="font-bold">{item.data.actor.username}</b>
+                    <b className="font-bold">{item.actor?.username}</b>
                     <span>Start following you</span>
                     <span className="text-neutral-500">{formatRelativeShort(item.createdAt)}</span>
                 </p>
@@ -34,4 +34,4 @@ const FollowYou = ({ item }: Props) => {
     )
 }
 
-export default FollowYou;
+export default FollowNotification;

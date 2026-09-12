@@ -1,6 +1,6 @@
 import { X } from "lucide-react"
 import { useResolvedReportModal } from "../../providers/ResolvedReportModalProvider"
-import { NOTIFICATION_TYPE } from "@odiano/shared";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, REPORT_STATUS } from "@odiano/shared";
 import NotificationMedia from "../notification/NotificationMedia";
 import { toHumanReadableDate } from "../../utils/dateFormater.util";
 import Profile from "../profile/Profile";
@@ -8,9 +8,9 @@ import Profile from "../profile/Profile";
 const ResolvedReportModal = () => {
     const resolvedReportModal = useResolvedReportModal();
     const notificationData = resolvedReportModal.data;
-    
-    if (!notificationData || notificationData.data.type !== NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED) return <></>;
-    
+
+    if (!notificationData || notificationData.data.type !== NOTIFICATION_TYPE.REPORT || notificationData.data.status !== REPORT_STATUS.RESOLVED) return <></>
+
     const target = notificationData?.data.target;
 
     return (
@@ -28,7 +28,7 @@ const ResolvedReportModal = () => {
                             </h2>
                             <div className="w-1 h-1 rounded-full bg-neutral-500"></div>
                             <h2 className="font-bold text-neutral-500">
-                                #{notificationData?.data.report.code ?? "-"}
+                                #{notificationData?.data.report.reason ?? "-"}
                             </h2>
                         </div>
                         <h1 className="font-bold text-neutral-300 text-2xl">
@@ -38,29 +38,48 @@ const ResolvedReportModal = () => {
                     <div className="mt-4 border rounded-xl border-neutral-600 p-3">
                         <div className="flex space-x-3">
                             <div className="w-12 h-12 rounded-full bg-neutral-800">
-                                <Profile data={target.author?.profileImage}/>
+                                {
+                                    target.type === NOTIFICATION_TARGET_TYPE.POST &&
+                                    <Profile data={target.author?.profileImage} />
+                                }
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center space-x-3">
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-2">
                                             <h1 className="font-semibold text-neutral-300">
-                                                {target.author?.name ?? "-"}
+                                                {
+                                                    target.type === NOTIFICATION_TARGET_TYPE.POST &&
+                                                    target.author?.name
+                                                }
                                             </h1>
                                             <h2 className="text-neutral-500">
-                                                @{target.author?.username ?? "-"}
+                                                @
+                                                {
+                                                    target.type === NOTIFICATION_TARGET_TYPE.POST &&
+                                                    target.author?.username
+                                                }
                                             </h2>
                                         </div>
                                         <div className="text-sm text-neutral-500">
-                                            {target.createdAt ? toHumanReadableDate(target.createdAt) : "-"}
+                                            {
+                                                target.type === NOTIFICATION_TARGET_TYPE.POST &&
+                                                    target.createdAt ? toHumanReadableDate(target.createdAt) : "-"
+                                            }
                                         </div>
                                     </div>
                                     <div className="rounded-md bg-neutral-800">
-                                        <NotificationMedia mediaType={target.firstMedia?.type} mediaUrl={target.firstMedia?.url} mediaAspectRatio={target.firstMedia?.aspectRatio} />
+                                        {
+                                            target.type === NOTIFICATION_TARGET_TYPE.POST &&
+                                            <NotificationMedia mediaType={target.firstMedia?.type} mediaUrl={target.firstMedia?.url} mediaAspectRatio={target.firstMedia?.aspectRatio} />
+                                        }
                                     </div>
                                 </div>
                                 <p className="mt-1 text-sm text-neutral-400 truncate">
-                                    {target.content || ""}
+                                    {
+                                        target.type === NOTIFICATION_TARGET_TYPE.POST &&
+                                        target.content || ""
+                                    }
                                 </p>
                             </div>
                         </div>

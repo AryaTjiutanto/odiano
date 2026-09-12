@@ -1,4 +1,4 @@
-import { ACTIONS, NOTIFICATION_TYPE, PaginationQuery, POST_COMMENT_STATUS, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS, UserSummaryDTO } from "@odiano/shared";
+import { ACTIONS, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PaginationQuery, POST_COMMENT_STATUS, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS, UserSummaryDTO } from "@odiano/shared";
 import Report from "../models/report.model";
 import mongoose, { Types } from "mongoose";
 import { REPORTS_PAGE_SIZE } from "../consts/report.const";
@@ -182,6 +182,7 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
                 } : null;
 
                 const targetSnapshot = {
+                    type : NOTIFICATION_TARGET_TYPE.POST,
                     id: report.target.id.toString(),
                     createdAt : report.createdAt,
                     publicId: target.publicId,
@@ -200,23 +201,25 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
                 };
 
                 const reportSnapshot = {
+                    type : NOTIFICATION_TARGET_TYPE.REPORT,
                     id: report._id.toString(),
-                    code: report.reason,
+                    reason: report.reason,
                 }
 
-                await createNotification(report.target.snapshot.author.toString(), {
-                    type: NOTIFICATION_TYPE.YOUR_POST_SUSPENDED,
+                await createNotification(report.target.snapshot.author.toString(), null, {
+                    type: NOTIFICATION_TYPE.SUSPEND,
                     target: targetSnapshot,
                     report: reportSnapshot
                 }, session)
 
-                await createNotification(report.reporter.toString(), {
-                    type: NOTIFICATION_TYPE.YOUR_REPORT_RESOLVED,
+                await createNotification(report.reporter.toString(), null, {
+                    type: NOTIFICATION_TYPE.REPORT,
                     target: targetSnapshot,
                     report: {
                         ...reportSnapshot,
                         createdAt: report.createdAt,
-                    }
+                    },
+                    status: REPORT_STATUS.RESOLVED,
                 })
             } else if(report.target.type === REPORT_TYPE.COMMENT) {
                 // suspend comment

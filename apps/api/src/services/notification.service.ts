@@ -1,4 +1,4 @@
-import { InfiniteQuery, NotificationDTO, NotificationType } from "@odiano/shared";
+import { InfiniteQuery, NotificationData, NotificationDTO, NotificationType } from "@odiano/shared";
 import { Notification } from "../models/notification.model"
 import { emitToUser } from "../socket/emitters/notification.emitter";
 import { getUserSummary } from "./user.service";
@@ -6,7 +6,8 @@ import { NOTIFICATION_PAGE_SIZE } from "../consts/notification.const";
 import { toNotificationDTO } from "../mappers/notification.mapper";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import mongoose, { ClientSession, Types } from "mongoose";
-import { NotificationDataSchema, NotificationQuery } from "../types/notification.type";
+import { NotificationQuery } from "../types/notification.type";
+import logger from "../libs/log/logger";
 
 export const get = async (currentUserId: string, cursor: string | undefined | null, isRead: boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications
@@ -33,7 +34,7 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
         {
             $lookup: {
                 from: "users",
-                localField: "data.actor",
+                localField: "actor",
                 foreignField: "_id",
                 as: "actor",
                 pipeline: [
@@ -50,7 +51,7 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
         },
         {
             $set: {
-                "data.actor": {
+                "actor": {
                     $arrayElemAt: ["$actor", 0]
                 }
             }
@@ -62,19 +63,21 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
                 isRead: 1,
                 createdAt: 1,
                 data: 1,
+                actor: 1,
             }
         }
     ]);
 
+    
     // organize the data
     let hasNextPage = notifications.length > NOTIFICATION_PAGE_SIZE;
-
+    
     if (hasNextPage) {
         notifications = notifications.splice(0, NOTIFICATION_PAGE_SIZE);
     }
 
     const items = notifications.map(toNotificationDTO);
-
+    
     return {
         hasNextPage,
         items: items,
@@ -104,11 +107,12 @@ export const updateAllReadStatus = async (currentUserId: string) => {
     })
 }
 
-export const create = async (recepientId: string, data: NotificationDataSchema, session?: ClientSession) => {
+export const create = async (recepientId: string, actorId: string | null, data: NotificationData, session?: ClientSession) => {
     const notifications = await Notification.create([
         {
             recepient: recepientId,
             data,
+            actor: actorId ? new Types.ObjectId(actorId) : null,
         }
     ], { session });
 
@@ -117,10 +121,8 @@ export const create = async (recepientId: string, data: NotificationDataSchema, 
         id: notifications[0]._id.toString(),
         recepient: recepientId,
         isRead: false,
-        data: ("actor" in data) ? {
-            ...data,
-            actor: await getUserSummary(data.actor.toString()),
-        } : data,
+        data : data,
+        actor: actorId ? await getUserSummary(actorId) : null,
         createdAt: new Date(),
     };
 

@@ -43,16 +43,14 @@ export const createFollowing = async (currentUserId: string, targetUserId: strin
             // check is this following notification exists
             const isNotificationExists = await Notification.exists({
                 recepient: targetUserId,
-                targetId: targetUserId,
-                targetType: NOTIFICATION_TARGET_TYPE.USER,
-                type: NOTIFICATION_TYPE.FOLLOW_YOU,
+                actor: currentUserId,
+                "data.type": NOTIFICATION_TYPE.FOLLOW,
             }).session(session);
 
             // create notification
             if (!isNotificationExists) {
-                await createNotification(targetUserId, {
-                    type: NOTIFICATION_TYPE.FOLLOW_YOU,
-                    actor: new Types.ObjectId(currentUserId),
+                await createNotification(targetUserId, currentUserId, {
+                    type: NOTIFICATION_TYPE.FOLLOW,
                 }, session)
             }
         })
