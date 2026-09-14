@@ -11,14 +11,14 @@ import PostComment from "../models/postComment.model";
 import { create as createNotification } from "./notification.service";
 
 export const createReport = async (currentUserId: string, reason: ReportReasonCode, type: ReportType, targetId: string) => {
-    const report = await Report.findOne({
+    const isReportExists = await Report.exists({
         reason,
         "target.type": type,
         "target.id": new Types.ObjectId(targetId),
         reporter: new Types.ObjectId(currentUserId),
-    }).select("_id").lean();
+    });
 
-    if (report) return;
+    if (isReportExists) return;
 
     // get target data
     let target: PostReportTargetSchema | UserReportTargetSchema | PostCommentReportTargetSchema | null = null;
