@@ -21,6 +21,8 @@ const Notifications = ({ data, fetchNextPage, hasNextPage, isFetchingNextPage, h
             <div className="w-full">
                 <div className="w-full space-y-2">
                     {data.pages.map((page) => page.items.map(item => {
+                        if(!item.data) return;
+
                         return (
                             <article className={`w-full ${!item.isRead && 'bg-[#141414]'} rounded-xl px-5 sm:px-3 py-3 cursor-pointer`} onClick={() => handleUpdateReadStatus(item)} key={`notification-${item.id}`}>
                                 {

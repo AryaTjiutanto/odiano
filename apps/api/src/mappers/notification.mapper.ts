@@ -9,9 +9,7 @@ export const toNotificationDTO = (data: NotificationQuery): NotificationDTO => {
         id: data._id.toString(),
         recepient: data.recepient.toString(),
         isRead: data.isRead,
-        data: ("actor" in notificationData) ? {
-            ...notificationData,
-        } : notificationData,
+        data: notificationData,
         actor: data.actor ? toUserSummaryDTO(data.actor) : null,
         createdAt: data.createdAt,
     }

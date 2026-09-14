@@ -76,6 +76,7 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
         notifications = notifications.splice(0, NOTIFICATION_PAGE_SIZE);
     }
 
+    
     const items = notifications.map(toNotificationDTO);
     
     return {

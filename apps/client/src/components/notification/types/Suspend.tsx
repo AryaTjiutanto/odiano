@@ -2,14 +2,14 @@ import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, type NotificationDTO } fro
 import { TriangleAlert } from "lucide-react"
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
 import NotificationMedia from "../NotificationMedia";
-import { useSuspendedPostModal } from "../../../providers/SuspendModalProvider";
+import { useSuspendModal } from "../../../providers/SuspendModalProvider";
 
 type Props = {
     item: NotificationDTO,
 };
 
 const SuspendNotification = ({ item }: Props) => {
-    const suspendedPostModal = useSuspendedPostModal();
+    const suspendedPostModal = useSuspendModal();
     if (item.data.type !== NOTIFICATION_TYPE.SUSPEND) return;
 
     const target = item.data.target;
