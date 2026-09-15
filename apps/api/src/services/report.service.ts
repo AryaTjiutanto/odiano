@@ -243,9 +243,10 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
 
             // delete similar reports
             await Report.deleteMany({
+                "_id" : mongoose.trusted({ $ne : report.id}),
                 "target.id" : report.target.id,
+                "target.type" : report.target.type,
             }, {session});
-            // error : its delete all report with target id
         })
     } finally {
         await session.endSession();

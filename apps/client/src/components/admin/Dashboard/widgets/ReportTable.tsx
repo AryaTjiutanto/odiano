@@ -47,10 +47,6 @@ const ReportTable = () => {
         gcTime: DEFAULT_GC_TIME,
     })
 
-    useEffect(() => {
-        console.log(reportQuery.data)
-    }, [reportQuery.data])
-
     // pagination query
     const reportPaginationQuery = useQuery<PaginationData | undefined>({
         queryKey: reportKeys.list(activeTab),
