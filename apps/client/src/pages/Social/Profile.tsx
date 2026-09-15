@@ -16,7 +16,6 @@ import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
 import { postKeys } from "../../queries/postKeys";
 import FollowingButton from "../../components/social/FollowingButton";
-import UserMenu from "../../components/floating-menu/UserMenu";
 
 const Profile = () => {
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);

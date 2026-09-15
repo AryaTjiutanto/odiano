@@ -20,9 +20,8 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedAspectRatio, setSelectedAspectRatio] = useState<MediaAspectRatio>(editData?.aspectRatio || options.aspectRatio);
 
-    if (!imageBlob) return;
-
     const handleCrop = async () => {
+        if (!imageBlob) return;
         setIsLoading(true);
 
         const blob = await getCroppedImage(URL.createObjectURL(imageBlob), imageCroppedAreaPixels);
@@ -43,6 +42,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
     }
 
     const handleEditing = () => {
+        if (!imageBlob) return;
         if (selectedAspectRatio == "original") {
             handleComplete({
                 blob: imageBlob,
@@ -73,7 +73,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
         return () => {
             document.removeEventListener("keyup", handleKeyDown);
         }
-    })
+    }, [])
 
     if (!imageBlob) return null;
 

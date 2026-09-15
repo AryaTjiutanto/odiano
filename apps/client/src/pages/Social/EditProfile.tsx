@@ -1,4 +1,3 @@
-
 import { BIO_LENGTH, MEDIA_ASPECT_RATIO, updateUserProfile, type UpdateUserProfile, type UserProfileDTO } from "@odiano/shared";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
 import ProfileComponent from "../../components/profile/Profile";
@@ -23,6 +22,7 @@ import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper
 import useFileUpload from "../../hooks/useFileUpload";
 import { useImageEditor } from "../../providers/ImageEditorProvider";
 import type { FileEditData } from "../../types/file.type";
+import { handleAppErrorNotification } from "../../helpers/errors/appError.helper";
 
 const EditProfile = () => {
     const imageEditor = useImageEditor();
@@ -168,18 +168,22 @@ const EditProfile = () => {
 
     // handle image editor
     const handleInputImage = async (e : ChangeEvent<HTMLInputElement>, handleImageInput : (e : ChangeEvent<HTMLInputElement>) => void, setImageCroppedBlob : (blob : Blob, data : FileEditData, fileIndex : number) => void, aspectRatio : number) => {
-        handleImageInput(e);
-
-        const image = e.target?.files?.[0];
-        if (!image) return;
-
-        const editResult = await imageEditor.edit(image, undefined, {
-            aspectRatio: aspectRatio,
-            allowAspectRatioChange: false,
-        });
-
-        if(!editResult) return;
-        setImageCroppedBlob(editResult.blob, editResult.editData, 0);
+        try {
+            handleImageInput(e);
+    
+            const image = e.target?.files?.[0];
+            if (!image) return;
+    
+            const editResult = await imageEditor.edit(image, undefined, {
+                aspectRatio: aspectRatio,
+                allowAspectRatioChange: false,
+            });
+    
+            if(!editResult) return;
+            setImageCroppedBlob(editResult.blob, editResult.editData, 0);
+        } catch (err) {
+            handleAppErrorNotification(err);
+        }
     }
 
     // update profile value

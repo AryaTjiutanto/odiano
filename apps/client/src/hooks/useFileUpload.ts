@@ -1,10 +1,10 @@
 import { useState, type ChangeEvent } from "react";
 import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_MAX_IMAGE_SIZE, DEFAULT_MAX_VIDEO_SIZE } from "../consts/file.const";
 import type { FileEditData, FileData, FileUploadProgress } from "../types/file.type";
-import { notify } from "../helpers/notification/notify.helper";
 import { uploadCoverImage, uploadPostAssets, uploadProfileImage } from "../services/upload.service";
 import { uploadSingleFile } from "../helpers/uploadFile.helper";
 import { ALLOWED_MEDIA_TYPES, POST_MAX_MEDIA } from "@odiano/shared";
+import { AppError } from "../errors/appError";
 
 type UseImageUploadOptions = {
     maximumFiles?: number,
@@ -33,12 +33,7 @@ const useFileUpload = ({
         // check file length
         const currentCount = fileData?.length || 0;
         if (maximumFiles !== 1 && currentCount >= maximumFiles) {
-            notify.error({
-                title: "Maximum files reached",
-                description: `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`,
-            });
-
-            return;
+            throw new AppError("Maximum files reached", `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`);
         }
 
         if (currentCount + files.length > maximumFiles) {
@@ -57,32 +52,21 @@ const useFileUpload = ({
         }
 
         if (maximumFiles !== 1 && fileData && fileData?.length >= maximumFiles) {
-            notify.error({
-                title: "Maximum files reached",
-                description: `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`,
-            });
-
-            return;
+           throw new AppError("Maximum files reached", `You can upload up to ${maximumFiles} file${maximumFiles > 1 ? "s" : ""}.`)
         }
 
         // check file type
         if (!allowedTypes.includes(file.type)) {
-            notify.error({ title: "Upload fail", "description": "Only png, jpeg and webp allowed" });
-
-            return;
+            throw new AppError("Upload fail", "Only png, jpeg and webp allowed");
         }
 
         // check file size
         if (file.type.startsWith("image/") && file.size > maxImageSize) {
-            notify.error({ title: "Upload fail", "description": `Max image size is ${maxImageSize / (1024 * 1024)}mb` });
-
-            return;
+            throw new AppError("Upload fail", `Max image size is ${maxImageSize / (1024 * 1024)}mb`);
         }
 
         if (file.type.startsWith("video/") && file.size > maxVideoSize) {
-            notify.error({ title: "Upload fail", "description": `Max video size is ${maxVideoSize / (1024 * 1024)}mb` });
-
-            return;
+            throw new AppError("Upload fail", `Max video size is ${maxVideoSize / (1024 * 1024)}mb`);
         }
 
         const url = URL.createObjectURL(file);

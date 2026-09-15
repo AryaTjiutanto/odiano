@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { handleAppErrorNotification } from "../helpers/errors/appError.helper";
 
 const useDragAndDrop = () => {
     const [isDrag, setIsDrag] = useState<boolean>(false);
@@ -27,10 +28,14 @@ const useDragAndDrop = () => {
     const handleDrop = (e: React.DragEvent<HTMLDivElement>, fallback : (data : File | undefined) => void) => {
         e.preventDefault();
 
-        dragCounter.current = 0;
-        setIsDrag(false);
-
-        fallback(e.dataTransfer.files[0]);
+        try {
+            dragCounter.current = 0;
+            setIsDrag(false);
+    
+            fallback(e.dataTransfer.files[0]);
+        } catch (err) {
+            handleAppErrorNotification(err);
+        }
     }
 
     return {

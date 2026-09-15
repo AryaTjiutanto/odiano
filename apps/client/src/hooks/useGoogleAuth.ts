@@ -5,9 +5,11 @@ import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 import { googleAuth } from "../services/auth.service";
 import { useAppDispatch } from "./useRedux"
 import { notify } from "../helpers/notification/notify.helper";
+import { useNavigate } from "react-router-dom";
 
 const useGoogleAuth = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const handleOnSuccess = async (CredentialResponse: CredentialResponse) => {
         const { credential } = CredentialResponse;
@@ -25,6 +27,8 @@ const useGoogleAuth = () => {
 
             dispatch(setAccessToken(accessToken));
             dispatch(intitializeAuth());
+
+            navigate("/onboarding");
         } catch (err) {
             handleApiErrorNotification(err);
         }

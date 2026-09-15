@@ -22,6 +22,7 @@ import { addPostToUserPostCache } from "../../helpers/cache/postCache.helper";
 import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { userKeys } from "../../queries/userKeys";
 import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
+import { handleAppErrorNotification } from "../../helpers/errors/appError.helper";
 
 const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
@@ -160,9 +161,13 @@ const PostFormSection = () => {
     }
 
     const handleImageInput = (e: ChangeEvent<HTMLInputElement>) => {
-        if (isSubmitting) return;
-
-        fileUpload.handleImageInput(e);
+        try {
+            if (isSubmitting) return;
+    
+            fileUpload.handleImageInput(e);
+        } catch (err) {
+            handleAppErrorNotification(err);
+        }
     }
 
     // handle post setting

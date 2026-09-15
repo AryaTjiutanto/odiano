@@ -18,6 +18,7 @@ import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 import useFileUpload from "../hooks/useFileUpload";
 import { useNavigate } from "react-router-dom";
 import { useImageEditor } from "../providers/ImageEditorProvider";
+import { handleAppErrorNotification } from "../helpers/errors/appError.helper";
 
 const OnBoarding = () => {
     const imageEditor = useImageEditor();
@@ -28,9 +29,9 @@ const OnBoarding = () => {
     const userData = useAppSelector((state) => state.auth.user);
 
     const fileUpload = useFileUpload({
-        allowedTypes : DEFAULT_ALLOWED_IMAGE_TYPES,
-        maxImageSize : DEFAULT_MAX_IMAGE_SIZE,
-        type : "profile",
+        allowedTypes: DEFAULT_ALLOWED_IMAGE_TYPES,
+        maxImageSize: DEFAULT_MAX_IMAGE_SIZE,
+        type: "profile",
     });
     const currentUserData = useAppSelector((state) => state.auth.user);
 
@@ -55,10 +56,10 @@ const OnBoarding = () => {
     })
 
     useEffect(() => {
-        if(userData) {
+        if (userData) {
             setValue("profileImageUrl", userData.profileImage?.url);
 
-            if(userData.dateOfBirth) {
+            if (userData.dateOfBirth) {
                 setValue("dateOfBirth", userData.dateOfBirth);
             }
         }
@@ -136,19 +137,25 @@ const OnBoarding = () => {
     }
 
     // handle image editor
-    const handleInputImage = async (e : ChangeEvent<HTMLInputElement>) => {
-        fileUpload.handleImageInput(e);
+    const handleInputImage = async (e: ChangeEvent<HTMLInputElement>) => {
+        if(isSubmitting) return;
 
-        const image = e.target?.files?.[0];
-        if (!image) return;
+        try {
+            fileUpload.handleImageInput(e);
 
-        const editResult = await imageEditor.edit(image, undefined, {
-            aspectRatio: MEDIA_ASPECT_RATIO["1:1"],
-            allowAspectRatioChange: false,
-        });
+            const image = e.target?.files?.[0];
+            if (!image) return;
 
-        if(!editResult) return;
-        fileUpload.setImageCroppedBlob(editResult.blob, editResult.editData, 0);
+            const editResult = await imageEditor.edit(image, undefined, {
+                aspectRatio: MEDIA_ASPECT_RATIO["1:1"],
+                allowAspectRatioChange: false,
+            });
+
+            if (!editResult) return;
+            fileUpload.setImageCroppedBlob(editResult.blob, editResult.editData, 0);
+        } catch (err) {
+            handleAppErrorNotification(err);
+        }
     }
 
     return (
@@ -163,11 +170,12 @@ const OnBoarding = () => {
             {/* body */}
             {/* content */}
             <div className="bg-black min-h-screen">
-                <div className="w-full text-neutral-100" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
+                <div className={`w-full text-neutral-100 ${isSubmitting && "pointer-events-none"}`} onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                     <div className="w-full min-h-screen flex items-center justify-center py-10 md:py-20 2xl:py-10 px-10 md:px-0">
                         <form onSubmit={handleSubmit(onSubmit)} className="w-full md:max-w-120 2xl:max-w-137.5 flex flex-col items-center">
                             <h1 className="text-center text-2xl md:text-3xl 2xl:text-4xl font-bold">Let anyone know who are you</h1>
 
+                            {/* profile image input */}
                             <div className="my-16 flex flex-col items-center">
                                 <label htmlFor="profile-input" className="">
                                     <div className="w-40 h-40 md:w-48 md:h-48 lg:w-40 lg:h-40 rounded-full bg-neutral-950 border-2 border-neutral-500 shadow-lg shadow-neutral-800 grid place-content-center relative overflow-hidden cursor-pointer group hover:border-neutral-400 hover:shadow-xl duration-300">
@@ -175,13 +183,18 @@ const OnBoarding = () => {
                                             fileUpload.fileData && fileUpload.fileData.length > 0 && fileUpload.fileData[0].blob?.edited ?
                                                 <img src={URL.createObjectURL(fileUpload.fileData[0].blob?.edited)} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                 :
-                                                <User className="size-20 text-neutral-700" />
+                                                watch("profileImageUrl") ?
+                                                    <img src={watch("profileImageUrl") || ""} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
+                                                    :
+                                                    <User className="size-20 text-neutral-700" />
                                         }
                                         <div className={`grid place-content-center absolute top-0 left-0 w-full h-full bg-neutral-950/80 cursor-pointer opacity-0 duration-100 z-10 ${dragAndDrop.isDrag ? "opacity-100" : "group-hover:opacity-100"}`}>
                                             <Upload className="w-10 text-neutral-400" />
                                         </div>
                                     </div>
                                 </label>
+
+                                {/* input */}
                                 <input type="file" id="profile-input" className="hidden" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} onChange={handleInputImage}></input>
                                 {
                                     fileUpload.fileData && fileUpload.fileData.length > 0 && fileUpload.fileData[0].error &&

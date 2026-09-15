@@ -36,7 +36,7 @@ export const createUserProfileSchema = z.object({
     profileImageUrl: z.string()
         .url({ message: "Invalid image URL" })
         .max(300, { message: `An error occur when uploading profile image` })
-        .refine((url) => url.includes("res.cloudinary.com"), { message: "Invalid image source" })
+        .refine((url) => url.includes("res.cloudinary.com") || url.includes("googleusercontent.com"), { message: "Invalid image source" })
         .nullable()
         .optional(),
     bio: z.string()
