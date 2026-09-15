@@ -1,4 +1,4 @@
-import { ACTIONS, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, PaginationQuery, POST_COMMENT_STATUS, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS, UserSummaryDTO } from "@odiano/shared";
+import { ACTIONS, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationData, PaginationQuery, POST_COMMENT_STATUS, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS, UserSummaryDTO } from "@odiano/shared";
 import Report from "../models/report.model";
 import mongoose, { Types } from "mongoose";
 import { REPORTS_PAGE_SIZE } from "../consts/report.const";
@@ -69,7 +69,7 @@ export const createReport = async (currentUserId: string, reason: ReportReasonCo
             type: REPORT_TYPE.COMMENT,
             id: comment._id,
             snapshot: {
-                postId : comment.postId,
+                postId: comment.postId,
                 author: comment.author,
                 parentId: comment.parentId || null,
                 content: comment.content,
@@ -174,17 +174,17 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
                 // create notification
                 const target = report.target.snapshot;
                 const author = await User.findById(report.target.snapshot.author).select("username profileImage name email").lean();
-                const authorData : UserSummaryDTO | null = author ? {
-                    username : author?.username,
-                    profileImage : author?.profileImage,
-                    name : author?.name,
-                    id : author?._id.toString(),
+                const authorData: UserSummaryDTO | null = author ? {
+                    username: author?.username,
+                    profileImage: author?.profileImage,
+                    name: author?.name,
+                    id: author?._id.toString(),
                 } : null;
 
                 const targetSnapshot = {
-                    type : NOTIFICATION_TARGET_TYPE.POST,
+                    type: NOTIFICATION_TARGET_TYPE.POST,
                     id: report.target.id.toString(),
-                    createdAt : report.createdAt,
+                    createdAt: report.createdAt,
                     publicId: target.publicId,
                     ...(target.content && {
                         content: target.content,
@@ -197,11 +197,11 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
                             publicId: target.media[0].source.publicId,
                         }
                     }),
-                    ...(authorData && {author : authorData}),
+                    ...(authorData && { author: authorData }),
                 };
 
                 const reportSnapshot = {
-                    type : NOTIFICATION_TARGET_TYPE.REPORT,
+                    type: NOTIFICATION_TARGET_TYPE.REPORT,
                     id: report._id.toString(),
                     reason: report.reason,
                 }
@@ -221,25 +221,31 @@ export const takeAction = async (currentUserId: string, reportId: string) => {
                     },
                     status: REPORT_STATUS.RESOLVED,
                 })
-            } else if(report.target.type === REPORT_TYPE.COMMENT) {
+            } else if (report.target.type === REPORT_TYPE.COMMENT) {
                 // suspend comment
                 await PostComment.updateOne({
-                    _id : report.target.id,
+                    _id: report.target.id,
                 }, {
-                    $set : {
-                        status : POST_COMMENT_STATUS.SUSPENDED,
+                    $set: {
+                        status: POST_COMMENT_STATUS.SUSPENDED,
                     }
-                }, {session})
+                }, { session })
 
                 // reduce post comment count
                 await Post.updateOne({
-                    _id : report.target.snapshot.postId,
+                    _id: report.target.snapshot.postId,
                 }, {
-                    $inc : {
-                        commentCount : -1,
+                    $inc: {
+                        commentCount: -1,
                     }
-                }, {session});
+                }, { session });
             }
+
+            // delete similar reports
+            await Report.deleteMany({
+                "target.id" : report.target.id,
+            }, {session});
+            // error : its delete all report with target id
         })
     } finally {
         await session.endSession();
@@ -425,7 +431,7 @@ export const getReports = async (status: string = REPORT_STATUS.PENDING, page: n
             }
         }
     ]);
-    
+
     const reportDTOs = reports[0].data.map(report => toReportDTO(report));
 
     return {

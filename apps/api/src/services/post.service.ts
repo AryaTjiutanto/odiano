@@ -1,4 +1,4 @@
-import { CreatedDocumentId, CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, POST_STATUS, PostDTO, type PostDTO as PostFeedItem } from "@odiano/shared";
+import { ACTIONS, CreatedDocumentId, CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, POST_STATUS, PostDTO, SUBJECTS, type PostDTO as PostFeedItem } from "@odiano/shared";
 import { Post } from "../models/post.model";
 import { toPostDto } from "../mappers/post.mapper";
 import { PostQuery } from "../types/post.type";
@@ -12,6 +12,9 @@ import { UnauthorizedError } from "../errors/unauthorized.error";
 import { commitTempImage, deleteImages } from "../helpers/cloudinary.helper";
 import { bulkCreateOrUpdateHashtag, bulkDecreseHashtagsCount } from "./hashtag.service";
 import { searchOptions } from "../types/search.type";
+import { bulkDeleteCommentsByPostId } from "./postComment.service";
+import { defineAbilityFor } from "../helpers/ability.helper";
+import { subject } from "@casl/ability";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts
@@ -445,6 +448,14 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
         throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Something is missing");
     }
 
+    // define ability
+    const user = await User.findById(currentUserId).select("role").lean();
+    if(!user) {
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
+    }
+    const ability = defineAbilityFor(currentUserId, user.role);
+
+    // start session
     const session = await mongoose.startSession();
 
     try {
@@ -453,18 +464,20 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
                 _id: postId,
             })
                 .session(session)
-                .select("_id author media hashtags");
+                .select("_id author media hashtags commentCount");
 
             if (!post) {
                 throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Post Not found")
             }
 
-            if (post.author.toString() != currentUserId) {
+            if (!ability.can(ACTIONS.DELETE, subject(SUBJECTS.POST, {
+                author: post.author,
+            }))) {
                 throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You dont have permission to delete this post");
             }
-
+            
+            // delete post
             const postMedia = post.media;
-
             await post.deleteOne({ session });
 
             // decrese user total posts
@@ -479,6 +492,11 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
             // decrese hashtags
             if (post.hashtags) {
                 await bulkDecreseHashtagsCount(post.hashtags, session);
+            }
+
+            // delete comments
+            if(post.commentCount > 0) {
+                await bulkDeleteCommentsByPostId(postId, currentUserId, session);
             }
 
             // delete media

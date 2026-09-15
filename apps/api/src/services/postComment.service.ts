@@ -6,7 +6,7 @@ import { MAX_TOP_LEVEL_POSTCOMMENT, POSTCOMMENT_PAGE_SIZE } from "../consts/post
 import { AppError } from "../errors/appError.error"
 import { Post } from "../models/post.model"
 import { create as createNotification } from "./notification.service";
-import mongoose, { Types } from "mongoose"
+import mongoose, { ClientSession, Types } from "mongoose"
 import { UnauthorizedError } from "../errors/unauthorized.error"
 import { Notification } from "../models/notification.model"
 
@@ -111,7 +111,7 @@ export const create = async ({ content, currentUserId, postId, parentId, depth }
                             }),
                             createdAt: new Date(),
                         }
-                    }, session)
+                    }, session);
                 }
             };
 
@@ -124,6 +124,12 @@ export const create = async ({ content, currentUserId, postId, parentId, depth }
     } finally {
         await session.endSession();
     }
+}
+
+export const bulkDeleteCommentsByPostId = async (postId: string, currentUserId: string, session: ClientSession) => {
+    await PostComment.deleteMany({
+        postId : postId,
+    }, {session});
 }
 
 export const deleteComment = async (currentUserId: string, commentId: string) => {

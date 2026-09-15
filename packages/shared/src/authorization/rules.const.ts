@@ -24,7 +24,7 @@ export const getRules = (userId: string, role: Role) => {
                 action : ACTIONS.DELETE,
                 subject : SUBJECTS.COMMENT,
                 conditions : { author : userId },
-            }
+            },
         )
     } else if (role === ROLES.ADMIN) {
         baseRules.push(

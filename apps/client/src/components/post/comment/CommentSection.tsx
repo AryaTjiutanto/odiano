@@ -94,13 +94,13 @@ const CommentSection = ({ postId, shouldGettingComments = true }: Props) => {
                             {
                                 hightlightedCommentQuery.data &&
                                 <div className="w-full" ref={highlightedCommentRef}>
-                                    <Comment data={hightlightedCommentQuery.data} postId={postId} isHightlighted={true}/>
+                                    <Comment data={hightlightedCommentQuery.data} postId={postId} isHightlighted={true} key={`comment-${hightlightedCommentQuery.data.id}`} />
                                 </div>
                             }
 
                             {/* current user comments */}
                             {
-                                currentUserCommentQuery.data?.map(data => <Comment data={data} postId={postId} />)
+                                currentUserCommentQuery.data?.map(data => <Comment data={data} postId={postId} key={`comment-${data.id}`} />)
                             }
 
                             {/* comments */}
