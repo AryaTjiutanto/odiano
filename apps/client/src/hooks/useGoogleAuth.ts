@@ -28,7 +28,7 @@ const useGoogleAuth = () => {
             dispatch(setAccessToken(accessToken));
             dispatch(intitializeAuth());
 
-            navigate("/onboarding");
+            navigate("/onboarding", { replace: true });
         } catch (err) {
             handleApiErrorNotification(err);
         }

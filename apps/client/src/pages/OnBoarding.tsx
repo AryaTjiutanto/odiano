@@ -138,7 +138,7 @@ const OnBoarding = () => {
 
     // handle image editor
     const handleInputImage = async (e: ChangeEvent<HTMLInputElement>) => {
-        if(isSubmitting) return;
+        if (isSubmitting) return;
 
         try {
             fileUpload.handleImageInput(e);
@@ -183,8 +183,8 @@ const OnBoarding = () => {
                                             fileUpload.fileData && fileUpload.fileData.length > 0 && fileUpload.fileData[0].blob?.edited ?
                                                 <img src={URL.createObjectURL(fileUpload.fileData[0].blob?.edited)} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                 :
-                                                watch("profileImageUrl") ?
-                                                    <img src={watch("profileImageUrl") || ""} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
+                                                watch("profileImageUrl")  ?
+                                                    <img src={watch("profileImageUrl")} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                     :
                                                     <User className="size-20 text-neutral-700" />
                                         }

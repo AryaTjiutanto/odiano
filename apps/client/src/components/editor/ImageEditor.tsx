@@ -20,6 +20,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedAspectRatio, setSelectedAspectRatio] = useState<MediaAspectRatio>(editData?.aspectRatio || options.aspectRatio);
 
+    // handler
     const handleCrop = async () => {
         if (!imageBlob) return;
         setIsLoading(true);
@@ -73,7 +74,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
         return () => {
             document.removeEventListener("keyup", handleKeyDown);
         }
-    }, [])
+    }, [handleClose, handleCrop])
 
     if (!imageBlob) return null;
 
