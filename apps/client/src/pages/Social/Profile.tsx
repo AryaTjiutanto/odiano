@@ -16,6 +16,7 @@ import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
 import { postKeys } from "../../queries/postKeys";
 import FollowingButton from "../../components/social/FollowingButton";
+import UserFollowingModal from "../../components/modal/UserFollowingModal";
 
 const Profile = () => {
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -129,6 +130,8 @@ const Profile = () => {
 
     return (
         <>
+            <UserFollowingModal/>
+
             <div className="w-full min-h-screen bg-black text-neutral-200 main-section-padding-top">
                 {/* head */}
                 <div className="w-full flex items-center space-x-2">
