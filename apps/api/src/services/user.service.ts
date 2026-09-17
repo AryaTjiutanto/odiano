@@ -186,6 +186,16 @@ export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSu
     return formmatedUsers;
 }
 
+export const getUserFollowing = async(currentUserId : string, targetUserId : string, cursor : string | null | undefined) => {
+    // const following = await Following.aggregate([
+    //     {
+    //         $match : {
+    //             userId : targetUserId    
+    //         }
+    //     }
+    // ]);
+}
+
 export const searchUsers = async (query: string, limit : number = 5) : Promise<UserSummaryDTO[]> => {
     const users = await User.aggregate<UserSummaryQuery>([
         {

@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
-import { CalendarDays, EllipsisVertical } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import ProfileComponent from "../../components/profile/Profile";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData, type InfiniteQuery, type PostDTO, type UserProfileDTO } from "@odiano/shared";
@@ -16,9 +16,14 @@ import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
 import { postKeys } from "../../queries/postKeys";
 import FollowingButton from "../../components/social/FollowingButton";
-import UserFollowingModal from "../../components/modal/UserFollowingModal";
+import { useUserFollowList } from "../../providers/UserFollowListProvider";
+import { lazy, Suspense } from "react";
+import ModalSuspenseFallback from "../../components/modal/SuspenseFallback";
+
+const UserFollowListModal = lazy(() => import("../../components/modal/UserFollowListModal"))
 
 const Profile = () => {
+    const userFollowList = useUserFollowList();
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const currentUserData = useAppSelector((state) => state.auth.user);
 
@@ -130,7 +135,12 @@ const Profile = () => {
 
     return (
         <>
-            <UserFollowingModal/>
+            {
+                userFollowList.isModalOpen &&
+                <Suspense fallback={<ModalSuspenseFallback />}>
+                    <UserFollowListModal />
+                </Suspense>
+            }
 
             <div className="w-full min-h-screen bg-black text-neutral-200 main-section-padding-top">
                 {/* head */}
@@ -173,7 +183,7 @@ const Profile = () => {
                         (!isAuthenticated || username != currentUserData?.username) &&
                         <>
                             <div role="button" className={`duration-100 h-11 ${profileQuery.data?.isFollowing ? "w-32" : "w-24"}`}>
-                                <FollowingButton isFollowing={profileQuery.data?.isFollowing} userId={profileQuery.data?.id} username={profileQuery.data?.username}/>
+                                <FollowingButton isFollowing={profileQuery.data?.isFollowing} userId={profileQuery.data?.id} username={profileQuery.data?.username} />
                             </div>
                         </>
 
@@ -215,22 +225,22 @@ const Profile = () => {
 
                 {/* follow infomation */}
                 <div className="flex items-center space-x-3 mt-5">
-                    <div className="flex items-center space-x-2 text-sm`">
+                    <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowersModal(profileQuery?.data?.followerCount || 0)}>
                         <h1 className="font-bold">
                             {profileQuery?.data?.followerCount || 0}
                         </h1>
                         <span className="text-neutral-400">
                             Followers
                         </span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm`">
+                    </button>
+                    <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowingModal(profileQuery?.data?.followingCount || 0)}>
                         <h1 className="font-bold">
                             {profileQuery?.data?.followingCount || 0}
                         </h1>
                         <span className="text-neutral-400">
                             Following
                         </span>
-                    </div>
+                    </button>
                 </div>
 
                 {/* posts */}
@@ -252,12 +262,12 @@ const Profile = () => {
                                 {
                                     postsQuery.data.pages.map(page => page.items.map((item) => {
                                         return (
-                                            <Post data={item} author={profileQuery.data} key={`post-${item.id}`}/>
+                                            <Post data={item} author={profileQuery.data} key={`post-${item.id}`} />
                                         )
                                     }))
                                 }
 
-                                <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage} textForGuest={`to see @${profileQuery.data?.username} full profile`}/>
+                                <InfiniteScrollSentinel fetchNextPage={postsQuery.fetchNextPage} hasNextPage={postsQuery.hasNextPage} isFetchingNextPage={postsQuery.isFetchingNextPage} textForGuest={`to see @${profileQuery.data?.username} full profile`} />
                             </>
                         }
                         {

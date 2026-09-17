@@ -15,7 +15,7 @@ import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_ALLOWED_VIDEO_TYPES } from "../../
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 import { useImageEditor } from "../../providers/ImageEditorProvider";
 import type { FileEditData } from "../../types/file.type";
-import PostContentEditor from "./PostContentEditor";
+import PostContentEditor from "../post/PostContentEditor";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { postKeys } from "../../queries/postKeys";
 import { addPostToUserPostCache } from "../../helpers/cache/postCache.helper";
@@ -26,7 +26,7 @@ import { handleAppErrorNotification } from "../../helpers/errors/appError.helper
 
 const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
-const PostFormSection = () => {
+const PostFormModal = () => {
     const setQueryDataHandler = useSetQueryDataHandler();
 
     const imageEditor = useImageEditor();
@@ -226,7 +226,7 @@ const PostFormSection = () => {
 
     return (
         <>
-            <div className="w-screen h-screen fixed bg-black/80 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
+            <div className="w-screen h-screen fixed bg-black/50 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                 {/* content */}
                 <div className="w-full sm:w-[500px] md:w-[600px] h-full sm:h-fit bg-black sm:bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
                     {/* form */}
@@ -391,4 +391,4 @@ const PostFormSection = () => {
     )
 }
 
-export default PostFormSection;
+export default PostFormModal;

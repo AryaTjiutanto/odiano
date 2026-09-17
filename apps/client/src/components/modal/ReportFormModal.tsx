@@ -1,4 +1,4 @@
-import { REPORT_REASONS, REPORT_TYPE, type ReportReasonCode } from "@odiano/shared";
+import { REPORT_REASONS, type ReportReasonCode } from "@odiano/shared";
 import { ChevronRight, X } from "lucide-react";
 import { useState } from "react";
 import { useReportForm } from "../../providers/ReportFormProvider";
@@ -9,7 +9,7 @@ type ReportReason = {
     description: string,
 }
 
-const ReportForm = () => {
+const ReportFormModal = () => {
     const reportForm = useReportForm();
     const [step, setStep] = useState<number>(1);
     const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
@@ -164,4 +164,4 @@ const ReportForm = () => {
     )
 }
 
-export default ReportForm;
+export default ReportFormModal;

@@ -1,14 +1,11 @@
 import { Outlet } from "react-router-dom";
-import { UserFollowersModalProvider } from "../providers/UserFollowersModalProvider";
-import { UserFollowingModalProvider } from "../providers/UserFollowingModalProvider";
+import { UserFollowListProvider } from "../providers/UserFollowListProvider";
 
 const ProfileWrapper = () => {
     return (
-        <UserFollowingModalProvider>
-            <UserFollowersModalProvider>
-                <Outlet />
-            </UserFollowersModalProvider>
-        </UserFollowingModalProvider>
+        <UserFollowListProvider>
+            <Outlet />
+        </UserFollowListProvider>
     )
 };
 

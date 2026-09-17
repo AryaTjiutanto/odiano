@@ -1,4 +1,4 @@
-import type { CreateUserProfileSchema, SuccessResponseData, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
+import type { CreateUserProfileSchema, InfiniteQuery, SuccessResponseData, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { api } from "../libs/api";
 
 export const getUserProfile = async (username: string): Promise<UserProfileDTO> => {
@@ -47,6 +47,18 @@ export const getSuggestedUsers = async (): Promise<UserSummaryDTO[]> => {
     if (!response.data.data) {
         throw new Error("Data is missing");
     }
+
+    return response.data.data;
+}
+
+export const getUserFollowing = async (userId: string) => {
+    const response = await api.get<SuccessResponseData<InfiniteQuery<UserSummaryDTO[]>>>(`/users/${userId}/following`);
+
+    return response.data.data;
+}
+
+export const getUserFollowers = async (userId: string) => {
+    const response = await api.get<SuccessResponseData<InfiniteQuery<UserSummaryDTO[]>>>(`/users/${userId}/followers`);
 
     return response.data.data;
 }

@@ -21,6 +21,6 @@ export type UserSummaryQuery = {
     _id: Types.ObjectId,
     name: string,
     username: string,
-    profileImage: UserProfileImageDTO
+    profileImage: UserProfileImageDTO,
     bio? : string,
 }

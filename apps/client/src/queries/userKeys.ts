@@ -5,6 +5,10 @@ export const userKeys = {
     profile : (username? : string) => [mainKey, "profile", username],
     checkUsername : (username : string) => [mainKey, "check", username],
     isFollowing : (id : string) => [mainKey, 'is-following', id],
+    
+    userFollowing : (id : string) => [mainKey, id, "following"],
+    userFollowers : (id : string) => [mainKey, id, "followers"], 
+
     sidebarSuggestions : [mainKey, "suggestions", "sidebar"],
     exploreSuggestions : [mainKey, "suggestions", "explore"],
 }

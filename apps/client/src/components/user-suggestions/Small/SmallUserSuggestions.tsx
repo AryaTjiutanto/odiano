@@ -36,7 +36,7 @@ const SmallUserSuggestions = () => {
                                         {
                                             userQuery.data?.map((data) => (
                                                 <article className="w-full flex items-center" key={`user-suggestion-${data.id}`}>
-                                                    <Link to={`/profile/${data.username}`} className="flex flex-1 items-center space-x-2">
+                                                    <Link to={`/profile/${data.username}`} className="flex flex-1 items-center space-x-2 truncate">
                                                         <div className="w-12 h-12">
                                                             <Profile data={data.profileImage} />
                                                         </div>
@@ -50,7 +50,7 @@ const SmallUserSuggestions = () => {
                                                         </div>
                                                     </Link>
 
-                                                    <div role="button" className={`h-9  duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
+                                                    <div role="button" className={`h-9 duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
                                                         <FollowingButton isFollowing={data.isFollowing} userId={data.id} username={data.username}/>
                                                     </div>
                                                 </article>
