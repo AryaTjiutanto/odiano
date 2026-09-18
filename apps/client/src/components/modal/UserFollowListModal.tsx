@@ -4,18 +4,33 @@ import { USER_FOLLOW_LIST_TYPE } from "../../types/user.type";
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { userKeys } from "../../queries/userKeys";
+import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
+import { getUserFollowers, getUserFollowing } from "../../services/user.service";
 
 const UserFollowListModal = () => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-    const { closeModal, selectedFollowListType, followCount } = useUserFollowList();
+    const { closeModal, selectedFollowListType, followCount, targetUserId } = useUserFollowList();
 
     // query
     const userFollowingQuery = useQuery({
-        
-        enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWING),
+        queryFn : () => getUserFollowing(targetUserId!),
+        queryKey : userKeys.userFollowing(targetUserId!),
+        enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWING && isAuthenticated && targetUserId),
+        staleTime : 60 * 1000,
+        gcTime : DEFAULT_GC_TIME,
     })
 
+    const userFollowersQuery = useQuery({
+        queryFn : () => getUserFollowers(targetUserId!),
+        queryKey : userKeys.userFollowers(targetUserId!),
+        enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS && isAuthenticated && targetUserId),
+        staleTime : 60 * 1000,
+        gcTime : DEFAULT_GC_TIME,
+    })
 
+    const data = userFollowingQuery.data || userFollowersQuery.data;
+    const isPending = userFollowingQuery.isPending || userFollowersQuery.isPending;
     
     // display
     if (!isAuthenticated) {

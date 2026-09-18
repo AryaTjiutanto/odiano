@@ -97,6 +97,7 @@ export const getUserFollowing = async (req : Request, res : Response, next : Nex
 
         const users = await userServices.getUserFollowing(currentUserId, targetUserId, cursor && String(cursor));
 
+        res.status(200).json(successResponseData("OK", "ok", users));
         // res.status(200).json(successResponseData<InfiniteQuery<UserSummaryDTO[]>>(SUCCESS_RESPONSE_CODE.ok, "ok", users));
     } catch (err) {
         next(err);

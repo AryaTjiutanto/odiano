@@ -225,7 +225,7 @@ const Profile = () => {
 
                 {/* follow infomation */}
                 <div className="flex items-center space-x-3 mt-5">
-                    <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowersModal(profileQuery?.data?.followerCount || 0)}>
+                    <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowersModal(profileQuery?.data?.followerCount || 0, profileQuery?.data?.id)}>
                         <h1 className="font-bold">
                             {profileQuery?.data?.followerCount || 0}
                         </h1>
@@ -233,7 +233,7 @@ const Profile = () => {
                             Followers
                         </span>
                     </button>
-                    <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowingModal(profileQuery?.data?.followingCount || 0)}>
+                    <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowingModal(profileQuery?.data?.followingCount || 0, profileQuery?.data?.id)}>
                         <h1 className="font-bold">
                             {profileQuery?.data?.followingCount || 0}
                         </h1>

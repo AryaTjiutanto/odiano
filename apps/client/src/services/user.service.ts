@@ -51,14 +51,22 @@ export const getSuggestedUsers = async (): Promise<UserSummaryDTO[]> => {
     return response.data.data;
 }
 
-export const getUserFollowing = async (userId: string) => {
+export const getUserFollowing = async (userId: string): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
     const response = await api.get<SuccessResponseData<InfiniteQuery<UserSummaryDTO[]>>>(`/users/${userId}/following`);
+
+    if (!response.data.data) {
+        throw new Error("Data is missing");
+    }
 
     return response.data.data;
 }
 
-export const getUserFollowers = async (userId: string) => {
+export const getUserFollowers = async (userId: string): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
     const response = await api.get<SuccessResponseData<InfiniteQuery<UserSummaryDTO[]>>>(`/users/${userId}/followers`);
+
+    if (!response.data.data) {
+        throw new Error("Data is missing");
+    }
 
     return response.data.data;
 }

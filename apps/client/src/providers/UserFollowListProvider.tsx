@@ -5,9 +5,10 @@ type UserFollowListProviderType = {
     isModalOpen : boolean,
     selectedFollowListType : UserFollowListType,
     followCount : number,
+    targetUserId : string | null | undefined,
 
-    openFollowingModal: (value : number) => void,
-    openFollowersModal: (value : number) => void,
+    openFollowingModal: (followCount : number, targetUserId : string | null | undefined) => void,
+    openFollowersModal: (followCount : number, targetUserId : string | null | undefined) => void,
     closeModal : () => void,
 }
 
@@ -16,19 +17,23 @@ const UserFollowListContext = createContext<UserFollowListProviderType | null>(n
 export const UserFollowListProvider = ({ children }: { children: React.ReactNode }) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedFollowListType, setSelectedFollowListType] = useState<UserFollowListType>(USER_FOLLOW_LIST_TYPE.FOLLOWERS)
+    const [targetUserId, setTargetUserId] = useState<string | null | undefined>(null);
     const [followCount, setFollowCount] = useState<number>(0);
     
-
-    function openFollowingModal(value : number) {
+    function openModal(followCount : number, targetUserId : string | null | undefined) {
         setIsModalOpen(true);
-        setSelectedFollowListType(USER_FOLLOW_LIST_TYPE.FOLLOWING);
-        setFollowCount(value);
+        setFollowCount(followCount);
+        setTargetUserId(targetUserId);
     }
 
-    function openFollowersModal(value : number) {
-        setIsModalOpen(true);
+    function openFollowingModal(followCount : number, targetUserId : string | null | undefined) {
+        setSelectedFollowListType(USER_FOLLOW_LIST_TYPE.FOLLOWING);
+        openModal(followCount, targetUserId);
+    }
+
+    function openFollowersModal(followCount : number, targetUserId : string | null | undefined) {
         setSelectedFollowListType(USER_FOLLOW_LIST_TYPE.FOLLOWERS);
-        setFollowCount(value);
+        openModal(followCount, targetUserId);
     }
 
     function closeModal() {
@@ -40,10 +45,11 @@ export const UserFollowListProvider = ({ children }: { children: React.ReactNode
             openFollowingModal,
             openFollowersModal,
             closeModal,
+            targetUserId,
+            followCount,
 
             isModalOpen,
             selectedFollowListType,
-            followCount,
         }}>
             {children}
         </UserFollowListContext.Provider>

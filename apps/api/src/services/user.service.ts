@@ -6,9 +6,10 @@ import cloudinary from "../config/cloudinary.config";
 import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
 import { toUserProfileDTO, toUserSummaryDTO } from "../mappers/user.mapper";
 import { Following } from "../models/following.model";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { getFollowingIds } from "./following.service";
+import logger from "../libs/log/logger";
 
 type OnboardingPayload = {
     userId: string,
@@ -146,37 +147,37 @@ export const updateProfile = async (currentUserId: string, data: UpdateUserProfi
     }
 }
 
-export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSummaryDTO[]> => {
+export const getSuggestedUsers = async (currentUserId: string): Promise<UserSummaryDTO[]> => {
     const followingIds = await getFollowingIds(currentUserId);
 
     const users = await User.aggregate<UserSummaryQuery>([
         {
-            $match : {
-                emailVerifiedAt : {
-                    $ne : null
+            $match: {
+                emailVerifiedAt: {
+                    $ne: null
                 },
-                isOnboarded : true,
-                _id : {
-                    $nin : followingIds,
-                    $ne : new mongoose.Types.ObjectId(currentUserId)
+                isOnboarded: true,
+                _id: {
+                    $nin: followingIds,
+                    $ne: new mongoose.Types.ObjectId(currentUserId)
                 },
-                role : {
-                    $eq : ROLES.USER
+                role: {
+                    $eq: ROLES.USER
                 }
             },
         },
         {
-            $sample : {
-                size : 5,
+            $sample: {
+                size: 5,
             }
         },
         {
-            $project : {
-                _id : 1,
-                name : 1,
-                username : 1,
-                profileImage : 1,
-                bio : 1,
+            $project: {
+                _id: 1,
+                name: 1,
+                username: 1,
+                profileImage: 1,
+                bio: 1,
             }
         }
     ]);
@@ -186,28 +187,98 @@ export const getSuggestedUsers = async (currentUserId : string) : Promise<UserSu
     return formmatedUsers;
 }
 
-export const getUserFollowing = async(currentUserId : string, targetUserId : string, cursor : string | null | undefined) => {
-    // const following = await Following.aggregate([
-    //     {
-    //         $match : {
-    //             userId : targetUserId    
-    //         }
-    //     }
-    // ]);
+export const getUserFollowing = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined) => {
+    const followingData = await Following.aggregate([
+        {
+            $match: {
+                userId: new Types.ObjectId(targetUserId),
+                ...(cursor && { _id: mongoose.trusted({ $lt: cursor }) }),
+            },
+        },
+        {
+            $sort: {
+                _id: -1
+            }
+        },
+        {
+            $limit: 21,
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "followUserId",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            username: 1,
+                            profileImage: 1,
+                            bio: 1,
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind: "$user"
+        },
+        {
+            $lookup: {
+                from: "followings",
+
+                let: {
+                    followUserId: "$user._id",
+                    userId: new Types.ObjectId(currentUserId),
+                },
+
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$$followUserId", "$followUserId"] },
+                                    { $eq: ["$$userId", "$userId"] },
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                        }
+                    }
+                ],
+
+                as : "following",
+            }
+        },
+        {
+            $set : {
+                isFollowing: {
+                    
+                }
+            }
+        }
+    ]);
+
+    logger.info({ followingData, userId: targetUserId, currentUserId });
 }
 
-export const searchUsers = async (query: string, limit : number = 5) : Promise<UserSummaryDTO[]> => {
+export const searchUsers = async (query: string, limit: number = 5): Promise<UserSummaryDTO[]> => {
     const users = await User.aggregate<UserSummaryQuery>([
         {
             $match: {
-                emailVerifiedAt : {
-                    $ne : null
+                emailVerifiedAt: {
+                    $ne: null
                 },
-                isOnboarded : {
-                    $eq : true
+                isOnboarded: {
+                    $eq: true
                 },
-                role : {
-                    $eq : ROLES.USER
+                role: {
+                    $eq: ROLES.USER
                 },
                 $or: [
                     { username: { $regex: query, $options: 'i' } },

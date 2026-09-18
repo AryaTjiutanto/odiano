@@ -18,10 +18,17 @@ const followingSchema = new Schema<FollowingSchema>({
     }
 }, {timestamps : true})
 
+// prevent duplicate follow
 followingSchema.index({
     userId : 1,
     followUserId : 1,
 }, {unique : true})
+
+// efficient following query
+followingSchema.index({
+    userId : 1,
+    _id : -1
+})
 
 followingSchema.pre("save", async function() {
     if(this.userId.equals(this.followUserId)) {
