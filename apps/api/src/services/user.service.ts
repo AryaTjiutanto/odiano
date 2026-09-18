@@ -1,4 +1,4 @@
-import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, ROLES, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, InfiniteQuery, ROLES, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";
@@ -9,7 +9,8 @@ import { Following } from "../models/following.model";
 import mongoose, { Types } from "mongoose";
 import { commitTempImage } from "../helpers/cloudinary.helper";
 import { getFollowingIds } from "./following.service";
-import logger from "../libs/log/logger";
+import { UserFollowListQuery } from "../types/following.type";
+import { MAX_FOLLOW_PAGE_SIZE } from "../consts/following.const";
 
 type OnboardingPayload = {
     userId: string,
@@ -187,8 +188,8 @@ export const getSuggestedUsers = async (currentUserId: string): Promise<UserSumm
     return formmatedUsers;
 }
 
-export const getUserFollowing = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined) => {
-    const followingData = await Following.aggregate([
+export const getUserFollowing = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
+    const followingData = await Following.aggregate<UserFollowListQuery>([
         {
             $match: {
                 userId: new Types.ObjectId(targetUserId),
@@ -201,7 +202,7 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
             }
         },
         {
-            $limit: 21,
+            $limit: MAX_FOLLOW_PAGE_SIZE + 1,
         },
         {
             $lookup: {
@@ -252,19 +253,36 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
                     }
                 ],
 
-                as : "following",
+                as: "following",
             }
         },
         {
-            $set : {
-                isFollowing: {
-                    
-                }
+            $project: {
+                _id: 1,
+                user: 1,
+                following: 1,
             }
         }
     ]);
 
-    logger.info({ followingData, userId: targetUserId, currentUserId });
+    // check next page
+    let hasNextPage = false;
+    let nextCursor = null;
+    if (followingData.length > MAX_FOLLOW_PAGE_SIZE) {
+        nextCursor = followingData[followingData.length - 1]._id.toString();
+        hasNextPage = true;
+    }
+
+    // format data
+    const users = followingData.map((data) => toUserSummaryDTO
+        (data.user, data.following.length > 0));
+
+    // return data
+    return {
+        hasNextPage,
+        nextCursor,
+        items: users,
+    }
 }
 
 export const searchUsers = async (query: string, limit: number = 5): Promise<UserSummaryDTO[]> => {

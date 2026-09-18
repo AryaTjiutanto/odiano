@@ -3,34 +3,39 @@ import { useUserFollowList } from "../../providers/UserFollowListProvider";
 import { USER_FOLLOW_LIST_TYPE } from "../../types/user.type";
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { userKeys } from "../../queries/userKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { getUserFollowers, getUserFollowing } from "../../services/user.service";
+import type { InfiniteQuery, UserSummaryDTO } from "@odiano/shared";
+import { useEffect } from "react";
+import UserSummary from "../user/UserSummary";
 
 const UserFollowListModal = () => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const { closeModal, selectedFollowListType, followCount, targetUserId } = useUserFollowList();
 
     // query
-    const userFollowingQuery = useQuery({
-        queryFn : () => getUserFollowing(targetUserId!),
+    const userFollowingQuery = useInfiniteQuery({
+        queryFn : ({ pageParam }) => getUserFollowing(targetUserId!, pageParam),
         queryKey : userKeys.userFollowing(targetUserId!),
         enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWING && isAuthenticated && targetUserId),
         staleTime : 60 * 1000,
         gcTime : DEFAULT_GC_TIME,
+        initialPageParam : null,
+        getNextPageParam : (lastPage : InfiniteQuery<UserSummaryDTO[]>) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
     })
 
-    const userFollowersQuery = useQuery({
-        queryFn : () => getUserFollowers(targetUserId!),
-        queryKey : userKeys.userFollowers(targetUserId!),
-        enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS && isAuthenticated && targetUserId),
-        staleTime : 60 * 1000,
-        gcTime : DEFAULT_GC_TIME,
-    })
+    // const userFollowersQuery = useQuery({
+    //     queryFn : () => getUserFollowers(targetUserId!),
+    //     queryKey : userKeys.userFollowers(targetUserId!),
+    //     enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS && isAuthenticated && targetUserId),
+    //     staleTime : 60 * 1000,
+    //     gcTime : DEFAULT_GC_TIME,
+    // })
 
-    const data = userFollowingQuery.data || userFollowersQuery.data;
-    const isPending = userFollowingQuery.isPending || userFollowersQuery.isPending;
+    const data = userFollowingQuery.data;
+    const isPending = userFollowingQuery.isPending;
     
     // display
     if (!isAuthenticated) {
@@ -116,6 +121,17 @@ const UserFollowListModal = () => {
                             <Search className="w-4 group-hover:text-neutral-400 cursor-pointer" />
                         </button>
                     </form>
+
+                    {/* user list */}
+                    <div className="w-full py-5">
+                        {
+                            data?.pages.map((page) => (
+                                page.items.map((item) => (
+                                    <UserSummary data={item} key={`following-${item.id}`}/>
+                                ))
+                            ))
+                        }
+                    </div>
                 </div>
             </div>
         </section>

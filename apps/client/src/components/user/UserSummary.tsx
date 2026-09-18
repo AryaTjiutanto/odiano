@@ -6,9 +6,10 @@ import { useAppSelector } from "../../hooks/useRedux";
 
 type Props = {
     data: UserSummaryDTO,
+    usernameLocation?: "bottom" | "right",
 }
 
-const UserSummary = ({ data }: Props) => {
+const UserSummary = ({ data, usernameLocation }: Props) => {
     const currentUserId = useAppSelector(state => state.auth.user?.id);
     const navigate = useNavigate();
 
@@ -20,7 +21,7 @@ const UserSummary = ({ data }: Props) => {
                 </div>
                 <div className="flex flex-1 flex-col">
                     <div className="w-full flex justify-between">
-                        <div>
+                        <div className={`${usernameLocation == "bottom" ? "inline-block" : "flex items-center space-x-2"}`}>
                             <h1 className="text-base font-bold truncate">
                                 {data.name}
                             </h1>
@@ -33,7 +34,7 @@ const UserSummary = ({ data }: Props) => {
                                 <Link to={`/profile/edit`} className="flex items-center justify-center w-28 h-9 duration-100 bg-white hover:bg-transparent text-neutral-900 hover:text-neutral-100 text-sm border border-white rounded-lg" onClick={(e: any) => e.stopPropagation()}>
                                     Edit Profile
                                 </Link>
-                            :
+                                :
                                 <div role="button" className={`h-9  duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
                                     <FollowingButton isFollowing={data.isFollowing} userId={data.id} username={data.username} />
                                 </div>
