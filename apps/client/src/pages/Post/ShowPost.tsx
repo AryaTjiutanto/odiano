@@ -122,7 +122,7 @@ const ShowPost = () => {
                                             :
                                             (currentUserId != postQuery.data?.author?.id) &&
                                             <div role="button" className={`h-10 duration-100 ${isFollowingQuery.data?.isFollowing ? "w-28" : "w-20"}`}>
-                                                <FollowingButton userId={postQuery.data?.author?.id} isFollowing={isFollowingQuery.data?.isFollowing} username={postQuery.data.author?.username} />
+                                                <FollowingButton targetUserId={postQuery.data?.author?.id} isFollowing={isFollowingQuery.data?.isFollowing} targetUsername={postQuery.data.author?.username} />
                                             </div>
                                     }
                                 </>

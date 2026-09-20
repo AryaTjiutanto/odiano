@@ -1,4 +1,5 @@
 import type { UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
+import type { InfiniteQueryUserSummaryDTO } from "../../types/user.type";
 
 export function updateUserTotalPosts(oldData: UserProfileDTO, by: number, mode: "increase" | "decrease" = "increase") {
     return {
@@ -31,6 +32,44 @@ export function markUserAsUnfollowedInList(oldData: UserSummaryDTO[], userId: st
 
         return data;
     })
+}
+
+export function markUserAsFollowedInInfiniteList(oldData: InfiniteQueryUserSummaryDTO, userId: string | undefined) {
+    return {
+        ...oldData,
+
+        pages: oldData.pages.map((page) => {
+            return {
+                ...page,
+
+                items: page.items.map((item) => ({
+                    ...item,
+                    ...(item.id === userId && {
+                        isFollowing: true,
+                    }),
+                })),
+            };
+        }),
+    };
+}
+
+export function markUserAsUnfollowedInInfiniteList(oldData: InfiniteQueryUserSummaryDTO, userId: string | undefined) {
+    return {
+        ...oldData,
+
+        pages: oldData.pages.map((page) => {
+            return {
+                ...page,
+
+                items: page.items.map((item) => ({
+                    ...item,
+                    ...(item.id === userId && {
+                        isFollowing: false,
+                    }),
+                })),
+            };
+        }),
+    };
 }
 
 export function markProfileAsFollowed(oldData: UserProfileDTO) {

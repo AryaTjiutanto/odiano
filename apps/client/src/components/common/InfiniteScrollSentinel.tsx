@@ -8,9 +8,10 @@ type Props = {
     hasNextPage: boolean,
     isFetchingNextPage: boolean,
     textForGuest? : string,
+    rootMargin? : number,
 }
 
-const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage, textForGuest = "to view more content" }: Props) => {
+const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage, textForGuest = "to view more content", rootMargin = 20 }: Props) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const sentinel = useRef<HTMLDivElement | null>(null);
 
@@ -24,7 +25,7 @@ const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage
                 await fetchNextPage();
             }
         }, {
-            rootMargin: "20px",
+            rootMargin: `${rootMargin}px`,
             threshold: 0,
         })
 

@@ -183,7 +183,7 @@ const Profile = () => {
                         (!isAuthenticated || username != currentUserData?.username) &&
                         <>
                             <div role="button" className={`duration-100 h-11 ${profileQuery.data?.isFollowing ? "w-32" : "w-24"}`}>
-                                <FollowingButton isFollowing={profileQuery.data?.isFollowing} userId={profileQuery.data?.id} username={profileQuery.data?.username} />
+                                <FollowingButton isFollowing={profileQuery.data?.isFollowing} targetUserId={profileQuery.data?.id} targetUsername={profileQuery.data?.username} />
                             </div>
                         </>
 

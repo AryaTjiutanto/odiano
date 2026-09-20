@@ -11,6 +11,7 @@ import { commitTempImage } from "../helpers/cloudinary.helper";
 import { getFollowingIds } from "./following.service";
 import { UserFollowListQuery } from "../types/following.type";
 import { MAX_FOLLOW_PAGE_SIZE } from "../consts/following.const";
+import logger from "../libs/log/logger";
 
 type OnboardingPayload = {
     userId: string,
@@ -188,12 +189,12 @@ export const getSuggestedUsers = async (currentUserId: string): Promise<UserSumm
     return formmatedUsers;
 }
 
-export const getUserFollowing = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
-    const followingData = await Following.aggregate<UserFollowListQuery>([
+export const getUserFollowers = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
+    let followersData = await Following.aggregate<UserFollowListQuery>([
         {
             $match: {
-                userId: new Types.ObjectId(targetUserId),
-                ...(cursor && { _id: mongoose.trusted({ $lt: cursor }) }),
+                followUserId: new Types.ObjectId(targetUserId),
+                ...(cursor && { _id: mongoose.trusted({ $lt: new Types.ObjectId(cursor) }) }),
             },
         },
         {
@@ -207,7 +208,7 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
         {
             $lookup: {
                 from: "users",
-                localField: "followUserId",
+                localField: "userId",
                 foreignField: "_id",
                 as: "user",
                 pipeline: [
@@ -268,14 +269,113 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
     // check next page
     let hasNextPage = false;
     let nextCursor = null;
-    if (followingData.length > MAX_FOLLOW_PAGE_SIZE) {
-        nextCursor = followingData[followingData.length - 1]._id.toString();
+    if (followersData.length > MAX_FOLLOW_PAGE_SIZE) {
+        followersData = followersData.slice(0, MAX_FOLLOW_PAGE_SIZE);
+        nextCursor = followersData[followersData.length - 1]._id.toString();
         hasNextPage = true;
     }
 
     // format data
-    const users = followingData.map((data) => toUserSummaryDTO
-        (data.user, data.following.length > 0));
+    const users = followersData.map((data) => toUserSummaryDTO(data.user, data.following?.length > 0 || currentUserId === targetUserId));
+
+    // return data
+    return {
+        hasNextPage,
+        nextCursor,
+        items: users,
+    }
+}
+
+export const getUserFollowing = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
+    let followingData = await Following.aggregate<UserFollowListQuery>([
+        {
+            $match: {
+                userId: new Types.ObjectId(targetUserId),
+                ...(cursor && { _id: mongoose.trusted({ $lt: new Types.ObjectId(cursor) }) }),
+            },
+        },
+        {
+            $sort: {
+                _id: -1
+            }
+        },
+        {
+            $limit: MAX_FOLLOW_PAGE_SIZE + 1,
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "followUserId",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            username: 1,
+                            profileImage: 1,
+                            bio: 1,
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind: "$user"
+        },
+        ...(currentUserId === targetUserId ? [] : [
+            {
+                $lookup: {
+                    from: "followings",
+
+                    let: {
+                        followUserId: "$user._id",
+                        userId: new Types.ObjectId(currentUserId),
+                    },
+
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$$followUserId", "$followUserId"] },
+                                        { $eq: ["$$userId", "$userId"] },
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                            }
+                        }
+                    ],
+
+                    as: "following",
+                }
+            }]),
+        {
+            $project: {
+                _id: 1,
+                user: 1,
+                following: 1,
+            }
+        }
+    ]);
+
+    // check next page
+    let hasNextPage = false;
+    let nextCursor = null;
+    if (followingData.length > MAX_FOLLOW_PAGE_SIZE) {
+        followingData = followingData.slice(0, MAX_FOLLOW_PAGE_SIZE);
+        nextCursor = followingData[followingData.length - 1]._id.toString();
+        hasNextPage = true;
+
+    }
+
+    // format data
+    const users = followingData.map((data) => toUserSummaryDTO(data.user, data.following?.length > 0 || currentUserId === targetUserId));
 
     // return data
     return {

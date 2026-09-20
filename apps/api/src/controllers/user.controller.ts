@@ -95,9 +95,8 @@ export const getUserFollowing = async (req : Request, res : Response, next : Nex
             throw UnauthorizedError;
         }
 
-        const users = await userServices.getUserFollowing(currentUserId, targetUserId, cursor && String(cursor));
+        const users = await userServices.getUserFollowing(currentUserId, targetUserId,  cursor && String(cursor));
 
-        res.status(200).json(successResponseData("OK", "ok", users));
         res.status(200).json(successResponseData<InfiniteQuery<UserSummaryDTO[]>>(SUCCESS_RESPONSE_CODE.ok, "ok", users));
     } catch (err) {
         next(err);
@@ -114,7 +113,7 @@ export const getUserFollowers = async (req : Request, res : Response, next : Nex
             throw UnauthorizedError;
         }
 
-        const users = await userServices.getUserFollowing(currentUserId, targetUserId, cursor && String(cursor));
+        const users = await userServices.getUserFollowers(currentUserId, targetUserId, cursor && String(cursor));
 
         res.status(200).json(successResponseData<InfiniteQuery<UserSummaryDTO[]>>(SUCCESS_RESPONSE_CODE.ok, "ok", users));
     } catch (err) {

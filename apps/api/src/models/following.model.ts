@@ -30,6 +30,12 @@ followingSchema.index({
     _id : -1
 })
 
+// efficient followers query
+followingSchema.index({
+    followUserId : 1,
+    _id : -1
+})
+
 followingSchema.pre("save", async function() {
     if(this.userId.equals(this.followUserId)) {
         throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You cannot follow your own account");

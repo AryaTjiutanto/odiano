@@ -6,8 +6,11 @@ import SmallUserSuggestionsSkeletonLoading from "./SmallUserSuggestionsSkeletonL
 import { Link } from "react-router-dom";
 import FollowingButton from "../../social/FollowingButton";
 import { getSuggestedUsers } from "../../../services/user.service";
+import { useAppSelector } from "../../../hooks/useRedux";
 
 const SmallUserSuggestions = () => {
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+
     // query
     const userQuery = useQuery({
         queryKey: userKeys.sidebarSuggestions,
@@ -15,6 +18,7 @@ const SmallUserSuggestions = () => {
         initialData: null,
         gcTime: DEFAULT_GC_TIME,
         staleTime: 1 * 60 * 1000,
+        enabled: isAuthenticated,
     })
 
     return (
@@ -51,7 +55,7 @@ const SmallUserSuggestions = () => {
                                                     </Link>
 
                                                     <div role="button" className={`h-9 duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
-                                                        <FollowingButton isFollowing={data.isFollowing} userId={data.id} username={data.username}/>
+                                                        <FollowingButton isFollowing={data.isFollowing} targetUserId={data.id} targetUsername={data.username}/>
                                                     </div>
                                                 </article>
                                             ))

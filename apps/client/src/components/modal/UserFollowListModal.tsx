@@ -1,42 +1,45 @@
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useUserFollowList } from "../../providers/UserFollowListProvider";
 import { USER_FOLLOW_LIST_TYPE } from "../../types/user.type";
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, type QueryFunctionContext } from "@tanstack/react-query";
 import { userKeys } from "../../queries/userKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { getUserFollowers, getUserFollowing } from "../../services/user.service";
 import type { InfiniteQuery, UserSummaryDTO } from "@odiano/shared";
-import { useEffect } from "react";
 import UserSummary from "../user/UserSummary";
+import InfiniteScrollSentinel from "../common/InfiniteScrollSentinel";
+import UserSummarySkeletonLoading from "../user/UserSummarySkeletonLoading";
 
 const UserFollowListModal = () => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+    const currentUserData = useAppSelector(state => state.auth.user);
     const { closeModal, selectedFollowListType, followCount, targetUserId } = useUserFollowList();
 
     // query
-    const userFollowingQuery = useInfiniteQuery({
-        queryFn : ({ pageParam }) => getUserFollowing(targetUserId!, pageParam),
-        queryKey : userKeys.userFollowing(targetUserId!),
-        enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWING && isAuthenticated && targetUserId),
-        staleTime : 60 * 1000,
-        gcTime : DEFAULT_GC_TIME,
-        initialPageParam : null,
-        getNextPageParam : (lastPage : InfiniteQuery<UserSummaryDTO[]>) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
+    function getUserFollowList({ pageParam }: QueryFunctionContext<string[], string | null>): Promise<InfiniteQuery<UserSummaryDTO[]>> {
+        if (selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS) {
+            return getUserFollowers(targetUserId!, pageParam);
+        }
+
+        return getUserFollowing(targetUserId!, pageParam);
+    };
+
+    const queryKey = selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS ? userKeys.userFollowers(targetUserId!) : userKeys.userFollowing(targetUserId!);
+
+    const userFollowListQuery = useInfiniteQuery({
+        queryFn: getUserFollowList,
+        queryKey: queryKey,
+        enabled: !!(selectedFollowListType && isAuthenticated && targetUserId),
+        staleTime: 60 * 1000,
+        gcTime: DEFAULT_GC_TIME,
+        initialPageParam: null,
+        getNextPageParam: (lastPage: InfiniteQuery<UserSummaryDTO[]>) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
     })
 
-    // const userFollowersQuery = useQuery({
-    //     queryFn : () => getUserFollowers(targetUserId!),
-    //     queryKey : userKeys.userFollowers(targetUserId!),
-    //     enabled : !!(selectedFollowListType && selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS && isAuthenticated && targetUserId),
-    //     staleTime : 60 * 1000,
-    //     gcTime : DEFAULT_GC_TIME,
-    // })
+    if (!targetUserId) return null;
 
-    const data = userFollowingQuery.data;
-    const isPending = userFollowingQuery.isPending;
-    
     // display
     if (!isAuthenticated) {
         return (
@@ -93,7 +96,7 @@ const UserFollowListModal = () => {
         <section className="w-full h-full fixed top-0 left-0 grid place-content-center z-25">
             <div className="w-full h-full bg-black/50 absolute z-25 cursor-pointer" onClick={closeModal}></div>
 
-            <div className="w-[500px] z-26 rounded-lg bg-neutral-900">
+            <div className="w-[500px] z-26 rounded-lg bg-[#101010]">
                 {/* head */}
                 <div className="w-full h-14 flex items-center justify-center border-neutral-700 border-b text-center relative">
                     <h1 className="text-lg font-semibold">
@@ -113,23 +116,73 @@ const UserFollowListModal = () => {
                 </div>
 
                 {/* content */}
-                <div className="px-4 py-2">
+                <div className="py-2">
                     {/* search input */}
-                    <form className="flex items-center bg-neutral-800 h-10 rounded-xl">
-                        <input className="flex-1 h-full default-input-text-behaviour px-3 text-sm text-neutral-300" placeholder="Search..."></input>
-                        <button className="h-full w-8 group">
-                            <Search className="w-4 group-hover:text-neutral-400 cursor-pointer" />
-                        </button>
-                    </form>
+                    {/* <div className="w-full px-4 pb-2 bg-[#101010]">
+                        <form className="flex items-center bg-neutral-900 h-10 rounded-xl">
+                            <input className="flex-1 h-full default-input-text-behaviour px-3 text-sm text-neutral-300" placeholder="Search..."></input>
+                            <button className="h-full w-8 group">
+                                <Search className="w-4 group-hover:text-neutral-400 cursor-pointer" />
+                            </button>
+                        </form>
+                    </div> */}
 
                     {/* user list */}
-                    <div className="w-full py-5">
+                    <div className="w-full max-h-[45vh] duration-100 overflow-y-auto py-5 px-4">
                         {
-                            data?.pages.map((page) => (
-                                page.items.map((item) => (
-                                    <UserSummary data={item} key={`following-${item.id}`}/>
-                                ))
-                            ))
+                            userFollowListQuery.isPending &&
+                            <div className="space-y-4">
+                                {
+                                    Array.from({ length: 5 }).map((_, key) => (
+                                        <UserSummarySkeletonLoading key={`skeleton-${key}`} usernameLocation="right" bioLength="short" />
+                                    ))
+                                }
+                            </div>
+                        }
+                        {
+                            (!userFollowListQuery.isPending) &&
+                            <>
+                                {
+                                    (userFollowListQuery.data?.pages[0]?.items.length ?? 0) >= 1 ? userFollowListQuery.data?.pages.map((page, index) => (
+                                        <div key={`page-${index}`}>
+                                            <div className="space-y-4 mb-4 last:mb-0">
+                                                {
+                                                    page.items.map((item) => (
+                                                        <UserSummary data={item} key={`following-${item.id}`} bioLength="short" usernameLocation="right" fn={closeModal} followListUserId={targetUserId} />
+                                                    ))
+                                                }
+                                            </div>
+
+                                            <InfiniteScrollSentinel hasNextPage={page.hasNextPage} fetchNextPage={userFollowListQuery.fetchNextPage} isFetchingNextPage={userFollowListQuery.isFetchingNextPage} />
+                                        </div>
+                                    ))
+                                        :
+                                        <>
+                                            {
+                                                selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWING &&
+                                                <div className="w-full h-32 border border-dashed border-neutral-700 rounded grid place-content-center p-5 text-center text-sm text-neutral-500">
+                                                    {
+                                                        targetUserId == currentUserData?.id ?
+                                                            "You haven't followed anyone yet"
+                                                            :
+                                                            "This user hasn't followed anyone yet"
+                                                    }
+                                                </div>
+                                            }
+                                            {
+                                                selectedFollowListType == USER_FOLLOW_LIST_TYPE.FOLLOWERS &&
+                                                <div className="w-full h-32 border border-dashed border-neutral-700 rounded grid place-content-center p-5 text-center text-sm text-neutral-500">
+                                                    {
+                                                        targetUserId == currentUserData?.id ?
+                                                            "You doesnt have any followers yet"
+                                                            :
+                                                            "This user doesn't have any followers yet"
+                                                    }
+                                                </div>
+                                            }
+                                        </>
+                                }
+                            </>
                         }
                     </div>
                 </div>
