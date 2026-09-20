@@ -190,6 +190,7 @@ export const getSuggestedUsers = async (currentUserId: string): Promise<UserSumm
 }
 
 export const getUserFollowers = async (currentUserId: string, targetUserId: string, cursor: string | null | undefined): Promise<InfiniteQuery<UserSummaryDTO[]>> => {
+    // get followers data
     let followersData = await Following.aggregate<UserFollowListQuery>([
         {
             $match: {
@@ -203,7 +204,7 @@ export const getUserFollowers = async (currentUserId: string, targetUserId: stri
             }
         },
         {
-            $limit: MAX_FOLLOW_PAGE_SIZE + 1,
+            $limit: MAX_FOLLOW_PAGE_SIZE,
         },
         {
             $lookup: {
@@ -267,21 +268,18 @@ export const getUserFollowers = async (currentUserId: string, targetUserId: stri
     ]);
 
     // check next page
-    let hasNextPage = false;
-    let nextCursor = null;
-    if (followersData.length > MAX_FOLLOW_PAGE_SIZE) {
-        followersData = followersData.slice(0, MAX_FOLLOW_PAGE_SIZE);
-        nextCursor = followersData[followersData.length - 1]._id.toString();
-        hasNextPage = true;
-    }
+    const hasNextDocument = followersData.length >= MAX_FOLLOW_PAGE_SIZE ? await Following.exists({
+        followUserId: targetUserId,
+        _id: mongoose.trusted({ $lt: followersData[followersData.length - 1]._id }),
+    }) : false;
 
     // format data
     const users = followersData.map((data) => toUserSummaryDTO(data.user, data.following?.length > 0 || currentUserId === targetUserId));
 
     // return data
     return {
-        hasNextPage,
-        nextCursor,
+        hasNextPage: !!hasNextDocument,
+        nextCursor: hasNextDocument ? followersData[followersData.length - 1]._id.toString() : null,
         items: users,
     }
 }
@@ -300,7 +298,7 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
             }
         },
         {
-            $limit: MAX_FOLLOW_PAGE_SIZE + 1,
+            $limit: MAX_FOLLOW_PAGE_SIZE,
         },
         {
             $lookup: {
@@ -365,22 +363,18 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
     ]);
 
     // check next page
-    let hasNextPage = false;
-    let nextCursor = null;
-    if (followingData.length > MAX_FOLLOW_PAGE_SIZE) {
-        followingData = followingData.slice(0, MAX_FOLLOW_PAGE_SIZE);
-        nextCursor = followingData[followingData.length - 1]._id.toString();
-        hasNextPage = true;
-
-    }
+    const hasNextDocument = followingData.length >= MAX_FOLLOW_PAGE_SIZE ? await Following.exists({
+        userId: targetUserId,
+        _id: mongoose.trusted({ $lt: followingData[followingData.length - 1]._id }),
+    }) : false;
 
     // format data
     const users = followingData.map((data) => toUserSummaryDTO(data.user, data.following?.length > 0 || currentUserId === targetUserId));
 
     // return data
     return {
-        hasNextPage,
-        nextCursor,
+        hasNextPage : !!hasNextDocument,
+        nextCursor : hasNextDocument ? followingData[followingData.length - 1]._id.toString() : null,
         items: users,
     }
 }
