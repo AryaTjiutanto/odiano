@@ -3,10 +3,11 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
 import { logout } from "../../../features/auth/auth.thunk";
 import Profile from "../../profile/Profile";
 import { EllipsisVertical, FilePenLine, MailWarning } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
 
 const SidebarUserMenu = () => {
+    const navigate = useNavigate();
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const userData = useAppSelector((state) => state.auth.user);
@@ -39,8 +40,9 @@ const SidebarUserMenu = () => {
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss])
 
     // logout
-    const logoutHandler = () => {
-        dispatch(logout());
+    const logoutHandler = async () => {
+        await dispatch(logout());
+        navigate("/signin");
     }
 
     if (!isInitialized) {
