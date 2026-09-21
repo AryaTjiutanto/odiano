@@ -11,7 +11,6 @@ import { commitTempImage } from "../helpers/cloudinary.helper";
 import { getFollowingIds } from "./following.service";
 import { UserFollowListQuery } from "../types/following.type";
 import { MAX_FOLLOW_PAGE_SIZE } from "../consts/following.const";
-import logger from "../libs/log/logger";
 
 type OnboardingPayload = {
     userId: string,

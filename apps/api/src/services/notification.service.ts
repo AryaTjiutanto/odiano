@@ -7,7 +7,6 @@ import { toNotificationDTO } from "../mappers/notification.mapper";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import mongoose, { ClientSession, Types } from "mongoose";
 import { NotificationQuery } from "../types/notification.type";
-import logger from "../libs/log/logger";
 
 export const get = async (currentUserId: string, cursor: string | undefined | null, isRead: boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications
@@ -18,7 +17,7 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
                 isRead,
                 ...(cursor && {
                     _id: mongoose.trusted({
-                        $lt: cursor
+                        $lt: new Types.ObjectId(cursor),
                     })
                 })
             }
@@ -29,7 +28,7 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
             }
         },
         {
-            $limit: NOTIFICATION_PAGE_SIZE + 1
+            $limit: NOTIFICATION_PAGE_SIZE
         },
         {
             $lookup: {
@@ -67,22 +66,23 @@ export const get = async (currentUserId: string, cursor: string | undefined | nu
             }
         }
     ]);
-
     
     // organize the data
-    let hasNextPage = notifications.length > NOTIFICATION_PAGE_SIZE;
-    
-    if (hasNextPage) {
-        notifications = notifications.splice(0, NOTIFICATION_PAGE_SIZE);
-    }
-
+    const lastId = notifications[notifications.length - 1]?._id;
+    const hasNextDocument = (notifications.length >= NOTIFICATION_PAGE_SIZE && lastId) ? await Notification.exists({
+        recepient: currentUserId,
+        isRead,
+        _id : mongoose.trusted({
+            $lt : lastId,
+        })
+    }) : false;
     
     const items = notifications.map(toNotificationDTO);
-    
+
     return {
-        hasNextPage,
+        hasNextPage : !!hasNextDocument,
         items: items,
-        nextCursor: hasNextPage ? items[items.length - 1].id : null,
+        nextCursor: hasNextDocument ? items[items.length - 1].id : null,
     };
 }
 
