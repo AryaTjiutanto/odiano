@@ -2,7 +2,7 @@ import express from "express";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware";
 import { createUserProfileSchema, updateUserProfile } from "@odiano/shared";
 import { validateData } from "../middlewares/validateData.middleware";
-import { checkUsernameAvailability, getUserFollowers, getUserFollowing, getUserProfile, onboarding, suggestions, updateProfile } from "../controllers/user.controller";
+import { checkUsernameAvailability, getUserFollowers, getUserFollowing, getUserMutuals, getUserProfile, onboarding, suggestions, updateProfile } from "../controllers/user.controller";
 import { apiLimiter, consume, searchLimiter } from "../libs/limiter";
 import optionalAuth from "../middlewares/optionalAuth.middleware";
 
@@ -15,6 +15,7 @@ router.get("/suggestions", consume(searchLimiter), requireAccessToken, suggestio
 
 router.get("/:userId/following", consume(apiLimiter), requireAccessToken, getUserFollowing);
 router.get("/:userId/followers", consume(apiLimiter), requireAccessToken, getUserFollowers);
+router.get("/:userId/mutuals", consume(apiLimiter), requireAccessToken, getUserMutuals);
 
 router.get("/:username", consume(apiLimiter), optionalAuth, getUserProfile);
 

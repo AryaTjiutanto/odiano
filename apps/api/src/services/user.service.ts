@@ -1,4 +1,4 @@
-import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, InfiniteQuery, ROLES, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
+import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, InfiniteQuery, ROLES, UpdateUserProfile, UserMutualsDTO, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { User } from "../models/user.model";
 import { AppError } from "../errors/appError.error";
 import { removeTemp } from "../utils/path";
@@ -11,6 +11,7 @@ import { commitTempImage } from "../helpers/cloudinary.helper";
 import { getFollowingIds } from "./following.service";
 import { UserFollowListQuery } from "../types/following.type";
 import { MAX_FOLLOW_PAGE_SIZE } from "../consts/following.const";
+import logger from "../libs/log/logger";
 
 type OnboardingPayload = {
     userId: string,
@@ -372,8 +373,8 @@ export const getUserFollowing = async (currentUserId: string, targetUserId: stri
 
     // return data
     return {
-        hasNextPage : !!hasNextDocument,
-        nextCursor : hasNextDocument ? followingData[followingData.length - 1]._id.toString() : null,
+        hasNextPage: !!hasNextDocument,
+        nextCursor: hasNextDocument ? followingData[followingData.length - 1]._id.toString() : null,
         items: users,
     }
 }
@@ -470,4 +471,63 @@ export const searchUsers = async (query: string, limit: number = 5): Promise<Use
     const formattedUsers = users.map((data) => toUserSummaryDTO(data));
 
     return formattedUsers;
+}
+
+export const getUserMutual = async (currentUserId: string, targetUserId: string | undefined | null) : Promise<UserMutualsDTO> => {
+    if (!targetUserId) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "Target user id is missing");
+    }
+
+    // get mutuals
+    const mutuals = await Following.aggregate([
+        {
+            $match: {
+                userId : mongoose.trusted({
+                    $ne : new Types.ObjectId(currentUserId)
+                }),
+                followUserId: new Types.ObjectId(currentUserId),
+            }
+        },
+        {
+            $lookup : {
+                from :  "followings",
+                let : {
+                    userId : "$userId",
+                    followUserId : new Types.ObjectId(targetUserId),
+                },
+
+                pipeline : [
+                    {
+                        $match : {
+                            $expr : {
+                                $and : [
+                                    { $eq : ["$userId", "$$userId"] },
+                                    { $eq : ["$followUserId", "$$followUserId"] },
+                                ]
+                            }
+                        }
+                    }
+                ],
+
+                as : "mutuals",
+            }
+        },
+        {
+            $unwind : "$mutuals",
+        },
+        {
+            $replaceRoot: {
+                newRoot : "$mutuals",
+            }
+        }
+    ]);
+
+    // get user preview
+    const userPreviewIds = mutuals.slice(0, Math.min(3, mutuals.length)).map((data) => data.userId);
+    const userPreview = await User.find({ _id: mongoose.trusted({ $in: userPreviewIds }) }).select("_id username name profileImage").lean<UserSummaryQuery[]>();
+
+    return {
+        totalMutuals: mutuals.length,
+        userPreview : userPreview.map((user) => toUserSummaryDTO(user, true))
+    }
 }

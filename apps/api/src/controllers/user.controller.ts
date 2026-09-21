@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/appError.error";
 import * as userServices from "../services/user.service";
 import { ReqBody } from "../types/request.type";
-import { CreateUserProfileSchema, InfiniteQuery, SUCCESS_RESPONSE_CODE, UpdateUserProfile, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
+import { CreateUserProfileSchema, InfiniteQuery, SUCCESS_RESPONSE_CODE, UpdateUserProfile, UserMutualsDTO, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
 import { successResponseData } from "../utils/response.util";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 
@@ -116,6 +116,22 @@ export const getUserFollowers = async (req : Request, res : Response, next : Nex
         const users = await userServices.getUserFollowers(currentUserId, targetUserId, cursor && String(cursor));
 
         res.status(200).json(successResponseData<InfiniteQuery<UserSummaryDTO[]>>(SUCCESS_RESPONSE_CODE.ok, "ok", users));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const getUserMutuals = async (req : Request, res : Response, next : NextFunction) => {
+    const currentUserId = req.userId;
+    const targetUserId = String(req.params.userId);
+
+    try {
+        if(!currentUserId) {
+            throw UnauthorizedError;
+        }
+
+        const data = await userServices.getUserMutual(currentUserId, targetUserId);
+        res.status(200).json(successResponseData<UserMutualsDTO>(SUCCESS_RESPONSE_CODE.success, "success", data));
     } catch (err) {
         next(err);
     }

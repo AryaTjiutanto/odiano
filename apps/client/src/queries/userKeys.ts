@@ -11,4 +11,6 @@ export const userKeys = {
 
     sidebarSuggestions : [mainKey, "suggestions", "sidebar"],
     exploreSuggestions : [mainKey, "suggestions", "explore"],
+
+    mutuals : (id : string) => [mainKey, id, "mutuals"],
 }

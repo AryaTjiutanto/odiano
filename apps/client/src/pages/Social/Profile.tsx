@@ -11,7 +11,7 @@ import type { AxiosError } from "axios";
 import InfiniteScrollSentinel from "../../components/common/InfiniteScrollSentinel";
 import { useAppSelector } from "../../hooks/useRedux";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
-import { getUserProfile } from "../../services/user.service";
+import { getUserMutuals, getUserProfile } from "../../services/user.service";
 import { userKeys } from "../../queries/userKeys";
 import { getUserPosts } from "../../services/post.service";
 import { postKeys } from "../../queries/postKeys";
@@ -37,6 +37,15 @@ const Profile = () => {
         enabled: !!username,
         queryKey: profileQueryKey,
         staleTime: 30 * 1000,
+        gcTime: DEFAULT_GC_TIME,
+    })
+
+    // get mutuals
+    const mutualsQuery = useQuery({
+        queryFn: () => getUserMutuals(profileQuery.data?.id!),
+        enabled: !!profileQuery.data,
+        queryKey: userKeys.mutuals(profileQuery.data?.id!),
+        staleTime: 60 * 1000,
         gcTime: DEFAULT_GC_TIME,
     })
 
@@ -244,33 +253,44 @@ const Profile = () => {
                 </div>
 
                 {/* mutals */}
-                <div className="w-full flex items-center mt-4">
-                    <div className="flex items-center space-x-2">
-                        <div className="flex items-center -space-x-3">
-                            <div className="w-8 h-8 rounded-full grid place-content-center bg-black">
-                                <div className="w-7 h-7 rounded-full bg-neutral-300">
-                                </div>
+                {
+                    mutualsQuery.data &&
+                    <div className="w-full flex items-center mt-4">
+                        <div className="flex items-center space-x-2">
+                            <div className="flex items-center -space-x-3">
+                                {
+                                    mutualsQuery.data.userPreview.map((user) => {
+                                        return (
+                                            <div className="w-8 h-8 rounded-full grid place-content-center bg-black">
+                                                <div className="w-7 h-7 rounded-full bg-neutral-300">
+                                                    <ProfileComponent data={user.profileImage}/>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
-                            <div className="w-8 h-8 rounded-full grid place-content-center bg-black">
-                                <div className="w-7 h-7 rounded-full bg-neutral-300">
-                                </div>
+                            <div className="text-neutral-300 text-sm">
+                                Followed by {" "}
+                                {
+                                    mutualsQuery.data.userPreview.map((user, index) => {
+                                        return (
+                                            <span key={`user-${user.id}`}>
+                                                <Link to={`/profile/${user.username}`} className="font-bold">
+                                                    {user.name}
+                                                </Link>
+                                                {index !== mutualsQuery.data.userPreview.length - 1 && ", "}
+                                            </span>
+                                        )
+                                    })
+                                }
+                                {/* <button className="">
+                                    +26 more
+                                </button> */}
                             </div>
-                        </div>
-                        <div className="text-neutral-300 text-sm">
-                            Followed by {" "}
-                            <Link to={"/"} className="font-bold">
-                                Arya Tjiutanto
-                            </Link>
-                            , {" "}
-                            <Link to={"/"} className="font-bold">
-                                Dono
-                            </Link> {" "}
-                            <button className="">
-                                +26 more
-                            </button>
                         </div>
                     </div>
-                </div>
+                }
 
                 {/* posts */}
                 <div className="w-full border-b border-neutral-800 mt-7">
