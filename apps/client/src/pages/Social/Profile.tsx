@@ -224,7 +224,7 @@ const Profile = () => {
                 </button>
 
                 {/* follow infomation */}
-                <div className="flex items-center space-x-3 mt-5">
+                <div className="flex items-center space-x-3 mt-3">
                     <button className="flex items-center space-x-2 text-sm cursor-pointer" onClick={() => userFollowList.openFollowersModal(profileQuery?.data?.followerCount || 0, profileQuery?.data?.id)}>
                         <h1 className="font-bold">
                             {profileQuery?.data?.followerCount || 0}
@@ -241,6 +241,35 @@ const Profile = () => {
                             Following
                         </span>
                     </button>
+                </div>
+
+                {/* mutals */}
+                <div className="w-full flex items-center mt-4">
+                    <div className="flex items-center space-x-2">
+                        <div className="flex items-center -space-x-3">
+                            <div className="w-8 h-8 rounded-full grid place-content-center bg-black">
+                                <div className="w-7 h-7 rounded-full bg-neutral-300">
+                                </div>
+                            </div>
+                            <div className="w-8 h-8 rounded-full grid place-content-center bg-black">
+                                <div className="w-7 h-7 rounded-full bg-neutral-300">
+                                </div>
+                            </div>
+                        </div>
+                        <div className="text-neutral-300 text-sm">
+                            Followed by {" "}
+                            <Link to={"/"} className="font-bold">
+                                Arya Tjiutanto
+                            </Link>
+                            , {" "}
+                            <Link to={"/"} className="font-bold">
+                                Dono
+                            </Link> {" "}
+                            <button className="">
+                                +26 more
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* posts */}
