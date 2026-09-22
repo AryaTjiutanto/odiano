@@ -50,10 +50,9 @@ const ShowPost = () => {
     const isFollowingQueryKey = userKeys.isFollowing(postQuery.data?.author?.username || "");
 
     const isFollowingQuery = useQuery({
-        queryFn: () => getIsFollowingInformation(postQuery.data?.author?.id),
+        queryFn: async () => await getIsFollowingInformation(postQuery.data?.author?.id),
         queryKey: isFollowingQueryKey,
-        enabled: (!!postQuery?.data && isAuthenticated && currentUserId !== postQuery.data?.author?.id),
-        initialData: null,
+        enabled: (!!postQuery.data && isAuthenticated && currentUserId !== postQuery.data.author?.id),
         staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
     });

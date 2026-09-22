@@ -37,5 +37,7 @@ export const getIsFollowingInformation = async (userId : string | undefined) => 
 
     const response = await api.get<SuccessResponseData<IsFollowingData>>(`/following/check/${userId}`);
 
+    console.log(response.data.data);
+
     return response.data.data;
 }
