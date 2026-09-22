@@ -523,9 +523,9 @@ export const getUserMutual = async (currentUserId: string, targetUserId: string 
     ]);
 
     // get user preview
-    const userPreviewIds = mutuals.slice(0, Math.min(3, mutuals.length)).map((data) => data.userId);
+    const userPreviewIds = mutuals.slice(0, Math.min(2, mutuals.length)).map((data) => data.userId);
     const userPreview = await User.find({ _id: mongoose.trusted({ $in: userPreviewIds }) }).select("_id username name profileImage").lean<UserSummaryQuery[]>();
-
+    
     return {
         totalMutuals: mutuals.length,
         userPreview : userPreview.map((user) => toUserSummaryDTO(user, true))

@@ -42,11 +42,12 @@ const Profile = () => {
 
     // get mutuals
     const mutualsQuery = useQuery({
-        queryFn: () => getUserMutuals(profileQuery.data?.id!),
-        enabled: !!profileQuery.data,
-        queryKey: userKeys.mutuals(profileQuery.data?.id!),
-        staleTime: 60 * 1000,
+        queryFn: () => getUserMutuals(profileQuery.data?.id),
+        enabled: !!profileQuery.data?.id && !!currentUserData?.id && profileQuery.data.id !== currentUserData.id,
+        queryKey: userKeys.mutuals(profileQuery.data?.id),
+        staleTime: 30 * 1000,
         gcTime: DEFAULT_GC_TIME,
+        initialData : undefined,
     })
 
     // get user posts
@@ -254,7 +255,7 @@ const Profile = () => {
 
                 {/* mutals */}
                 {
-                    mutualsQuery.data &&
+                    (profileQuery.data && profileQuery.data.id !== currentUserData?.id && mutualsQuery.data && mutualsQuery.data.totalMutuals > 0) &&
                     <div className="w-full flex items-center mt-4">
                         <div className="flex items-center space-x-2">
                             <div className="flex items-center -space-x-3">
@@ -263,7 +264,7 @@ const Profile = () => {
                                         return (
                                             <div className="w-8 h-8 rounded-full grid place-content-center bg-black">
                                                 <div className="w-7 h-7 rounded-full bg-neutral-300">
-                                                    <ProfileComponent data={user.profileImage}/>
+                                                    <ProfileComponent data={user.profileImage} />
                                                 </div>
                                             </div>
                                         )
@@ -284,9 +285,12 @@ const Profile = () => {
                                         )
                                     })
                                 }
-                                {/* <button className="">
-                                    +26 more
-                                </button> */}
+                                {
+                                    mutualsQuery.data.totalMutuals > mutualsQuery.data.userPreview.length &&
+                                    <button className="ml-1 cursor-pointer hover:text-neutral-200 duration-100" onClick={() => userFollowList.openFollowersModal(profileQuery.data.followerCount, profileQuery.data.id)}>
+                                        +{mutualsQuery.data.totalMutuals - mutualsQuery.data.userPreview.length} more
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>
