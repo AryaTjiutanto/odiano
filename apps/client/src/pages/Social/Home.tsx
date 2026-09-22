@@ -7,7 +7,7 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { postKeys } from "../../queries/postKeys";
 import { getPosts } from "../../services/post.service";
 import HomeHeader from "../../components/social/HomeHeader";
-import CreatePostFloatingButton from "../../components/social/CreatePostFloatingButton";
+import MobileHeader from "../../components/social/MobileHeader";
 
 const Homepage = () => {
     const postsQueryKey = postKeys.all;
@@ -34,16 +34,13 @@ const Homepage = () => {
                 content="odiano with friends, share posts, and explore communities."
             />
 
-            {/* create post button - mobile */}
-            <CreatePostFloatingButton />
-
             {/* body */}
             <div className="w-full">
                 {/* header */}
                 <HomeHeader />
+                <MobileHeader />
 
                 {/* story */}
-                {/* comming soon */}
                 {/* <StoryList /> */}
 
                 {/* posts */}

@@ -1,4 +1,4 @@
-import { Bell, Home, User } from "lucide-react"
+import { Home, Search, User } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 import { useAppSelector } from "../../hooks/useRedux"
 
@@ -19,8 +19,8 @@ export const BottomNavigation = () => {
             <Link to={"/"} className={`grid place-content-center w-full h-full group duration-100 ${location.pathname == "/" ? "text-white" : "text-neutral-400"}`}> 
                 <Home/>
             </Link>
-            <Link to={"/notification"} className="grid place-content-center w-full h-full text-neutral-400">
-                <Bell/>
+            <Link to={"/search"} className="grid place-content-center w-full h-full text-neutral-400">
+                <Search/>
             </Link>
             <Link to={`/profile/${userData?.username}`} className={`grid place-content-center w-full h-full duration-100 ${location.pathname.includes("profile") ? "text-white" : "text-neutral-400"}`}>
                 <User/>

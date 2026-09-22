@@ -19,6 +19,7 @@ import FollowingButton from "../../components/social/FollowingButton";
 import { useUserFollowList } from "../../providers/UserFollowListProvider";
 import { lazy, Suspense } from "react";
 import ModalSuspenseFallback from "../../components/modal/SuspenseFallback";
+import MobileHeader from "../../components/social/MobileHeader";
 
 const UserFollowListModal = lazy(() => import("../../components/modal/UserFollowListModal"))
 
@@ -142,9 +143,12 @@ const Profile = () => {
                 </Suspense>
             }
 
-            <div className="w-full min-h-screen bg-black text-neutral-200 main-section-padding-top">
+            {/* header */}
+            <MobileHeader />
+
+            <div className="w-full min-h-screen bg-black text-neutral-200 sm:main-section-padding-top">
                 {/* head */}
-                <div className="w-full flex items-center space-x-2">
+                <div className="w-full hidden sm:flex items-center space-x-2">
                     <GoBackIconButton />
                     <div className="space-y-1">
                         <h1 className="font-bold text-lg text-white">
