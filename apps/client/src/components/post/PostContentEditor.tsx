@@ -1,5 +1,6 @@
-import { $getRoot } from "lexical";
+import { $getRoot} from "lexical";
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
@@ -8,13 +9,17 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { $isHashtagNode, HashtagNode } from '@lexical/hashtag';
 import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';
-import { useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { POST_CONTENT_LENGTH } from "@odiano/shared";
 
 type Props = {
     errorMessage: string | undefined | null,
     setContent: (content: string) => void,
     setHashtags: (hastags: string[] | null) => void,
+}
+
+export type PostContentEditorRef = {
+    reset: () => void,
 }
 
 const theme = {
@@ -30,8 +35,20 @@ const initialConfig = {
     onError: () => { }
 }
 
+const ResetPlugin = ({ editorRef }: { editorRef: React.ForwardedRef<PostContentEditorRef> }) => {
+    const [editor] = useLexicalComposerContext();
 
-const PostContentEditor = ({ errorMessage, setContent, setHashtags }: Props) => {
+    useImperativeHandle(editorRef, () => ({
+        reset: () => editor.update(() => {
+            const root = $getRoot();
+            root.clear();
+        }),
+    }), [editor]);
+
+    return null;
+}
+
+const PostContentEditor = forwardRef<PostContentEditorRef, Props>(({ errorMessage, setContent, setHashtags }: Props, ref) => {
     const [contentLength, setContentLength] = useState<number>(0);
 
     const changeHandler = (editorState: any) => {
@@ -75,6 +92,8 @@ const PostContentEditor = ({ errorMessage, setContent, setHashtags }: Props) => 
                         {contentLength}/{POST_CONTENT_LENGTH.MAX}
                     </div>
                 </div>
+
+                <ResetPlugin editorRef={ref} />
             </LexicalComposer>
             {
                 errorMessage &&
@@ -82,6 +101,6 @@ const PostContentEditor = ({ errorMessage, setContent, setHashtags }: Props) => 
             }
         </>
     )
-}
+});
 
 export default PostContentEditor;

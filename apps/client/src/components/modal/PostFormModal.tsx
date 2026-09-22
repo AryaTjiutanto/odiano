@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { ALLOWED_MEDIA_PROVIDERS, createPostSchema, MEDIA_ASPECT_RATIO, POST_MAX_MEDIA, type CreatedDocumentId, type CreatePostSchema, type PostMedia, type SuccessResponseData, type UserProfileDTO } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import { DEFAULT_ALLOWED_IMAGE_TYPES, DEFAULT_ALLOWED_VIDEO_TYPES } from "../../
 import { useConfirmationModal } from "../../providers/ConfirmationModalProvider";
 import { useImageEditor } from "../../providers/ImageEditorProvider";
 import type { FileEditData } from "../../types/file.type";
-import PostContentEditor from "../post/PostContentEditor";
+import PostContentEditor, { type PostContentEditorRef } from "../post/PostContentEditor";
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler";
 import { postKeys } from "../../queries/postKeys";
 import { addPostToUserPostCache } from "../../helpers/cache/postCache.helper";
@@ -44,6 +44,9 @@ const PostFormModal = () => {
     const [postPublicId, setPostPublicId] = useState<string | null>(null);
 
     const currentUserUsername = useAppSelector((state) => state.auth.user?.username);
+
+    // post content editor ref
+    const postContentEditorRef = useRef<PostContentEditorRef | null>(null);
 
     // handle form
     const {
@@ -99,7 +102,7 @@ const PostFormModal = () => {
                 ...data,
                 media,
             }
-            
+
             const response = await api.post<SuccessResponseData<CreatedDocumentId>>("/post/create", payload);
 
             if (!response.data || !response.data.data?.id) {
@@ -163,7 +166,7 @@ const PostFormModal = () => {
     const handleImageInput = (e: ChangeEvent<HTMLInputElement>) => {
         try {
             if (isSubmitting) return;
-    
+
             fileUpload.handleImageInput(e);
         } catch (err) {
             handleAppErrorNotification(err);
@@ -224,6 +227,13 @@ const PostFormModal = () => {
 
     }, [fileUpload.fileData, isDirty])
 
+    // reset editor
+    const resetEditor = () => {
+        setIsCreated(false);
+        fileUpload.reset();
+        postContentEditorRef.current?.reset();
+    }
+
     return (
         <>
             <div className="w-screen h-screen fixed bg-black/50 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
@@ -251,7 +261,7 @@ const PostFormModal = () => {
                                                     <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
                                                         {file.type == "image" &&
                                                             <>
-                                                                <img src={URL.createObjectURL( file.blob.edited || file.blob.original)} alt="file" className="h-full w-fit" />
+                                                                <img src={URL.createObjectURL(file.blob.edited || file.blob.original)} alt="file" className="h-full w-fit" />
                                                             </>
                                                         }
                                                         {
@@ -276,9 +286,9 @@ const PostFormModal = () => {
                                                             <div className="p-1 px-2 text-[13px] rounded-md bg-black/60 absolute top-2 left-2 duration-100">
                                                                 {
                                                                     fileUpload.uploadProgress[file.id] == 100 ?
-                                                                    "Uploaded"
-                                                                    :
-                                                                    `${fileUpload.uploadProgress[file.id]}%`
+                                                                        "Uploaded"
+                                                                        :
+                                                                        `${fileUpload.uploadProgress[file.id]}%`
                                                                 }
                                                             </div>
                                                         }
@@ -307,7 +317,7 @@ const PostFormModal = () => {
                         <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={handleImageInput} />
 
                         {/* text input */}
-                        <PostContentEditor errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content, {
+                        <PostContentEditor ref={postContentEditorRef} errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content, {
                             shouldDirty: true,
                             shouldTouch: true,
                         })} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags, {
@@ -376,7 +386,7 @@ const PostFormModal = () => {
                             </Link>
 
                             <button
-                                className="w-full sm:w-48 rounded-lg bg-transparent h-12 text-sm font-semibold text-neutral-200 border border-white hover:bg-neutral-100 hover:text-neutral-800 duration-100 cursor-pointer" onClick={() => setIsCreated(false)}
+                                className="w-full sm:w-48 rounded-lg bg-transparent h-12 text-sm font-semibold text-neutral-200 border border-white hover:bg-neutral-100 hover:text-neutral-800 duration-100 cursor-pointer" onClick={resetEditor}
                             >
                                 Create Another Post
                             </button>

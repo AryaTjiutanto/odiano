@@ -170,6 +170,10 @@ const useFileUpload = ({
         return URL.createObjectURL(blob.edited || blob.original)
     };
 
+    const reset = () => {
+        setFileData(null);
+    }
+
     return {
         fileData,
 
@@ -185,6 +189,7 @@ const useFileUpload = ({
         isMediaNotFull,
 
         uploadProgress,
+        reset,
     }
 }
 
