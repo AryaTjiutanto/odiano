@@ -93,10 +93,10 @@ const UserFollowListModal = () => {
     }
 
     return (
-        <section className="w-full h-full fixed top-0 left-0 grid place-content-center z-25">
-            <div className="w-full h-full bg-black/50 absolute z-25 cursor-pointer" onClick={closeModal}></div>
+        <section className="fixed grid inset-0 place-content-center z-25">
+            <div className="w-full h-full bg-black/50 absolute cursor-pointer" onClick={closeModal}></div>
 
-            <div className="w-[500px] z-26 rounded-lg bg-[#101010]">
+            <div className="w-[80%] md:w-[500px] h-fit right-0 left-0 top-0 bottom-0 m-auto absolute rounded-lg bg-[#101010]">
                 {/* head */}
                 <div className="w-full h-14 flex items-center justify-center border-neutral-700 border-b text-center relative">
                     <h1 className="text-lg font-semibold">

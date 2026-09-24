@@ -13,7 +13,7 @@ export const ExploreHeader = () => {
     const searchQuery = searchParams.get("q");
 
     return (
-        <section className={`w-full sticky sm:top-0 pt-6 sm:pt-6 lg:pt-5 xl:pt-9 hidden sm:flex justify-between items-center bg-black z-23 ${isAuthenticated ? "pb-4" : "pb-0"}`}>
+        <section className={`w-full sticky top-0 pt-6 sm:pt-6 lg:pt-5 xl:pt-9 flex justify-between items-center bg-black z-23 ${isAuthenticated ? "pb-4" : "pb-0"}`}>
             {
                 (isInitialized && isAuthenticated) &&
                 <div className="w-full">

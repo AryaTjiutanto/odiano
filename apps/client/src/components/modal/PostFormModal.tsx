@@ -238,14 +238,14 @@ const PostFormModal = () => {
         <>
             <div className="w-screen h-screen fixed bg-black/50 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                 {/* content */}
-                <div className="w-full sm:w-[500px] md:w-[600px] h-full sm:h-fit bg-black sm:bg-neutral-950 rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
+                <div className="w-[90%] sm:w-[500px] md:w-[600px] h-fit bg-neutral-950 rounded-xl sm:rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
                     {/* form */}
-                    <form onSubmit={handleSubmit(onSubmit)} className={`w-full p-8 sm:p-10 h-fit sm:h-full relative ${isCreated && "hidden"}`}>
+                    <form onSubmit={handleSubmit(onSubmit)} className={`w-full p-6 sm:p-10 h-fit sm:h-full relative ${isCreated && "hidden"}`}>
                         <div className="flex items-center space-x-3 mb-6 sm:hidden">
                             <button className="" onClick={postForm.close}>
-                                <X className="size-9" />
+                                <X className="size-7 sm:size-9" />
                             </button>
-                            <h1 className="text-3xl font-bold sm:hidden">
+                            <h1 className="text-xl sm:text-3xl font-medium sm:font-bold sm:hidden">
                                 Create Post
                             </h1>
                         </div>

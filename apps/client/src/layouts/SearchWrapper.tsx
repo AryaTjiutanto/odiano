@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import SearchInputProvider from "../providers/SearchInputProvider";
 
-const SearchLayout = () => {
+const SearchWrapper = () => {
     return (
         <>
             <SearchInputProvider>
@@ -11,4 +11,4 @@ const SearchLayout = () => {
     )
 }
 
-export default SearchLayout;
+export default SearchWrapper;

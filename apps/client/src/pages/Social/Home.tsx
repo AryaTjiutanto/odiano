@@ -7,7 +7,7 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { postKeys } from "../../queries/postKeys";
 import { getPosts } from "../../services/post.service";
 import HomeHeader from "../../components/social/HomeHeader";
-import MobileHeader from "../../components/social/MobileHeader";
+import SEO from "../../components/seo/SEO";
 
 const Homepage = () => {
     const postsQueryKey = postKeys.all;
@@ -27,18 +27,12 @@ const Homepage = () => {
 
     return (
         <>
-            {/* head */}
-            <title>Odiano - Share Your Moments</title>
-            <meta
-                name="description"
-                content="odiano with friends, share posts, and explore communities."
-            />
+            <SEO title="Share Your Moments"/>
 
             {/* body */}
             <div className="w-full">
                 {/* header */}
                 <HomeHeader />
-                <MobileHeader />
 
                 {/* story */}
                 {/* <StoryList /> */}

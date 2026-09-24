@@ -10,6 +10,7 @@ import DotsLoader from "../../components/loader/DotsLoader";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
+import SEO from "../../components/seo/SEO";
 
 const Signin = () => {
     const dispatch = useAppDispatch();
@@ -44,11 +45,7 @@ const Signin = () => {
     return (
         <>
             {/* head */}
-            <title>Signin - odiano</title>
-            <meta
-                name="description"
-                content="odiano with friends, share posts, and explore communities."
-            />
+            <SEO title="Signin"/>
 
             {/* body */}
             <div className="h-full min-h-screen flex items-center py-32 xl:py-0">

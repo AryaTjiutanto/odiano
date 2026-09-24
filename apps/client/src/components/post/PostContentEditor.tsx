@@ -72,7 +72,7 @@ const PostContentEditor = forwardRef<PostContentEditorRef, Props>(({ errorMessag
                     <RichTextPlugin
                         contentEditable={
                             <ContentEditable
-                                className={`mt-4 w-full h-64 sm:h-40 border duration-100 rounded-xl py-4 px-5 default-input-text-behaviour ${errorMessage ? "border-red-500 text-red-500" : "border-neutral-600 text-neutral-300"}`}
+                                className={`mt-4 w-full max-h-[60%] h-64 sm:h-40 border duration-100 rounded-xl py-4 px-5 default-input-text-behaviour ${errorMessage ? "border-red-500 text-red-500" : "border-neutral-600 text-neutral-300"} overflow-y-auto`}
                                 aria-placeholder={'Enter some text...'}
                                 placeholder={
                                     <div className="absolute top-5 left-5 text-neutral-500">

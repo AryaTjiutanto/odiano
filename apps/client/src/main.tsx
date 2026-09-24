@@ -28,10 +28,9 @@ import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
 import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
 import Explore from './pages/Social/Explore.tsx'
-import NotFoundPage from './pages/error/NotFound.tsx'
 import Search from './pages/Social/Search.tsx'
 import ExploreLayout from './layouts/ExploreLayout.tsx'
-import SearchLayout from './layouts/SearchLayout.tsx'
+import SearchWrapper from './layouts/SearchWrapper.tsx'
 import Notification from './pages/Social/Notification.tsx'
 import HomeAdminDashboard from './pages/admin/Dashboard/Home.tsx'
 import DashboardLayout from './layouts/DashboardLayout.tsx'
@@ -43,7 +42,7 @@ import RequireRoleGuard from './guard/RequireRoleGuard.tsx'
 import { ROLES } from '@odiano/shared'
 import NotificationModalWrapper from './layouts/NotificationModalWrapper.tsx'
 import ProfileWrapper from './layouts/ProfileWrapper.tsx'
-
+import NotFoundPage from './pages/Error/NotFound.tsx'
 const IDBPersister = createIDBPersister();
 
 createRoot(document.getElementById('root')!).render(
@@ -57,7 +56,7 @@ createRoot(document.getElementById('root')!).render(
             const key = query.queryKey[0];
             return typeof key == "string" && ["post", "user", "notification"].includes(key);
           }
-        },
+        }
       }}>
         <SocketProvider>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -73,7 +72,7 @@ createRoot(document.getElementById('root')!).render(
                         {/* social */}
                         <Route element={<SocialWrapper />}>
                           <Route element={<SocialLayout />}>
-                            <Route element={<SearchLayout />}>
+                            <Route element={<SearchWrapper />}>
                               <Route element={<ExploreLayout />}>
                                 <Route path='/explore' element={<Explore />} />
                                 <Route path='/search' element={<Search />} />
@@ -84,7 +83,6 @@ createRoot(document.getElementById('root')!).render(
 
                             {/* post */}
                             <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
-
 
                             {/* profile */}
                             <Route element={<ProfileWrapper />}>

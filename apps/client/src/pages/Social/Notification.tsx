@@ -11,6 +11,7 @@ import { notify } from "../../helpers/notification/notify.helper";
 import { lazy, Suspense } from "react";
 import { useReportModal } from "../../providers/ReportModalProvider";
 import { useSuspendModal } from "../../providers/SuspendModalProvider";
+import GoBackIconButton from "../../components/common/GoBackIconButton";
 
 const ReportModal = lazy(() => import("../../components/modal/ReportModal"));
 const SuspendModal = lazy(() => import("../../components/modal/SuspendModal"));
@@ -45,7 +46,7 @@ const Notification = () => {
     });
 
     const handleReadAllNotification = async () => {
-        if(notificationReadStatusMutation.isPending) return;
+        if (notificationReadStatusMutation.isPending) return;
 
         try {
             await notificationReadStatusMutation.mutateAsync();
@@ -66,22 +67,27 @@ const Notification = () => {
             {
                 reportModal.isOpen &&
                 <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
-                    <ReportModal/>
+                    <ReportModal />
                 </Suspense>
             }
 
             {
                 suspendModal.isOpen &&
                 <Suspense fallback={<div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26 flex items-center justify-center"></div>}>
-                    <SuspendModal/>
+                    <SuspendModal />
                 </Suspense>
             }
 
             <div className="main-section-padding-top">
                 <section className="flex items-center justify-between">
-                    <h1 className="font-bold text-2xl">
-                        Notifications
-                    </h1>
+                    <div className="flex items-center space-x-3">
+                        <div className="sm:hidden">
+                            <GoBackIconButton />
+                        </div>
+                        <h1 className="font-medium sm:font-bold text-xl sm:text-2xl">
+                            Notifications
+                        </h1>
+                    </div>
                     {
                         unreadCount > 0 &&
                         <button className="text-sky-500 hover:text-sky-600 duration-100 text-sm cursor-pointer" onClick={handleReadAllNotification}>
