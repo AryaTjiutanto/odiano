@@ -19,6 +19,7 @@ import useFileUpload from "../hooks/useFileUpload";
 import { useNavigate } from "react-router-dom";
 import { useImageEditor } from "../providers/ImageEditorProvider";
 import { handleAppErrorNotification } from "../helpers/errors/appError.helper";
+import SEO from "../components/seo/SEO";
 
 const OnBoarding = () => {
     const imageEditor = useImageEditor();
@@ -160,14 +161,8 @@ const OnBoarding = () => {
 
     return (
         <>
-            {/* head */}
-            <title>Set Up Your Profile - odiano</title>
-            <meta
-                name="description"
-                content="odiano with friends, share posts, and explore communities."
-            />
+            <SEO title="Onboarding"/>            
 
-            {/* body */}
             {/* content */}
             <div className="bg-black min-h-screen">
                 <div className={`w-full text-neutral-100 ${isSubmitting && "pointer-events-none"}`} onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>

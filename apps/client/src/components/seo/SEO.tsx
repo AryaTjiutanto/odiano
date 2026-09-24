@@ -1,14 +1,21 @@
+import { useAppSelector } from "../../hooks/useRedux";
+
 type Props = {
     title: string,
     description?: string,
+    withTitleSuffix? : boolean,
 }
 
 const DEFAULT_DESCRIPTION = "Odiano - Connect, share, and discover moments with your community.";
 
-const SEO = ({ title, description }: Props) => {
+const SEO = ({ title, description, withTitleSuffix = true }: Props) => {
+    const unreadNotificationCount = useAppSelector(state => state.notification.unreadCount);
+
+
+    const titleWithUnreadNotificationCount = unreadNotificationCount > 0 ? `(${unreadNotificationCount}) ${title}` : title;
     return (
         <>
-            <title>{title + " | odiano"}</title>
+            <title>{ titleWithUnreadNotificationCount + (withTitleSuffix ? " · odiano" : "") }</title>
             <meta name="description" content={description || DEFAULT_DESCRIPTION} />
             <meta
                 name="keywords"

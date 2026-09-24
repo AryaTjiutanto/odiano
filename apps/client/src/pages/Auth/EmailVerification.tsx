@@ -9,6 +9,7 @@ import { api } from "../../libs/api";
 import type { SuccessResponseData } from "@odiano/shared";
 import { useNavigate } from "react-router-dom";
 import { setEmailVerified } from "../../features/auth/auth.slice";
+import SEO from "../../components/seo/SEO";
 
 const EmailVerification = () => {
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ const EmailVerification = () => {
 
     return (
         <>
-            <title>Email verification - Odiano</title>
+            <SEO title="Verify your email"/>
 
             <div className="w-screen h-screen grid place-content-center p-7 sm:p-0">
                 <div className="flex flex-col items-center justify-center text-center">

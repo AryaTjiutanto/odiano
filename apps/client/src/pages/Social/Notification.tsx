@@ -12,6 +12,7 @@ import { lazy, Suspense } from "react";
 import { useReportModal } from "../../providers/ReportModalProvider";
 import { useSuspendModal } from "../../providers/SuspendModalProvider";
 import GoBackIconButton from "../../components/common/GoBackIconButton";
+import SEO from "../../components/seo/SEO";
 
 const ReportModal = lazy(() => import("../../components/modal/ReportModal"));
 const SuspendModal = lazy(() => import("../../components/modal/SuspendModal"));
@@ -60,9 +61,7 @@ const Notification = () => {
 
     return (
         <>
-            <title>
-                Notification - Odiano
-            </title>
+            <SEO title="Notifications"/>
 
             {
                 reportModal.isOpen &&

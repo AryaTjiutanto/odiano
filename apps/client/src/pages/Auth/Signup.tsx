@@ -9,6 +9,7 @@ import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import DateInputSection from "../../components/input/DateInputSection";
+import SEO from "../../components/seo/SEO";
 
 const Signup = () => {
     const dispatch = useAppDispatch();
@@ -44,11 +45,7 @@ const Signup = () => {
     return (
         <>
             {/* head */}
-            <title>Create an account - odiano</title>
-            <meta
-                name="description"
-                content="odiano with friends, share posts, and explore communities."
-            />
+            <SEO title="Create an account"/>
 
             {/* body */}
             <div className="w-full min-h-screen flex justify-start md:justify-center items-center pt-32 pb-12 2xl:pt-0 2xl:pb-0 px-10 md:px-0">

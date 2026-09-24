@@ -5,6 +5,7 @@ import { useSearchSectionContext } from "../../providers/SearchSectionProvider";
 import PostSection from "../../components/search/section/PostSection";
 import PeopleSection from "../../components/search/section/PeopleSection";
 import PostMediaSection from "../../components/search/section/PostMediaSection";
+import SEO from "../../components/seo/SEO";
 
 const Search = () => {
     const searchSectionContext = useSearchSectionContext();
@@ -23,11 +24,7 @@ const Search = () => {
     return (
         <>
             {/* head */}
-            <title>search - Odiano</title>
-            <meta
-                name="description"
-                content="odiano with friends, share posts, and explore communities."
-            />
+            <SEO title={`${searchQuery} - search`} />
 
             {/* body */}
             <div className="mt-2 space-y-6 sm:pb-6">

@@ -23,6 +23,7 @@ import useFileUpload from "../../hooks/useFileUpload";
 import { useImageEditor } from "../../providers/ImageEditorProvider";
 import type { FileEditData } from "../../types/file.type";
 import { handleAppErrorNotification } from "../../helpers/errors/appError.helper";
+import SEO from "../../components/seo/SEO";
 
 const EditProfile = () => {
     const imageEditor = useImageEditor();
@@ -167,19 +168,19 @@ const EditProfile = () => {
     }
 
     // handle image editor
-    const handleInputImage = async (e : ChangeEvent<HTMLInputElement>, handleImageInput : (e : ChangeEvent<HTMLInputElement>) => void, setImageCroppedBlob : (blob : Blob, data : FileEditData, fileIndex : number) => void, aspectRatio : number) => {
+    const handleInputImage = async (e: ChangeEvent<HTMLInputElement>, handleImageInput: (e: ChangeEvent<HTMLInputElement>) => void, setImageCroppedBlob: (blob: Blob, data: FileEditData, fileIndex: number) => void, aspectRatio: number) => {
         try {
             handleImageInput(e);
-    
+
             const image = e.target?.files?.[0];
             if (!image) return;
-    
+
             const editResult = await imageEditor.edit(image, undefined, {
                 aspectRatio: aspectRatio,
                 allowAspectRatioChange: false,
             });
-    
-            if(!editResult) return;
+
+            if (!editResult) return;
             setImageCroppedBlob(editResult.blob, editResult.editData, 0);
         } catch (err) {
             handleAppErrorNotification(err);
@@ -198,136 +199,135 @@ const EditProfile = () => {
         })
     }, [userProfile.data, reset]);
 
-    // check is pending
-    if (userProfile.isPending) {
-        return (
-            <EditProfileSkeletonLoading />
-        )
-    }
-
     // display form
     return (
         <>
-            {/* head */}
-            <title>Edit your profile - Odiano</title>
+            <SEO title="Edit your profile" />
+            {
+                userProfile.isPending &&
+                <EditProfileSkeletonLoading />
+            }
+            {
+                userProfile.data &&
+                <>
+                    <div className={`w-full min-h-screen main-section-padding-top ${isSubmitting && "pointer-events-none"}`}>
+                        <form onSubmit={handleSubmit(update)} className="w-full h-full">
+                            {/* header */}
+                            <div className="w-full flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <GoBackIconButton />
+                                    <h1 className="text-2xl font-bold">
+                                        Edit Profile
+                                    </h1>
+                                </div>
+                                <button className={`w-18 h-9.5 rounded-full bg-white border border-white text-neutral-800 cursor-pointer duration-100 text-sm font-bold grid place-content-center ${!isSubmitting && "hover:bg-transparent hover:text-neutral-100"}`} disabled={isSubmitting} type="submit">
+                                    {
+                                        isSubmitting ?
+                                            <div className="size-7 h-fit">
+                                                <DotsLoader />
+                                            </div>
+                                            :
+                                            <span>
+                                                Save
+                                            </span>
+                                    }
+                                </button>
+                            </div>
 
-            {/* form */}
-            <div className={`w-full min-h-screen main-section-padding-top ${isSubmitting && "pointer-events-none"}`}>
-                <form onSubmit={handleSubmit(update)} className="w-full h-full">
-                    {/* header */}
-                    <div className="w-full flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <GoBackIconButton />
-                            <h1 className="text-2xl font-bold">
-                                Edit Profile
-                            </h1>
-                        </div>
-                        <button className={`w-18 h-9.5 rounded-full bg-white border border-white text-neutral-800 cursor-pointer duration-100 text-sm font-bold grid place-content-center ${!isSubmitting && "hover:bg-transparent hover:text-neutral-100"}`} disabled={isSubmitting} type="submit">
-                            {
-                                isSubmitting ?
-                                    <div className="size-7 h-fit">
-                                        <DotsLoader />
+                            {/* cover image */}
+                            <div className={`w-full relative`}>
+                                <div
+                                    className={`cover-image-aspect bg-neutral-500 rounded-xl mt-5 overflow-hidden duration-100`}
+                                >
+                                    {
+                                        coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited &&
+                                        <img src={URL.createObjectURL(coverImageUpload.fileData[0].blob?.edited || coverImageUpload.fileData[0].blob?.original)} className="w-full h-full" />
+                                    }
+                                    {
+                                        (coverImageUrl && (!coverImageUpload.fileData || coverImageUpload.fileData.length === 0)) &&
+                                        <img src={coverImageUrl} className="w-full h-full" />
+                                    }
+                                </div>
+
+                                <div className={`w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1  rounded-xl grid place-content-center duration-100 ${coverDragAndDrop.isDrag ? "bg-black/50" : "bg-black/40"}`} onDragEnter={coverDragAndDrop.handleDragEnter} onDragLeave={coverDragAndDrop.handleDragLeave} onDragOver={coverDragAndDrop.handleDragOver} onDrop={(e) => coverDragAndDrop.handleDrop(e, coverImageUpload.processFile)}>
+                                    <div className="w-fit flex items-center space-x-3">
+                                        {/* upload */}
+                                        <label htmlFor="inputCoverImage" className={`w-14 aspect-square rounded-full duration-100 grid place-content-center cursor-pointer ${coverDragAndDrop.isDrag ? "bg-neutral-950/80" : "bg-neutral-950/60 hover:bg-neutral-900/60 hover:text-neutral-50 "}`}>
+                                            <Upload className="w-5" />
+                                        </label>
+                                        <input id="inputCoverImage" type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" onChange={(e) => handleInputImage(e, coverImageUpload.handleImageInput, coverImageUpload.setImageCroppedBlob, 3 / 1)} />
+
+                                        {/* delete cover */}
+                                        {
+                                            ((coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited) || userProfile.data?.coverImage) &&
+                                            <button type="button" className={`w-14 aspect-square rounded-full bg-neutral-950/60  duration-100 grid place-content-center cursor-pointer hover:bg-neutral-900/60 hover:text-neutral-50`} disabled={isSubmitting} onClick={() => coverImageUpload.removeFile(0, () => {
+                                                setValue("coverImagePublicId", null);
+                                                setValue("coverImageUrl", null);
+                                            })}>
+                                                <X />
+                                            </button>
+                                        }
                                     </div>
-                                    :
-                                    <span>
-                                        Save
-                                    </span>
-                            }
-                        </button>
-                    </div>
+                                </div>
 
-                    {/* cover image */}
-                    <div className={`w-full relative`}>
-                        <div
-                            className={`cover-image-aspect bg-neutral-500 rounded-xl mt-5 overflow-hidden duration-100`}
-                        >
-                            {
-                                coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited &&
-                                <img src={URL.createObjectURL(coverImageUpload.fileData[0].blob?.edited || coverImageUpload.fileData[0].blob?.original)} className="w-full h-full" />
-                            }
-                            {
-                                (coverImageUrl && (!coverImageUpload.fileData || coverImageUpload.fileData.length === 0)) &&
-                                <img src={coverImageUrl} className="w-full h-full" />
-                            }
-                        </div>
+                                {/* profile */}
+                                <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-black rounded-full overflow-hidden z-2`} onDragEnter={profileDragAndDrop.handleDragEnter} onDragOver={profileDragAndDrop.handleDragOver} onDragLeave={profileDragAndDrop.handleDragLeave} onDrop={(e) => profileDragAndDrop.handleDrop(e, profileImageUpload.processFile)}>
+                                    <ProfileComponent data={
+                                        profileImageUpload.fileData && profileImageUpload.fileData.length > 0 && profileImageUpload.fileData[0].blob?.edited ?
+                                            {
+                                                url: URL.createObjectURL(profileImageUpload.fileData[0].blob.edited)
+                                            }
+                                            :
+                                            userProfile.data?.profileImage
+                                    } />
 
-                        <div className={`w-full h-full absolute top-0 left-0 bottom-0 right-0 z-1  rounded-xl grid place-content-center duration-100 ${coverDragAndDrop.isDrag ? "bg-black/50" : "bg-black/40"}`} onDragEnter={coverDragAndDrop.handleDragEnter} onDragLeave={coverDragAndDrop.handleDragLeave} onDragOver={coverDragAndDrop.handleDragOver} onDrop={(e) => coverDragAndDrop.handleDrop(e, coverImageUpload.processFile)}>
-                            <div className="w-fit flex items-center space-x-3">
-                                {/* upload */}
-                                <label htmlFor="inputCoverImage" className={`w-14 aspect-square rounded-full duration-100 grid place-content-center cursor-pointer ${coverDragAndDrop.isDrag ? "bg-neutral-950/80" : "bg-neutral-950/60 hover:bg-neutral-900/60 hover:text-neutral-50 "}`}>
-                                    <Upload className="w-5" />
-                                </label>
-                                <input id="inputCoverImage" type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" onChange={(e) => handleInputImage(e, coverImageUpload.handleImageInput, coverImageUpload.setImageCroppedBlob, 3/1)} />
+                                    <label htmlFor="inputProfileImage" className={`w-full h-full cursor-pointer absolute top-0 left-0 right-0 bottom-0 m-auto  hover:text-neutral-50 duration-100 grid place-content-center ${profileDragAndDrop.isDrag ? "hover:bg-black/80 bg-black/60" : "hover:bg-black/60 bg-black/40"}`}>
+                                        <Upload />
+                                    </label>
 
-                                {/* delete cover */}
+                                    <input type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" id="inputProfileImage" onChange={(e) => handleInputImage(e, profileImageUpload.handleImageInput, profileImageUpload.setImageCroppedBlob, MEDIA_ASPECT_RATIO["1:1"])} />
+                                </div>
+                            </div>
+
+                            {/* username input */}
+                            <div className={`w-full mt-18`}>
+                                <div className={`w-full rounded bg-black border p-1 pt-1.25 px-3 flex flex-col ${errors.name ? "border-red-500" : "focus-within:border-sky-500 border-neutral-600"} -space-y-1 group`}>
+                                    <label className={`text-sm ${errors.name ? "text-red-500" : "text-neutral-500 group-focus-within:text-sky-500"} duration-100`}>
+                                        Name
+                                    </label>
+                                    <input className="h-8 w-full default-input-text-behaviour" {...register("name")}></input>
+                                </div>
                                 {
-                                    ((coverImageUpload.fileData && coverImageUpload.fileData.length > 0 && coverImageUpload.fileData[0].blob?.edited) || userProfile.data?.coverImage) &&
-                                    <button type="button" className={`w-14 aspect-square rounded-full bg-neutral-950/60  duration-100 grid place-content-center cursor-pointer hover:bg-neutral-900/60 hover:text-neutral-50`} disabled={isSubmitting} onClick={() => coverImageUpload.removeFile(0,() => {
-                                        setValue("coverImagePublicId", null);
-                                        setValue("coverImageUrl", null);
-                                    })}>
-                                        <X />
-                                    </button>
+                                    errors.name &&
+                                    <span className="text-xs text-red-500">
+                                        {errors.name.message}
+                                    </span>
                                 }
                             </div>
-                        </div>
 
-                        {/* profile */}
-                        <div className={`absolute w-28 aspect-square left-6 -bottom-[25%] flex items-center justify-center p-1 bg-black rounded-full overflow-hidden z-2`} onDragEnter={profileDragAndDrop.handleDragEnter} onDragOver={profileDragAndDrop.handleDragOver} onDragLeave={profileDragAndDrop.handleDragLeave} onDrop={(e) => profileDragAndDrop.handleDrop(e, profileImageUpload.processFile)}>
-                            <ProfileComponent data={
-                                profileImageUpload.fileData && profileImageUpload.fileData.length > 0 && profileImageUpload.fileData[0].blob?.edited ?
-                                    {
-                                        url: URL.createObjectURL(profileImageUpload.fileData[0].blob.edited)
-                                    }
-                                    :
-                                    userProfile.data?.profileImage
-                            } />
+                            {/* bio */}
+                            <div className="w-full mt-4">
+                                <div className={`w-full col-span-1 rounded bg-black border ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "border-red-500" : "border-neutral-600 focus-within:border-sky-500"} p-1 pt-2 px-3 flex flex-col group relative`}>
+                                    <label className={`text-sm ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "text-red-500" : "text-neutral-500 focus-within:text-sky-500"} duration-100`}>
+                                        Bio
+                                    </label>
+                                    <textarea rows={4} className="w-full default-input-text-behaviour" {...register("bio")}></textarea>
 
-                            <label htmlFor="inputProfileImage" className={`w-full h-full cursor-pointer absolute top-0 left-0 right-0 bottom-0 m-auto  hover:text-neutral-50 duration-100 grid place-content-center ${profileDragAndDrop.isDrag ? "hover:bg-black/80 bg-black/60" : "hover:bg-black/60 bg-black/40"}`}>
-                                <Upload />
-                            </label>
-
-                            <input type="file" accept={`${DEFAULT_ALLOWED_IMAGE_TYPES.join(", ")}`} className="hidden" id="inputProfileImage" onChange={(e) => handleInputImage(e, profileImageUpload.handleImageInput, profileImageUpload.setImageCroppedBlob, MEDIA_ASPECT_RATIO["1:1"])} />
-                        </div>
-                    </div>
-
-                    {/* username input */}
-                    <div className={`w-full mt-18`}>
-                        <div className={`w-full rounded bg-black border p-1 pt-1.25 px-3 flex flex-col ${errors.name ? "border-red-500" : "focus-within:border-sky-500 border-neutral-600"} -space-y-1 group`}>
-                            <label className={`text-sm ${errors.name ? "text-red-500" : "text-neutral-500 group-focus-within:text-sky-500"} duration-100`}>
-                                Name
-                            </label>
-                            <input className="h-8 w-full default-input-text-behaviour" {...register("name")}></input>
-                        </div>
-                        {
-                            errors.name &&
-                            <span className="text-xs text-red-500">
-                                {errors.name.message}
-                            </span>
-                        }
-                    </div>
-
-                    {/* bio */}
-                    <div className="w-full mt-4">
-                        <div className={`w-full col-span-1 rounded bg-black border ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "border-red-500" : "border-neutral-600 focus-within:border-sky-500"} p-1 pt-2 px-3 flex flex-col group relative`}>
-                            <label className={`text-sm ${(watch("bio")?.length > BIO_LENGTH.MAX || errors.bio) ? "text-red-500" : "text-neutral-500 focus-within:text-sky-500"} duration-100`}>
-                                Bio
-                            </label>
-                            <textarea rows={4} className="w-full default-input-text-behaviour" {...register("bio")}></textarea>
-
-                            <div className={`absolute top-3 right-5 text-xs ${watch("bio")?.length > BIO_LENGTH.MAX ? "text-red-500" : "text-neutral-400"}`}>
-                                {watch("bio")?.length}/{BIO_LENGTH.MAX}
+                                    <div className={`absolute top-3 right-5 text-xs ${watch("bio")?.length > BIO_LENGTH.MAX ? "text-red-500" : "text-neutral-400"}`}>
+                                        {watch("bio")?.length}/{BIO_LENGTH.MAX}
+                                    </div>
+                                </div>
+                                {
+                                    errors.bio &&
+                                    <span className="text-xs text-red-500">
+                                        {errors.bio.message}
+                                    </span>
+                                }
                             </div>
-                        </div>
-                        {
-                            errors.bio &&
-                            <span className="text-xs text-red-500">
-                                {errors.bio.message}
-                            </span>
-                        }
+                        </form>
                     </div>
-                </form>
-            </div>
+                </>
+            }
         </>
     );
 };

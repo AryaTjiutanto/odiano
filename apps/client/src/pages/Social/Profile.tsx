@@ -28,9 +28,11 @@ const Profile = () => {
         gcTime: DEFAULT_GC_TIME,
     });;
 
+    const title = profileQuery.data ? `${profileQuery.data.name} (@${profileQuery.data.username})` : `@${username}`;
+
     return (
         <>
-            <SEO title={`@${username}`}/>
+            <SEO title={title}/>
 
             {
                 userFollowList.isModalOpen &&

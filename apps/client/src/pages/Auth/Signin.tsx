@@ -45,7 +45,7 @@ const Signin = () => {
     return (
         <>
             {/* head */}
-            <SEO title="Signin"/>
+            <SEO title="Welcome back"/>
 
             {/* body */}
             <div className="h-full min-h-screen flex items-center py-32 xl:py-0">
