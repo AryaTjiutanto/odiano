@@ -29,8 +29,8 @@ const UserSummary = ({ data, usernameLocation, bioLength = "long", fn, followLis
                 </div>
                 <div className="flex flex-1 min-w-0 flex-col">
                     <div className={`w-full flex justify-between ${bioLength == "short" && "items-center"}`}>
-                        <div className="max-w-[60%]">
-                            <div className={`${usernameLocation == "bottom" ? "inline-block" : "flex items-center space-x-2"}`}>
+                        <div className="max-w-[60%] h-fit">
+                            <div className={`${usernameLocation == "bottom" ? "inline-block" : "flex flex-col sm:flex-row sm:items-center space-x-2"}`}>
                                 <h1 className="text-base font-bold truncate">
                                     {data.name}
                                 </h1>
@@ -40,18 +40,18 @@ const UserSummary = ({ data, usernameLocation, bioLength = "long", fn, followLis
                             </div>
                             {
                                 bioLength == "short" &&
-                                <p className="w-full text-neutral-300 truncate text-left">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis dolores atque vitae, praesentium suscipit maxime iure accusamus perspiciatis iste aut rem perferendis reprehenderit nam? Adipisci illum vel delectus quidem aut!
+                                <p className="hidden sm:inline-block w-full text-neutral-300 truncate text-left">
+                                   {data.bio}
                                 </p>
                             }
                         </div>
                         {
                             currentUserId == data.id ?
-                                <Link to={`/profile/edit`} className="flex items-center justify-center w-28 h-9 duration-100 bg-white hover:bg-transparent text-neutral-900 hover:text-neutral-100 text-sm border border-white rounded-lg" onClick={(e: any) => e.stopPropagation()}>
+                                <Link to={`/profile/edit`} className="flex items-center justify-center w-23 sm:w-28 h-9 duration-100 bg-white hover:bg-transparent text-neutral-900 hover:text-neutral-100 text-sm border border-white rounded-lg" onClick={(e: any) => e.stopPropagation()}>
                                     Edit Profile
                                 </Link>
                                 :
-                                <div role="button" className={`h-9  duration-100 ${data.isFollowing ? "w-28" : "w-24"}`}>
+                                <div role="button" className={`h-9  duration-100 ${data.isFollowing ? "w-23 sm:w-28" : "w-18 sm:w-24"}`}>
                                     <FollowingButton isFollowing={data.isFollowing} targetUserId={data.id} targetUsername={data.username} followListUserId={followListUserId} />
                                 </div>
                         }

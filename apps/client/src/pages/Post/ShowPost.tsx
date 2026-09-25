@@ -68,7 +68,7 @@ const ShowPost = () => {
                 <PostDetailSkeletonLoading />
             }
             {
-                postQuery.data == null &&
+                (postQuery.data == null && !postQuery.isPending) &&
                 <NotFound />
             }
             {

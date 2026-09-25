@@ -3,6 +3,7 @@ import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, REPORT_STATUS } from "@odi
 import { toHumanReadableDate } from "../../utils/dateFormater.util";
 import ModalPostCard from "./PostCard";
 import { useReportModal } from "../../providers/ReportModalProvider";
+import ModalContainer from "./ModalContainer";
 
 const ReportModal = () => {
     const reportModal = useReportModal();
@@ -12,8 +13,8 @@ const ReportModal = () => {
 
     if (notificationData.data.status == REPORT_STATUS.RESOLVED) {
         return (
-            <section className="w-full h-full fixed top-0 left-0 z-26 flex items-center justify-center">
-                <div className="bg-[#101010] w-[550px] rounded-2xl p-16 relative z-27">
+            <ModalContainer closeModalHandler={reportModal.close} width="fit">
+                <div className="w-[550px] p-16">
                     <button className="w-10 h-10 rounded-full bg-transparent hover:bg-neutral-800/80 duration-100 cursor-pointer grid place-content-center absolute top-4 left-4" onClick={() => reportModal.close()}>
                         <X className="w-5" />
                     </button>
@@ -53,8 +54,7 @@ const ReportModal = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26" onClick={() => reportModal.close()}></div>
-            </section>
+            </ModalContainer>
         )
     }
 }

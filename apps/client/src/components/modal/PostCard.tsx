@@ -21,7 +21,7 @@ const ModalPostCard = ({ data }: Props) => {
                                 <h1 className="font-semibold text-neutral-300">
                                     {data.author?.name}
                                 </h1>
-                                <h2 className="text-neutral-500">
+                                <h2 className="hidden sm:inline-block text-neutral-500">
                                     @{ data.author?.username }
                                 </h2>
                             </div>

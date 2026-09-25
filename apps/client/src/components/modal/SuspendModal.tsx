@@ -3,6 +3,7 @@ import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@odiano/shared";
 import { toHumanReadableDate } from "../../utils/dateFormater.util";
 import ModalPostCard from "./PostCard";
 import { useSuspendModal } from "../../providers/SuspendModalProvider";
+import ModalContainer from "./ModalContainer";
 
 const SuspendModal = () => {
     const suspendModal = useSuspendModal();
@@ -12,8 +13,8 @@ const SuspendModal = () => {
 
     if (notificationData.data.target.type === NOTIFICATION_TARGET_TYPE.POST) {
         return (
-            <section className="w-full h-full fixed top-0 left-0 z-26 flex items-center justify-center">
-                <div className="bg-[#101010] w-[550px] rounded-2xl p-16 relative z-27">
+            <ModalContainer closeModalHandler={suspendModal.close} width="fit">
+                <div className="sm:w-[550px] relative p-14 md:p-16">
                     <button className="w-10 h-10 rounded-full bg-transparent hover:bg-neutral-800/80 duration-100 cursor-pointer grid place-content-center absolute top-4 left-4" onClick={() => suspendModal.close()}>
                         <X className="w-5" />
                     </button>
@@ -52,8 +53,7 @@ const SuspendModal = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full h-full fixed bg-black/50 top-0 left-0 z-26" onClick={() => suspendModal.close()}></div>
-            </section>
+            </ModalContainer>
         )
     }
 }

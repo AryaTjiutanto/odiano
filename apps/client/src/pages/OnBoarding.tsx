@@ -179,7 +179,7 @@ const OnBoarding = () => {
                                                 <img src={URL.createObjectURL(fileUpload.fileData[0].blob?.edited)} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                 :
                                                 watch("profileImageUrl")  ?
-                                                    <img src={watch("profileImageUrl")} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
+                                                    <img src={watch("profileImageUrl") || undefined} className="w-full aspect-square rounded-full object-cover absolute z-1"></img>
                                                     :
                                                     <User className="size-20 text-neutral-700" />
                                         }

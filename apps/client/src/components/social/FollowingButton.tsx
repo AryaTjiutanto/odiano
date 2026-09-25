@@ -21,12 +21,7 @@ type Props = {
     followListUserId?: string | undefined,
 }
 
-// ============================================================================
-// note : dont pass the targetUserId and targetUsername to the function
-
 const FollowingButton = ({ isFollowing, targetUserId, targetUsername, followListUserId }: Props) => {
-    if (!targetUserId || !targetUsername) return null;
-
     const setQueryDataHandler = useSetQueryDataHandler();
     const navigate = useNavigate();
     const currentUserData = useAppSelector(state => state.auth.user);
@@ -34,6 +29,8 @@ const FollowingButton = ({ isFollowing, targetUserId, targetUsername, followList
     const queryClient = useQueryClient();
 
     const followingHandler = () => {
+        if (!targetUserId || !targetUsername) return null;
+
         // suggestion
         setQueryDataHandler<UserSummaryDTO[]>(userKeys.exploreSuggestions, (oldData) => markUserAsFollowedInList(oldData, targetUserId));
         setQueryDataHandler<UserSummaryDTO[]>(userKeys.sidebarSuggestions, (oldData) => markUserAsFollowedInList(oldData, targetUserId));

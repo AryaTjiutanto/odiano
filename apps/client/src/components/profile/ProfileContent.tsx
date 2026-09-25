@@ -143,25 +143,30 @@ const ProfileContent = ({ queryData, targetUsername }: Props) => {
                 </div>
 
                 {/* action button - mobile */}
-                <div className="mt-8">
-                    {
-                        (isAuthenticated && targetUsername == currentUserData?.username) &&
-                        <Link to={`/profile/edit`}>
-                            <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
-                                Edit profile
-                            </button>
-                        </Link>
-                    }
-                    {
-                        (!isAuthenticated || targetUsername != currentUserData?.username) &&
-                        <>
-                            <div role="button" className={`duration-100 h-11 ${queryData?.isFollowing ? "w-32" : "w-24"}`}>
-                                <FollowingButton isFollowing={queryData?.isFollowing} targetUserId={queryData?.id} targetUsername={queryData?.username} />
-                            </div>
-                        </>
+                {
+                    isAuthenticated &&
+                    <>
+                        <div className="mt-8">
+                            {
+                                (isAuthenticated && targetUsername == currentUserData?.username) &&
+                                <Link to={`/profile/edit`}>
+                                    <button className="w-32 h-11 bg-white border border-white rounded-lg text-neutral-900 hover:text-neutral-100 hover:bg-transparent cursor-pointer duration-100">
+                                        Edit profile
+                                    </button>
+                                </Link>
+                            }
+                            {
+                                (!isAuthenticated || targetUsername != currentUserData?.username) &&
+                                <>
+                                    <div role="button" className={`duration-100 h-11 ${queryData?.isFollowing ? "w-32" : "w-24"}`}>
+                                        <FollowingButton isFollowing={queryData?.isFollowing} targetUserId={queryData?.id} targetUsername={queryData?.username} />
+                                    </div>
+                                </>
 
-                    }
-                </div>
+                            }
+                        </div>
+                    </>
+                }
 
                 {/* posts */}
                 <div className="w-full border-b border-neutral-800 mt-7">

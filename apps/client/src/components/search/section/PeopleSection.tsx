@@ -39,7 +39,7 @@ const PeopleSection = ({ searchQuery }: Props) => {
     }
 
     return (
-        usersQuery.data?.map((user, i) => <UserSummary key={`user-search-result-${i}`} data={user}/>)
+        usersQuery.data?.map((user, i) => <UserSummary key={`user-search-result-${i}`} data={user} usernameLocation="bottom"/>)
     )
 }
 

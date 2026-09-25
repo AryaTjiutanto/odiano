@@ -463,6 +463,7 @@ export const searchUsers = async (query: string, limit: number = 5): Promise<Use
                 name: 1,
                 username: 1,
                 profileImage: 1,
+                bio: 1,
             }
         },
     ]);
