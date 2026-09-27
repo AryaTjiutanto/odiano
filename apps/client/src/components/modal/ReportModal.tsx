@@ -13,8 +13,8 @@ const ReportModal = () => {
 
     if (notificationData.data.status == REPORT_STATUS.RESOLVED) {
         return (
-            <ModalContainer closeModalHandler={reportModal.close} width="fit">
-                <div className="w-[550px] p-16">
+            <ModalContainer closeModalHandler={reportModal.close}>
+                <div className="sm:w-[550px] p-16">
                     <button className="w-10 h-10 rounded-full bg-transparent hover:bg-neutral-800/80 duration-100 cursor-pointer grid place-content-center absolute top-4 left-4" onClick={() => reportModal.close()}>
                         <X className="w-5" />
                     </button>

@@ -1,49 +1,23 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Signup from './pages/Auth/Signup.tsx'
-import Signin from './pages/Auth/Signin.tsx'
-import AuthLayout from './layouts/AuthLayout.tsx'
-import OnBoarding from './pages/OnBoarding.tsx'
+import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
-import Homepage from './pages/Social/Home.tsx'
-import AppLayout from './layouts/AppLayout.tsx'
-import SocialLayout from './layouts/SocialLayout.tsx'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createIDBPersister } from './libs/persister.ts'
-import ShowPost from './pages/Post/ShowPost.tsx'
 import NavigationTracker from './components/common/NavigationTracker.tsx'
-import PageLoader from './components/loader/PageLoader.tsx'
-import Profile from './pages/Social/Profile.tsx'
 import SocketProvider from './providers/SocketProvider.tsx'
 import { queryClient } from './libs/react-query/queryClient.ts'
-import EditProfile from './pages/Social/EditProfile.tsx'
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import EmailVerification from './pages/Auth/EmailVerification.tsx'
-import SocialWrapper from './layouts/SocialWrapper.tsx'
 import ScrollToTop from './router/ScrollToTop.tsx'
 import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
 import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
-import Explore from './pages/Social/Explore.tsx'
-import Search from './pages/Social/Search.tsx'
-import ExploreLayout from './layouts/ExploreLayout.tsx'
-import SearchWrapper from './layouts/SearchWrapper.tsx'
-import Notification from './pages/Social/Notification.tsx'
-import HomeAdminDashboard from './pages/admin/Dashboard/Home.tsx'
-import DashboardLayout from './layouts/DashboardLayout.tsx'
-import RequireAuthGuard from './guard/RequireAuthGuard.tsx'
-import RequireGuestGuard from './guard/RequireGuestGuard.tsx'
-import RequireUnVerify from './guard/RequireUnVerify.tsx'
-import RequireUnOnboarded from './guard/RequireUnOnboarded.tsx'
-import RequireRoleGuard from './guard/RequireRoleGuard.tsx'
-import { ROLES } from '@odiano/shared'
-import NotificationModalWrapper from './layouts/NotificationModalWrapper.tsx'
-import ProfileWrapper from './layouts/ProfileWrapper.tsx'
-import NotFoundPage from './pages/Error/NotFound.tsx'
+import AppRoutes from './routes/AppRoutes.tsx'
 const IDBPersister = createIDBPersister();
+
+
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -65,73 +39,9 @@ createRoot(document.getElementById('root')!).render(
                 <BrowserRouter>
                   <GoogleOneTap />
                   <ScrollToTop />
-                  <NavigationTracker />
-                  <Routes>
-                    <Route element={<AppLayout />}>
-                      <Route element={<PageLoader />}>
-                        {/* social */}
-                        <Route element={<SocialWrapper />}>
-                          <Route element={<SocialLayout />}>
-                            <Route element={<SearchWrapper />}>
-                              <Route element={<ExploreLayout />}>
-                                <Route path='/explore' element={<Explore />} />
-                                <Route path='/search' element={<Search />} />
-                              </Route>
-
-                              <Route path='/' element={<Homepage />} />
-                            </Route>
-
-                            {/* post */}
-                            <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
-
-                            {/* profile */}
-                            <Route element={<ProfileWrapper />}>
-                              <Route path='/profile/:username' element={<Profile />} />
-                            </Route>
-
-                            {/* require auth */}
-                            <Route element={<RequireAuthGuard />}>
-                              <Route element={<NotificationModalWrapper />}>
-                                <Route path='/notification' element={<Notification />} />
-                              </Route>
-
-                              <Route path='/profile/edit' element={<EditProfile />} />
-                            </Route>
-                          </Route>
-                        </Route>
-
-                        {/* auth process */}
-                        <Route element={<RequireGuestGuard />}>
-                          <Route element={<AuthLayout />}>
-                            <Route path='/signin' element={<Signin />} />
-                            <Route path='/signup' element={<Signup />} />
-                          </Route>
-                        </Route>
-
-                        {/* email verification */}
-                        <Route element={<RequireUnVerify />}>
-                          <Route path='/email/verify' element={<EmailVerification />} />
-                        </Route>
-
-                        {/* onboarding */}
-                        <Route element={<RequireUnOnboarded />}>
-                          <Route path='/onboarding' element={<OnBoarding />} />
-                        </Route>
-
-                        {/* admin dashboard */}
-                        <Route element={<RequireAuthGuard />}>
-                          <Route element={<RequireRoleGuard role={ROLES.ADMIN} />}>
-                            <Route element={<DashboardLayout />}>
-                              <Route path='/admin/dashboard' element={<HomeAdminDashboard />} />
-                            </Route>
-                          </Route>
-                        </Route>
-
-                        {/* not fond */}
-                        <Route path='*' element={<NotFoundPage />} />
-                      </Route>
-                    </Route>
-                  </Routes>
+                  {/* <NavigationTracker /> */}
+                 
+                  <AppRoutes/>
                 </BrowserRouter>
               </ImageEditorProvider>
             </ConfirmationModalProvider>

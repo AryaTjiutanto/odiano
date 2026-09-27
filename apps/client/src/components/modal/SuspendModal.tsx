@@ -13,7 +13,7 @@ const SuspendModal = () => {
 
     if (notificationData.data.target.type === NOTIFICATION_TARGET_TYPE.POST) {
         return (
-            <ModalContainer closeModalHandler={suspendModal.close} width="fit">
+            <ModalContainer closeModalHandler={suspendModal.close}>
                 <div className="sm:w-[550px] relative p-14 md:p-16">
                     <button className="w-10 h-10 rounded-full bg-transparent hover:bg-neutral-800/80 duration-100 cursor-pointer grid place-content-center absolute top-4 left-4" onClick={() => suspendModal.close()}>
                         <X className="w-5" />

@@ -10,7 +10,6 @@ const useGoBack = () => {
     const routes = useAppSelector((state) => state.navigationHistory.routeHistory);
 
     const isNavigating = useRef(false);
-
     
     return () => {
         if(isNavigating.current) return;

@@ -3,6 +3,7 @@ import { ChevronRight, X } from "lucide-react";
 import { useState } from "react";
 import { useReportForm } from "../../providers/ReportFormProvider";
 import DotsLoader from "../loader/DotsLoader";
+import ModalContainer from "./ModalContainer";
 
 type ReportReason = {
     code: ReportReasonCode,
@@ -26,8 +27,8 @@ const ReportFormModal = () => {
     }
 
     return (
-        <section className="w-full h-full fixed top-0 left-0 z-25 flex items-center justify-center">
-            <form className="w-[550px] rounded-2xl bg-neutral-950 overflow-hidden z-26">
+        <ModalContainer closeModalHandler={reportForm.close}>
+            <form className="sm:w-[550px]">
                 <div className="w-full">
                     {/* header */}
                     <div className="px-6">
@@ -158,9 +159,7 @@ const ReportFormModal = () => {
                     }
                 </div>
             </form>
-
-            <div className="w-full h-full absolute top-0 left-0 z-25 bg-black/50" onClick={reportForm.close}></div>
-        </section>
+        </ModalContainer>
     )
 }
 
