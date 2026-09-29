@@ -17,13 +17,13 @@ const useGoBack = () => {
         
         const prevRoute = String(routes.at(-2));
         
-        if (prevRoute == location.pathname) {
+        if (prevRoute == location.pathname || !prevRoute) {
             navigate("/");
             return
         }
         
         dispatch(removeRouteFromBack(2));
-        navigate(prevRoute);
+        navigate(-1);
     }
 }
 

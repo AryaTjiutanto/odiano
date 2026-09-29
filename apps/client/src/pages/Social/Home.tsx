@@ -18,6 +18,7 @@ const Homepage = () => {
         staleTime: 10 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
+        refetchOnMount : false,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
             return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         }
