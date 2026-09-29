@@ -17,8 +17,6 @@ import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
 import AppRoutes from './routes/AppRoutes.tsx'
 const IDBPersister = createIDBPersister();
 
-
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
@@ -39,9 +37,8 @@ createRoot(document.getElementById('root')!).render(
                 <BrowserRouter>
                   <GoogleOneTap />
                   <ScrollToTop />
-                  {/* <NavigationTracker /> */}
-                 
-                  <AppRoutes/>
+                  <NavigationTracker />
+                  <AppRoutes />
                 </BrowserRouter>
               </ImageEditorProvider>
             </ConfirmationModalProvider>

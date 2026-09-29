@@ -20,15 +20,7 @@ const Post = ({ data, author }: Props) => {
     const dataAuthor = data.author ?? author;
 
     return (
-        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`, {
-            state : {
-                backgroundLocation : {
-                    pathName : location.pathname,
-                    search : location.search,
-                    hash : location.hash,
-                },
-            }
-        })} className="inline-block w-full pb-6 sm:pb-7 first:pt-2 py-6 sm:py-7 lg:py-10 sm:first:pt-4 sm:rounded-lg cursor-pointer border-b last:border-0 border-neutral-900 relative">
+        <article onClick={() => navigate(`/${dataAuthor?.username}/post/${data.publicId}`)} className="inline-block w-full pb-6 sm:pb-7 first:pt-2 py-6 sm:py-7 lg:py-10 sm:first:pt-4 sm:rounded-lg cursor-pointer border-b last:border-0 border-neutral-900 relative">
             <div className="flex items-center justify-between">
                 <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
                     <div className="flex items-center space-x-3">

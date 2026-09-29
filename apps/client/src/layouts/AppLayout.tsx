@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { lazy, Suspense, useEffect } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";

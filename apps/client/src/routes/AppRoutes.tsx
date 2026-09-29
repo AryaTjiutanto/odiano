@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 import PageLoader from "../components/loader/PageLoader";
 import SocialWrapper from "../layouts/SocialWrapper";
@@ -28,15 +28,11 @@ import { ROLES } from "@odiano/shared";
 import DashboardLayout from "../layouts/DashboardLayout";
 import HomeAdminDashboard from "../pages/admin/Dashboard/Home";
 import NotFoundPage from "../pages/error/NotFoundPage";
-import ModalRoutes from "./ModalRoutes";
 
 const AppRoutes = () => {
-    const location = useLocation();
-    const backgroundLocation = location.state?.backgroundLocation;
-
     return (
         <>
-            <Routes location={backgroundLocation || location}>
+            <Routes>
                 <Route element={<AppLayout />}>
                     <Route element={<PageLoader />}>
                         {/* social */}
@@ -103,11 +99,6 @@ const AppRoutes = () => {
                     </Route>
                 </Route>
             </Routes>
-
-            {
-                backgroundLocation &&
-                <ModalRoutes />
-            }
         </>
     )
 }

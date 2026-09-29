@@ -60,8 +60,6 @@ export const getPosts = async (cursor: string | undefined | null): Promise<Infin
     if (!response.data.data) {
         throw new Error("No post available");
     }
-    
-    console.log(response.data.data);
 
     return response.data.data;
 }
