@@ -44,3 +44,8 @@ export type UserProfileDTO = {
     totalPosts : number,
     isFollowing? : boolean,
 }
+
+export type UserMutualsDTO = {
+    totalMutuals : number,
+    userPreview : UserSummaryDTO[],
+}
