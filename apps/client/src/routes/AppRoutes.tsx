@@ -1,19 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 import PageLoader from "../components/loader/PageLoader";
-import SocialWrapper from "../layouts/SocialWrapper";
-import SocialLayout from "../layouts/SocialLayout";
-import SearchWrapper from "../layouts/SearchWrapper";
-import ExploreLayout from "../layouts/ExploreLayout";
-import Explore from "../pages/Social/Explore";
-import Homepage from "../pages/Social/Home";
-import ShowPost from "../pages/Post/ShowPost";
-import ProfileWrapper from "../layouts/ProfileWrapper";
 import RequireAuthGuard from "../guard/RequireAuthGuard";
-import NotificationModalWrapper from "../layouts/NotificationModalWrapper";
-import Profile from "../pages/Social/Profile";
-import Notification from "../pages/Social/Notification";
-import EditProfile from "../pages/Social/EditProfile";
 import RequireGuestGuard from "../guard/RequireGuestGuard";
 import AuthLayout from "../layouts/AuthLayout";
 import Signin from "../pages/Auth/Signin";
@@ -27,7 +15,7 @@ import { ROLES } from "@odiano/shared";
 import DashboardLayout from "../layouts/DashboardLayout";
 import HomeAdminDashboard from "../pages/admin/Dashboard/Home";
 import NotFoundPage from "../pages/error/NotFoundPage";
-import Search from "../pages/Social/Search";
+import StackViewport from "../components/stack/StackViewport";
 
 const AppRoutes = () => {
     return (
@@ -35,37 +23,6 @@ const AppRoutes = () => {
             <Routes>
                 <Route element={<AppLayout />}>
                     <Route element={<PageLoader />}>
-                        {/* social */}
-                        <Route element={<SocialWrapper />}>
-                            <Route element={<SocialLayout />}>
-                                <Route element={<SearchWrapper />}>
-                                    <Route element={<ExploreLayout />}>
-                                        <Route path='/explore' element={<Explore />} />
-                                        <Route path='/search' element={<Search />} />
-                                    </Route>
-
-                                    <Route path='/' element={<Homepage />} />
-                                </Route>
-
-                                {/* post */}
-                                <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
-
-                                {/* profile */}
-                                <Route element={<ProfileWrapper />}>
-                                    <Route path='/profile/:username' element={<Profile />} />
-                                </Route>
-
-                                {/* require auth */}
-                                <Route element={<RequireAuthGuard />}>
-                                    <Route element={<NotificationModalWrapper />}>
-                                        <Route path='/notification' element={<Notification />} />
-                                    </Route>
-
-                                    <Route path='/profile/edit' element={<EditProfile />} />
-                                </Route>
-                            </Route>
-                        </Route>
-
                         {/* auth process */}
                         <Route element={<RequireGuestGuard />}>
                             <Route element={<AuthLayout />}>
@@ -99,6 +56,9 @@ const AppRoutes = () => {
                     </Route>
                 </Route>
             </Routes>
+
+            {/* stack */}
+            <StackViewport />
         </>
     )
 }

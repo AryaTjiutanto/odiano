@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createIDBPersister } from './libs/persister.ts'
-import NavigationTracker from './components/common/NavigationTracker.tsx'
 import SocketProvider from './providers/SocketProvider.tsx'
 import { queryClient } from './libs/react-query/queryClient.ts'
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -37,7 +36,6 @@ createRoot(document.getElementById('root')!).render(
                 <BrowserRouter>
                   <GoogleOneTap />
                   <ScrollToTop />
-                  <NavigationTracker />
                   <AppRoutes />
                 </BrowserRouter>
               </ImageEditorProvider>
