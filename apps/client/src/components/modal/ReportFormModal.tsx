@@ -28,7 +28,7 @@ const ReportFormModal = () => {
 
     return (
         <ModalContainer closeModalHandler={reportForm.close}>
-            <form className="sm:w-[550px]">
+            <form className="sm:w-[500px] xl:w-[550px]">
                 <div className="w-full">
                     {/* header */}
                     <div className="px-6">
@@ -63,7 +63,7 @@ const ReportFormModal = () => {
                                 {
                                     reportForm.targetType && REPORT_REASONS[reportForm.targetType].map((reason) => {
                                         return (
-                                            <button key={`reason-${reason.code}`} className="flex items-center w-full justify-between py-3 text-neutral-400 cursor-pointer hover:text-neutral-300 group" onClick={() => selectReason(reason)}>
+                                            <button key={`reason-${reason.code}`} className="flex items-center w-full justify-between py-3 text-neutral-400 cursor-pointer hover:text-neutral-300 group text-left" onClick={() => selectReason(reason)}>
                                                 <span>
                                                     {reason.description}
                                                 </span>

@@ -4,6 +4,8 @@ import Cropper from "react-easy-crop";
 import DotsLoader from "../loader/DotsLoader";
 import { MEDIA_ASPECT_RATIO, type MediaAspectRatio } from "@odiano/shared";
 import type { FileEditData, FileEditResult, ImageEditorOptions } from "../../types/file.type";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode } from "swiper/modules";
 
 type Payload = {
     handleComplete: (result: FileEditResult) => void,
@@ -111,48 +113,49 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                     </div>
                 </div>
 
-                {/* aspect ratio */}
-                {
-                    options.allowAspectRatioChange &&
-                    <div className="flex flex-col text-neutral-50">
-                        <h1 className="font-bold">
-                            Aspect ratio
-                        </h1>
+                <div className="hidden md:inline-block">
+                    {/* aspect ratio */}
+                    {options.allowAspectRatioChange && (
+                        <div className="flex flex-col text-neutral-50">
+                            <h1 className="font-bold">
+                                Aspect ratio
+                            </h1>
 
-                        <div className="h-16 lg:h-fit flex flex-row md:flex-col items-stretch gap-4 mt-5">
-                            {Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => (
-                                <button
-                                    key={key}
-                                    type="button"
-                                    onClick={() => setSelectedAspectRatio(value)}
-                                    className="h-full md:h-fit w-fit cursor-pointer group"
-                                >
-                                    <div
-                                        className={`
-                        h-full w-fit md:w-16 2xl:w-20
-                        ${key === "original" ? "p-3" : ""}
-                        border grid place-content-center rounded
-                        duration-100
-                        ${value === selectedAspectRatio
-                                                ? "border-2 border-sky-500 text-sky-500"
-                                                : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"
-                                            }
-                    `}
-                                        style={{
-                                            ...(key !== "original" && {
-                                                aspectRatio: value,
-                                            }),
-                                        }}
+                            <div className="hidden md:flex flex-row md:flex-col items-stretch gap-4 mt-5">
+                                {Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => (
+                                    <button
+                                        key={key}
+                                        type="button"
+                                        onClick={() => setSelectedAspectRatio(value)}
+                                        className="h-fit w-fit cursor-pointer group"
                                     >
-                                        <span className="text-sm">
-                                            {key}
-                                        </span>
-                                    </div>
-                                </button>
-                            ))}
+                                        <div
+                                            className={`
+                            h-fit w-16 2xl:w-20
+                            ${key === "original" ? "p-3" : ""}
+                            border grid place-content-center rounded
+                            duration-100
+                            ${value === selectedAspectRatio
+                                                    ? "border-2 border-sky-500 text-sky-500"
+                                                    : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"
+                                                }
+                        `}
+                                            style={{
+                                                ...(key !== "original" && {
+                                                    aspectRatio: value,
+                                                }),
+                                            }}
+                                        >
+                                            <span className="text-sm">
+                                                {key}
+                                            </span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                }
+                    )}
+                </div>
             </div>
 
             {/* cropper */}

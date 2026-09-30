@@ -272,7 +272,7 @@ const PostFormModal = () => {
                                                         <div className="absolute top-1 right-1 flex items-center space-x-1">
                                                             {
                                                                 file.type == "image" &&
-                                                                <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer" onClick={() => handleEditImage(file.blob?.original, file.editData, index)}>
+                                                                <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 hidden md:grid place-content-center cursor-pointer" onClick={() => handleEditImage(file.blob?.original, file.editData, index)}>
                                                                     <Crop size={18} />
                                                                 </button>
                                                             }
@@ -342,7 +342,7 @@ const PostFormModal = () => {
                     </div> */}
 
                         <div className="w-full mt-10 flex flex-col sm:flex-row items-center text-base sm:text-sm gap-3">
-                            <button className={`w-full sm:w-fit px-11 h-14 sm:h-11 border border-white bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-transparent hover:text-neutral-100"} duration-100 cursor-pointer rounded`} disabled={isSubmitting}>
+                            <button className={`w-full sm:w-fit px-11 h-14 sm:h-11 border border-white bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-transparent hover:text-neutral-100"} duration-100 cursor-pointer rounded grid place-content-center`} disabled={isSubmitting}>
                                 {isSubmitting ? <DotsLoader /> : "Post"}
                             </button>
                             {
@@ -355,7 +355,7 @@ const PostFormModal = () => {
                     </form>
 
                     {/* sucess */}
-                    <div className={`w-full h-full sm:h-120 flex flex-col items-center justify-center px-8 sm:px-6 ${!isCreated && "hidden"}`}>
+                    <div className={`w-full h-full py-10 sm:h-120 flex flex-col items-center justify-center px-8 sm:px-6 ${!isCreated && "hidden"}`}>
                         <div className="flex justify-center">
                             <div className="bg-neutral-50 p-[2px] rounded-full">
                                 <div className="flex items-center justify-center w-20 h-20 rounded-full  bg-neutral-950 text-neutral-50">

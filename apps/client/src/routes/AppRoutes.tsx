@@ -6,7 +6,6 @@ import SocialLayout from "../layouts/SocialLayout";
 import SearchWrapper from "../layouts/SearchWrapper";
 import ExploreLayout from "../layouts/ExploreLayout";
 import Explore from "../pages/Social/Explore";
-import { Search } from "lucide-react";
 import Homepage from "../pages/Social/Home";
 import ShowPost from "../pages/Post/ShowPost";
 import ProfileWrapper from "../layouts/ProfileWrapper";
@@ -28,6 +27,7 @@ import { ROLES } from "@odiano/shared";
 import DashboardLayout from "../layouts/DashboardLayout";
 import HomeAdminDashboard from "../pages/admin/Dashboard/Home";
 import NotFoundPage from "../pages/error/NotFoundPage";
+import Search from "../pages/Social/Search";
 
 const AppRoutes = () => {
     return (

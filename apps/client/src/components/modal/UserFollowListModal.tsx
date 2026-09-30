@@ -91,7 +91,7 @@ const UserFollowListModal = () => {
 
     return (
         <ModalContainer closeModalHandler={closeModal}>
-            <div className="md:w-[500px]">
+            <div className="md:w-[480px] xl:w-[500px]">
                 {/* head */}
                 <div className="w-full h-14 flex items-center justify-center border-neutral-700 border-b text-center relative">
                     <h1 className="text-lg font-semibold">

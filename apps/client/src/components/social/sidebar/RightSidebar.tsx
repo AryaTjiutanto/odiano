@@ -13,7 +13,7 @@ const RightSidebar = () => {
 
     if (!isAuthenticated) {
         return (
-            <div>
+            <div className="">
                 <h1 className="text-lg font-bold">
                     Welcome to Odiano
                 </h1>
