@@ -1,6 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import SocialWrapper from "../layouts/SocialWrapper";
-import SocialLayout from "../layouts/SocialLayout";
 import SearchWrapper from "../layouts/SearchWrapper";
 import ExploreLayout from "../layouts/ExploreLayout";
 import Explore from "../pages/Social/Explore";
@@ -13,18 +11,23 @@ import NotificationModalWrapper from "../layouts/NotificationModalWrapper";
 import Notification from "../pages/Social/Notification";
 import EditProfile from "../pages/Social/EditProfile";
 import Search from "../pages/Social/Search";
-import AppLayout from "../layouts/AppLayout";
-import PageLoader from "../components/loader/PageLoader";
+import { useStackProvider } from "../providers/StackProvider";
+import NotFoundPage from "../pages/error/NotFoundPage";
+import StackWrapper from "../layouts/StackWrapper";
 
 const StackRoutes = () => {
+    const { stack } = useStackProvider();
+
     return (
         <>
-            <Routes>
-                <Route element={<AppLayout />}>
-                    <Route element={<PageLoader />}>
-                        {/* social */}
-                        <Route element={<SocialWrapper />}>
-                            <Route element={<SocialLayout />}>
+            {
+                stack.map((item, index) => {
+                    const isTop = index == stack.length - 1;
+
+                    return (
+                        <Routes location={item.location}>
+                            <Route element={<StackWrapper isTop={isTop} />}>
+                                {/* social */}
                                 <Route element={<SearchWrapper />}>
                                     <Route element={<ExploreLayout />}>
                                         <Route path='/explore' element={<Explore />} />
@@ -50,11 +53,13 @@ const StackRoutes = () => {
 
                                     <Route path='/profile/edit' element={<EditProfile />} />
                                 </Route>
+
+                                <Route path='*' element={<NotFoundPage />} />
                             </Route>
-                        </Route>
-                    </Route>
-                </Route>
-            </Routes >
+                        </Routes >
+                    )
+                })
+            }
         </>
     )
 }

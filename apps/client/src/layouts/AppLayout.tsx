@@ -1,6 +1,5 @@
-import { Outlet, ScrollRestoration } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Toaster } from "react-hot-toast";
 import ConfirmationModal from "../components/modal/ConfirmationModal";
@@ -9,10 +8,11 @@ import { useImageEditor } from "../providers/ImageEditorProvider";
 import { getRules } from "@odiano/shared";
 import { AbilityProvider } from '@casl/react';
 import { createAppAbility } from "../helpers/ability.helper";
+import PageLoader from "../components/loader/PageLoader";
 
 const ImageEditor = lazy(() => import("../components/editor/ImageEditor"));
 
-const AppLayout = () => {
+const AppLayout = ({ children }: { children: ReactNode }) => {
     const confirmationModal = useConfirmationModal();
     const imageEditor = useImageEditor();
     const dispatch = useAppDispatch();
@@ -22,7 +22,7 @@ const AppLayout = () => {
         dispatch(intitializeAuth());
     }, [dispatch])
 
-    let ability = createAppAbility(currentUser ? getRules(currentUser.id, currentUser.role) ?? [] : []);
+    const ability = createAppAbility(currentUser ? getRules(currentUser.id, currentUser.role) ?? [] : []);
 
     return (
         <>
@@ -48,7 +48,9 @@ const AppLayout = () => {
                     }
 
                     {/* content */}
-                    <Outlet />
+                    <PageLoader>
+                        {children}
+                    </PageLoader>
                 </div>
             </AbilityProvider>
         </>

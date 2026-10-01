@@ -14,6 +14,8 @@ import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
 import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
 import AppRoutes from './routes/AppRoutes.tsx'
+import AppLayout from './layouts/AppLayout.tsx'
+import { StackProvider } from './providers/StackProvider.tsx'
 const IDBPersister = createIDBPersister();
 
 createRoot(document.getElementById('root')!).render(
@@ -36,7 +38,11 @@ createRoot(document.getElementById('root')!).render(
                 <BrowserRouter>
                   <GoogleOneTap />
                   <ScrollToTop />
-                  <AppRoutes />
+                  <AppLayout>
+                    <StackProvider>
+                      <AppRoutes />
+                    </StackProvider>
+                  </AppLayout>
                 </BrowserRouter>
               </ImageEditorProvider>
             </ConfirmationModalProvider>

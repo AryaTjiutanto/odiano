@@ -10,7 +10,9 @@ const NotFoundPage = () => {
                 content="odiano with friends, share posts, and explore communities."
             />
 
-            <NotFound/>
+            <div className="fixed top-0 left-0 w-screen h-screen z-100 bg-black">
+                <NotFound/>
+            </div>
         </>
     )
 }

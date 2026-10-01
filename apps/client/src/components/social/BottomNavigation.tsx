@@ -2,6 +2,7 @@ import { Home, Search, User } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 import { useAppSelector } from "../../hooks/useRedux"
 import Profile from "../profile/Profile";
+import StackLink from "../stack/StackLink";
 
 export const BottomNavigation = () => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -17,22 +18,28 @@ export const BottomNavigation = () => {
 
     return (
         <nav className="h-16 w-full bg-black sm:hidden grid grid-cols-3 z-25 fixed bottom-0 left-0 border-t border-neutral-800">
-            <Link to={"/"} className={`grid place-content-center w-full h-full group duration-100 ${location.pathname == "/" ? "text-white" : "text-neutral-400"}`}>
-                <Home />
-            </Link>
-            <Link to={"/explore"} className="grid place-content-center w-full h-full text-neutral-400">
-                <Search />
-            </Link>
-            <Link to={`/profile/${userData?.username}`} className={`grid place-content-center w-full h-full duration-100 ${location.pathname.includes("profile") ? "text-white" : "text-neutral-400"}`}>
-                {
-                    isInitialized ?
-                        <div className="w-8">
-                            <Profile data={userData?.profileImage}/>
-                        </div>
-                    :
-                        <User />
-                }
-            </Link>
+            <StackLink to={"/"}>
+                <button className={`grid place-content-center w-full h-full group duration-100 ${location.pathname == "/" ? "text-white" : "text-neutral-400"}`}>
+                    <Home />
+                </button>
+            </StackLink>
+            <StackLink to={"/explore"}>
+                <button className="grid place-content-center w-full h-full text-neutral-400">
+                    <Search />
+                </button>
+            </StackLink>
+            <StackLink to={`/profile/${userData?.username}`}>
+                <button className={`grid place-content-center w-full h-full duration-100 ${location.pathname.includes("profile") ? "text-white" : "text-neutral-400"}`}>
+                    {
+                        isInitialized ?
+                            <div className="w-8">
+                                <Profile data={userData?.profileImage} />
+                            </div>
+                            :
+                            <User />
+                    }
+                </button>
+            </StackLink>
         </nav>
     )
 }

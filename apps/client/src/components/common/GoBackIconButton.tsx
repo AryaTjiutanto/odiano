@@ -1,11 +1,11 @@
 import { ArrowLeft } from "lucide-react";
-import useGoBack from "../../hooks/useGoBack";
+import { useStackProvider } from "../../providers/StackProvider";
 
 const GoBackIconButton = () => {
-    const handleGoBack = useGoBack();
+    const {pop} = useStackProvider();
 
     return (
-        <button type="button" className="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-sky-500/20 hover:text-sky-500 rounded-full duration-100" onClick={handleGoBack}>
+        <button type="button" className="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-sky-500/20 hover:text-sky-500 rounded-full duration-100" onClick={pop}>
             <ArrowLeft />
         </button>
     )

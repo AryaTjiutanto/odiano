@@ -1,15 +1,18 @@
 import { Outlet } from "react-router-dom";
-import { PostFormProvider } from "../providers/PostFormProvider";
 import ReportFormProvider from "../providers/ReportFormProvider";
+import { PostFormProvider } from "../providers/PostFormProvider";
+import SocialLayout from "./SocialLayout";
 
 const SocialWrapper = () => {
     return (
         <ReportFormProvider>
             <PostFormProvider>
-                <Outlet />
+                <SocialLayout>
+                    <Outlet/>
+                </SocialLayout>
             </PostFormProvider>
         </ReportFormProvider>
     )
 }
 
-export default SocialWrapper
+export default SocialWrapper;

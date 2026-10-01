@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useGoBack from "../../hooks/useGoBack";
+import { useStackProvider } from "../../providers/StackProvider";
 
 type Props = {
     title: string;
@@ -16,7 +16,7 @@ const ErrorState = ({
     code,
     fontSize,
 }: Props) => {
-    const goBackHandler = useGoBack();
+    const {pop} = useStackProvider();
 
     return (
         <div className="flex flex-col items-center justify-center text-center">
@@ -47,7 +47,7 @@ const ErrorState = ({
                         </Link>
                         :
                         <button
-                            onClick={goBackHandler}
+                            onClick={pop}
                             className="cursor-pointer px-4 py-2 rounded-full bg-white border border-white hover:bg-transparent hover:text-white duration-100 text-black text-sm font-medium hover:opacity-90 transition"
                         >
                             Go back

@@ -2,6 +2,7 @@ import { Bell, Plus } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link, useLocation } from "react-router-dom";
 import { usePostForm } from "../../providers/PostFormProvider";
+import StackLink from "../stack/StackLink";
 
 const MobileHeader = () => {
     const currentUserData = useAppSelector((state) => state.auth.user);
@@ -43,7 +44,7 @@ const MobileHeader = () => {
 
                 {
                     (isInitialized && isAuthenticated) &&
-                    <Link to={"/notification"} className={`cursor-pointer `}>
+                    <StackLink to={"/notification"}>
                         <div className="relative">
                             <Bell className="size-7 xl:size-auto" />
 
@@ -57,7 +58,7 @@ const MobileHeader = () => {
                         <span className="hidden xl:inline-block">
                             Notifications
                         </span>
-                    </Link>
+                    </StackLink>
                 }
 
                 {

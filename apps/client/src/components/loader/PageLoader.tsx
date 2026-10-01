@@ -1,10 +1,9 @@
 import { Lock } from "lucide-react";
 import connectLogo from "../../assets/img/logo/odiano-full.webp";
-import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAppSelector } from "../../hooks/useRedux";
 
-const PageLoader = () => {
+const PageLoader = ({ children }: { children: ReactNode }) => {
     const { isAuthLoading, isInitialized } = useAppSelector(state => state.auth);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -19,9 +18,7 @@ const PageLoader = () => {
         const remaining = 700 - elapsed;
         const delay = remaining > 0 ? remaining : 0;
 
-        let timeout1: ReturnType<typeof setTimeout>;
-
-        timeout1 = setTimeout(() => {
+        const timeout1 = setTimeout(() => {
             setIsLoaderVisible(false);
 
             setTimeout(() => {
@@ -49,7 +46,9 @@ const PageLoader = () => {
         )
     }
 
-    return <Outlet />
+    return <>
+        {children}
+    </>
 }
 
 export default PageLoader;
