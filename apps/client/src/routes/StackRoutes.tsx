@@ -26,7 +26,7 @@ const StackRoutes = () => {
 
                     return (
                         <Routes location={item.location}>
-                            <Route element={<StackWrapper isTop={isTop} />}>
+                            <Route element={<StackWrapper isTop={isTop}/>}>
                                 {/* social */}
                                 <Route element={<SearchWrapper />}>
                                     <Route element={<ExploreLayout />}>

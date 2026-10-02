@@ -11,12 +11,14 @@ import { getNotifications, updateNotificationReadStatus } from "../../services/n
 import { markNotificationAsRead, markNotificationAsUnread } from "../../helpers/cache/notificationCache.helper";
 import type { InfiniteQueryNotificationDTO } from "../../types/notification.type";
 import { decrementUnreadCount } from "../../features/notification/notification.slice";
+import { useStackProvider } from "../../providers/StackProvider";
 
 const NotificationContainer = () => {
     const username = useAppSelector((state) => state.auth.user?.username);
     const isAuth = useAppSelector((state) => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
     const dispatch = useAppDispatch();
+    const { setCurrentStackScrollY } = useStackProvider();
 
     const navigate = useNavigate();
 
@@ -56,6 +58,8 @@ const NotificationContainer = () => {
     })
 
     const handleUpdateReadStatus = async (item: NotificationDTO) => {
+        setCurrentStackScrollY(window.scrollY);
+        
         if (item.data.type === NOTIFICATION_TYPE.FOLLOW) {
             navigate(`/profile/${item.actor?.username}`);
         } else if (item.data.type === NOTIFICATION_TYPE.LIKE) {

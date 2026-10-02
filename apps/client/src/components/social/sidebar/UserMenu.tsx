@@ -5,6 +5,7 @@ import Profile from "../../profile/Profile";
 import { EllipsisVertical, FilePenLine, MailWarning } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
+import { useStackProvider } from "../../../providers/StackProvider";
 
 const SidebarUserMenu = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const SidebarUserMenu = () => {
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const userData = useAppSelector((state) => state.auth.user);
     const dispatch = useAppDispatch();
+    const { resetStack } = useStackProvider();
 
     // profile link
     const profileLink = !isAuthenticated
@@ -42,6 +44,7 @@ const SidebarUserMenu = () => {
     // logout
     const logoutHandler = async () => {
         await dispatch(logout());
+        resetStack();
         navigate("/signin");
     }
 

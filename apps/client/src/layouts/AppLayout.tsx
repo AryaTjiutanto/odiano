@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, type ReactNode } from "react";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { Toaster } from "react-hot-toast";
 import ConfirmationModal from "../components/modal/ConfirmationModal";
@@ -9,6 +9,8 @@ import { getRules } from "@odiano/shared";
 import { AbilityProvider } from '@casl/react';
 import { createAppAbility } from "../helpers/ability.helper";
 import PageLoader from "../components/loader/PageLoader";
+import { useLocation } from "react-router-dom";
+import { useStackProvider } from "../providers/StackProvider";
 
 const ImageEditor = lazy(() => import("../components/editor/ImageEditor"));
 
@@ -17,12 +19,24 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
     const imageEditor = useImageEditor();
     const dispatch = useAppDispatch();
     const currentUser = useAppSelector(state => state.auth.user);
+    const location = useLocation();
+    const { stack } = useStackProvider();
 
     useEffect(() => {
         dispatch(intitializeAuth());
     }, [dispatch])
 
     const ability = createAppAbility(currentUser ? getRules(currentUser.id, currentUser.role) ?? [] : []);
+
+    // handle stack scroll y
+    useLayoutEffect(() => {
+        const currentStack = stack[stack.length - 1];
+
+        if(currentStack?.location?.pathname != location.pathname) return;
+
+        window.scrollTo(0, currentStack.scrollY);
+
+    }, [location, stack]);
 
     return (
         <>

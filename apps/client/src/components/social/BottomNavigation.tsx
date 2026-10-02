@@ -1,5 +1,5 @@
 import { Home, Search, User } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useAppSelector } from "../../hooks/useRedux"
 import Profile from "../profile/Profile";
 import StackLink from "../stack/StackLink";

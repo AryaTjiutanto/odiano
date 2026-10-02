@@ -33,8 +33,6 @@ const PostMenu = ({ post, authorId }: Props) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const user = useAppSelector(state => state.auth.user);
 
-    if (!isAuthenticated || !authorId || !user) return;
-
     // define ability
     const canDeletePost = ability.can(ACTIONS.DELETE, subject(SUBJECTS.POST, {
         author: authorId,
@@ -44,6 +42,8 @@ const PostMenu = ({ post, authorId }: Props) => {
     const deletePostMutation = useMutation({
         mutationFn: deletePost,
         onMutate: () => {
+            if (!post.id || !user) return;
+
             let prevData: InfiniteQueryPostDTO | null = null;
 
             setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => {
@@ -58,6 +58,8 @@ const PostMenu = ({ post, authorId }: Props) => {
             }
         },
         onError: (_error, _variables, context) => {
+            if (!post.id || !user) return;
+
             setQueryDataHandler<InfiniteQueryPostDTO>(postKeys.userPosts(user.username), (oldData) => context?.prevData || oldData)
             setQueryDataHandler<UserProfileDTO>(userKeys.profile(user.username), (oldData) => updateUserTotalPosts(oldData, 1, "increase"))
         },
@@ -103,12 +105,14 @@ const PostMenu = ({ post, authorId }: Props) => {
         reportForm.open(post.id, REPORT_TYPE.POST);
     }
 
+    if (!isAuthenticated || !authorId || !user) return;
+
     return (
         <FloatingMenu trigger={
             <button className="relative group hover:text-sky-500">
                 <div className="relative cursor-pointer group hover:text-sky-500 duration-100">
                     {/* content */}
-                    <div className="w-10 h-10 rounded-full absolute top-0 bottom-0 my-auto -left-1/2 m-auto bg-sky-500/5 z-1 opacity-0 group-hover:opacity-100 duration-100"></div>
+                    <div className="w-10 h-10 rounded-full absolute top-0 bottom-0 my-auto -left-1/2 m-auto bg-sky-500/10 z-1 opacity-0 group-hover:opacity-100 duration-100"></div>
                     <EllipsisVertical className="w-5 z-1" />
                 </div>
             </button>

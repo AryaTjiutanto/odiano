@@ -33,7 +33,6 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
 
     const ability = useAbility<AppAbility>();
 
-    if (!isAuthenticated || !user || !postPublicId) return;
     const canDeleteComment = ability.can(ACTIONS.DELETE, subject(SUBJECTS.COMMENT, {
         author: authorId,
     }));
@@ -43,6 +42,8 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
         mutationFn: deleteComment,
 
         onMutate: () => {
+            if(!postId || !postPublicId) return;
+
             let prevData: PostCommentDTO[] | null = null;
             setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => {
                 prevData = oldData;
@@ -58,6 +59,8 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
         },
 
         onError: (_error, _variables, context) => {
+            if(!postId || !postPublicId) return;
+
             setQueryDataHandler<PostCommentDTO[]>(postKeys.currentUserComments(postId), (oldData) => context?.prevData || oldData);
 
             setQueryDataHandler<PostDTO>(postKeys.detail(postPublicId), (oldData) => increaseCommentCount(oldData));
@@ -94,6 +97,8 @@ const CommentMenu = ({ postPublicId, postId, commentId, authorId }: Props) => {
     const reportHandler = async () => {
         reportForm.open(commentId, REPORT_TYPE.COMMENT);
     };
+
+    if (!isAuthenticated || !user || !postPublicId) return;
 
     return (
         <>

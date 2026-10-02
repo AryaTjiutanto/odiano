@@ -1,9 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ConnectLogo from "../../../assets/img/logo/odiano-gradient.svg";
 import { Bell, Home, Pencil, Search, User } from "lucide-react";
 import UserMenu from "./UserMenu";
 import { usePostForm } from "../../../providers/PostFormProvider";
 import { useAppSelector } from "../../../hooks/useRedux";
+import StackLink from "../../stack/StackLink";
 
 const LeftSidebar = () => {
     const postForm = usePostForm();
@@ -30,37 +31,43 @@ const LeftSidebar = () => {
                             <nav className="mt-20 xl:mt-16 w-full">
                                 <ul className="w-full space-y-7 xl:space-y-5 text-neutral-200">
                                     <li className="w-full">
-                                        <Link to={"/"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/" && "text-white font-semibold"} duration-100`}>
-                                            <Home className="size-7 w-fit xl:size-auto" />
-                                            <span className="hidden xl:inline-block">
-                                                Home
-                                            </span>
-                                        </Link>
-                                    </li>
-                                    <li className="w-full">
-                                        <Link to={"/explore"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes("explore") && "text-white font-semibold"} duration-100`}>
-                                            <Search className="size-7 w-fit xl:size-auto" />
-                                            <span className="hidden xl:inline-block">
-                                                Explore
-                                            </span>
-                                        </Link>
-                                    </li>
-                                    <li className="w-full">
-                                        <Link to={"/notification"} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl cursor-pointer ${pathName.includes("notification") && "text-white font-semibold"} `}>
-                                            <div className="relative">
-                                                <Bell className="size-7 xl:size-auto" />
-
-                                                {
-                                                    unreadNotificationCount > 0 &&
-                                                    <div className="w-fit aspect-1 py-0.5 px-2 rounded-full bg-rose-500 absolute -top-3 left-[60%] text-[12px] font-bold grid place-content-center">
-                                                        {unreadNotificationCount}
-                                                    </div>
-                                                }
+                                        <StackLink to="/">
+                                            <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/" && "text-white font-semibold"} duration-100`}>
+                                                <Home className="size-7 w-fit xl:size-auto" />
+                                                <span className="hidden xl:inline-block">
+                                                    Home
+                                                </span>
                                             </div>
-                                            <span className="hidden xl:inline-block">
-                                                Notifications
-                                            </span>
-                                        </Link>
+                                        </StackLink>
+                                    </li>
+                                    <li className="w-full">
+                                        <StackLink to="/explore">
+                                            <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes("explore") && "text-white font-semibold"} duration-100`}>
+                                                <Search className="size-7 w-fit xl:size-auto" />
+                                                <span className="hidden xl:inline-block">
+                                                    Explore
+                                                </span>
+                                            </div>
+                                        </StackLink>
+                                    </li>
+                                    <li className="w-full">
+                                        <StackLink to={"/notification"}>
+                                            <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl cursor-pointer ${pathName.includes("notification") && "text-white font-semibold"} `}>
+                                                <div className="relative">
+                                                    <Bell className="size-7 xl:size-auto" />
+
+                                                    {
+                                                        unreadNotificationCount > 0 &&
+                                                        <div className="w-fit aspect-1 py-0.5 px-2 rounded-full bg-rose-500 absolute -top-3 left-[60%] text-[12px] font-bold grid place-content-center">
+                                                            {unreadNotificationCount}
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <span className="hidden xl:inline-block">
+                                                    Notifications
+                                                </span>
+                                            </div>
+                                        </StackLink>
                                     </li>
 
                                     {/* comming soon */}
@@ -84,12 +91,14 @@ const LeftSidebar = () => {
                                     {
                                         userData?.isOnboarded &&
                                         <li className="w-full">
-                                            <Link to={`profile/${userData && userData?.username}`} className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
-                                                <User className="size-7 xl:size-auto" />
-                                                <span className="hidden xl:inline-block">
-                                                    Profile
-                                                </span>
-                                            </Link>
+                                            <StackLink to={`profile/${userData && userData?.username}`}>
+                                                <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
+                                                    <User className="size-7 xl:size-auto" />
+                                                    <span className="hidden xl:inline-block">
+                                                        Profile
+                                                    </span>
+                                                </div>
+                                            </StackLink>
                                         </li>
                                     }
 

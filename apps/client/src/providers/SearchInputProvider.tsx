@@ -17,7 +17,7 @@ type SearchInputContextType = {
 
 const SearchInputContext = createContext<SearchInputContextType | null>(null);
 
-const SearchInputProvider = ({ children }: any) => {
+export const SearchInputProvider = ({ children }: any) => {
     const currentUserId = useAppSelector((state) => state.auth.user?.id);
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
@@ -78,8 +78,6 @@ const SearchInputProvider = ({ children }: any) => {
         </SearchInputContext.Provider>
     )
 }
-
-export default SearchInputProvider;
 
 export const useSearchInputContext = () => {
     const context = useContext(SearchInputContext);

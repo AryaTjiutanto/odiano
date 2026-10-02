@@ -1,6 +1,6 @@
 import { offset, shift, useDismiss, useFloating, useFocus, useInteractions } from "@floating-ui/react";
 import { Search } from "lucide-react";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
@@ -9,6 +9,7 @@ import { getSearchSuggestions } from "../../services/search.service";
 import { useSearchInputContext } from "../../providers/SearchInputProvider";
 import { SEARCH_TYPES } from "@odiano/shared";
 import { useNavigate } from "react-router-dom";
+import { useStackProvider } from "../../providers/StackProvider";
 
 type Props = {
     searchIconPosition? : "left" | "right",
@@ -23,6 +24,7 @@ const SearchOverlay = lazy(() =>
 const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => {
     const { query, setQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
     const navigate = useNavigate();
+    const { pushStack } = useStackProvider();
 
     const debounceValue = useDebounce<string>(query);
 
@@ -63,7 +65,7 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
             keyword: query,
         }))
 
-        navigate(`/search?${new URLSearchParams({
+       pushStack(e, `/search?${new URLSearchParams({
             q: query,
         }).toString()}`);
     }
@@ -80,7 +82,9 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
                     <button type="submit" className="w-10 h-full grid place-content-center text-neutral-300 cursor-pointer">
                         <Search className="w-4" />
                     </button>
-                    <input className={`flex-1 w-full h-full default-input-text-behaviour ${searchIconPosition == "right" && "px-4"}`} placeholder="Search..." value={query} onChange={(e) => setQuery(e.target.value)} />
+                    <input className={`flex-1 w-full h-full default-input-text-behaviour ${searchIconPosition == "right" && "px-4"}`} placeholder="Search..." value={query} onChange={(e) => {
+                        setQuery(e.target.value)
+                    }} />
                 </div>
             </form>
         </>

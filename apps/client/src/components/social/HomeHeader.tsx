@@ -2,16 +2,18 @@ import SearchInput from "../search/SearchInput";
 import { useAppSelector } from "../../hooks/useRedux";
 import { useSearchInputContext } from "../../providers/SearchInputProvider";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const HomeHeader = () => {
-    const searchInputContext = useSearchInputContext();
-
+    const location = useLocation();
+    const {setQuery} = useSearchInputContext();
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
 
     useEffect(() => {
-        searchInputContext.setQuery("");
-    }, [])
+        if(location.pathname != "/") return;
+        setQuery("");
+    }, [location, setQuery])
 
     return (
         <>
@@ -21,7 +23,7 @@ const HomeHeader = () => {
                     (isInitialized && isAuthenticated) &&
                     <>
                         {/* search bar */}
-                        <SearchInput width={"small"} />
+                        <SearchInput width={"small"} key={"home-header-search"}/>
 
                         {/* filter */}
                         <div className="w-fit hidden sm:flex items-center space-x-4">

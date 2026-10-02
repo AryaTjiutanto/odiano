@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import SearchInputProvider from "../providers/SearchInputProvider";
+import { SearchInputProvider } from "../providers/SearchInputProvider";
 
 const SearchWrapper = () => {
     return (

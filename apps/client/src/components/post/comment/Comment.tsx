@@ -1,12 +1,13 @@
 import { formatRelativeShort } from "../../../utils/dateFormater.util";
-import { type PostCommentDTO} from "@odiano/shared";
+import { type PostCommentDTO } from "@odiano/shared";
 import Profile from "../../profile/Profile";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CommentMenu from "../../floating-menu/CommentMenu";
+import StackLink from "../../stack/StackLink";
 
 type Props = {
     data: PostCommentDTO,
-    postId : string,
+    postId: string,
     isHightlighted?: boolean,
 }
 
@@ -23,14 +24,16 @@ const Comment = ({ data, postId, isHightlighted }: Props) => {
                 <div className="w-full">
                     <div className="flex items-center justify-between w-full">
                         <div className="w-full flex items-center justify-between">
-                            <Link to={`/profile/${data.author.username}`} className="flex items-center space-x-2 text-sm">
-                                <h1 className="font-bold">{data.author.name || ""}</h1>
-                                <h2 className="text-neutral-500">@{data.author.username || ""}</h2>
-                            </Link>
+                            <StackLink to={`/profile/${data.author.username}`}>
+                                <div className="flex items-center space-x-2 text-sm">
+                                    <h1 className="font-bold">{data.author.name || ""}</h1>
+                                    <h2 className="text-neutral-500">@{data.author.username || ""}</h2>
+                                </div>
+                            </StackLink>
                         </div>
                         {
                             (!("isPosted" in data) || data.isPosted) &&
-                            <CommentMenu authorId={data.author.id} commentId={data.id} postId={postId} postPublicId={postPublicId}/>
+                            <CommentMenu authorId={data.author.id} commentId={data.id} postId={postId} postPublicId={postPublicId} />
                         }
                     </div>
                     <p className="mt-1 whitespace-pre-wrap">

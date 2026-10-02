@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import PageLoader from "../components/loader/PageLoader";
 import RequireAuthGuard from "../guard/RequireAuthGuard";
 import RequireGuestGuard from "../guard/RequireGuestGuard";
 import AuthLayout from "../layouts/AuthLayout";

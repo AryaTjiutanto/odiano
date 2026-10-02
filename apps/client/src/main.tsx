@@ -9,7 +9,6 @@ import { createIDBPersister } from './libs/persister.ts'
 import SocketProvider from './providers/SocketProvider.tsx'
 import { queryClient } from './libs/react-query/queryClient.ts'
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import ScrollToTop from './router/ScrollToTop.tsx'
 import GoogleOneTap from './components/auth/GoogleOneTap.tsx'
 import { ConfirmationModalProvider } from './providers/ConfirmationModalProvider.tsx'
 import { ImageEditorProvider } from './providers/ImageEditorProvider.tsx'
@@ -37,12 +36,11 @@ createRoot(document.getElementById('root')!).render(
               <ImageEditorProvider>
                 <BrowserRouter>
                   <GoogleOneTap />
-                  <ScrollToTop />
-                  <AppLayout>
-                    <StackProvider>
+                  <StackProvider>
+                    <AppLayout>
                       <AppRoutes />
-                    </StackProvider>
-                  </AppLayout>
+                    </AppLayout>
+                  </StackProvider>
                 </BrowserRouter>
               </ImageEditorProvider>
             </ConfirmationModalProvider>

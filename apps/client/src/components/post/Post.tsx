@@ -8,6 +8,7 @@ import PostMedia from "./PostMedia";
 import PostContent from "./PostContent";
 import usePostHandler from "../../hooks/usePostHandler";
 import StackLink from "../stack/StackLink";
+import { useStackProvider } from "../../providers/StackProvider";
 
 type Props = {
     data: PostDTO,
@@ -15,6 +16,7 @@ type Props = {
 }
 
 const Post = ({ data, author }: Props) => {
+    const { pushStack } = useStackProvider();
     const { handleLike } = usePostHandler(data.publicId);
 
     const dataAuthor = data.author ?? author;
@@ -23,7 +25,7 @@ const Post = ({ data, author }: Props) => {
         <StackLink to={`/${dataAuthor?.username}/post/${data.publicId}`}>
             <article className="inline-block w-full pb-6 sm:pb-7 first:pt-2 py-6 sm:py-7 lg:py-10 sm:first:pt-4 sm:rounded-lg cursor-pointer border-b last:border-0 border-neutral-900 relative">
                 <div className="flex items-center justify-between">
-                    <Link to={`/profile/${dataAuthor?.username}`} className="z-20">
+                    <button onClick={(e) => pushStack(e, `/profile/${dataAuthor?.username}`)} className="z-20 flex items-start text-start cursor-pointer">
                         <div className="flex items-center space-x-3">
                             <div className="w-10 aspect-square">
                                 <Profile data={dataAuthor?.profileImage} />
@@ -38,9 +40,12 @@ const Post = ({ data, author }: Props) => {
                                 </h3>
                             </div>
                         </div>
-                    </Link>
+                    </button>
 
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }}>
                         <PostMenu authorId={dataAuthor?.id} post={data} />
                     </div>
                 </div>

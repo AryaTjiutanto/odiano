@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type StackType = {
@@ -12,6 +12,7 @@ type StackContextType = {
     pop: () => void,
     setCurrentStackScrollY : (position : number) => void,
     pushStack : (e : React.MouseEvent<HTMLAnchorElement, MouseEvent>, to: string) => void,
+    resetStack : () => void,
 }
 
 const StackContext = createContext<StackContextType | null>(null);
@@ -52,19 +53,24 @@ export const StackProvider = ({ children }: { children: React.ReactNode }) => {
         })  
     };
 
+    const resetStack = () => {
+        setStack([]);
+    }
+
     const pop = () => {
         navigate(-1);
     }
 
-    function pushStack (e : React.MouseEvent<HTMLAnchorElement, MouseEvent>, to: string) {
+    function pushStack (e : MouseEvent<HTMLAnchorElement, MouseEvent> | MouseEvent<HTMLButtonElement, MouseEvent>, to: string) {
         e.preventDefault();
+        e.stopPropagation();
 
         setCurrentStackScrollY(window.scrollY);
         navigate(to);
     }
 
     return (
-        <StackContext.Provider value={{ stack, pop, setCurrentStackScrollY, pushStack }}>
+        <StackContext.Provider value={{ stack, pop, setCurrentStackScrollY, pushStack, resetStack }}>
             {children}
         </StackContext.Provider>
     )
