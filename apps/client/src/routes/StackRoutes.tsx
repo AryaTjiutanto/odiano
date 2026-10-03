@@ -14,6 +14,7 @@ import Search from "../pages/Social/Search";
 import { useStackProvider } from "../providers/StackProvider";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import StackWrapper from "../layouts/StackWrapper";
+import Settings from "../pages/Social/Settings";
 
 const StackRoutes = () => {
     const { stack } = useStackProvider();
@@ -44,6 +45,7 @@ const StackRoutes = () => {
                                 <Route element={<ProfileWrapper />}>
                                     <Route path='/profile/:username' element={<Profile />} />
                                 </Route>
+                                <Route path='/settings' element={<Settings />} />
 
                                 {/* require auth */}
                                 <Route element={<RequireAuthGuard />}>

@@ -5,7 +5,7 @@ const ProfileWrapper = () => {
     return (
         <UserFollowListProvider>
             <Outlet />
-        </UserFollowListProvider>
+        </UserFollowListProvider>        
     )
 };
 

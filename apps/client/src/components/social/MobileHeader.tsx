@@ -1,4 +1,4 @@
-import { Bell, Plus } from "lucide-react";
+import { Bell, Menu, Plus } from "lucide-react";
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link, useLocation } from "react-router-dom";
 import { usePostForm } from "../../providers/PostFormProvider";
@@ -16,18 +16,18 @@ const MobileHeader = () => {
     const pathName = location.pathname;
 
     // check type
-    let headerType : "profile" | "home" | null = null;
+    let headerType: "profile" | "home" | null = null;
 
-    if(pathName == "/") {
+    if (pathName == "/") {
         headerType = "home";
-    } else if(pathName.startsWith("/profile")) {
+    } else if (pathName.startsWith("/profile")) {
         const username = pathName.split("/")[2];
-        if(username != currentUserData?.username) return;
-        
+        if (username != currentUserData?.username) return;
+
         headerType = "profile";
     }
 
-    if(headerType == null) return <></>
+    if (headerType == null) return <></>
 
     return (
         <>
@@ -44,21 +44,27 @@ const MobileHeader = () => {
 
                 {
                     (isInitialized && isAuthenticated) &&
-                    <StackLink to={"/notification"}>
-                        <div className="relative">
-                            <Bell className="size-7 xl:size-auto" />
+                    <>
+                        {
+                            headerType == "profile" ?
+                                <StackLink to={"/settings"}>
+                                    <Menu/>
+                                </StackLink>
+                                :
+                                <StackLink to={"/notification"}>
+                                    <div className="relative">
+                                        <Bell className="size-7 xl:size-auto" />
 
-                            {
-                                unreadNotificationCount > 0 &&
-                                <div className="w-fit aspect-1 py-0.5 px-2 rounded-full bg-rose-500 absolute -top-3 left-[60%] text-[12px] font-bold grid place-content-center">
-                                    {unreadNotificationCount}
-                                </div>
-                            }
-                        </div>
-                        <span className="hidden xl:inline-block">
-                            Notifications
-                        </span>
-                    </StackLink>
+                                        {
+                                            unreadNotificationCount > 0 &&
+                                            <div className="w-fit aspect-1 py-0.5 px-2 rounded-full bg-rose-500 absolute -top-3 left-[60%] text-[12px] font-bold grid place-content-center">
+                                                {unreadNotificationCount}
+                                            </div>
+                                        }
+                                    </div>
+                                </StackLink>
+                        }
+                    </>
                 }
 
                 {
