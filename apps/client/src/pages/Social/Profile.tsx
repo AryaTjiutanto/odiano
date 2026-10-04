@@ -33,7 +33,6 @@ const Profile = () => {
     return (
         <>
             <SEO title={title} />
-
             {
                 userFollowList.isModalOpen &&
                 <Suspense fallback={<ModalSuspenseFallback />}>

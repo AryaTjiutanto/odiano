@@ -1,19 +1,16 @@
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/useRedux";
-import { logout } from "../../../features/auth/auth.thunk";
+import { useAppSelector } from "../../../hooks/useRedux";
 import Profile from "../../profile/Profile";
 import { EllipsisVertical, FilePenLine, MailWarning } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { autoUpdate, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
-import { useStackProvider } from "../../../providers/StackProvider";
+import { useLogout } from "../../../hooks/useLogout";
 
 const SidebarUserMenu = () => {
-    const navigate = useNavigate();
+    const {logoutHandler} = useLogout();
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const userData = useAppSelector((state) => state.auth.user);
-    const dispatch = useAppDispatch();
-    const { resetStack } = useStackProvider();
 
     // profile link
     const profileLink = !isAuthenticated
@@ -40,13 +37,6 @@ const SidebarUserMenu = () => {
     const dismiss = useDismiss(context);
 
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss])
-
-    // logout
-    const logoutHandler = async () => {
-        await dispatch(logout());
-        resetStack();
-        navigate("/signin");
-    }
 
     if (!isInitialized) {
         return (
