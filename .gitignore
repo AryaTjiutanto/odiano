@@ -3,3 +3,6 @@ dist/
 .env
 .env.production
 .env.development
+
+!apps/api/src/bootstraps/env.bootstrap.ts
+!apps/worker/src/bootstraps/env.bootstrap.ts
