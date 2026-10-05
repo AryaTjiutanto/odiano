@@ -1,3 +1,4 @@
+import "./bootstrap/env.bootstrap.js";
 import logger from "./lib/log/logger.js";
 import { emailWorker } from "./worker/email.worker.js";
 

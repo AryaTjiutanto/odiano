@@ -291,6 +291,9 @@ importers:
 
   packages/queue:
     dependencies:
+      '@odiano/redis':
+        specifier: workspace:*
+        version: link:../redis
       bullmq:
         specifier: ^5.78.1
         version: 5.78.1
