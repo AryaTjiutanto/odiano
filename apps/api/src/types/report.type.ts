@@ -1,5 +1,5 @@
 import { PostMedia, REPORT_TYPE, ReportReasonCode, ReportStatus } from "@odiano/shared";
-import { ImageAsset, UserSummaryQuery } from "./user.type";
+import { ImageAsset, UserSummaryQuery } from "./user.type.js";
 import { Types } from "mongoose";
 
 // report schema

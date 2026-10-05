@@ -1,4 +1,4 @@
-import { ErrorResponseCode, SuccessResponseCode } from "./response.const"
+import { ErrorResponseCode, SuccessResponseCode } from "./response.const.js"
 
 export type SuccessResponseData<T = null> = {
     success: true,

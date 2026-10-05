@@ -1,6 +1,6 @@
 import express from "express"
-import { get, getUnreadCount, updateAllReadStatus, updateReadStatus } from "../controllers/notification.controller";
-import { apiLimiter, consume } from "../libs/limiter";
+import { get, getUnreadCount, updateAllReadStatus, updateReadStatus } from "../controllers/notification.controller.js";
+import { apiLimiter, consume } from "../libs/limiter/index.js";
 
 const router = express.Router();
 

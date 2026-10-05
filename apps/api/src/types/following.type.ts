@@ -1,5 +1,5 @@
 import { Types } from "mongoose"
-import { UserSummaryQuery } from "./user.type"
+import { UserSummaryQuery } from "./user.type.js"
 
 export type UserFollowListQuery = {
     _id : Types.ObjectId,

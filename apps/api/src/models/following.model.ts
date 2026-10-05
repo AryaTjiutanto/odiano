@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose";
-import { AppError } from "../errors/appError.error";
+import { AppError } from "../errors/appError.error.js";
 import { ERROR_RESPONSE_CODE } from "@odiano/shared";
 
 type FollowingSchema = {

@@ -1,12 +1,12 @@
 import { InfiniteQuery, NotificationData, NotificationDTO, NotificationType } from "@odiano/shared";
-import { Notification } from "../models/notification.model"
-import { emitToUser } from "../socket/emitters/notification.emitter";
-import { getUserSummary } from "./user.service";
-import { NOTIFICATION_PAGE_SIZE } from "../consts/notification.const";
-import { toNotificationDTO } from "../mappers/notification.mapper";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import { Notification } from "../models/notification.model.js"
+import { emitToUser } from "../socket/emitters/notification.emitter.js";
+import { getUserSummary } from "./user.service.js";
+import { NOTIFICATION_PAGE_SIZE } from "../consts/notification.const.js";
+import { toNotificationDTO } from "../mappers/notification.mapper.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import mongoose, { ClientSession, Types } from "mongoose";
-import { NotificationQuery } from "../types/notification.type";
+import { NotificationQuery } from "../types/notification.type.js";
 
 export const get = async (currentUserId: string, cursor: string | undefined | null, isRead: boolean): Promise<InfiniteQuery<NotificationDTO[]>> => {
     // get notifications

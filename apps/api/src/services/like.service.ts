@@ -1,11 +1,11 @@
 import mongoose, { Types } from "mongoose";
-import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
-import Like from "../models/like.model";
-import { Post } from "../models/post.model";
-import { AppError } from "../errors/appError.error";
+import { LIKE_TYPES, LikeTypes } from "../consts/like.const.js";
+import Like from "../models/like.model.js";
+import { Post } from "../models/post.model.js";
+import { AppError } from "../errors/appError.error.js";
 import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_STATUS } from "@odiano/shared";
-import { create as createNotification } from "./notification.service";
-import { Notification } from "../models/notification.model";
+import { create as createNotification } from "./notification.service.js";
+import { Notification } from "../models/notification.model.js";
 
 export const getLikedIds = async (currentUserId: string, type: LikeTypes, targetIds: string[] | Types.ObjectId[]) => {
     const likes = await Like.find({

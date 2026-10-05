@@ -1,12 +1,12 @@
-import "../bootstraps/env.bootstrap"
-import { googleClient } from "../libs/google/client"
-import { User } from "../models/user.model";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { createAuthSession } from "./auth.service";
+import "../bootstraps/env.bootstrap.js"
+import { googleClient } from "../libs/google/client.js"
+import { User } from "../models/user.model.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { createAuthSession } from "./auth.service.js";
 import { AuthToken, ERROR_RESPONSE_CODE } from "@odiano/shared";
-import { AUTH_PROVIDERS } from "../consts/user.const";
+import { AUTH_PROVIDERS } from "../consts/user.const.js";
 import { nanoid } from "nanoid";
-import { AppError } from "../errors/appError.error";
+import { AppError } from "../errors/appError.error.js";
 
 export const authentication = async (credential: string): Promise<AuthToken> => {
     const ticket = await googleClient.verifyIdToken({

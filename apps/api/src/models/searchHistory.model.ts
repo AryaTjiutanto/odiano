@@ -1,6 +1,6 @@
 import { SEARCH_TYPES } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
-import { SearchHistory as SearchHistorySchema } from "../types/searchHistory.type";
+import { SearchHistory as SearchHistorySchema } from "../types/searchHistory.type.js";
 
 const searchHistorySchema = new Schema<SearchHistorySchema>({
     targetId : {

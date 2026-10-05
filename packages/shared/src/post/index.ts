@@ -1,3 +1,3 @@
-export * from "./post.schema";
-export * from "./post.const";
-export * from "./post.type";
+export * from "./post.schema.js";
+export * from "./post.const.js";
+export * from "./post.type.js";

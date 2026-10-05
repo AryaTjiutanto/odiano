@@ -1,3 +1,3 @@
-import { createLimiter } from "../core/limiter.factory";
+import { createLimiter } from "../core/limiter.factory.js";
 
 export const createPostLimiter = createLimiter({duration:10 * 60, keyPrefix : "post:create:", points : 11})

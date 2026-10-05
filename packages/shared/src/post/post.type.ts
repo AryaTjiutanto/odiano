@@ -1,6 +1,6 @@
 
-import { UserSummaryDTO } from "../user"
-import { AllowedMediaProviders, AllowedMediaTypes, MediaAspectRatio, PostVisibilities } from "./post.const"
+import { UserSummaryDTO } from "../user/index.js"
+import { AllowedMediaProviders, AllowedMediaTypes, MediaAspectRatio, PostVisibilities } from "./post.const.js"
 
 export type MediaSource = {
     url: string,

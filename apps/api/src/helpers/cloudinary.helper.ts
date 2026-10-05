@@ -1,6 +1,6 @@
 import { ALLOWED_MEDIA_TYPES, AllowedMediaTypes, PostMedia } from "@odiano/shared";
-import cloudinary from "../config/cloudinary.config";
-import { removeTemp } from "../utils/path";
+import cloudinary from "../config/cloudinary.config.js";
+import { removeTemp } from "../utils/path.js";
 
 type CloudinaryNewDataResult = {
     publicId : string,

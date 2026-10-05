@@ -1,15 +1,15 @@
-import "./bootstraps/env.bootstrap";
+import "./bootstraps/env.bootstrap.js";
 import express from "express";
 import cors from "cors";
-import routes from "./routes/index";
+import routes from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "./errors/appError.error";
-import { errorResponseData } from "./utils/response.util";
+import { AppError } from "./errors/appError.error.js";
+import { errorResponseData } from "./utils/response.util.js";
 import { ZodError } from "zod";
 import { ERROR_RESPONSE_CODE, ValidationError } from "@odiano/shared";
 import helmet from "helmet";
-import logger from "./libs/log/logger";
+import logger from "./libs/log/logger.js";
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || "localhost:5050";
 

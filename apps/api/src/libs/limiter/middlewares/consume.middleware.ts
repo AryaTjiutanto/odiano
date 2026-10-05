@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import { AppError } from "../../../errors/appError.error";
+import { AppError } from "../../../errors/appError.error.js";
 import { TooManyRequestError } from "@odiano/shared";
 
 const defaultKeyGenerator = (req : Request) => {

@@ -1,19 +1,19 @@
 import { ACTIONS, CreatedDocumentId, CreatePostSchema, ERROR_RESPONSE_CODE, InfiniteQuery, POST_STATUS, PostDTO, SUBJECTS, type PostDTO as PostFeedItem } from "@odiano/shared";
-import { Post } from "../models/post.model";
-import { toPostDto } from "../mappers/post.mapper";
-import { PostQuery } from "../types/post.type";
-import { POSTS_PAGE_SIZE } from "../consts/post.const";
-import { AppError } from "../errors/appError.error";
-import { User } from "../models/user.model";
-import { LIKE_TYPES } from "../consts/like.const";
-import { getIsLiked, getLikedIds } from "./like.service";
+import { Post } from "../models/post.model.js";
+import { toPostDto } from "../mappers/post.mapper.js";
+import { PostQuery } from "../types/post.type.js";
+import { POSTS_PAGE_SIZE } from "../consts/post.const.js";
+import { AppError } from "../errors/appError.error.js";
+import { User } from "../models/user.model.js";
+import { LIKE_TYPES } from "../consts/like.const.js";
+import { getIsLiked, getLikedIds } from "./like.service.js";
 import mongoose from "mongoose";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { commitTempImage, deleteImages } from "../helpers/cloudinary.helper";
-import { bulkCreateOrUpdateHashtag, bulkDecreseHashtagsCount } from "./hashtag.service";
-import { searchOptions } from "../types/search.type";
-import { bulkDeleteCommentsByPostId } from "./postComment.service";
-import { defineAbilityFor } from "../helpers/ability.helper";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { commitTempImage, deleteImages } from "../helpers/cloudinary.helper.js";
+import { bulkCreateOrUpdateHashtag, bulkDecreseHashtagsCount } from "./hashtag.service.js";
+import { searchOptions } from "../types/search.type.js";
+import { bulkDeleteCommentsByPostId } from "./postComment.service.js";
+import { defineAbilityFor } from "../helpers/ability.helper.js";
 import { subject } from "@casl/ability";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {

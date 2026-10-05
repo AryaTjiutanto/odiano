@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyRefreshToken } from "../libs/auth/auth.token";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import { verifyRefreshToken } from "../libs/auth/auth.token.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 
 export const requireRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {

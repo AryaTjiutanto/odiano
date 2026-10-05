@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../libs/auth/auth.token";
-import { AppError } from "../errors/appError.error";
+import { verifyAccessToken } from "../libs/auth/auth.token.js";
+import { AppError } from "../errors/appError.error.js";
 import { ERROR_RESPONSE_CODE } from "@odiano/shared";
 
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {

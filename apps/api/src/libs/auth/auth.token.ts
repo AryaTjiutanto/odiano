@@ -1,7 +1,7 @@
-import "../../bootstraps/env.bootstrap";
+import "../../bootstraps/env.bootstrap.js";
 import jwt from "jsonwebtoken";
-import { AccessTokenPayload, RefreshTokenPayload, TokenPayload } from "./auth.types";
-import { UnauthorizedError } from "../../errors/unauthorized.error";
+import { AccessTokenPayload, RefreshTokenPayload, TokenPayload } from "./auth.types.js";
+import { UnauthorizedError } from "../../errors/unauthorized.error.js";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;

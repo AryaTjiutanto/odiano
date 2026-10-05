@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
-import { errorResponseData } from "../utils/response.util";
-import { AppError } from "../errors/appError.error";
+import { errorResponseData } from "../utils/response.util.js";
+import { AppError } from "../errors/appError.error.js";
 import { ERROR_RESPONSE_CODE } from "@odiano/shared";
 
 export const requireGuest = (req : Request, res: Response, next : NextFunction) => {

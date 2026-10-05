@@ -1,4 +1,4 @@
-import { SearchSuggestionDTO } from "../search/search.type";
+import { SearchSuggestionDTO } from "../search/search.type.js";
 
 export type SearchHistoryDTO = {
     id : string,

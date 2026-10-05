@@ -1,6 +1,6 @@
-import { Action, ACTIONS } from "./action.const";
-import { Role, ROLES } from "./role.const";
-import { Subject, SUBJECTS } from "./subject.const";
+import { Action, ACTIONS } from "./action.const.js";
+import { Role, ROLES } from "./role.const.js";
+import { Subject, SUBJECTS } from "./subject.const.js";
 
 type Rule = {
     action: Action,

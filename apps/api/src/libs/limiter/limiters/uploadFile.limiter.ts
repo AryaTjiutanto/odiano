@@ -1,4 +1,4 @@
-import { createLimiter } from "../core/limiter.factory";
+import { createLimiter } from "../core/limiter.factory.js";
 
 export const shortUploadFileLimiter = createLimiter({
     duration: 30,

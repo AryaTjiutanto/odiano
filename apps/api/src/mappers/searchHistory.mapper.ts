@@ -1,5 +1,5 @@
 import { GeneralSearchDTO, HashTagSearchDTO, HashTagSummaryDTO, SEARCH_TYPES, SearchHistoryDTO, UserSearchDTO, UserSummaryDTO } from "@odiano/shared";
-import { searchHistoryQuery } from "../types/searchHistory.type";
+import { searchHistoryQuery } from "../types/searchHistory.type.js";
 
 type searchHistoryTargetData = {
     users: Map<string, UserSummaryDTO>,

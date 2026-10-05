@@ -1,7 +1,7 @@
 import express from "express";
-import requireAccessToken from "../middlewares/requireAccessToken.middleware";
-import { generateCoverSignature, generatePostMediaSignature, generateProfileSignature } from "../controllers/upload.controller";
-import { consume, longUploadFileLimiter, shortUploadFileLimiter } from "../libs/limiter";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
+import { generateCoverSignature, generatePostMediaSignature, generateProfileSignature } from "../controllers/upload.controller.js";
+import { consume, longUploadFileLimiter, shortUploadFileLimiter } from "../libs/limiter/index.js";
 
 const router = express.Router();
 

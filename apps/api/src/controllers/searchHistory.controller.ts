@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import * as searchHistoryService from "../services/searchHistory.service";
-import { successResponseData } from "../utils/response.util";
+import * as searchHistoryService from "../services/searchHistory.service.js";
+import { successResponseData } from "../utils/response.util.js";
 import { ERROR_RESPONSE_CODE, SearchHistoryDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { AppError } from "../errors/appError.error";
-import logger from "../libs/log/logger";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { AppError } from "../errors/appError.error.js";
+import logger from "../libs/log/logger.js";
 
 export const get = async (req: Request, res: Response, next: NextFunction) => {
     const currentUserId = req.userId;

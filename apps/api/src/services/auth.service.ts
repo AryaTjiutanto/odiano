@@ -1,16 +1,16 @@
 import { AUTH_CACHE_KEYS, AUTH_TOKEN, AuthToken, CurrentUserDTO, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES, ROLES } from "@odiano/shared";
-import { AppError } from "../errors/appError.error";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token";
-import { User } from "../models/user.model";
+import { AppError } from "../errors/appError.error.js";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../libs/auth/auth.token.js";
+import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
-import { RefreshToken } from "../models/refreshToken.model";
+import { RefreshToken } from "../models/refreshToken.model.js";
 import { nanoid } from "nanoid";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import { delCache, getCache, setCache } from "@odiano/redis";
-import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper";
-import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper";
+import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper.js";
+import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper.js";
 import { Types } from "mongoose";
-import { createAndSendOTP, verifyOTP } from "./otp.service";
+import { createAndSendOTP, verifyOTP } from "./otp.service.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 

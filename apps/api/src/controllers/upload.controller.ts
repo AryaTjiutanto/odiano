@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import * as uploadServices from "../services/upload.service";
-import { successResponseData } from "../utils/response.util";
+import * as uploadServices from "../services/upload.service.js";
+import { successResponseData } from "../utils/response.util.js";
 import { CloudinarySignaturePayload, POST_MAX_MEDIA, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import { UPLOAD_PRESETS } from "../consts/cloudinary.const";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import { UPLOAD_PRESETS } from "../consts/cloudinary.const.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 
 export const generateProfileSignature = (req: Request, res: Response, next: NextFunction) => {
     const userId = req.userId;

@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../errors/appError.error";
+import { AppError } from "../errors/appError.error.js";
 import { CreatedDocumentId, CreatePostCommentSchema, ERROR_RESPONSE_CODE, InfiniteQuery, PostCommentDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import * as postCommentService from "../services/postComment.service";
-import { successResponseData } from "../utils/response.util";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { ReqBody } from "../types/request.type";
+import * as postCommentService from "../services/postComment.service.js";
+import { successResponseData } from "../utils/response.util.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { ReqBody } from "../types/request.type.js";
 
 export const createComment = async (req: ReqBody<CreatePostCommentSchema>, res: Response, next: NextFunction) => {
     const currentUserId = req.userId;

@@ -1,6 +1,6 @@
 import { PostMedia, PostVisibilities } from "@odiano/shared"
 import { Types } from "mongoose"
-import { UserSummaryQuery } from "./user.type"
+import { UserSummaryQuery } from "./user.type.js"
 
 export type PostQuery = {
     _id : Types.ObjectId,

@@ -1,10 +1,10 @@
 import { ERROR_RESPONSE_CODE, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "@odiano/shared"
-import { AppError } from "../errors/appError.error"
-import { Following } from "../models/following.model";
-import { User } from "../models/user.model";
+import { AppError } from "../errors/appError.error.js"
+import { Following } from "../models/following.model.js";
+import { User } from "../models/user.model.js";
 import mongoose, { Types } from "mongoose";
-import { create as createNotification } from "./notification.service";
-import { Notification } from "../models/notification.model";
+import { create as createNotification } from "./notification.service.js";
+import { Notification } from "../models/notification.model.js";
 
 export const createFollowing = async (currentUserId: string, targetUserId: string) => {
     if (currentUserId == targetUserId) {

@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import * as tempAssetsService from "../services/tempAssets.service";
+import * as tempAssetsService from "../services/tempAssets.service.js";
 
 export const startDeleteExpiredTempAssets = async () => {
     cron.schedule("0 */12 * * *", () => {

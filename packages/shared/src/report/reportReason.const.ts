@@ -1,4 +1,4 @@
-import { REPORT_TYPE } from "./reportType.const";
+import { REPORT_TYPE } from "./reportType.const.js";
 
 export const REPORT_REASON_CODES = {
     // Common

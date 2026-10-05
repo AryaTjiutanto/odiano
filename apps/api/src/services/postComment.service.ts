@@ -1,14 +1,14 @@
 import { CreatedDocumentId, ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, POST_COMMENT_STATUS, POST_STATUS, PostCommentDTO } from "@odiano/shared"
-import { toPostCommentDTO } from "../mappers/postComment.mapper"
-import PostComment from "../models/postComment.model"
-import { PostCommentQuery } from "../types/postComment.type"
-import { MAX_TOP_LEVEL_POSTCOMMENT, POSTCOMMENT_PAGE_SIZE } from "../consts/postComment.const"
-import { AppError } from "../errors/appError.error"
-import { Post } from "../models/post.model"
-import { create as createNotification } from "./notification.service";
+import { toPostCommentDTO } from "../mappers/postComment.mapper.js"
+import PostComment from "../models/postComment.model.js"
+import { PostCommentQuery } from "../types/postComment.type.js"
+import { MAX_TOP_LEVEL_POSTCOMMENT, POSTCOMMENT_PAGE_SIZE } from "../consts/postComment.const.js"
+import { AppError } from "../errors/appError.error.js"
+import { Post } from "../models/post.model.js"
+import { create as createNotification } from "./notification.service.js";
 import mongoose, { ClientSession, Types } from "mongoose"
-import { UnauthorizedError } from "../errors/unauthorized.error"
-import { Notification } from "../models/notification.model"
+import { UnauthorizedError } from "../errors/unauthorized.error.js"
+import { Notification } from "../models/notification.model.js"
 
 type createPostCommentParams = {
     content: string,

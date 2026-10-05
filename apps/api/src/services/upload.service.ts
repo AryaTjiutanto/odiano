@@ -1,8 +1,8 @@
 import { CloudinarySignaturePayload, ERROR_RESPONSE_CODE, POST_MAX_MEDIA } from "@odiano/shared";
-import "../bootstraps/env.bootstrap";
-import cloudinary from "../config/cloudinary.config";
-import { UPLOAD_PRESETS, UploadPresets } from "../consts/cloudinary.const";
-import { AppError } from "../errors/appError.error";
+import "../bootstraps/env.bootstrap.js";
+import cloudinary from "../config/cloudinary.config.js";
+import { UPLOAD_PRESETS, UploadPresets } from "../consts/cloudinary.const.js";
+import { AppError } from "../errors/appError.error.js";
 
 type GenerateSignaturePayload = {
     params : {

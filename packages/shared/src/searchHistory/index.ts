@@ -1,1 +1,1 @@
-export * from "./searchHistory.type";
+export * from "./searchHistory.type.js";

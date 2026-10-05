@@ -1,17 +1,17 @@
 import { CreateUserProfileSchema, ERROR_RESPONSE_CODE, InfiniteQuery, ROLES, UpdateUserProfile, UserMutualsDTO, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
-import { User } from "../models/user.model";
-import { AppError } from "../errors/appError.error";
-import { removeTemp } from "../utils/path";
-import cloudinary from "../config/cloudinary.config";
-import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
-import { toUserProfileDTO, toUserSummaryDTO } from "../mappers/user.mapper";
-import { Following } from "../models/following.model";
+import { User } from "../models/user.model.js";
+import { AppError } from "../errors/appError.error.js";
+import { removeTemp } from "../utils/path.js";
+import cloudinary from "../config/cloudinary.config.js";
+import { UserProfileQuery, UserSummaryQuery } from "../types/user.type.js";
+import { toUserProfileDTO, toUserSummaryDTO } from "../mappers/user.mapper.js";
+import { Following } from "../models/following.model.js";
 import mongoose, { Types } from "mongoose";
-import { commitTempImage } from "../helpers/cloudinary.helper";
-import { getFollowingIds } from "./following.service";
-import { UserFollowListQuery } from "../types/following.type";
-import { MAX_FOLLOW_PAGE_SIZE } from "../consts/following.const";
-import logger from "../libs/log/logger";
+import { commitTempImage } from "../helpers/cloudinary.helper.js";
+import { getFollowingIds } from "./following.service.js";
+import { UserFollowListQuery } from "../types/following.type.js";
+import { MAX_FOLLOW_PAGE_SIZE } from "../consts/following.const.js";
+import logger from "../libs/log/logger.js";
 
 type OnboardingPayload = {
     userId: string,

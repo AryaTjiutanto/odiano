@@ -1,5 +1,5 @@
 import { ERROR_RESPONSE_CODE, FailedAttemptError } from "@odiano/shared";
-import { AppError } from "../../errors/appError.error";
+import { AppError } from "../../errors/appError.error.js";
 import { setCache } from "@odiano/redis";
 
 type Params = {

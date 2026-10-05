@@ -1,7 +1,7 @@
 import express from "express";
-import { validateData } from "../middlewares/validateData.middleware";
+import { validateData } from "../middlewares/validateData.middleware.js";
 import { createReport } from "@odiano/shared";
-import { create, getAll, process, takeAction } from "../controllers/report.controller";
+import { create, getAll, process, takeAction } from "../controllers/report.controller.js";
 
 const router = express.Router();
 

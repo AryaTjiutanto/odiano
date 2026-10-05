@@ -1,5 +1,5 @@
 import z from "zod";
-import { POST_COMMENT_CONTENT_LENGTH, POST_COMMENT_DEPTH } from "./postComment.const";
+import { POST_COMMENT_CONTENT_LENGTH, POST_COMMENT_DEPTH } from "./postComment.const.js";
 
 export const createPostCommentSchema = z.object({
     content: z.string()

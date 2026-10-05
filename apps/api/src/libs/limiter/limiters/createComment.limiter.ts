@@ -1,4 +1,4 @@
-import { createLimiter } from "../core/limiter.factory";
+import { createLimiter } from "../core/limiter.factory.js";
 
 const commentLimiter = createLimiter({
     duration : 1 * 30,

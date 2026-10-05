@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { REPORT_REASON_CODES } from "./reportReason.const";
-import { REPORT_TYPE } from "./reportType.const";
+import { REPORT_REASON_CODES } from "./reportReason.const.js";
+import { REPORT_TYPE } from "./reportType.const.js";
 
 export const createReport = z.object({
     reason : z.enum(Object.values(REPORT_REASON_CODES)),

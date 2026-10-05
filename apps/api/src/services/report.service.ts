@@ -1,14 +1,14 @@
 import { ACTIONS, NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE, NotificationData, PaginationQuery, POST_COMMENT_STATUS, POST_STATUS, REPORT_STATUS, REPORT_TYPE, ReportDTO, ReportReasonCode, ReportType, SUBJECTS, UserSummaryDTO } from "@odiano/shared";
-import Report from "../models/report.model";
+import Report from "../models/report.model.js";
 import mongoose, { Types } from "mongoose";
-import { REPORTS_PAGE_SIZE } from "../consts/report.const";
-import { PostCommentReportTargetSchema, PostReportTargetSchema, ReportAggregationQueryResult, UserReportTargetSchema } from "../types/report.type";
-import { toReportDTO } from "../mappers/report.mapper";
-import { User } from "../models/user.model";
-import { defineAbilityFor } from "../helpers/ability.helper";
-import { Post } from "../models/post.model";
-import PostComment from "../models/postComment.model";
-import { create as createNotification } from "./notification.service";
+import { REPORTS_PAGE_SIZE } from "../consts/report.const.js";
+import { PostCommentReportTargetSchema, PostReportTargetSchema, ReportAggregationQueryResult, UserReportTargetSchema } from "../types/report.type.js";
+import { toReportDTO } from "../mappers/report.mapper.js";
+import { User } from "../models/user.model.js";
+import { defineAbilityFor } from "../helpers/ability.helper.js";
+import { Post } from "../models/post.model.js";
+import PostComment from "../models/postComment.model.js";
+import { create as createNotification } from "./notification.service.js";
 
 export const createReport = async (currentUserId: string, reason: ReportReasonCode, type: ReportType, targetId: string) => {
     const isReportExists = await Report.exists({

@@ -1,6 +1,6 @@
-import "../bootstraps/env.bootstrap";
-import { connectDB } from "../bootstraps/db.bootstrap";
-import { createAdmin } from "./admin.seeder";
+import "../bootstraps/env.bootstrap.js";
+import { connectDB } from "../bootstraps/db.bootstrap.js";
+import { createAdmin } from "./admin.seeder.js";
 
 await connectDB();
 

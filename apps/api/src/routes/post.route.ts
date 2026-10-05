@@ -1,13 +1,13 @@
-import requireAccessToken from "../middlewares/requireAccessToken.middleware";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
 import express from "express"
-import { create as createPost, deletePost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller";
-import { createComment, deleteComment, getComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller";
+import { create as createPost, deletePost, getUserPosts, index as indexPost, show as showPost } from "../controllers/post.controller.js";
+import { createComment, deleteComment, getComment, getComments, getCurrentUserComments } from "../controllers/postComment.controller.js";
 import { createPostCommentSchema, createPostApiSchema } from "@odiano/shared";
-import { validateData } from "../middlewares/validateData.middleware";
-import optionalAuth from "../middlewares/optionalAuth.middleware";
-import { createPostLike, deletePostLike } from "../controllers/like.controller";
-import { apiLimiter, consume, createPostLimiter, likeLimiter, postIndexLimiter } from "../libs/limiter";
-import commentLimiter from "../libs/limiter/limiters/createComment.limiter";
+import { validateData } from "../middlewares/validateData.middleware.js";
+import optionalAuth from "../middlewares/optionalAuth.middleware.js";
+import { createPostLike, deletePostLike } from "../controllers/like.controller.js";
+import { apiLimiter, consume, createPostLimiter, likeLimiter, postIndexLimiter } from "../libs/limiter/index.js";
+import commentLimiter from "../libs/limiter/limiters/createComment.limiter.js";
 
 const router = express.Router();
 

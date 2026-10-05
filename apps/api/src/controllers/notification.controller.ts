@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import * as notificationService from "../services/notification.service";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { successResponseData } from "../utils/response.util";
+import * as notificationService from "../services/notification.service.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { successResponseData } from "../utils/response.util.js";
 import { ERROR_RESPONSE_CODE, InfiniteQuery, NOTIFICATION_READ_STATUS, NotificationDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import { AppError } from "../errors/appError.error";
+import { AppError } from "../errors/appError.error.js";
 
 export const get = async (req : Request, res : Response, next : NextFunction) => {
     const currentUserId = req.userId;

@@ -1,5 +1,5 @@
 import { HashTagSummaryDTO } from "@odiano/shared"
-import { HashTagSummaryQuery } from "../types/hashtag.type"
+import { HashTagSummaryQuery } from "../types/hashtag.type.js"
 
 export const toHashTagSummaryDTO = (hashtag: HashTagSummaryQuery): HashTagSummaryDTO => {
     return {

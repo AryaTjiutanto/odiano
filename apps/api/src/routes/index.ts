@@ -1,15 +1,15 @@
 import express from "express";
-import authRoutes from "./auth.route";
-import userRoutes from "./user.route";
-import uploadRoutes from "./upload.route";
-import postRoutes from "./post.route";
-import followingRoutes from "./following.route";
-import notificationRoutes from "./notification.route";
-import requireAccessToken from "../middlewares/requireAccessToken.middleware";
-import searchRoutes from "./search.route";
-import reportRoutes  from "./report.route";
-import { apiLimiter, consume, followingLimiter } from "../libs/limiter";
-import { reportLimiter } from "../libs/limiter/limiters/report.limiter";
+import authRoutes from "./auth.route.js";
+import userRoutes from "./user.route.js";
+import uploadRoutes from "./upload.route.js";
+import postRoutes from "./post.route.js";
+import followingRoutes from "./following.route.js";
+import notificationRoutes from "./notification.route.js";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
+import searchRoutes from "./search.route.js";
+import reportRoutes  from "./report.route.js";
+import { apiLimiter, consume, followingLimiter } from "../libs/limiter/index.js";
+import { reportLimiter } from "../libs/limiter/limiters/report.limiter.js";
 
 const router = express.Router();
 

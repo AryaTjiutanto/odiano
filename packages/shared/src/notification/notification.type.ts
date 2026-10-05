@@ -1,7 +1,7 @@
-import { AllowedMediaTypes, MediaAspectRatio } from "../post";
-import { ReportReasonCode, ReportStatus } from "../report";
-import { UserSummaryDTO } from "../user";
-import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "./notification.const";
+import { AllowedMediaTypes, MediaAspectRatio } from "../post/index.js";
+import { ReportReasonCode, ReportStatus } from "../report/index.js";
+import { UserSummaryDTO } from "../user/index.js";
+import { NOTIFICATION_TARGET_TYPE, NOTIFICATION_TYPE } from "./notification.const.js";
 
 // notification target data
 export type NotificationPostTarget = {

@@ -1,6 +1,6 @@
 import { NotificationDTO } from "@odiano/shared";
-import { NotificationQuery } from "../types/notification.type";
-import { toUserSummaryDTO } from "./user.mapper";
+import { NotificationQuery } from "../types/notification.type.js";
+import { toUserSummaryDTO } from "./user.mapper.js";
 
 export const toNotificationDTO = (data: NotificationQuery): NotificationDTO => {
     const notificationData = data.data;

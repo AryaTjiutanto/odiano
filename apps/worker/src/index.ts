@@ -1,5 +1,5 @@
-import logger from "./lib/log/logger";
-import { emailWorker } from "./worker/email.worker";
+import logger from "./lib/log/logger.js";
+import { emailWorker } from "./worker/email.worker.js";
 
 // email worker
 emailWorker.on("active", () => {

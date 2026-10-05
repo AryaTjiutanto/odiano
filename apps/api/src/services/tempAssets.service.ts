@@ -1,4 +1,4 @@
-import cloudinary from "../config/cloudinary.config"
+import cloudinary from "../config/cloudinary.config.js"
 
 export const deleteExpiredTempAssets = async () => {
     console.log("Running temp clenup job");

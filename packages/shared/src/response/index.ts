@@ -1,2 +1,2 @@
-export * from "./response.const";
-export * from "./response.type";
+export * from "./response.const.js";
+export * from "./response.type.js";

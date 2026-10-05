@@ -1,6 +1,6 @@
-import { HashTagSummaryDTO } from "../hashtag"
-import { UserSummaryDTO } from "../user"
-import { SEARCH_TYPES } from "./search.const";
+import { HashTagSummaryDTO } from "../hashtag/index.js"
+import { UserSummaryDTO } from "../user/index.js"
+import { SEARCH_TYPES } from "./search.const.js";
 
 
 export type SearchDTO = {

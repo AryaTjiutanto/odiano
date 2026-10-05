@@ -1,5 +1,5 @@
 import { UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
-import { UserProfileQuery, UserSummaryQuery } from "../types/user.type";
+import { UserProfileQuery, UserSummaryQuery } from "../types/user.type.js";
 
 export const toUserProfileDTO = (data : UserProfileQuery, isFollowing? : boolean | null | undefined) : UserProfileDTO => {
     return {

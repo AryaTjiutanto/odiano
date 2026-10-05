@@ -1,2 +1,2 @@
-export * from "./notification.const";
-export * from "./notification.type";
+export * from "./notification.const.js";
+export * from "./notification.type.js";

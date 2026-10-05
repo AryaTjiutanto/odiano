@@ -1,16 +1,16 @@
 import { SEARCH_TYPES, SearchHistoryDTO, SearchTypes } from "@odiano/shared";
-import { SEARCH_HISTORY_LIMIT } from "../consts/searchHistory.const"
-import { User } from "../models/user.model";
-import { UserSummaryQuery } from "../types/user.type";
-import { searchHistoryQuery } from "../types/searchHistory.type";
-import { toUserSummaryDTO } from "../mappers/user.mapper";
-import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper";
-import { SearchHistory } from "../models/searchHistory.model";
+import { SEARCH_HISTORY_LIMIT } from "../consts/searchHistory.const.js"
+import { User } from "../models/user.model.js";
+import { UserSummaryQuery } from "../types/user.type.js";
+import { searchHistoryQuery } from "../types/searchHistory.type.js";
+import { toUserSummaryDTO } from "../mappers/user.mapper.js";
+import { toSearchHistoryDTO } from "../mappers/searchHistory.mapper.js";
+import { SearchHistory } from "../models/searchHistory.model.js";
 import mongoose from "mongoose";
-import { HashTagSummaryQuery } from "../types/hashtag.type";
-import HashTag from "../models/hashtag.model";
-import { toHashTagSummaryDTO } from "../mappers/hashtag.mapper";
-import logger from "../libs/log/logger";
+import { HashTagSummaryQuery } from "../types/hashtag.type.js";
+import HashTag from "../models/hashtag.model.js";
+import { toHashTagSummaryDTO } from "../mappers/hashtag.mapper.js";
+import logger from "../libs/log/logger.js";
 
 export const getSearchHistory = async (currentUserId : string) : Promise<SearchHistoryDTO[]> => {
     const searchHistories = await SearchHistory.find({user : currentUserId})

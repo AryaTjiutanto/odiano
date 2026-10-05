@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { verifyAccessToken } from "../libs/auth/auth.token";
+import { verifyAccessToken } from "../libs/auth/auth.token.js";
 
 export const socketAuth = (socket : Socket, next : Function) => {
     try {

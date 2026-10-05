@@ -1,11 +1,11 @@
 import express from "express";
-import { googleAuth, logout, me, refresh, resendEmailVerification, signin, signup, verifyEmail } from "../controllers/auth.controller";
-import { requireGuest } from "../middlewares/requireGuest.middleware";
-import requireAccessToken from "../middlewares/requireAccessToken.middleware";
-import { requireRefreshToken } from "../middlewares/requireRefreshToken.middleware";
-import { validateData } from "../middlewares/validateData.middleware";
+import { googleAuth, logout, me, refresh, resendEmailVerification, signin, signup, verifyEmail } from "../controllers/auth.controller.js";
+import { requireGuest } from "../middlewares/requireGuest.middleware.js";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
+import { requireRefreshToken } from "../middlewares/requireRefreshToken.middleware.js";
+import { validateData } from "../middlewares/validateData.middleware.js";
 import { authenticateUserSchema, createUserSchema } from "@odiano/shared";
-import { apiLimiter, consume, otpLimiter, refreshLimiter, signinLimiter, signupLimiter, verifyLimiter } from "../libs/limiter";
+import { apiLimiter, consume, otpLimiter, refreshLimiter, signinLimiter, signupLimiter, verifyLimiter } from "../libs/limiter/index.js";
 
 const router = express.Router();
 

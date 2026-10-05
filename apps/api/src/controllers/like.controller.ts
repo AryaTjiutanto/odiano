@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import * as likeServices from "../services/like.service";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { AppError } from "../errors/appError.error";
+import * as likeServices from "../services/like.service.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { AppError } from "../errors/appError.error.js";
 import { ERROR_RESPONSE_CODE, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import { successResponseData } from "../utils/response.util";
+import { successResponseData } from "../utils/response.util.js";
 
 export const createPostLike = async (req: Request, res: Response, next: NextFunction) => {
     const currentUserId = req.userId;

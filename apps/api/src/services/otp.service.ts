@@ -1,15 +1,15 @@
 import { AUTH_CACHE_KEYS, DEFAULT_OTP_EXPIRES_TIME, ERROR_RESPONSE_CODE, OtpChannels, OtpPurposes } from "@odiano/shared";
-import OTP from "../models/otp.model";
+import OTP from "../models/otp.model.js";
 import { customAlphabet } from "nanoid";
 import { emailQueue, EmailQueueData } from "@odiano/queue";
 import { render } from "@react-email/components";
 import React from "react";
 import { getCache, setCache } from "@odiano/redis";
-import { AppError } from "../errors/appError.error";
+import { AppError } from "../errors/appError.error.js";
 
 import bcrypt from "bcrypt";
-import logger from "../libs/log/logger";
-import VerifyEmail from "../emails/verifyEmail";
+import logger from "../libs/log/logger.js";
+import VerifyEmail from "../emails/verifyEmail.js";
 
 export const createAndSendOTP = async (target: string, channel: OtpChannels, purpose: OtpPurposes) => {
     // check send email verification attempt

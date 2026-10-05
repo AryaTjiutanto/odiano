@@ -1,4 +1,4 @@
-import { createLimiter } from "../core/limiter.factory";
+import { createLimiter } from "../core/limiter.factory.js";
 
 export const updateProfileLimiter = createLimiter({
     duration : 1 * 24 * 60 * 60,

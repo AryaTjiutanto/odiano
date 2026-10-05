@@ -6,15 +6,13 @@
   "private": true,
   "scripts": {
     "dev": "pnpm -r --parallel --stream run dev",
-    "build" : "pnpm -r build",
+    "build": "pnpm -r build",
     "test": "echo \"Error: no test specified\" && exit 1",
-
-    "build:client" : "pnpm --filter @odiano/client... build",
-    "build:api" : "pnpm --filter @odiano/api... build",
-    "build:worker" : "pnpm --filter @odiano/worker... build",
-
-    "start:api" : "pnpm --filter @odiano/api run start",
-    "start:worker" : "pnpm --filter @odiano/worker run start"
+    "build:client": "pnpm --filter @odiano/client... build",
+    "build:api": "pnpm --filter @odiano/api... build",
+    "build:worker": "pnpm --filter @odiano/worker... build",
+    "start:api": "pnpm --filter @odiano/api run start",
+    "start:worker": "pnpm --filter @odiano/worker run start"
   },
   "keywords": [],
   "author": "",

@@ -1,8 +1,8 @@
 import mongoose, { ClientSession } from "mongoose";
-import HashTag from "../models/hashtag.model"
+import HashTag from "../models/hashtag.model.js"
 import { HashTagSummaryDTO } from "@odiano/shared";
-import { HashTagSummaryQuery } from "../types/hashtag.type";
-import { toHashTagSummaryDTO } from "../mappers/hashtag.mapper";
+import { HashTagSummaryQuery } from "../types/hashtag.type.js";
+import { toHashTagSummaryDTO } from "../mappers/hashtag.mapper.js";
 
 const hashTagRegex = /^[\p{L}\p{N}_]+$/u;
 

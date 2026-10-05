@@ -1,2 +1,2 @@
-export * from "./limiters/index"
-export * from "./middlewares/consume.middleware"
+export * from "./limiters/index.js"
+export * from "./middlewares/consume.middleware.js"

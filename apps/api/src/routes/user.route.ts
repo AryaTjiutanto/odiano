@@ -1,10 +1,10 @@
 import express from "express";
-import requireAccessToken from "../middlewares/requireAccessToken.middleware";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
 import { createUserProfileSchema, updateUserProfile } from "@odiano/shared";
-import { validateData } from "../middlewares/validateData.middleware";
-import { checkUsernameAvailability, getUserFollowers, getUserFollowing, getUserMutuals, getUserProfile, onboarding, suggestions, updateProfile } from "../controllers/user.controller";
-import { apiLimiter, consume, searchLimiter } from "../libs/limiter";
-import optionalAuth from "../middlewares/optionalAuth.middleware";
+import { validateData } from "../middlewares/validateData.middleware.js";
+import { checkUsernameAvailability, getUserFollowers, getUserFollowing, getUserMutuals, getUserProfile, onboarding, suggestions, updateProfile } from "../controllers/user.controller.js";
+import { apiLimiter, consume, searchLimiter } from "../libs/limiter/index.js";
+import optionalAuth from "../middlewares/optionalAuth.middleware.js";
 
 const router = express.Router();
 

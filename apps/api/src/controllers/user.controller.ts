@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../errors/appError.error";
-import * as userServices from "../services/user.service";
-import { ReqBody } from "../types/request.type";
+import { AppError } from "../errors/appError.error.js";
+import * as userServices from "../services/user.service.js";
+import { ReqBody } from "../types/request.type.js";
 import { CreateUserProfileSchema, InfiniteQuery, SUCCESS_RESPONSE_CODE, UpdateUserProfile, UserMutualsDTO, UserProfileDTO, UserSummaryDTO } from "@odiano/shared";
-import { successResponseData } from "../utils/response.util";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import { successResponseData } from "../utils/response.util.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 
 export const onboarding = async (req: ReqBody<CreateUserProfileSchema>, res: Response, next: NextFunction) => {
     try {

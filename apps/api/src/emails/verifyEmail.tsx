@@ -9,7 +9,7 @@ import {
     Section,
     Text,
 } from "@react-email/components";
-import { formatDuration } from "../utils/formatDurration";
+import { formatDuration } from "../utils/formatDurration.js";
 
 type VerifyEmailProps = {
     code: string;

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import * as postServices from "../services/post.service";
-import { ReqBody } from "../types/request.type";
+import * as postServices from "../services/post.service.js";
+import { ReqBody } from "../types/request.type.js";
 import { CreatedDocumentId, CreatePostSchema, InfiniteQuery, PostDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import { successResponseData } from "../utils/response.util";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import { successResponseData } from "../utils/response.util.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 
 export const index = async(req: Request, res: Response, next: NextFunction) => {
     const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;

@@ -1,1 +1,1 @@
-export * from "./hashtag.type";
+export * from "./hashtag.type.js";

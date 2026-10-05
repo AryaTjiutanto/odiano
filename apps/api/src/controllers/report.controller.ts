@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { ReqBody } from "../types/request.type";
+import { ReqBody } from "../types/request.type.js";
 import { CreateReport, PaginationQuery, ReportDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
-import * as reportService from "../services/report.service";
-import { UnauthorizedError } from "../errors/unauthorized.error";
-import { successResponseData } from "../utils/response.util";
+import * as reportService from "../services/report.service.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import { successResponseData } from "../utils/response.util.js";
 
 export const getAll = async(req : Request, res : Response, next : NextFunction) => {
     const { status, page, withPagination } = req.query;

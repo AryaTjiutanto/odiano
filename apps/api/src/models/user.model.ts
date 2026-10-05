@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { ImageAsset } from "../types/user.type";
-import { AUTH_PROVIDERS, AuthProviders } from "../consts/user.const";
+import { ImageAsset } from "../types/user.type.js";
+import { AUTH_PROVIDERS, AuthProviders } from "../consts/user.const.js";
 import { Role, ROLES } from "@odiano/shared";
 
 // types for schema

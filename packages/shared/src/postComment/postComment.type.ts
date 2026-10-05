@@ -1,4 +1,4 @@
-import { UserSummaryDTO } from "../user"
+import { UserSummaryDTO } from "../user/index.js"
 
 export type PostCommentDTO = {
     id : string,

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../errors/appError.error";
+import { AppError } from "../errors/appError.error.js";
 import { ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, SearchSuggestionDTO, SUCCESS_RESPONSE_CODE, UserSummaryDTO } from "@odiano/shared";
-import * as searchService from "../services/search.service";
-import { successResponseData } from "../utils/response.util";
-import { UnauthorizedError } from "../errors/unauthorized.error";
+import * as searchService from "../services/search.service.js";
+import { successResponseData } from "../utils/response.util.js";
+import { UnauthorizedError } from "../errors/unauthorized.error.js";
 
 export const getPostsSearchResult = async (req : Request, res : Response, next : NextFunction) => {
     const currentUserId = req.userId;

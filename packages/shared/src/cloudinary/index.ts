@@ -1,1 +1,1 @@
-export * from "./cloudinary.type";
+export * from "./cloudinary.type.js";

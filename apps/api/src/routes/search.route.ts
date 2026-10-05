@@ -1,10 +1,10 @@
 import express from "express";
-import { deleteAllHistory, deleteHistory, get as getSearchHistory, record } from "../controllers/searchHistory.controller";
-import { apiLimiter, consume, searchLimiter } from "../libs/limiter";
-import { validateData } from "../middlewares/validateData.middleware";
-import { searchQuerySchema } from "../validations/search.validation";
-import requireAccessToken from "../middlewares/requireAccessToken.middleware";
-import { getPostsSearchResult, getSuggestions, getUsersSearchResult } from "../controllers/search.controller";
+import { deleteAllHistory, deleteHistory, get as getSearchHistory, record } from "../controllers/searchHistory.controller.js";
+import { apiLimiter, consume, searchLimiter } from "../libs/limiter/index.js";
+import { validateData } from "../middlewares/validateData.middleware.js";
+import { searchQuerySchema } from "../validations/search.validation.js";
+import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
+import { getPostsSearchResult, getSuggestions, getUsersSearchResult } from "../controllers/search.controller.js";
 
 const router = express.Router();
 

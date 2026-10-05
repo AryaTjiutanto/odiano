@@ -1,9 +1,9 @@
 import { ERROR_RESPONSE_CODE, InfiniteQuery, PostDTO, SEARCH_TYPES, SearchSuggestionDTO, UserSummaryDTO } from "@odiano/shared";
-import { getHashtags } from "./hashtag.service";
-import { AppError } from "../errors/appError.error";
-import { listPostsByHashtag, searchPosts } from "./post.service";
-import { searchUsers } from "./user.service";
-import { searchOptions } from "../types/search.type";
+import { getHashtags } from "./hashtag.service.js";
+import { AppError } from "../errors/appError.error.js";
+import { listPostsByHashtag, searchPosts } from "./post.service.js";
+import { searchUsers } from "./user.service.js";
+import { searchOptions } from "../types/search.type.js";
 
 export const getPostsSearchResult = async (query: string | undefined, cursor: string | undefined, currentUserId: string, options : searchOptions): Promise<InfiniteQuery<PostDTO[]>> => {
     if (!query) {

@@ -1,6 +1,6 @@
 import { REPORT_REASON_CODES, REPORT_STATUS } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
-import { ReportSchema } from "../types/report.type";
+import { ReportSchema } from "../types/report.type.js";
 
 const reportSchema = new Schema<ReportSchema>({
     reason: {

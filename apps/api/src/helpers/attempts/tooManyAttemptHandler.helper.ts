@@ -1,6 +1,6 @@
 import { ERROR_RESPONSE_CODE, TooManyRequestError } from "@odiano/shared";
 import { getCachePTTL } from "@odiano/redis";
-import { AppError } from "../../errors/appError.error";
+import { AppError } from "../../errors/appError.error.js";
 
 type Params = {
     cacheKey : string,

@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose"
-import { LIKE_TYPES, LikeTypes } from "../consts/like.const";
+import { LIKE_TYPES, LikeTypes } from "../consts/like.const.js";
 
 type LikeSchema = {
     user: Types.ObjectId,

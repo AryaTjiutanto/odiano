@@ -1,8 +1,8 @@
-import { PostMedia } from "../post";
-import { UserProfileImageDTO, UserSummaryDTO } from "../user";
-import { ReportReasonCode } from "./reportReason.const";
-import { ReportStatus } from "./reportStatus.const";
-import { REPORT_TYPE } from "./reportType.const";
+import { PostMedia } from "../post/index.js";
+import { UserProfileImageDTO, UserSummaryDTO } from "../user/index.js";
+import { ReportReasonCode } from "./reportReason.const.js";
+import { ReportStatus } from "./reportStatus.const.js";
+import { REPORT_TYPE } from "./reportType.const.js";
 
 export type ReportPostTarget = {
     type: typeof REPORT_TYPE.POST,

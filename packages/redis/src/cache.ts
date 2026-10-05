@@ -1,4 +1,4 @@
-import { getRedis } from "./client";
+import { getRedis } from "./client.js";
 
 type CacheOptions = {
     NX? : boolean,

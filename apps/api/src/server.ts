@@ -1,9 +1,9 @@
-import "./bootstraps/env.bootstrap";
-import { connectDB } from "./bootstraps/db.bootstrap";
-import { startDeleteExpiredTempAssets } from "./jobs/deleteTempAssets";
+import "./bootstraps/env.bootstrap.js";
+import { connectDB } from "./bootstraps/db.bootstrap.js";
+import { startDeleteExpiredTempAssets } from "./jobs/deleteTempAssets.js";
 import { createServer } from "http";
-import app from "./app";
-import { initializeSocket } from "./socket";
+import app from "./app.js";
+import { initializeSocket } from "./socket/index.js";
 
 const PORT = process.env.PORT || "5050";
 

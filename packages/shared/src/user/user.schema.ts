@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BIO_LENGTH, NAME_LENGTH, PASSWORD_LENGTH, USERNAME_LENGTH } from "./user.const";
+import { BIO_LENGTH, NAME_LENGTH, PASSWORD_LENGTH, USERNAME_LENGTH } from "./user.const.js";
 
 export const createUserSchema = z.object({
     email: z.string()

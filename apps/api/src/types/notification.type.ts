@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { UserSummaryQuery } from "./user.type";
+import { UserSummaryQuery } from "./user.type.js";
 import { Notification } from "@odiano/shared";
 
 export type NotificationSchema = Omit<Notification, "recepient"> & {

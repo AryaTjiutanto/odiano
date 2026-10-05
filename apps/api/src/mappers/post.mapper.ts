@@ -1,6 +1,6 @@
 import { PostDTO } from "@odiano/shared";
-import { type PostQuery } from "../types/post.type";
-import { toUserSummaryDTO } from "./user.mapper";
+import { type PostQuery } from "../types/post.type.js";
+import { toUserSummaryDTO } from "./user.mapper.js";
 
 type AdditionalData = {
     isLiked : boolean,

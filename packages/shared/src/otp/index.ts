@@ -1,1 +1,1 @@
-export * from "./otp.const"
+export * from "./otp.const.js"

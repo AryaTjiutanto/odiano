@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, POST_MAX_TAGS, POST_VISIBILITIES } from "./post.const";
-import { MediaSource, Post, PostMedia } from "./post.type";
+import { ALLOWED_MEDIA_PROVIDERS, ALLOWED_MEDIA_TYPES, MEDIA_ASPECT_RATIO, POST_CONTENT_LENGTH, POST_MAX_MEDIA, POST_MAX_TAGS, POST_VISIBILITIES } from "./post.const.js";
+import { MediaSource, Post, PostMedia } from "./post.type.js";
 
 const mediaSourceSchema = z.object({
     publicId: z

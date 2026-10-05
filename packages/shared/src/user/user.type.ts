@@ -1,4 +1,4 @@
-import { Role } from "../authorization"
+import { Role } from "../authorization/index.js"
 
 export type UserProfileImageDTO = {
     url: string,
