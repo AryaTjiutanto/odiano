@@ -1,4 +1,4 @@
-import { BarChart3, LayoutDashboard, Settings, ShoppingBag, Users, X } from "lucide-react";
+import { LayoutDashboard, X } from "lucide-react";
 import { useState } from "react";
 import { useDashboard } from "../../../providers/DashboardProvider";
 

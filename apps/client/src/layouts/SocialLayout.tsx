@@ -1,5 +1,5 @@
 import LeftSidebar from "../components/social/sidebar/LeftSidebar";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { registerNotificationListeners, unregisterNotificationListeners } from "../features/notification/notification.socket";
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
@@ -9,13 +9,12 @@ import { getUnreadNotificationCount } from "../features/notification/notificatio
 import { useReportForm } from "../providers/ReportFormProvider";
 import ModalSuspenseFallback from "../components/modal/SuspenseFallback";
 import MobileHeader from "../components/social/MobileHeader";
-import { Outlet } from "react-router-dom";
 
 const PostFormModal = lazy(() => import("../components/modal/PostFormModal"))
 
 const ReportFormModal = lazy(() => import("../components/modal/ReportFormModal"));
 
-const SocialLayout = () => {
+const SocialLayout = ({children} : {children : ReactNode}) => {
     const dispatch = useAppDispatch();
     const postForm = usePostForm();
     const reportForm = useReportForm();
@@ -59,7 +58,7 @@ const SocialLayout = () => {
 
                         {/* main */}
                         <main className="sm:col-span-8 md:col-span-5 lg:col-span-6 xl:col-span-7 2xl:col-span-5 pb-16 sm:pb-0 min-w-0">
-                            <Outlet/>
+                            {children}
                         </main>
 
                         {/* right sidebar */}

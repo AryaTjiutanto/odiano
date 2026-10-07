@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type MouseEvent } from "react";
+import { createContext, useContext, useEffect, useState, type FormEvent, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type StackType = {
@@ -11,7 +11,7 @@ type StackContextType = {
     stack: StackType[],
     pop: () => void,
     setCurrentStackScrollY : (position : number) => void,
-    pushStack : (e : React.MouseEvent<HTMLAnchorElement, MouseEvent>, to: string) => void,
+    pushStack : (e : MouseEvent<HTMLAnchorElement | HTMLButtonElement> | FormEvent<HTMLFormElement>, to: string) => void,
     resetStack : () => void,
 }
 
@@ -61,7 +61,7 @@ export const StackProvider = ({ children }: { children: React.ReactNode }) => {
         navigate(-1);
     }
 
-    function pushStack (e : MouseEvent<HTMLAnchorElement, MouseEvent> | MouseEvent<HTMLButtonElement, MouseEvent>, to: string) {
+    function pushStack (e : MouseEvent<HTMLAnchorElement | HTMLButtonElement> | FormEvent<HTMLFormElement>, to: string) {
         e.preventDefault();
         e.stopPropagation();
 

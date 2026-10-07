@@ -6,7 +6,7 @@ import "swiper/css/pagination";
 import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Props = {
@@ -14,6 +14,12 @@ type Props = {
 };
 
 const PostMedia = ({ media }: Props) => {
+    const [isBeginning, setIsBeginning] = useState(true);
+    const [isEnd, setIsEnd] = useState(false);
+
+    const prevButtonRef = useRef<HTMLButtonElement>(null);
+    const nextButtonRef = useRef<HTMLButtonElement>(null);
+
     if (!media || media.length === 0) return null;
 
     if (media.length === 1) {
@@ -26,7 +32,7 @@ const PostMedia = ({ media }: Props) => {
                     style={{
                         ...(item.aspectRatio !== MEDIA_ASPECT_RATIO["original"] && { aspectRatio: item.aspectRatio }),
                     }}
-                    onClick={(e: any) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {item.type === "image" && (
                         <img
@@ -43,7 +49,7 @@ const PostMedia = ({ media }: Props) => {
                             controls
                             controlsList="nodownload nopictureinpicture"
                             disablePictureInPicture
-                            onContextMenu={(e: any) => e.preventDefault()}
+                            onContextMenu={(e) => e.preventDefault()}
                         />
                     )}
                 </div>
@@ -51,20 +57,14 @@ const PostMedia = ({ media }: Props) => {
         );
     }
 
-    const [isBeginning, setIsBeginning] = useState(true);
-    const [isEnd, setIsEnd] = useState(false);
-
     const updateSwiperState = (swiper: SwiperType) => {
         setIsBeginning(swiper.isBeginning);
         setIsEnd(swiper.isEnd);
     };
 
-    const prevButtonRef = useRef<HTMLButtonElement>(null);
-    const nextButtonRef = useRef<HTMLButtonElement>(null);
-
     return (
 
-        <div className="mt-8 w-full min-w-0 overflow-hidden relative" onClick={(e: any) => e.stopPropagation()}>
+        <div className="mt-8 w-full min-w-0 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
             <Swiper
                 modules={[Navigation, Pagination]}
                 slidesPerView="auto"
@@ -87,7 +87,7 @@ const PostMedia = ({ media }: Props) => {
                     "--swiper-pagination-bullet-inactive-opacity": "1",
                     "--swiper-pagination-bullet-size": "16px",
                     "--swiper-pagination-bullet-horizontal-gap": "6px"
-                }}
+                } as CSSProperties}
             >
                 {media.map((item, index) => (
                     <SwiperSlide key={index} style={{
@@ -122,10 +122,10 @@ const PostMedia = ({ media }: Props) => {
             </Swiper>
 
             {/* navigation */}
-            <button ref={prevButtonRef} className={`absolute top-0 bottom-0 my-auto left-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isBeginning ? "opacity-0" : "opacity-100"}`} onClick={(e: any) => e.stopPropagation()}>
+            <button ref={prevButtonRef} className={`absolute top-0 bottom-0 my-auto left-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isBeginning ? "opacity-0" : "opacity-100"}`} onClick={(e) => e.stopPropagation()}>
                 <ChevronLeft />
             </button>
-            <button ref={nextButtonRef} className={`absolute top-0 bottom-0 my-auto right-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isEnd ? "opacity-0" : "opacity-100"}`} onClick={(e: any) => e.stopPropagation()}>
+            <button ref={nextButtonRef} className={`absolute top-0 bottom-0 my-auto right-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isEnd ? "opacity-0" : "opacity-100"}`} onClick={(e) => e.stopPropagation()}>
                 <ChevronRight />
             </button>
         </div>

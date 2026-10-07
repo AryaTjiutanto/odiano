@@ -1,16 +1,11 @@
-import { useNavigate } from "react-router-dom"
-import Profile from "../../profile/Profile"
 import { userKeys } from "../../../queries/userKeys";
 import { useQuery } from "@tanstack/react-query";
 import { getSuggestedUsers } from "../../../services/user.service";
 import { DEFAULT_GC_TIME } from "../../../consts/queryTime.const";
-import FollowingButton from "../../social/FollowingButton";
 import UserSummarySkeletonLoading from "../../user/UserSummarySkeletonLoading";
 import UserSummary from "../../user/UserSummary";
 
 const LargeUserSuggestions = () => {
-    const navigate = useNavigate();
-
     // query
     const userQuery = useQuery({
         queryKey: userKeys.exploreSuggestions,

@@ -1,7 +1,6 @@
 import { type PostDTO, type UserSummaryDTO } from "@odiano/shared";
 import { Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
 import Profile from "../profile/Profile";
 import PostMenu from "../floating-menu/PostMenu";
 import PostMedia from "./PostMedia";
