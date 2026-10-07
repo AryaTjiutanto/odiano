@@ -15,6 +15,6 @@ export const connectDB = async () => {
             logger.info("Mongodb successfully connected");
         })
         .catch((err) => {
-            logger.error("Failed to odiano to mongodb : ", err);
+            logger.error("Failed to connect to mongodb : ", err);
         })
 }
