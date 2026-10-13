@@ -1,6 +1,6 @@
 import { offset, shift, useDismiss, useFloating, useFocus, useInteractions } from "@floating-ui/react";
 import { Search } from "lucide-react";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { searchKeys } from "../../queries/searchKeys";
@@ -8,7 +8,6 @@ import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
 import { getSearchSuggestions } from "../../services/search.service";
 import { useSearchInputContext } from "../../providers/SearchInputProvider";
 import { SEARCH_TYPES } from "@odiano/shared";
-import { useNavigate } from "react-router-dom";
 import { useStackProvider } from "../../providers/StackProvider";
 
 type Props = {
@@ -22,8 +21,7 @@ const SearchOverlay = lazy(() =>
 )
 
 const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => {
-    const { query, setQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
-    const navigate = useNavigate();
+    const { query, handleSetQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
     const { pushStack } = useStackProvider();
 
     const debounceValue = useDebounce<string>(query);
@@ -83,7 +81,8 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
                         <Search className="w-4" />
                     </button>
                     <input className={`flex-1 w-full h-full default-input-text-behaviour ${searchIconPosition == "right" && "px-4"}`} placeholder="Search..." value={query} onChange={(e) => {
-                        setQuery(e.target.value)
+                        console.log(e.target.value);
+                        handleSetQuery(e.target.value)
                     }} />
                 </div>
             </form>

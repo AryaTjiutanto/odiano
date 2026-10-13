@@ -6,14 +6,13 @@ import { useLocation } from "react-router-dom";
 
 const HomeHeader = () => {
     const location = useLocation();
-    const {setQuery} = useSearchInputContext();
+    const {handleSetQuery, query} = useSearchInputContext();
     const isInitialized = useAppSelector(state => state.auth.isInitialized);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
 
     useEffect(() => {
         if(location.pathname != "/") return;
-        setQuery("");
-    }, [location, setQuery])
+    }, [location, handleSetQuery, query])
 
     return (
         <>

@@ -16,7 +16,6 @@ const Search = () => {
 
     useEffect(() => {
         document.title = `${searchQuery || "Search"} - Odiano`;
-        searchInputContext.setQuery(searchQuery || "");
     }, [searchQuery, searchInputContext]);
 
     if(!searchQuery) return <></>

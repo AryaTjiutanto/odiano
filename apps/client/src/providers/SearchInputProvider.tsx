@@ -8,7 +8,7 @@ import { useAppSelector } from "../hooks/useRedux";
 
 type SearchInputContextType = {
     query: string,
-    setQuery: React.Dispatch<React.SetStateAction<string>>,
+    handleSetQuery: (query: string) => void,
     isSearchPanelOpen: boolean,
     setIsSearchPanelOpen: React.Dispatch<React.SetStateAction<boolean>>,
     handleSearch: (query: string, fn?: () => void) => void,
@@ -65,10 +65,15 @@ export const SearchInputProvider = ({ children }: any) => {
         await historyMutation.mutateAsync(data);
     }
 
+    const handleSetQuery = (query: string) => {
+        console.log(query);
+        setQuery(query);
+    }
+
     return (
         <SearchInputContext.Provider value={{
             query,
-            setQuery,
+            handleSetQuery,
             isSearchPanelOpen,
             setIsSearchPanelOpen,
             handleSearch,
