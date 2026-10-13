@@ -66,7 +66,6 @@ export const SearchInputProvider = ({ children }: any) => {
     }
 
     const handleSetQuery = (query: string) => {
-        console.log(query);
         setQuery(query);
     }
 

@@ -11,21 +11,17 @@ import { SEARCH_TYPES } from "@odiano/shared";
 import { useStackProvider } from "../../providers/StackProvider";
 
 type Props = {
-    searchIconPosition? : "left" | "right",
-    width? : "full" | "small",
+    searchIconPosition?: "left" | "right",
+    width?: "full" | "small",
 }
 
 // search overlay - lazy loading
-const SearchOverlay = lazy(() => 
+const SearchOverlay = lazy(() =>
     import("./SearchOverlay")
 )
 
-const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => {
-<<<<<<< HEAD
-    const { query, handleSetQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
-=======
-    const { query, setQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
->>>>>>> 65be89e43223489c112c6a70ced76bd9337289ed
+const SearchInput = ({ searchIconPosition = "left", width = "small" }: Props) => {
+    const { query, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation, handleSetQuery } = useSearchInputContext();
     const { pushStack } = useStackProvider();
 
     const debounceValue = useDebounce<string>(query);
@@ -44,7 +40,7 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
         placement: searchIconPosition == "right" ? "bottom-end" : "bottom-start",
         middleware: [
             shift(),
-            offset(10),  
+            offset(10),
         ],
         open: isSearchPanelOpen,
         onOpenChange: setIsSearchPanelOpen,
@@ -56,10 +52,10 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
     const { getFloatingProps, getReferenceProps } = useInteractions([dismiss, focus])
 
     // handle submit
-    const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if(!query || query.length <= 0) return;
+        if (!query || query.length <= 0) return;
 
         handleSearch(query, () => handleMutation({
             type: SEARCH_TYPES.GENERAL,
@@ -67,7 +63,7 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
             keyword: query,
         }))
 
-       pushStack(e, `/search?${new URLSearchParams({
+        pushStack(e, `/search?${new URLSearchParams({
             q: query,
         }).toString()}`);
     }
@@ -75,7 +71,7 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
     return (
         <>
             <Suspense>
-                <SearchOverlay searchQueryData={searchQuery.data} floatingStyles={floatingStyles} floatingProps={getFloatingProps()} isSearchQueryPending={searchQuery.isPending} ref={refs.setFloating}/>
+                <SearchOverlay searchQueryData={searchQuery.data} floatingStyles={floatingStyles} floatingProps={getFloatingProps()} isSearchQueryPending={searchQuery.isPending} ref={refs.setFloating} />
             </Suspense>
 
             {/* search input */}
@@ -85,7 +81,6 @@ const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => 
                         <Search className="w-4" />
                     </button>
                     <input className={`flex-1 w-full h-full default-input-text-behaviour ${searchIconPosition == "right" && "px-4"}`} placeholder="Search..." value={query} onChange={(e) => {
-                        console.log(e.target.value);
                         handleSetQuery(e.target.value)
                     }} />
                 </div>

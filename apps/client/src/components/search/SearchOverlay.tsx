@@ -21,7 +21,7 @@ type Props = {
 }
 
 const SearchOverlay = forwardRef<HTMLDivElement, Props>(({ floatingStyles, floatingProps, isSearchQueryPending, searchQueryData }, ref) => {
-    const { query, isSearchPanelOpen } = useSearchInputContext();
+    const { isSearchPanelOpen, query } = useSearchInputContext();
     const isInitialized = useAppSelector((state) => state.auth.isInitialized);
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const setQueryDataHandler = useSetQueryDataHandler();
