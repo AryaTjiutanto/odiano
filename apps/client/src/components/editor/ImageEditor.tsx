@@ -4,8 +4,6 @@ import Cropper from "react-easy-crop";
 import DotsLoader from "../loader/DotsLoader";
 import { MEDIA_ASPECT_RATIO, type MediaAspectRatio } from "@odiano/shared";
 import type { FileEditData, FileEditResult, ImageEditorOptions } from "../../types/file.type";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode } from "swiper/modules";
 
 type Payload = {
     handleComplete: (result: FileEditResult) => void,

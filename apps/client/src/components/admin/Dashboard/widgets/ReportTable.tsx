@@ -1,6 +1,6 @@
 import { MEDIA_ASPECT_RATIO, REPORT_STATUS, REPORT_TYPE, type PaginationData, type ReportDTO, type ReportStatus } from "@odiano/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { reportKeys } from "../../../../queries/reportKeys";
 import { getReportList, processReport, takeAction } from "../../../../services/report.service";
 import { DEFAULT_GC_TIME } from "../../../../consts/queryTime.const";
@@ -48,14 +48,14 @@ const ReportTable = () => {
     })
 
     // pagination query
-    const reportPaginationQuery = useQuery<PaginationData | undefined>({
-        queryKey: reportKeys.list(activeTab),
-        queryFn: () => {
-            return queryClient.getQueryData(reportKeys.pagination(activeTab));
-        },
-        staleTime: 60 * 1000,
-        gcTime: DEFAULT_GC_TIME,
-    });
+    // const reportPaginationQuery = useQuery<PaginationData | undefined>({
+    //     queryKey: reportKeys.list(activeTab),
+    //     queryFn: () => {
+    //         return queryClient.getQueryData(reportKeys.pagination(activeTab));
+    //     },
+    //     staleTime: 60 * 1000,
+    //     gcTime: DEFAULT_GC_TIME,
+    // });
 
     // mutation contructor
     const updateReportStatusMutation = (currentStatus: ReportStatus, targetStatus: ReportStatus, mutationFn: (report: string) => Promise<boolean>) => useMutation<boolean, Error, ReportDTO, ProccessReportMutationData>({

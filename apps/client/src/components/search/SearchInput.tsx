@@ -21,7 +21,11 @@ const SearchOverlay = lazy(() =>
 )
 
 const SearchInput = ({searchIconPosition = "left", width = "small"} : Props) => {
+<<<<<<< HEAD
     const { query, handleSetQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
+=======
+    const { query, setQuery, isSearchPanelOpen, setIsSearchPanelOpen, handleSearch, handleMutation } = useSearchInputContext();
+>>>>>>> 65be89e43223489c112c6a70ced76bd9337289ed
     const { pushStack } = useStackProvider();
 
     const debounceValue = useDebounce<string>(query);
