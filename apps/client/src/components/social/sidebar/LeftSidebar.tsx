@@ -43,7 +43,7 @@ const LeftSidebar = () => {
                                         </StackLink>
                                     </li>
                                     <li className="w-full">
-                                        <StackLink to="/explore">
+                                        <StackLink onClick={() => handleSetQuery("")} to="/explore">
                                             <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes("explore") && "text-white font-semibold"} duration-100`}>
                                                 <Search className="size-7 w-fit xl:size-auto" />
                                                 <span className="hidden xl:inline-block">
