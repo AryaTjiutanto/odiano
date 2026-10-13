@@ -1,17 +1,24 @@
-import type { ReactNode } from "react"
+import type { MouseEvent, ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { useStackProvider } from "../../providers/StackProvider";
 
 type Props = {
     children: ReactNode,
     to: string,
+    onClick? : () => void,
 }
 
-const StackLink = ({ children, to }: Props) => {
+const StackLink = ({ children, to,  onClick}: Props) => {
     const {pushStack} = useStackProvider();
 
+    const clickHandler = (e : MouseEvent<HTMLAnchorElement>) => {
+        if(onClick) onClick();
+
+        return pushStack(e, to)
+    }
+
     return (
-        <Link to={to} onClick={(e) => pushStack(e, to)} className="cursor-pointer">
+        <Link to={to} onClick={clickHandler} className="cursor-pointer">
             {children}
         </Link>
     )

@@ -5,8 +5,10 @@ import UserMenu from "./UserMenu";
 import { usePostForm } from "../../../providers/PostFormProvider";
 import { useAppSelector } from "../../../hooks/useRedux";
 import StackLink from "../../stack/StackLink";
+import { useSearchInputContext } from "../../../providers/SearchInputProvider";
 
 const LeftSidebar = () => {
+    const {handleSetQuery} = useSearchInputContext();
     const postForm = usePostForm();
 
     const unreadNotificationCount = useAppSelector((state) => state.notification.unreadCount);
@@ -31,7 +33,7 @@ const LeftSidebar = () => {
                             <nav className="mt-20 xl:mt-16 w-full">
                                 <ul className="w-full space-y-7 xl:space-y-5 text-neutral-200">
                                     <li className="w-full">
-                                        <StackLink to="/">
+                                        <StackLink onClick={() => handleSetQuery("")} to="/">
                                             <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName == "/" && "text-white font-semibold"} duration-100`}>
                                                 <Home className="size-7 w-fit xl:size-auto" />
                                                 <span className="hidden xl:inline-block">

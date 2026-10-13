@@ -2,14 +2,17 @@ import { Outlet } from "react-router-dom";
 import ReportFormProvider from "../providers/ReportFormProvider";
 import { PostFormProvider } from "../providers/PostFormProvider";
 import SocialLayout from "./SocialLayout";
+import { SearchInputProvider } from "../providers/SearchInputProvider";
 
 const SocialWrapper = () => {
     return (
         <ReportFormProvider>
             <PostFormProvider>
-                <SocialLayout>
-                    <Outlet/>
-                </SocialLayout>
+                <SearchInputProvider>
+                    <SocialLayout>
+                        <Outlet />
+                    </SocialLayout>
+                </SearchInputProvider>
             </PostFormProvider>
         </ReportFormProvider>
     )

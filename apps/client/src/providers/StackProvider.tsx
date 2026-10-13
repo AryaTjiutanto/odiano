@@ -25,7 +25,7 @@ export const StackProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         setStack(prev => {
-            const index = prev.findIndex(item => item.location.pathname == location.pathname);
+            const index = prev.findIndex(item => item.location.pathname == location.pathname && item.location.search == location.search);
 
             if (index > -1) {
                 const data = [...prev.slice(0, index + 1)]

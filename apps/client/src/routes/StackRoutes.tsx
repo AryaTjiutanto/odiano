@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import SearchWrapper from "../layouts/SearchWrapper";
 import ExploreLayout from "../layouts/ExploreLayout";
 import Explore from "../pages/Social/Explore";
 import Homepage from "../pages/Social/Home";
@@ -27,16 +26,14 @@ const StackRoutes = () => {
 
                     return (
                         <Routes location={item.location}>
-                            <Route element={<StackWrapper isTop={isTop}/>}>
+                            <Route element={<StackWrapper isTop={isTop} />}>
                                 {/* social */}
-                                <Route element={<SearchWrapper />}>
-                                    <Route element={<ExploreLayout />}>
-                                        <Route path='/explore' element={<Explore />} />
-                                        <Route path='/search' element={<Search />} />
-                                    </Route>
-
-                                    <Route path='/' element={<Homepage />} />
+                                <Route element={<ExploreLayout />}>
+                                    <Route path='/explore' element={<Explore />} />
+                                    <Route path='/search' element={<Search />} />
                                 </Route>
+
+                                <Route path='/' element={<Homepage />} />
 
                                 {/* post */}
                                 <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
