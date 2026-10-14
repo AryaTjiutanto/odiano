@@ -10,7 +10,7 @@ type Props = {
 const ConfirmationModal = ({handleConfirm, handleCancel, title, description, confirmButtonText, cancelButtonText} : Props) => {
     return (
         <section className="w-screen h-screen fixed top-0 left-0 bg-black/50 z-50 grid place-content-center">
-            <div className="w-100 p-8 bg-neutral-950 rounded-lg">
+            <div className="w-[90%] sm:w-100 p-8 m-auto bg-neutral-950 rounded-lg">
                 <h1 className="text-xl font-bold">
                     {title}
                 </h1>

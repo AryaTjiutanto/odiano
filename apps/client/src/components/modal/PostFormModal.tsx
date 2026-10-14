@@ -241,12 +241,15 @@ const PostFormModal = () => {
                 <div className="w-[90%] sm:w-[500px] md:w-[600px] h-fit max-h-[90%] overflow-y-auto bg-neutral-950 rounded-xl sm:rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
                     {/* form */}
                     <form onSubmit={handleSubmit(onSubmit)} className={`w-full p-6 sm:p-10 h-fit sm:h-full relative ${isCreated && "hidden"}`}>
-                        <div className="flex items-center space-x-3 mb-6 sm:hidden">
-                            <button className="" onClick={postForm.close}>
-                                <X className="size-7 sm:size-9" />
-                            </button>
-                            <h1 className="text-xl sm:text-3xl font-medium sm:font-bold sm:hidden">
-                                Create Post
+                        <div className="flex items-center space-x-3 mb-6 sm:hidden duration-100">
+                            {
+                                !isSubmitting &&
+                                <button className="" type="button" onClick={handleCancel}>
+                                    <X className="size-7 sm:size-9" />
+                                </button>
+                            }
+                            <h1 className="text-xl sm:text-3xl font-medium sm:font-bold sm:hidden duration-100">
+                                New Post
                             </h1>
                         </div>
 
@@ -307,7 +310,7 @@ const PostFormModal = () => {
                                     }
                                 </div>
                                 :
-                                <div className={`w-full h-24`}>
+                                <div className={`w-full h-32 sm:h-24`}>
                                     <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 p-5 text-center ${dragAndDrop.isDrag ? "border-sky-500" : "border-neutral-500"}`} htmlFor="media-input">
                                         <span className={`${dragAndDrop.isDrag && "hidden"}`}>Drag and drop photos or videos here, or click to select files. (optional)</span>
                                         <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500`}>Drop your Files</span>
@@ -341,13 +344,13 @@ const PostFormModal = () => {
                         </div>
                     </div> */}
 
-                        <div className="w-full mt-10 flex flex-col sm:flex-row items-center text-base sm:text-sm gap-3">
-                            <button className={`w-full sm:w-fit px-11 h-14 sm:h-11 border border-white bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-transparent hover:text-neutral-100"} duration-100 cursor-pointer rounded grid place-content-center`} disabled={isSubmitting}>
-                                {isSubmitting ? <DotsLoader /> : "Post"}
+                        <div className="w-full mt-10 flex flex-col font-medium text-sm sm:flex-row items-center gap-3">
+                            <button className={`w-full sm:w-fit px-11 h-12 sm:h-10 bg-white text-neutral-800 ${isSubmitting ? "" : "hover:bg-sky-500 hover:text-neutral-100"} duration-100 cursor-pointer rounded-lg grid place-content-center`} disabled={isSubmitting}>
+                                {isSubmitting ? <DotsLoader /> : "Share"}
                             </button>
                             {
                                 !isSubmitting &&
-                                <button type="button" onClick={handleCancel} className="w-full sm:w-fit px-8 h-14 sm:h-11 border border-white hover:bg-white hover:text-neutral-800 duration-100 cursor-pointer rounded">
+                                <button type="button" onClick={handleCancel} className="w-full sm:w-fit px-8 h-14 sm:h-10 border border-white hover:text-white hover:bg-red-500 hover:border-red-500 duration-100 cursor-pointer rounded-lg hidden sm:grid place-content-center">
                                     Cancel
                                 </button>
                             }
