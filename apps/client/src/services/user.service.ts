@@ -36,7 +36,7 @@ export const checkUsername = async (username: string): Promise<boolean> => {
 }
 
 export const updateProfile = async (data: UpdateUserProfile): Promise<SuccessResponseData> => {
-    const response = await api.put<SuccessResponseData>(`/users/profile/update`, data);
+    const response = await api.patch<SuccessResponseData>(`/users/profile/update`, data);
 
     return response.data;
 }
