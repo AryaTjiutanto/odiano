@@ -323,9 +323,11 @@ const PostFormModal = () => {
                         <PostContentEditor ref={postContentEditorRef} errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content, {
                             shouldDirty: true,
                             shouldTouch: true,
+                            shouldValidate: true,
                         })} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags, {
                             shouldDirty: true,
                             shouldTouch: true,
+                            shouldValidate: true,
                         })} />
 
                         {/* commming soon */}
