@@ -15,6 +15,7 @@ const PostFormModal = lazy(() => import("../components/modal/PostFormModal"))
 const ReportFormModal = lazy(() => import("../components/modal/ReportFormModal"));
 
 const SocialLayout = ({children} : {children : ReactNode}) => {
+    const {isOpen} = usePostForm();
     const dispatch = useAppDispatch();
     const postForm = usePostForm();
     const reportForm = useReportForm();
@@ -31,7 +32,7 @@ const SocialLayout = ({children} : {children : ReactNode}) => {
 
     return (
         <>
-            <div className="w-full min-h-screen">
+            <div className={`w-full h-screen ${isOpen ? "overflow-y-hidden" : "overflow-y-auto"}`}>
                 <MobileHeader />
 
                 <div className="px-5 sm:px-2 xl:px-10 2xl:px-40">
