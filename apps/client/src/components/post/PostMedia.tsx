@@ -122,10 +122,16 @@ const PostMedia = ({ media }: Props) => {
             </Swiper>
 
             {/* navigation */}
-            <button ref={prevButtonRef} className={`absolute top-0 bottom-0 my-auto left-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isBeginning ? "opacity-0" : "opacity-100"}`} onClick={(e) => e.stopPropagation()}>
+            <button ref={prevButtonRef} className={`absolute top-0 bottom-0 my-auto left-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isBeginning ? "opacity-0" : "opacity-100"}`} onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+            }}>
                 <ChevronLeft />
             </button>
-            <button ref={nextButtonRef} className={`absolute top-0 bottom-0 my-auto right-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isEnd ? "opacity-0" : "opacity-100"}`} onClick={(e) => e.stopPropagation()}>
+            <button ref={nextButtonRef} className={`absolute top-0 bottom-0 my-auto right-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 cursor-pointer text-white text-sm ${isEnd ? "opacity-0" : "opacity-100"}`} onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+            }}>
                 <ChevronRight />
             </button>
         </div>

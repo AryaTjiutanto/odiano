@@ -6,6 +6,7 @@ const PostContent = ({ content }: { content: string }) => {
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>, value : string) => {
         e.stopPropagation();
+        e.preventDefault();
 
         navigate(`/search?${new URLSearchParams({q : value})}`);
     };
