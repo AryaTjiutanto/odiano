@@ -236,7 +236,7 @@ const PostFormModal = () => {
 
     return (
         <>
-            <div className="w-screen h-screen fixed bg-black/50 top-0 left-0 z-30 sm:z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
+            <div className="w-screen h-screen fixed bg-black/50 top-0 left-0 z-25 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                 {/* content */}
                 <div className="w-[90%] sm:w-[500px] md:w-[600px] h-fit max-h-[90%] overflow-y-auto bg-neutral-950 rounded-xl sm:rounded-3xl overflow-hidden duration-100 z-22 flex flex-col">
                     {/* form */}
@@ -272,17 +272,20 @@ const PostFormModal = () => {
                                                             <video src={fileUpload.fileData?.[index]?.url} className="h-full w-fit" />
                                                         }
 
-                                                        <div className="absolute top-1 right-1 flex items-center space-x-1">
-                                                            {
-                                                                file.type == "image" &&
-                                                                <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 hidden md:grid place-content-center cursor-pointer" onClick={() => handleEditImage(file.blob?.original, file.editData, index)}>
-                                                                    <Crop size={18} />
+                                                        {
+                                                            !isSubmitting &&
+                                                            <div className="absolute top-1 right-1 flex items-center space-x-1">
+                                                                {
+                                                                    file.type == "image" &&
+                                                                    <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer" onClick={() => handleEditImage(file.blob?.original, file.editData, index)}>
+                                                                        <Crop size={18} />
+                                                                    </button>
+                                                                }
+                                                                <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => handleRemoveFile(index)}>
+                                                                    <X size={20} />
                                                                 </button>
-                                                            }
-                                                            <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => handleRemoveFile(index)}>
-                                                                <X size={20} />
-                                                            </button>
-                                                        </div>
+                                                            </div>
+                                                        }
 
                                                         {
                                                             fileUpload.uploadProgress[file.id] &&
