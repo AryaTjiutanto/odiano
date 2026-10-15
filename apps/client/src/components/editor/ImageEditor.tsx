@@ -180,7 +180,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
 
                     {/* aspect ratio */}
                     {options.allowAspectRatioChange && (
-                        <div className="w-full sm:w-32 h-24 sm:h-auto border-t sm:border-t-0 border-l-0 sm:border-l border-neutral-700 bg-[#111111] overflow-hidden">
+                        <div className="w-full sm:w-32 h-28 sm:h-auto border-t sm:border-t-0 border-l-0 sm:border-l border-neutral-700 bg-[#111111] overflow-hidden">
                             {/* horizontal Swiper */}
                             <div className="w-[93%] mx-auto h-full sm:hidden flex items-center">
                                 <Swiper
