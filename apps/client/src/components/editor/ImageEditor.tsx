@@ -5,6 +5,7 @@ import DotsLoader from "../loader/DotsLoader";
 import { MEDIA_ASPECT_RATIO, type MediaAspectRatio } from "@odiano/shared";
 import type { FileEditData, FileEditResult, ImageEditorOptions } from "../../types/file.type";
 import { X } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 type Payload = {
     handleComplete: (result: FileEditResult) => void,
@@ -118,7 +119,7 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
 
             {/* cropper */}
             <div className="bg-neutral-900 rounded-xl flex flex-col overflow-hidden relative">
-                <div className="w-full h-10 border-b border-neutral-700 flex items-center justify-between px-4 text-sm text-neutral-300">
+                <div className="w-full h-14 sm:h-12 xl:h-10 border-b border-neutral-800 flex items-center justify-between px-4 text-sm text-neutral-300 bg-[#111111]">
                     <div className="flex items-center">
                         <button className="w-8 aspect-square rounded-full bg-transparent hover:bg-red-500/10 text-neutral-300 hover:text-red-500 grid place-content-center duration-100 cursor-pointer -translate-x-1.5" onClick={() => handleClose(null)}>
                             <X className="w-5 z-1 relative" />
@@ -145,42 +146,83 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                         }
                     </button>
                 </div>
-                <div className="w-full flex flex-1 max-h-[65vh]">
+                <div className="w-full flex flex-col sm:flex-row flex-1 min-h-[40vh] md:min-h-[45vh] lg:min-h-[30vh] xl:min-h-[40vh] 2xl:min-h-[50vh]  xl:max-h-[65vh] max-w-[85vw]">
                     {/* preview */}
-                    <div className="h-full w-[75vw] md:w-[60vw] lg:w-[380px] 2xl:w-[500px]">
-                        <div className="w-full h-full">
-                            {
-                                selectedAspectRatio == "original" ?
-                                    <div className="relative overflow-y-auto w-full overflow-hidden rounded-xl">
+                    <div className="h-full w-full sm:w-[60vw] max-h-[40vh] sm:max-h-[80vh] lg:w-[380px] 2xl:w-[500px]">
+                        {
+                            selectedAspectRatio == "original" ?
+                                <div className="relative overflow-y-auto w-full h-full overflow-hidden grid place-content-center">
+                                    <div className="absolute w-full h-full bg-center blur-sm opacity-60" style={{ backgroundImage: `url(${URL.createObjectURL(imageBlob)})` }}></div>
+                                    <div className="relative overflow-hidden">
                                         <img src={URL.createObjectURL(imageBlob)} className="w-full h-full" />
                                     </div>
-                                    :
-                                    <div className="relative h-full w-full overflow-hidden rounded-xl">
-                                        <Cropper
-                                            crop={crop}
-                                            zoom={zoom}
-                                            aspect={selectedAspectRatio}
-                                            onCropChange={isLoading ? () => { } : setCrop}
-                                            onZoomChange={isLoading ? () => { } : setZoom}
-                                            image={URL.createObjectURL(imageBlob)}
-                                            onCropComplete={(_, croppedAreaPixels) => {
-                                                setImageCroppedAreaPixels(croppedAreaPixels);
-                                            }}
-                                        />
+                                </div>
+                                :
+                                <div className="relative h-full w-full overflow-hidden">
+                                    <Cropper
+                                        crop={crop}
+                                        zoom={zoom}
+                                        aspect={selectedAspectRatio}
+                                        onCropChange={isLoading ? () => { } : setCrop}
+                                        onZoomChange={isLoading ? () => { } : setZoom}
+                                        image={URL.createObjectURL(imageBlob)}
+                                        onCropComplete={(_, croppedAreaPixels) => {
+                                            setImageCroppedAreaPixels(croppedAreaPixels);
+                                        }}
+                                    />
 
-                                        {isLoading && (
-                                            <div className="absolute inset-0 z-10 cursor-not-allowed" />
-                                        )}
-                                    </div>
-                            }
-                        </div>
+                                    {isLoading && (
+                                        <div className="absolute inset-0 z-10 cursor-not-allowed" />
+                                    )}
+                                </div>
+                        }
                     </div>
 
                     {/* aspect ratio */}
                     {options.allowAspectRatioChange && (
-                        <div className="w-32 px-5 bg-neutral-800">
-                            <div className="flex flex-col text-neutral-50">
-                                <div className="hidden md:flex flex-row md:flex-col items-stretch gap-4 mt-5">
+                        <div className="w-full sm:w-32 h-24 sm:h-auto border-t sm:border-t-0 border-l-0 sm:border-l border-neutral-700 bg-[#111111] overflow-hidden">
+                            {/* horizontal Swiper */}
+                            <div className="w-[93%] mx-auto h-full sm:hidden flex items-center">
+                                <Swiper
+                                    slidesPerView="auto"
+                                    spaceBetween={12}
+                                    className=""
+                                >
+                                    {Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => (
+                                        <SwiperSlide key={key} className="!w-auto">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedAspectRatio(value)}
+                                                className="h-14 px-1 flex items-center cursor-pointer group"
+                                            >
+                                                <div
+                                                    className={`
+                                h-full 
+                                ${key === "original" ? "p-3" : ""}
+                                border grid place-content-center rounded
+                                duration-100
+                                ${value === selectedAspectRatio
+                                                            ? "border-2 border-sky-500 text-sky-500"
+                                                            : "border-neutral-500 text-neutral-500 group-hover:border-neutral-400 group-hover:text-neutral-400"
+                                                        }
+                            `}
+                                                    style={{
+                                                        ...(key !== "original" && {
+                                                            aspectRatio: value,
+                                                        }),
+                                                    }}
+                                                >
+                                                    <span className="text-sm">{key}</span>
+                                                </div>
+                                            </button>
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            </div>
+
+                            {/* vertical list */}
+                            <div className="hidden sm:block h-full overflow-y-auto overflow-x-hidden">
+                                <div className="w-full flex flex-col items-center text-neutral-50 gap-3 py-5">
                                     {Object.entries(MEDIA_ASPECT_RATIO).map(([key, value]) => (
                                         <button
                                             key={key}
@@ -205,14 +247,13 @@ const ImageEditor = ({ imageBlob, options, editData, handleComplete, handleClose
                                                     }),
                                                 }}
                                             >
-                                                <span className="text-sm">
-                                                    {key}
-                                                </span>
+                                                <span className="text-sm">{key}</span>
                                             </div>
                                         </button>
                                     ))}
                                 </div>
                             </div>
+
                         </div>
                     )}
                 </div>
