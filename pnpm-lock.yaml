@@ -270,6 +270,9 @@ importers:
       bullmq:
         specifier: ^5.78.1
         version: 5.78.1
+      cloudinary:
+        specifier: ^2.10.0
+        version: 2.10.0
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
