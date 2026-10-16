@@ -4,7 +4,7 @@ import { ALLOWED_MEDIA_PROVIDERS, createPostSchema, MEDIA_ASPECT_RATIO, POST_MAX
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../loader/DotsLoader";
 import { api } from "../../libs/api";
-import { Check, Crop, Plus, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Crop, GalleryVerticalEnd, Plus, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../hooks/useRedux";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
@@ -23,6 +23,8 @@ import type { InfiniteQueryPostDTO } from "../../types/post.type";
 import { userKeys } from "../../queries/userKeys";
 import { updateUserTotalPosts } from "../../helpers/cache/userCache.helper";
 import { handleAppErrorNotification } from "../../helpers/errors/appError.helper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper as SwiperType } from "swiper";
 
 const POST_ASSETS_ALLOWED_TYPES = DEFAULT_ALLOWED_IMAGE_TYPES.concat(DEFAULT_ALLOWED_VIDEO_TYPES);
 
@@ -234,11 +236,25 @@ const PostFormModal = () => {
         postContentEditorRef.current?.reset();
     }
 
+    // media swiper
+    const swiperRef = useRef<SwiperType | null>(null);
+
+    const [isBeginning, setIsBeginning] = useState(true);
+    const [isEnd, setIsEnd] = useState(false);
+
+    const updateSwiperState = (swiper: SwiperType) => {
+        setIsBeginning(swiper.isBeginning);
+        setIsEnd(swiper.isEnd);
+    };
+
     return (
         <>
-            <div className="w-screen h-screen fixed bg-black/80 top-0 left-0  z-26 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, fileUpload.processFile)} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
+            <div className="w-screen h-screen fixed bg-black/80 top-0 left-0  z-26 flex justify-center items-center 2xl:items-start 2xl:py-32" onDrop={(e) => dragAndDrop.handleDrop(e, (data) => {
+                fileUpload.processFile(data)
+                if (swiperRef.current) updateSwiperState(swiperRef.current);
+            })} onDragOver={dragAndDrop.handleDragOver} onDragEnter={dragAndDrop.handleDragEnter} onDragLeave={dragAndDrop.handleDragLeave}>
                 {/* content */}
-                <form onSubmit={handleSubmit(onSubmit)} className="w-[90%] sm:w-[500px] md:w-[600px] h-fit max-h-[90%] overflow-y-auto bg-neutral-950 rounded-xl overflow-hidden duration-100 z-22 flex flex-col">
+                <form onSubmit={handleSubmit(onSubmit)} className="w-[90%] sm:w-[440px] lg:w-[500px] h-fit max-h-[90%] overflow-y-auto bg-neutral-950 rounded-xl overflow-hidden duration-100 z-22 flex flex-col">
                     <div className="w-full h-14 sm:h-12 xl:h-10 border-b border-neutral-800 flex items-center justify-between px-4 text-sm text-neutral-300 bg-neutral-900">
                         <div className="flex items-center">
                             {
@@ -280,102 +296,184 @@ const PostFormModal = () => {
 
                     {/* form */}
                     <div className={`${isCreated && "hidden"} relative flex flex-col`}>
-                        <div className={`w-full flex-1 p-6 sm:p-10 h-fit sm:h-full`}>
+                        <div className={`w-full flex-1 h-fit sm:h-full`}>
                             {/* image input */}
-                            {
-                                (fileUpload.fileData && fileUpload.fileData.length > 0) ?
-                                    <div className="w-full grid grid-cols-3 gap-5">
-                                        {
-                                            fileUpload.fileData?.map((file, index) => {
-                                                if (file.blob?.original) {
+                            <div className={`w-full h-52 sm:h-40 md:h-45 overflow-y-hidden border ${dragAndDrop.isDrag ? "border-sky-500" : "border-transparent"} relative`}>
+                                {
+                                    (fileUpload.fileData && fileUpload.fileData.length > 0) ?
+                                        <>
+                                            <Swiper
+                                                className="w-full h-full"
+                                                slidesPerView={1}
+                                                breakpoints={{
+                                                    450: {
+                                                        slidesPerView: 2,
+                                                    },
+                                                }}
+                                                onSwiper={(swiper) => {
+                                                    swiperRef.current = swiper;
+                                                    updateSwiperState(swiper);
+                                                }}
+                                                onSlideChange={updateSwiperState}
+                                            >
+                                                {fileUpload.fileData?.map((file, index) => {
+                                                    if (!file.blob?.original) return null;
+
+                                                    const blobUrl = URL.createObjectURL(
+                                                        file.blob.edited || file.blob.original
+                                                    );
+
                                                     return (
-                                                        <div key={file.id} className="w-full relative bg-neutral-900 rounded-xl flex justify-center overflow-hidden" style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
-                                                            {file.type == "image" &&
-                                                                <>
-                                                                    <img src={URL.createObjectURL(file.blob.edited || file.blob.original)} alt="file" className="h-full w-fit" />
-                                                                </>
-                                                            }
-                                                            {
-                                                                file.type == "video" &&
-                                                                <video src={fileUpload.fileData?.[index]?.url} className="h-full w-fit" />
-                                                            }
+                                                        <SwiperSlide
+                                                            key={`file-${file.id}`}
+                                                            className="h-full"
+                                                        >
+                                                            <div className="w-full h-full relative flex items-center justify-center overflow-hidden">
+                                                                {file.type === "image" && (
+                                                                    <>
+                                                                        {/* Background */}
+                                                                        <img
+                                                                            src={blobUrl}
+                                                                            alt=""
+                                                                            className="absolute inset-0 w-full h-full object-cover blur-sm opacity-60"
+                                                                        />
 
-                                                            {
-                                                                !isSubmitting &&
-                                                                <div className="absolute top-1 right-1 flex items-center space-x-1">
-                                                                    {
-                                                                        file.type == "image" &&
-                                                                        <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer" onClick={() => handleEditImage(file.blob?.original, file.editData, index)}>
-                                                                            <Crop size={18} />
+                                                                        {/* Actual image */}
+                                                                        <img
+                                                                            src={blobUrl}
+                                                                            alt="file"
+                                                                            className="relative max-w-full max-h-full w-auto h-auto object-contain"
+                                                                        />
+                                                                    </>
+                                                                )}
+
+                                                                {file.type === "video" && (
+                                                                    <>
+                                                                        {/* Background */}
+                                                                        <video
+                                                                            src={fileUpload.fileData?.[index]?.url}
+                                                                            className="absolute inset-0 w-full h-full object-cover blur-sm opacity-60 pointer-events-none"
+                                                                            muted
+                                                                            playsInline
+                                                                        />
+
+                                                                        {/* Actual video */}
+                                                                        <video
+                                                                            src={fileUpload.fileData?.[index]?.url}
+                                                                            className="relative max-w-full max-h-full w-auto h-auto"
+                                                                            controls
+                                                                        />
+                                                                    </>
+                                                                )}
+
+                                                                {!isSubmitting && (
+                                                                    <div className="absolute top-1 right-1 flex items-center space-x-1">
+                                                                        {file.type === "image" && (
+                                                                            <button
+                                                                                type="button"
+                                                                                className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-sky-500 grid place-content-center cursor-pointer"
+                                                                                onClick={() =>
+                                                                                    handleEditImage(
+                                                                                        file.blob?.original,
+                                                                                        file.editData,
+                                                                                        index
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <Crop size={18} />
+                                                                            </button>
+                                                                        )}
+
+                                                                        <button
+                                                                            type="button"
+                                                                            className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer"
+                                                                            onClick={() => handleRemoveFile(index)}
+                                                                        >
+                                                                            <X size={20} />
                                                                         </button>
-                                                                    }
-                                                                    <button type="button" className="w-8 h-8 rounded-full bg-neutral-900/80 hover:bg-neutral-900/60 duration-100 text-neutral-50 hover:text-rose-500 grid place-content-center cursor-pointer" onClick={() => handleRemoveFile(index)}>
-                                                                        <X size={20} />
-                                                                    </button>
-                                                                </div>
-                                                            }
+                                                                    </div>
+                                                                )}
 
-                                                            {
-                                                                fileUpload.uploadProgress[file.id] &&
-                                                                <div className="p-1 px-2 text-[13px] rounded-md bg-black/60 absolute top-2 left-2 duration-100">
-                                                                    {
-                                                                        fileUpload.uploadProgress[file.id] == 100 ?
-                                                                            "Uploaded"
-                                                                            :
-                                                                            `${fileUpload.uploadProgress[file.id]}%`
-                                                                    }
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    )
-                                                }
-                                            })
-                                        }
-                                        {
-                                            fileUpload.isMediaNotFull() &&
-                                            <label htmlFor="media-input" className={`w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 border border-neutral-500 border-dashed rounded-xl hover:border-neutral-400 hover:text-neutral-400 ${isSubmitting && "pointer-events-none cursor-not-allowed"}`} style={{ aspectRatio: MEDIA_ASPECT_RATIO["7:5"] }}>
-                                                <div className="w-10 h-10 bg-neutral-900 grid place-content-center rounded-full">
-                                                    <Plus />
+                                                                {fileUpload.uploadProgress[file.id] && (
+                                                                    <div className="p-1 px-2 text-[13px] rounded-md bg-black/60 absolute top-2 left-2 duration-100">
+                                                                        {fileUpload.uploadProgress[file.id] === 100
+                                                                            ? "Uploaded"
+                                                                            : `${fileUpload.uploadProgress[file.id]}%`}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </SwiperSlide>
+                                                    );
+                                                })}
+
+                                                {(fileUpload.isMediaNotFull() && !isSubmitting) && (
+                                                    <SwiperSlide className="h-full">
+                                                        <label
+                                                            htmlFor="media-input"
+                                                            className={`w-full h-full grid place-content-center text-neutral-500 cursor-pointer duration-100 hover:border-neutral-400 hover:text-neutral-300 ${dragAndDrop.isDrag ? "bg-gray-900" : "bg-[#101010]"}`}
+                                                        >
+                                                            <div className={`w-10 h-10 grid place-content-center rounded-full ${dragAndDrop.isDrag ? "text-sky-500 bg-gray-900" : "bg-neutral-900"}`}>
+                                                                <Plus />
+                                                            </div>
+                                                        </label>
+                                                    </SwiperSlide>
+                                                )}
+                                            </Swiper>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => swiperRef.current?.slidePrev()}
+                                                disabled={isBeginning}
+                                                className={`absolute top-0 bottom-0 my-auto left-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 text-white ${isBeginning
+                                                    ? "opacity-0 pointer-events-none"
+                                                    : "opacity-100 cursor-pointer"
+                                                    }`}
+                                            >
+                                                <ChevronLeft />
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => swiperRef.current?.slideNext()}
+                                                disabled={isEnd}
+                                                className={`absolute top-0 bottom-0 my-auto right-2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 hover:bg-neutral-800 duration-100 text-white ${isEnd
+                                                    ? "opacity-0 pointer-events-none"
+                                                    : "opacity-100 cursor-pointer"
+                                                    }`}
+                                            >
+                                                <ChevronRight />
+                                            </button>
+                                        </>
+                                        :
+                                        <>
+                                            <label className={`w-full h-full flex flex-col items-center justify-center text-xs text-neutral-300 cursor-pointer duration-100 p-5 text-center group relative ${dragAndDrop.isDrag ? "bg-gray-900" : "bg-[#101010]"}`} htmlFor="media-input">
+                                                <GalleryVerticalEnd className={`w-7 ${dragAndDrop.isDrag ? "text-sky-500" : ""}`} />
+                                                <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500 font-semibold text-sm mt-1`}>Drop your Files</span>
+
+                                                <span className={`${dragAndDrop.isDrag && "hidden"} mt-2 text-sm`}>
+                                                    Drag images or videos here - <b className="">optional</b>
+                                                </span>
+                                                <div className={`w-36 h-8 mt-2 rounded-lg grid place-content-center bg-white border border-white hover:bg-transparent hover:text-white duration-100 text-neutral-900 font-medium text-[10px] cursor-pointer group-hover:bg-transparent group-hover:text-white ${dragAndDrop.isDrag ? "hidden" : ""}`}>
+                                                    Select from computer
                                                 </div>
                                             </label>
-                                        }
-                                    </div>
-                                    :
-                                    <div className={`w-full h-32 sm:h-24`}>
-                                        <label className={`w-full h-full rounded-xl border border-dashed grid place-content-center text-xs text-neutral-300 cursor-pointer duration-100 p-5 text-center ${dragAndDrop.isDrag ? "border-sky-500" : "border-neutral-500"}`} htmlFor="media-input">
-                                            <span className={`${dragAndDrop.isDrag && "hidden"}`}>Drag and drop photos or videos here, or click to select files. (optional)</span>
-                                            <span className={`${dragAndDrop.isDrag ? "inline-block" : "hidden"} text-sky-500`}>Drop your Files</span>
-                                        </label>
-                                    </div>
-                            }
+                                        </>
+                                }
+                            </div>
                             <input type="file" className="hidden" id="media-input" accept="image/png, image/webp,image/jpeg,video/mp4,video/mkv" multiple onChange={handleImageInput} />
 
                             {/* text input */}
-                            <PostContentEditor ref={postContentEditorRef} errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content, {
-                                shouldDirty: true,
-                                shouldTouch: true,
-                                shouldValidate: true,
-                            })} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags, {
-                                shouldDirty: true,
-                                shouldTouch: true,
-                                shouldValidate: true,
-                            })} />
-
-                            {/* commming soon */}
-                            {/* <div className="flex flex-col space-y-2 mt-3">
-                        <div className="flex items-center space-x-10">
-                            <p className="h-fit">
-                                Hide Like count on this post?
-                            </p>
-                            <PillSwitch checked={hideLikeAndViewCount} onToggle={() => handleToggle("hideLikeAndViewCount")} />
-                        </div>
-                        <div className="flex items-center space-x-10">
-                            <p className="h-fit">
-                                Turn off commenting
-                            </p>
-                            <PillSwitch checked={turnOffCommenting} onToggle={() => handleToggle("turnOffCommenting")} />
-                        </div>
-                    </div> */}
+                            <div className="w-full py-4">
+                                <PostContentEditor ref={postContentEditorRef} errorMessage={errors.content?.message} setContent={(content: string) => setValue("content", content, {
+                                    shouldDirty: true,
+                                    shouldTouch: true,
+                                    shouldValidate: true,
+                                })} setHashtags={(hashtags: string[] | null) => setValue("hashtags", hashtags, {
+                                    shouldDirty: true,
+                                    shouldTouch: true,
+                                    shouldValidate: true,
+                                })} />
+                            </div>
                         </div>
                     </div>
 

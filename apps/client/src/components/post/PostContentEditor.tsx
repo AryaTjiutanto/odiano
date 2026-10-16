@@ -72,10 +72,10 @@ const PostContentEditor = forwardRef<PostContentEditorRef, Props>(({ errorMessag
                     <RichTextPlugin
                         contentEditable={
                             <ContentEditable
-                                className={`mt-4 w-full max-h-80 sm:max-h-60 min-h-56 sm:min-h-40 border duration-100 rounded-xl py-4 px-5 default-input-text-behaviour ${errorMessage ? "border-red-500 text-red-500" : "border-neutral-600 text-neutral-300"} overflow-y-auto`}
+                                className={`mt-0 w-full max-h-80 sm:max-h-60 min-h-56 sm:min-h-40 duration-100 px-5 default-input-text-behaviour ${errorMessage ? "border-red-500 text-red-500" : "border-neutral-600 text-neutral-300"} overflow-y-auto`}
                                 aria-placeholder={'Enter some text...'}
                                 placeholder={
-                                    <div className="absolute top-5 left-5 text-neutral-500">
+                                    <div className="absolute top-0 left-5 text-neutral-500">
                                         What's on your mind?
                                     </div>
                                 }
@@ -88,17 +88,13 @@ const PostContentEditor = forwardRef<PostContentEditorRef, Props>(({ errorMessag
                     <AutoFocusPlugin />
                     <OnChangePlugin onChange={changeHandler} />
 
-                    <div className={`absolute bottom-3 right-3 text-sm ${contentLength > POST_CONTENT_LENGTH.MAX ? 'text-red-500' : 'text-neutral-100'}`}>
+                    <div className={`absolute -bottom-1 right-4 text-xs ${contentLength > POST_CONTENT_LENGTH.MAX ? 'text-red-500' : 'text-neutral-200'}`}>
                         {contentLength}/{POST_CONTENT_LENGTH.MAX}
                     </div>
                 </div>
 
                 <ResetPlugin editorRef={ref} />
             </LexicalComposer>
-            {
-                errorMessage &&
-                <p className="mt-1 text-xs text-red-500">{errorMessage}</p>
-            }
         </>
     )
 });
