@@ -1,14 +1,13 @@
 import { AUTH_CACHE_KEYS, DEFAULT_OTP_EXPIRES_TIME, ERROR_RESPONSE_CODE, OtpChannels, OtpPurposes } from "@odiano/shared";
 import OTP from "../models/otp.model.js";
 import { customAlphabet } from "nanoid";
-import { emailQueue, EmailQueueData } from "@odiano/queue";
 import { render } from "@react-email/components";
 import React from "react";
 import { getCache, setCache } from "@odiano/redis";
 import { AppError } from "../errors/appError.error.js";
+import { JOB_NAMES, QUEUE_NAMES, registerEmailJob } from "@odiano/queue";
 
 import bcrypt from "bcrypt";
-import logger from "../libs/log/logger.js";
 import VerifyEmail from "../emails/verifyEmail.js";
 
 export const createAndSendOTP = async (target: string, channel: OtpChannels, purpose: OtpPurposes) => {
@@ -42,19 +41,11 @@ export const createAndSendOTP = async (target: string, channel: OtpChannels, pur
         expiresIn: DEFAULT_OTP_EXPIRES_TIME / 1000,
     }));
 
-    emailQueue.add("send-otp", {
+    registerEmailJob(JOB_NAMES[QUEUE_NAMES.EMAIL].SEND_OTP, {
         id: `email-otp-${otp[0]._id.toString()}`,
         email: target,
         content,
-    } satisfies EmailQueueData, {
-        attempts: 5,
-        backoff: {
-            type: "exponential",
-            delay: 3000,
-        },
-        removeOnComplete: 3000,
-        removeOnFail: 5000,
-    });
+    })
 
     // increase send email verification attempt
     await setCache(sendEmailVerificationCacheKey, emailVerificationAttempt + 1, { PX: 1 * 24 * 60 * 60 * 1000 });
