@@ -29,11 +29,44 @@ const MobileHeader = () => {
 
     if (headerType == null) return <></>
 
+    const isVerified = currentUserData && currentUserData.isOnboarded && currentUserData.isEmailVerified;
+
+    const authenticatedRightSection = (
+        headerType == "profile" ?
+            <StackLink to={"/settings"}>
+                <Menu />
+            </StackLink>
+            :
+            isVerified ?
+                (isInitialized && isAuthenticated && isVerified) &&
+                <StackLink to={"/notification"}>
+                    <div className="relative">
+                        <Bell className="size-7 xl:size-auto" />
+                        {
+                            unreadNotificationCount > 0 &&
+                            <div className="w-fit aspect-1 py-0.5 px-2 rounded-full bg-rose-500 absolute -top-3 left-[60%] text-[12px] font-bold grid place-content-center">
+                                {unreadNotificationCount}
+                            </div>
+                        }
+                    </div>
+                </StackLink>
+                :
+                !currentUserData?.isEmailVerified ? (
+                    <Link to={"/email/verify"} className="px-3 py-2 bg-white text-neutral-900 rounded-lg text-xs font-semibold">
+                        Verify your Email
+                    </Link>
+                ) : (
+                    <Link to={"/onboarding"} className="px-3 py-2 bg-white text-neutral-900 rounded-lg text-xs font-semibold">
+                        Complete your data
+                    </Link>
+                )
+    )
+
     return (
         <>
             <section className="px-5 sticky top-0 pt-6 sm:pt-6 lg:pt-5 xl:pt-9 pb-6 flex sm:hidden justify-between items-center bg-black z-23">
                 {
-                    isAuthenticated &&
+                    (isAuthenticated && isVerified) &&
                     <button onClick={postForm.open}>
                         <Plus className="w-9" />
                     </button>
@@ -42,30 +75,7 @@ const MobileHeader = () => {
                     Odiano
                 </h1>
 
-                {
-                    (isInitialized && isAuthenticated) &&
-                    <>
-                        {
-                            headerType == "profile" ?
-                                <StackLink to={"/settings"}>
-                                    <Menu/>
-                                </StackLink>
-                                :
-                                <StackLink to={"/notification"}>
-                                    <div className="relative">
-                                        <Bell className="size-7 xl:size-auto" />
-
-                                        {
-                                            unreadNotificationCount > 0 &&
-                                            <div className="w-fit aspect-1 py-0.5 px-2 rounded-full bg-rose-500 absolute -top-3 left-[60%] text-[12px] font-bold grid place-content-center">
-                                                {unreadNotificationCount}
-                                            </div>
-                                        }
-                                    </div>
-                                </StackLink>
-                        }
-                    </>
-                }
+                {isAuthenticated && authenticatedRightSection}
 
                 {
                     (isInitialized && !isAuthenticated) &&

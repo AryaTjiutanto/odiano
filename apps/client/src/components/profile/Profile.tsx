@@ -11,7 +11,7 @@ type Props = {
 
 const Profile = ({data} : Props) => {
     return (
-        <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-zinc-800">
+        <div className="w-full h-full aspect-square rounded-full overflow-hidden flex items-center justify-center bg-zinc-800">
             {
                 data ?
                 <img src={data.url} className="w-full h-full"/>
