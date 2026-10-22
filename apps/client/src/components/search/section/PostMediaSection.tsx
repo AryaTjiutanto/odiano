@@ -29,7 +29,11 @@ const PostMediaSection = ({ searchQuery }: Props) => {
     // display data
     if (postsMediaQuery.isPending) {
         return (
-            Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
+            <div className="space-y-2">
+                {
+                    Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
+                }
+            </div>
         )
     }
 

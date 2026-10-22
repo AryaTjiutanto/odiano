@@ -71,7 +71,11 @@ const Explore = () => {
                     <div className="w-full mt-6">
                         {
                             isPending &&
-                            Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
+                            <div className="space-y-2">
+                                {
+                                    Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
+                                }
+                            </div>
                         }
                         {
                             (isDataEmpty && isPending) &&
@@ -95,7 +99,7 @@ const Explore = () => {
                                         ))
                                     )
                                 }
-                                <InfiniteScrollSentinel<PostDTO[]> fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." data={data?.pages[data.pages.length - 1]} cooldownMode={true}/>
+                                <InfiniteScrollSentinel<PostDTO[]> fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." data={data?.pages[data.pages.length - 1]} cooldownMode={true} />
                             </>
                         }
                     </div>

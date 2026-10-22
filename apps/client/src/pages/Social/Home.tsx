@@ -18,15 +18,15 @@ const Homepage = () => {
         staleTime: 10 * 1000,
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
-        refetchOnMount : false,
+        refetchOnMount: false,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
-            if(lastPage.type === "double") {
+            if (lastPage.type === "double") {
                 return {
-                    cursorTop : lastPage.cursorTop,
-                    cursorBottom : lastPage.cursorBottom,
+                    cursorTop: lastPage.cursorTop,
+                    cursorBottom: lastPage.cursorBottom,
                 };
             }
-            
+
             return null;
         }
     })
@@ -35,7 +35,7 @@ const Homepage = () => {
 
     return (
         <>
-            <SEO title="Share Your Moments"/>
+            <SEO title="Share Your Moments" />
 
             {/* body */}
             <div className="w-full">
@@ -49,7 +49,11 @@ const Homepage = () => {
                 <div className="w-full mt-2 sm:pb-6">
                     {
                         isPending &&
-                        Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
+                        <div className="space-y-2">
+                            {
+                                Array.from({ length: 3 }).map((_, i) => <PostSkeletonLoading key={`post-skeleton-${i}`} />)
+                            }
+                        </div>
                     }
                     {
                         data &&
