@@ -3,7 +3,7 @@
 @layer utilities {
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(192, 192, 192, 0.4) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.4) #000000;
   }
 
   *::-webkit-scrollbar {
@@ -12,16 +12,16 @@
   }
 
   *::-webkit-scrollbar-track {
-    background: transparent;
+    background: #000000;
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: rgba(44, 44, 44, 0.4);
+    background-color: rgba(192, 192, 192, 0.4);
     border-radius: 9999px;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(80, 79, 79, 0.6);
+    background-color: rgba(255, 255, 255, 0.6);
   }
 }
 

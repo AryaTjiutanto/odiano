@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import ConnectLogo from "../../../assets/img/logo/odiano-gradient.svg";
-import { Bell, Home, Pencil, Search, User } from "lucide-react";
+import { Bell, Home, Pencil, Search, Settings, User } from "lucide-react";
 import UserMenu from "./UserMenu";
 import { usePostForm } from "../../../providers/PostFormProvider";
 import { useAppSelector } from "../../../hooks/useRedux";
@@ -8,7 +8,7 @@ import StackLink from "../../stack/StackLink";
 import { useSearchInputContext } from "../../../providers/SearchInputProvider";
 
 const LeftSidebar = () => {
-    const {handleSetQuery} = useSearchInputContext();
+    const { handleSetQuery } = useSearchInputContext();
     const postForm = usePostForm();
 
     const unreadNotificationCount = useAppSelector((state) => state.notification.unreadCount);
@@ -92,27 +92,29 @@ const LeftSidebar = () => {
 
                                     {
                                         userData?.isOnboarded &&
-                                        <li className="w-full">
-                                            <StackLink to={`profile/${userData && userData?.username}`}>
-                                                <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
-                                                    <User className="size-7 xl:size-auto" />
-                                                    <span className="hidden xl:inline-block">
-                                                        Profile
-                                                    </span>
-                                                </div>
-                                            </StackLink>
-                                        </li>
+                                        <>
+                                            <li className="w-full">
+                                                <StackLink to={`profile/${userData && userData?.username}`}>
+                                                    <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
+                                                        <User className="size-7 xl:size-auto" />
+                                                        <span className="hidden xl:inline-block">
+                                                            Profile
+                                                        </span>
+                                                    </div>
+                                                </StackLink>
+                                            </li>
+                                            {/* <li className="w-full">
+                                                <StackLink to={`/settings`}>
+                                                    <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
+                                                        <Settings className="size-7 xl:size-auto" />
+                                                        <span className="hidden xl:inline-block">
+                                                            Settings
+                                                        </span>
+                                                    </div>
+                                                </StackLink>
+                                            </li> */}
+                                        </>
                                     }
-
-                                    {/* comming soon */}
-                                    {/* <li className="w-full">
-                                        <Link to={""} className="w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl">
-                                            <Settings />
-                                            <span>
-                                                Setting and privacy
-                                            </span>
-                                        </Link>
-                                    </li> */}
                                 </ul>
                             </nav>
                             {/* xl */}

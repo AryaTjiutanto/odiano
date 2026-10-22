@@ -1,5 +1,5 @@
 import LeftSidebar from "../components/social/sidebar/LeftSidebar";
-import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
 import { registerNotificationListeners, unregisterNotificationListeners } from "../features/notification/notification.socket";
 import { BottomNavigation } from "../components/social/BottomNavigation";
 import { usePostForm } from "../providers/PostFormProvider";
@@ -9,6 +9,7 @@ import { getUnreadNotificationCount } from "../features/notification/notificatio
 import { useReportForm } from "../providers/ReportFormProvider";
 import ModalSuspenseFallback from "../components/modal/SuspenseFallback";
 import MobileHeader from "../components/social/MobileHeader";
+import { useLocation } from "react-router-dom";
 
 const PostFormModal = lazy(() => import("../components/modal/PostFormModal"))
 
@@ -30,9 +31,17 @@ const SocialLayout = ({children} : {children : ReactNode}) => {
         }
     }, [dispatch])
 
+    // window scroll
+    const location = useLocation();
+    const layout = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        console.log(location.pathname, layout.current?.scrollHeight);
+    }, [location])
+
     return (
         <>
-            <div className={`w-full h-screen ${isOpen ? "overflow-y-hidden" : "overflow-y-auto"}`}>
+            <div className={`w-full ${isOpen ? "overflow-y-hidden" : ""}`} ref={layout} onClick={() => console.log(layout.current?.scrollTop, window.scrollY)}>
                 <MobileHeader />
 
                 <div className="px-5 sm:px-2 xl:px-10 2xl:px-40">

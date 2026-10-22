@@ -47,7 +47,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
             />
 
             <AbilityProvider value={ability}>
-                <div className="w-full max-w-480 min-h-screen bg-black text-neutral-100">
+                <div className="w-full max-w-480 min-h-screen text-neutral-100">
                     {/* confirmation modal */}
                     {
                         confirmationModal.isOpen &&
