@@ -14,6 +14,7 @@ import { useStackProvider } from "../providers/StackProvider";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import StackWrapper from "../layouts/StackWrapper";
 import Settings from "../pages/Social/Settings";
+import SocialContentLayout from "../layouts/SocialContentLayout";
 
 const StackRoutes = () => {
     const { stack } = useStackProvider();
@@ -27,31 +28,35 @@ const StackRoutes = () => {
                     return (
                         <Routes location={item.location}>
                             <Route element={<StackWrapper isTop={isTop} />}>
+
                                 {/* social */}
-                                <Route element={<ExploreLayout />}>
-                                    <Route path='/explore' element={<Explore />} />
-                                    <Route path='/search' element={<Search />} />
-                                </Route>
-
-                                <Route path='/' element={<Homepage />} />
-
-                                {/* post */}
-                                <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
-
-                                {/* profile */}
-                                <Route element={<ProfileWrapper />}>
-                                    <Route path='/profile/:username' element={<Profile />} />
-                                </Route>
-                                <Route path='/settings' element={<Settings />} />
-
-                                {/* require auth */}
-                                <Route element={<RequireAuthGuard />}>
-                                    <Route element={<NotificationModalWrapper />}>
-                                        <Route path='/notification' element={<Notification />} />
+                                <Route element={<SocialContentLayout />}>
+                                    <Route element={<ExploreLayout />}>
+                                        <Route path='/explore' element={<Explore />} />
+                                        <Route path='/search' element={<Search />} />
                                     </Route>
 
-                                    <Route path='/profile/edit' element={<EditProfile />} />
+                                    <Route path='/' element={<Homepage />} />
+
+                                    {/* post */}
+                                    <Route path='/:username/post/:postPublicId' element={<ShowPost />} />
+
+                                    {/* profile */}
+                                    <Route element={<ProfileWrapper />}>
+                                        <Route path='/profile/:username' element={<Profile />} />
+                                    </Route>
+
+                                    {/* require auth */}
+                                    <Route element={<RequireAuthGuard />}>
+                                        <Route element={<NotificationModalWrapper />}>
+                                            <Route path='/notification' element={<Notification />} />
+                                        </Route>
+
+                                        <Route path='/profile/edit' element={<EditProfile />} />
+                                    </Route>
                                 </Route>
+
+                                <Route path='/settings' element={<Settings />} />
 
                                 <Route path='*' element={<NotFoundPage />} />
                             </Route>
