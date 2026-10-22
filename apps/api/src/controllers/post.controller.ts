@@ -4,13 +4,15 @@ import { ReqBody } from "../types/request.type.js";
 import { CreatedDocumentId, CreatePostSchema, InfiniteQuery, PostDTO, SUCCESS_RESPONSE_CODE } from "@odiano/shared";
 import { successResponseData } from "../utils/response.util.js";
 import { UnauthorizedError } from "../errors/unauthorized.error.js";
+import logger from "../libs/log/logger.js";
 
 export const index = async(req: Request, res: Response, next: NextFunction) => {
-    const cursor = typeof req.query.cursor == "string" ? req.query.cursor : null;
+    const cursorTop = req.query.cursorTop ? String(req.query.cursorTop) : null;
+    const cursorBottom = req.query.cursorBottom ? String(req.query.cursorBottom) : null;
     const currentUserId = req.userId;
 
     try{
-        const data = await postServices.listPosts(currentUserId, cursor);
+        const data = await postServices.listPosts(currentUserId, cursorTop, cursorBottom);
 
         res.status(200).json(successResponseData<InfiniteQuery<PostDTO[]>>(SUCCESS_RESPONSE_CODE.success, "Success", data));
     } catch(err) {

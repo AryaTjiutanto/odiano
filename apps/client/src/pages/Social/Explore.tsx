@@ -10,7 +10,7 @@ import LargeUserSuggestions from "../../components/user-suggestions/large/LargeU
 import SEO from "../../components/seo/SEO";
 
 const Explore = () => {
-    const postsQueryKey = postKeys.all;
+    const postsQueryKey = postKeys.explore;
 
     const { data, isPending, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
         queryFn: ({ pageParam }) => getPosts(pageParam),
@@ -19,7 +19,14 @@ const Explore = () => {
         gcTime: DEFAULT_GC_TIME,
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
-            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+            if (lastPage.type === "double") {
+                return {
+                    cursorTop: lastPage.cursorTop,
+                    cursorBottom: lastPage.cursorBottom,
+                };
+            }
+
+            return null;
         }
     })
 
@@ -88,7 +95,7 @@ const Explore = () => {
                                         ))
                                     )
                                 }
-                                <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." />
+                                <InfiniteScrollSentinel<PostDTO[]> fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." data={data?.pages[data.pages.length - 1]} cooldownMode={true}/>
                             </>
                         }
                     </div>

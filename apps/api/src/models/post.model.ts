@@ -8,6 +8,8 @@ type PostSchema = PostType & {
     author: Types.ObjectId,
     hasMedia : boolean,
     status : PostStatus,
+    createdAt : Date,
+    updatedAt : Date,
 }
 
 // post media schema

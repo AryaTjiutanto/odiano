@@ -2,6 +2,7 @@ const mainKey = "post";
 
 export const postKeys = {
     all: [mainKey],
+    explore : [mainKey, "explore"],
     detail: (publicId: string) => [mainKey, publicId],
     
     userPosts : (username : string) => [mainKey, "user" , username],

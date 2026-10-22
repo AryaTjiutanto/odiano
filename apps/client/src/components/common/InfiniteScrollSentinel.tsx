@@ -2,28 +2,50 @@ import { useEffect, useRef } from "react";
 import DotsLoader from "../loader/DotsLoader";
 import { useAppSelector } from "../../hooks/useRedux";
 import { Link } from "react-router-dom";
+import type { InfiniteQuery } from "@odiano/shared";
 
-type Props = {
+type Props<T> = {
     fetchNextPage: () => void,
     hasNextPage: boolean,
     isFetchingNextPage: boolean,
-    textForGuest? : string,
-    rootMargin? : number,
+    data?: InfiniteQuery<T>,
+    textForGuest?: string,
+    rootMargin?: number,
+    cooldownMode?: boolean,
 }
 
-const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage, textForGuest = "to view more content", rootMargin = 20 }: Props) => {
+const InfiniteScrollSentinel = <T,>({ fetchNextPage, hasNextPage, isFetchingNextPage, textForGuest = "to view more content", rootMargin = 20, data, cooldownMode = false }: Props<T>) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const sentinel = useRef<HTMLDivElement | null>(null);
+
+    const cooldown = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (!isAuthenticated) return;
 
         const observer = new IntersectionObserver(async (entries) => {
             const entry = entries[0];
+            if (isFetchingNextPage || !hasNextPage || !entry.isIntersecting) return;
 
-            if (!isFetchingNextPage && hasNextPage && entry.isIntersecting) {
-                await fetchNextPage();
+            // cooldown
+            const isEmptyDoubleType = (cooldownMode && data?.type == "double" && data.isBottomPostsNull && data.isTopPostsNull) || !data;
+
+            if (cooldown.current) {
+                return;
             }
+
+            if (isEmptyDoubleType) {
+                cooldown.current = setTimeout(async () => {
+                    cooldown.current = null;
+
+                    await fetchNextPage();
+                }, 30 * 1000);
+
+                return;
+            }
+
+            // fetching
+            await fetchNextPage();
         }, {
             rootMargin: `${rootMargin}px`,
             threshold: 0,
@@ -38,10 +60,9 @@ const InfiniteScrollSentinel = ({ fetchNextPage, hasNextPage, isFetchingNextPage
                 observer.unobserve(sentinel.current);
             }
         }
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage, isAuthenticated]);
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage, data, isAuthenticated, rootMargin, cooldownMode]);
 
-
-    if(!hasNextPage) return <></>;
+    if (!hasNextPage) return <></>;
 
     if (!isAuthenticated) {
         return (

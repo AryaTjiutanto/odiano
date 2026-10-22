@@ -7,7 +7,7 @@ import { AppError } from "../errors/appError.error.js";
 import { User } from "../models/user.model.js";
 import { LIKE_TYPES } from "../consts/like.const.js";
 import { getIsLiked, getLikedIds } from "./like.service.js";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import { commitTempImage, deleteImages } from "../helpers/cloudinary.helper.js";
 import { bulkCreateOrUpdateHashtag, bulkDecreseHashtagsCount } from "./hashtag.service.js";
@@ -15,6 +15,8 @@ import { searchOptions } from "../types/search.type.js";
 import { bulkDeleteCommentsByPostId } from "./postComment.service.js";
 import { defineAbilityFor } from "../helpers/ability.helper.js";
 import { subject } from "@casl/ability";
+import { getListPostsCursor } from "../helpers/posts.helper.js";
+import logger from "../libs/log/logger.js";
 
 export const searchPosts = async (currentUserId: string, query: string, cursor: string | null | undefined, searchOptions: searchOptions | null = null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // get posts
@@ -163,7 +165,7 @@ export const listPostsByHashtag = async (currentUserId: string | null | undefine
             _id: mongoose.trusted({ $lt: cursor })
         } : {}),
         ...(searchOptions?.onlyMedia && { media: { $exists: true } }),
-        status : POST_STATUS.ACTIVE,
+        status: POST_STATUS.ACTIVE,
     };
 
     let posts = await Post.find(query)
@@ -207,35 +209,116 @@ export const listPostsByHashtag = async (currentUserId: string | null | undefine
     }
 }
 
-export const listPosts = async (currentUserId: string | null | undefined, cursor: string | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
+export const listPosts = async (currentUserId: string | null | undefined, cursorTop: string | Types.ObjectId | null, cursorBottom: string | Types.ObjectId | null): Promise<InfiniteQuery<PostFeedItem[]>> => {
     // check is user authenticated
-    if (cursor && !currentUserId) {
+    if ((cursorTop || cursorBottom) && !currentUserId) {
         throw new UnauthorizedError();
     }
 
-    // get posts data
-    const query = {
-        ...(cursor && {
-            _id: mongoose.trusted({ $lt: cursor }),
-        }),
-        status : POST_STATUS.ACTIVE,
-    };
+    // get cursor
+    let currentCursorTop = cursorTop;
+    let currentCursorBottom = cursorBottom;
 
-    let posts = await Post.find(query)
-        .sort({ _id: -1 })
-        .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount status")
-        .populate("author", "name username profileImage")
-        .limit(POSTS_PAGE_SIZE + 1).lean<PostQuery[]>();
-
-    // check if there's a next page
-    let hasNextPage = posts.length > POSTS_PAGE_SIZE;
-    if (hasNextPage) {
-        posts = posts.slice(0, POSTS_PAGE_SIZE);
+    if (!currentCursorTop || !currentCursorBottom) {
+        const { cursor } = await getListPostsCursor();
+        currentCursorTop = cursor;
+        currentCursorBottom = cursor;
     }
+
+    // get posts data
+    const postDefaultPipeline = [
+        {
+            $limit: Math.floor(POSTS_PAGE_SIZE / 2),
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "author",
+                foreignField: "_id",
+                as: "author",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            username: 1,
+                            profileImage: 1,
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind: "$author"
+        },
+        {
+            $project: {
+                _id: 1,
+                publicId: 1,
+                content: 1,
+                media: 1,
+                visibility: 1,
+                hideLikeAndViewCount: 1,
+                turnOffCommenting: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                commentCount: 1,
+                likeCount: 1,
+                author: 1,
+            }
+        }
+    ]
+
+    let postsData = await Post.aggregate<{
+        "topPosts": PostQuery[],
+        "bottomPosts": PostQuery[],
+    }>([
+        {
+            $facet: {
+                "topPosts": [
+                    {
+                        $match: {
+                            status: POST_STATUS.ACTIVE,
+                            _id: mongoose.trusted({ $gt: new Types.ObjectId(currentCursorTop) }),
+                        }
+                    },
+                    {
+                        $sort : {_id : 1}
+                    },
+                    ...postDefaultPipeline
+                ],
+                "bottomPosts": [
+                    {
+                        $match: {
+                            status: POST_STATUS.ACTIVE,
+                            _id: mongoose.trusted({
+                                ...(!cursorBottom ? {
+                                    $lte: new Types.ObjectId(currentCursorBottom) 
+                                } : {
+                                    $lt : new Types.ObjectId(currentCursorBottom)
+                                })
+                            }),
+                        }
+                    },
+                                        {
+                        $sort: {
+                            _id: -1
+                        }
+                    },
+                    ...postDefaultPipeline
+                ]
+            },
+        },
+    ]);
+
+    // get cursor and merge posts
+    let nextCursorTop = postsData[0].topPosts[postsData[0].topPosts.length - 1]?._id.toString();
+    let nextCursorBottom = postsData[0].bottomPosts[postsData[0].bottomPosts.length - 1]?._id.toString();
+
+    let posts = postsData[0].topPosts.concat(postsData[0].bottomPosts);
 
     // get likes
     let likedPostIds = new Set<String>();
-
     if (currentUserId) {
         const postIds = posts.map(post => post._id);
 
@@ -253,17 +336,19 @@ export const listPosts = async (currentUserId: string | null | undefined, cursor
         })
     );
 
-    let nextCursor = items[items.length - 1]?.id
-
     return {
-        nextCursor,
-        hasNextPage,
+        type: "double",
+        cursorTop: nextCursorTop?.length > 0 ? nextCursorTop : currentCursorTop.toString(),
+        cursorBottom: nextCursorBottom?.length > 0 ? nextCursorBottom : currentCursorBottom.toString(),
+
+        isTopPostsNull: postsData[0].topPosts.length == 0,
+        isBottomPostsNull: postsData[0].bottomPosts.length == 0,
         items,
     }
 }
 
 export const getPost = async (currentUserId: string | null | undefined, publicId: string): Promise<PostDTO | null> => {
-    const post = await Post.findOne({ publicId, status : POST_STATUS.ACTIVE })
+    const post = await Post.findOne({ publicId, status: POST_STATUS.ACTIVE })
         .select("content publicId media visibility hideLikeAndComment turnOffComment createdAt updatedAt commentCount likeCount")
         .populate("author", "name username profileImage")
         .lean<PostQuery>();
@@ -450,7 +535,7 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
 
     // define ability
     const user = await User.findById(currentUserId).select("role").lean();
-    if(!user) {
+    if (!user) {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "User not found");
     }
     const ability = defineAbilityFor(currentUserId, user.role);
@@ -475,7 +560,7 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
             }))) {
                 throw new AppError(403, ERROR_RESPONSE_CODE.forbidden, "You dont have permission to delete this post");
             }
-            
+
             // delete post
             const postMedia = post.media;
             await post.deleteOne({ session });
@@ -495,7 +580,7 @@ export const deletePost = async (currentUserId: string, postId: string | undefin
             }
 
             // delete comments
-            if(post.commentCount > 0) {
+            if (post.commentCount > 0) {
                 await bulkDeleteCommentsByPostId(postId, currentUserId, session);
             }
 

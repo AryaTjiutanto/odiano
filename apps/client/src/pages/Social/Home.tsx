@@ -20,7 +20,14 @@ const Homepage = () => {
         initialPageParam: null,
         refetchOnMount : false,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
-            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+            if(lastPage.type === "double") {
+                return {
+                    cursorTop : lastPage.cursorTop,
+                    cursorBottom : lastPage.cursorBottom,
+                };
+            }
+            
+            return null;
         }
     })
 
@@ -54,7 +61,7 @@ const Homepage = () => {
                                     ))
                                 )
                             }
-                            <InfiniteScrollSentinel fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts."/>
+                            <InfiniteScrollSentinel<PostDTO[]> fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} textForGuest="to view more posts." data={data.pages[data.pages.length - 1]} cooldownMode={true}/>
                         </>
                     }
 

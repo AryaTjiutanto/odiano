@@ -1,4 +1,4 @@
-import type { CreatedDocumentId, InfiniteQuery, PostDTO, SuccessResponseData } from "@odiano/shared";
+import type { CreatedDocumentId, DoubleCursor, InfiniteQuery, PostDTO, SuccessResponseData } from "@odiano/shared";
 import { api } from "../libs/api";
 import type { CreateCommentMutationParams } from "../types/post.type";
 
@@ -40,7 +40,7 @@ export const getUserPosts = async (cursor: string | undefined | null, username: 
 }
 
 // get posts
-export const getPost = async (publicId : string) => {
+export const getPost = async (publicId: string) => {
     const response = await api.get<SuccessResponseData<PostDTO>>(`/post/${publicId}`);
 
     if (!response.data.data) {
@@ -50,11 +50,14 @@ export const getPost = async (publicId : string) => {
     return response.data.data;
 }
 
-export const getPosts = async (cursor: string | undefined | null): Promise<InfiniteQuery<PostDTO[]>> => {
+export const getPosts = async (data: DoubleCursor | null): Promise<InfiniteQuery<PostDTO[]>> => {
+    const params = {
+        ...(data?.cursorTop && { cursorTop: data.cursorTop }),
+        ...(data?.cursorBottom && { cursorBottom: data.cursorBottom }),
+    }
+
     const response = await api.get<SuccessResponseData<InfiniteQuery<PostDTO[]>>>("/post", {
-        params: {
-            cursor,
-        }
+        params,
     });
 
     if (!response.data.data) {

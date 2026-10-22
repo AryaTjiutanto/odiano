@@ -19,7 +19,7 @@ const PostSection = ({ searchQuery }: Props) => {
         enabled: !!(searchQuery && searchQuery.length > 0),
         initialPageParam: null,
         getNextPageParam: (lastPage: InfiniteQuery<PostDTO[]>) => {
-            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+                return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
         },
         gcTime: DEFAULT_GC_TIME
     });

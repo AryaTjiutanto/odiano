@@ -44,8 +44,27 @@ export type PaginationQuery<T> = {
     data: T,
 }
 
-export type InfiniteQuery<T> = {
+// infinite query
+export type DoubleCursor = {
+    cursorTop: string | null,
+    cursorBottom: string | null,
+}
+
+type DoubleCursorInfiniteQuery = DoubleCursor & {
+    type: "double",
+    isTopPostsNull: boolean,
+    isBottomPostsNull: boolean,
+    hasNextPage?: undefined,
+}
+
+type DefaultInfiniteQuery = {
+    type?: "default",
     nextCursor: string | null,
     hasNextPage: boolean,
+}
+
+type InfiniteQueryTypeData = DoubleCursorInfiniteQuery | DefaultInfiniteQuery;
+
+export type InfiniteQuery<T> = InfiniteQueryTypeData & {
     items: T,
 }
