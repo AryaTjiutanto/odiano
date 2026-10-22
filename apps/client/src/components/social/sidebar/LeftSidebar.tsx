@@ -103,7 +103,7 @@ const LeftSidebar = () => {
                                                     </div>
                                                 </StackLink>
                                             </li>
-                                            {/* <li className="w-full">
+                                            <li className="w-full">
                                                 <StackLink to={`/settings`}>
                                                     <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
                                                         <Settings className="size-7 xl:size-auto" />
@@ -112,7 +112,7 @@ const LeftSidebar = () => {
                                                         </span>
                                                     </div>
                                                 </StackLink>
-                                            </li> */}
+                                            </li>
                                         </>
                                     }
                                 </ul>
