@@ -13,8 +13,10 @@ import Search from "../pages/Social/Search";
 import { useStackProvider } from "../providers/StackProvider";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import StackWrapper from "../layouts/StackWrapper";
-import Settings from "../pages/Social/Settings";
+import SettingLayout from "../layouts/SettingLayout";
 import SocialContentLayout from "../layouts/SocialContentLayout";
+import DeviceAndSessions from "../pages/Settings/DeviceAndSession";
+import TwoFactorAuthentication from "../pages/Settings/TwoFactorAuthentication";
 
 const StackRoutes = () => {
     const { stack } = useStackProvider();
@@ -56,7 +58,10 @@ const StackRoutes = () => {
                                     </Route>
                                 </Route>
 
-                                <Route path='/settings' element={<Settings />} />
+                                <Route path='/settings' element={<SettingLayout />}>
+                                    <Route path="devices-and-sessions" element={<DeviceAndSessions />} />
+                                    <Route path="two-factor-authentication" element={<TwoFactorAuthentication />} />
+                                </Route>
 
                                 <Route path='*' element={<NotFoundPage />} />
                             </Route>

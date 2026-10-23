@@ -56,7 +56,7 @@ export const StackProvider = ({ children }: { children: React.ReactNode }) => {
 
     const resetStack = () => {
         setStack([]);
-    }
+    }   
 
     const pop = () => {
         navigate(-1);
