@@ -14,6 +14,7 @@ export const requireRefreshToken = async (req: Request, res: Response, next: Nex
 
         req.userId = decoded.userId;
         req.tokenId = decoded.tokenId;
+        req.sessionId = decoded.sessionId;
         next();
     } catch (err) {
         next(err);

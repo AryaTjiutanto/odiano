@@ -48,7 +48,6 @@ export const StackProvider = ({ children }: { children: React.ReactNode }) => {
 
             const updatedData = [...prev];
             updatedData[updatedData.length - 1].scrollY = position;
-            console.log(updatedData, position);
 
             return updatedData;
         })  

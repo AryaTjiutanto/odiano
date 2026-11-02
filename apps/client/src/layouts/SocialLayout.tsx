@@ -8,7 +8,6 @@ import { getUnreadNotificationCount } from "../features/notification/notificatio
 import { useReportForm } from "../providers/ReportFormProvider";
 import ModalSuspenseFallback from "../components/modal/SuspenseFallback";
 import MobileHeader from "../components/social/MobileHeader";
-import { useLocation } from "react-router-dom";
 
 const PostFormModal = lazy(() => import("../components/modal/PostFormModal"))
 
@@ -31,16 +30,11 @@ const SocialLayout = ({children} : {children : ReactNode}) => {
     }, [dispatch])
 
     // window scroll
-    const location = useLocation();
     const layout = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        console.log(location.pathname, layout.current?.scrollHeight);
-    }, [location])
 
     return (
         <>
-            <div className={`w-full ${isOpen ? "overflow-y-hidden" : ""}`} ref={layout} onClick={() => console.log(layout.current?.scrollTop, window.scrollY)}>
+            <div className={`w-full ${isOpen ? "overflow-y-hidden" : ""}`} ref={layout}>
                 <MobileHeader />
 
                 <div className="px-5 sm:px-2 xl:px-10 2xl:px-40">

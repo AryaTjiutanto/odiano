@@ -8,6 +8,7 @@ import notificationRoutes from "./notification.route.js";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
 import searchRoutes from "./search.route.js";
 import reportRoutes  from "./report.route.js";
+import sessionRoutes from "./session.route.js";
 import { apiLimiter, consume, followingLimiter } from "../libs/limiter/index.js";
 import { reportLimiter } from "../libs/limiter/limiters/report.limiter.js";
 
@@ -21,5 +22,6 @@ router.use("/following", consume(followingLimiter), requireAccessToken, followin
 router.use('/notification', consume(apiLimiter), requireAccessToken, notificationRoutes);
 router.use('/report', consume(reportLimiter), requireAccessToken, reportRoutes)
 router.use('/search', searchRoutes);
+router.use('/session', requireAccessToken, sessionRoutes);
 
 export default router;

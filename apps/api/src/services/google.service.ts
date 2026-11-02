@@ -2,13 +2,14 @@ import "../bootstraps/env.bootstrap.js"
 import { googleClient } from "../libs/google/client.js"
 import { User } from "../models/user.model.js";
 import { UnauthorizedError } from "../errors/unauthorized.error.js";
-import { createAuthSession } from "./auth.service.js";
 import { AuthToken, ERROR_RESPONSE_CODE } from "@odiano/shared";
 import { AUTH_PROVIDERS } from "../consts/user.const.js";
 import { nanoid } from "nanoid";
 import { AppError } from "../errors/appError.error.js";
+import { createAuthToken } from "./auth.service.js";
+import { createSession, findOrCreateSession } from "./session.service.js";
 
-export const authentication = async (credential: string): Promise<AuthToken> => {
+export const authentication = async (credential: string, deviceId: string, userAgent: string | null): Promise<AuthToken> => {
     const ticket = await googleClient.verifyIdToken({
         idToken: credential,
         audience: process.env.GOOGLE_CLIENT_ID,
@@ -25,7 +26,8 @@ export const authentication = async (credential: string): Promise<AuthToken> => 
 
     // signin
     if (currentUser) {
-        const token = await createAuthSession(currentUser._id);
+        const session = await findOrCreateSession(deviceId, userAgent, currentUser._id);
+        const token = await createAuthToken(session._id.toString(), currentUser._id.toString());
 
         return token;
     }
@@ -56,7 +58,8 @@ export const authentication = async (credential: string): Promise<AuthToken> => 
         emailVerifiedAt: Date.now(),
     })
 
-    const token = await createAuthSession(user._id);
+    const session = await createSession(deviceId, userAgent, user._id);
+    const token = await createAuthToken(session._id.toString(), user._id.toString());
 
     return token;
 }

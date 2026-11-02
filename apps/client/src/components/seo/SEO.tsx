@@ -11,7 +11,6 @@ const DEFAULT_DESCRIPTION = "Odiano - Connect, share, and discover moments with 
 const SEO = ({ title, description, withTitleSuffix = true }: Props) => {
     const unreadNotificationCount = useAppSelector(state => state.notification.unreadCount);
 
-
     const titleWithUnreadNotificationCount = unreadNotificationCount > 0 ? `(${unreadNotificationCount}) ${title}` : title;
     return (
         <>

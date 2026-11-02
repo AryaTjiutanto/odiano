@@ -20,6 +20,7 @@ export const requireAccessToken = (req: Request, res: Response, next: NextFuncti
         const decoded = verifyAccessToken(token);
 
         req.userId = decoded.userId;
+        req.sessionId = decoded.sessionId;
         next();
     } catch (err) {
         next(err);

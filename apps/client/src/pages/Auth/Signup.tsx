@@ -10,10 +10,12 @@ import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import DateInputSection from "../../components/input/DateInputSection";
 import SEO from "../../components/seo/SEO";
+import { useEffect } from "react";
+import { getDeviceId } from "../../helpers/deviceId";
 
 const Signup = () => {
     const dispatch = useAppDispatch();
-
+    
     const {
         register,
         setError,
@@ -41,6 +43,10 @@ const Signup = () => {
             });
         }
     }
+
+    useEffect(() => {
+        setValue("deviceId", getDeviceId());
+    }, [setValue])
 
     return (
         <>

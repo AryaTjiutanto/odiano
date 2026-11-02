@@ -11,6 +11,8 @@ import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import SEO from "../../components/seo/SEO";
+import { useEffect } from "react";
+import { getDeviceId } from "../../helpers/deviceId";
 
 const Signin = () => {
     const dispatch = useAppDispatch();
@@ -19,11 +21,16 @@ const Signin = () => {
         register,
         handleSubmit,
         setError,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm<AuthenticateUserSchema>({
         mode: "onTouched",
         resolver: zodResolver(authenticateUserSchema)
     });
+
+    useEffect(() => {
+        setValue("deviceId", getDeviceId());
+    }, [setValue]);
 
     const onSubmit: SubmitHandler<AuthenticateUserSchema> = async (data) => {
         try {

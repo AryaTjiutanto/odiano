@@ -9,12 +9,29 @@ import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import { delCache, getCache, setCache } from "@odiano/redis";
 import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper.js";
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper.js";
-import { Types } from "mongoose";
 import { createAndSendOTP, verifyOTP } from "./otp.service.js";
+import { createSession, findOrCreateSession } from "./session.service.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
-export const signIn = async (email: string, password: string, ip: string): Promise<AuthToken> => {
+type SigninData = {
+    email : string,
+    password : string,
+    ip : string,
+    userAgent : string | null,
+    deviceId : string
+}
+
+type SignupData = {
+    dateOfBirth: string,
+    email: string,
+    password: string,
+    ip: string,
+    deviceId : string,
+    userAgent : string | null,
+}
+
+export const signIn = async ({email, password, ip, userAgent, deviceId} : SigninData): Promise<AuthToken> => {
     const MAX_EMAIL_SIGNIN_ATTEMPT = 3;
     const MAX_SIGNIN_ATTEMPT = MAX_EMAIL_SIGNIN_ATTEMPT * 6;
 
@@ -71,8 +88,9 @@ export const signIn = async (email: string, password: string, ip: string): Promi
         })
     }
 
-    // create auth token
-    const token = await createAuthSession(currentUser._id);
+    // create session
+    const sessionId = await findOrCreateSession(deviceId, userAgent, currentUser._id);
+    const token = await createAuthToken(sessionId.toString(), currentUser._id.toString());
 
     // delete attempt cache
     await delCache(emailSigninAttemptsCacheKey);
@@ -80,7 +98,7 @@ export const signIn = async (email: string, password: string, ip: string): Promi
     return token;
 }
 
-export const signUp = async (dateOfBirth: string, email: string, password: string, ip: string): Promise<AuthToken> => {
+export const signUp = async ({dateOfBirth, deviceId, email, ip, password, userAgent} : SignupData): Promise<AuthToken> => {
     const MAX_SIGNUP_COUNT = 2;
 
     // get and check signup count
@@ -106,8 +124,9 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
         username: `user_${nanoid(6).toString()}`,
     });
 
-    // generate auth token
-    const token = await createAuthSession(currentUser._id);
+    // create session
+    const session = await createSession(deviceId, userAgent, currentUser._id);
+    const token = await createAuthToken(session._id.toString(), currentUser._id.toString());
 
     // send verification email
     await createAndSendOTP(email, OTP_CHANNELS.EMAIL, OTP_PURPOSES.VERIFY_EMAIL);
@@ -119,11 +138,9 @@ export const signUp = async (dateOfBirth: string, email: string, password: strin
     return token;
 }
 
-export const createAuthSession = async (userId: Types.ObjectId): Promise<AuthToken> => {
-    const id = userId.toString();
-
-    const accessToken = generateAccessToken({ userId: id });
-    const refreshToken = await createRefreshToken(id);
+export const createAuthToken = async (sessionId : string, userId: string): Promise<AuthToken> => {
+    const accessToken = generateAccessToken({ sessionId, userId });
+    const refreshToken = await createRefreshToken(sessionId, userId);
 
     return {
         [AUTH_TOKEN.ACCESS]: accessToken,
@@ -153,7 +170,7 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
     }
 }
 
-export const refresh = async (userId: string, tokenId: string, token: string): Promise<AuthToken> => {
+export const refresh = async (userId: string, tokenId: string, token: string, sessionId : string): Promise<AuthToken> => {
     const refreshToken = await RefreshToken.findOne({ tokenId });
 
     if (!refreshToken) {
@@ -174,8 +191,8 @@ export const refresh = async (userId: string, tokenId: string, token: string): P
         throw new AppError(401, ERROR_RESPONSE_CODE.unauthorized, "Invalid owner token");
     }
 
-    const newAccessToken = generateAccessToken({ userId });
-    const newRefreshToken = await createRefreshToken(userId);
+    const newAccessToken = generateAccessToken({ userId, sessionId });
+    const newRefreshToken = await createRefreshToken(sessionId, userId);
 
     await refreshToken.deleteOne();
 
@@ -185,10 +202,10 @@ export const refresh = async (userId: string, tokenId: string, token: string): P
     }
 }
 
-export const createRefreshToken = async (userId: string) => {
+export const createRefreshToken = async (sessionId : string, userId: string) => {
     const tokenId = nanoid(12);
 
-    const refreshToken = generateRefreshToken({ userId, tokenId });
+    const refreshToken = generateRefreshToken({ sessionId, userId, tokenId });
 
     await RefreshToken.create({
         tokenHash: refreshToken,
