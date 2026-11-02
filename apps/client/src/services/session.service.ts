@@ -10,3 +10,9 @@ export const getSessions = async () : Promise<SessionsDTO> => {
     
     return response.data.data;
 }
+
+export const deleteSession = async (sessionId : string) : Promise<boolean> => {
+    const response = await api.delete<SuccessResponseData>(`/session/${sessionId}`);
+    
+    return response.data.success;
+}

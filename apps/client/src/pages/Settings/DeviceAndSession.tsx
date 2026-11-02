@@ -33,14 +33,14 @@ const DeviceAndSessions = () => {
                         (sessionData.isFetching) ?
                             <SessionSkelatonLoading />
                             :
-                            <Session session={sessionData.data?.currentSession} withLogoutButton={false} withDate={false}/>
+                            <Session session={sessionData.data?.currentSession} withLogoutButton={false} withDate={false} />
                     }
                 </div>
             </div>
             <div className="mt-10">
                 <div>
                     <h2 className="text-base font-semibold">
-                        Log out of other sessions
+                        Other sessions
                     </h2>
                     <p className="text-sm mt-3 text-neutral-500">
                         You’re logged into these accounts on these devices and aren’t currently using them.
@@ -53,9 +53,15 @@ const DeviceAndSessions = () => {
                                 <SessionSkelatonLoading />
                             ))
                             :
-                            sessionData.data?.otherSessions.map((session) => (
-                                <Session session={session}/>
-                            ))
+                            (sessionData.data && sessionData.data.otherSessions.length > 0) ?
+                                sessionData.data?.otherSessions.map((session) => (
+                                    <Session session={session} />
+                                ))
+                                :
+                                <div className="w-full h-20 border border-dashed border-neutral-700 rounded grid place-content-center text-xs text-neutral-500">
+                                    No other sessions found
+                                </div>
+
                     }
                 </div>
             </div>

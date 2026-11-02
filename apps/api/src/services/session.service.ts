@@ -1,6 +1,7 @@
-import { SessionDTO, SessionsDTO } from "@odiano/shared";
+import { ERROR_RESPONSE_CODE, SessionDTO, SessionsDTO } from "@odiano/shared";
 import { Session } from "../models/session.model.js";
 import { Types } from "mongoose";
+import { AppError } from "../errors/appError.error.js";
 
 export const findOrCreateSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId): Promise<Types.ObjectId> => {
     let session;
@@ -43,5 +44,20 @@ export const getAllSession = async (userId: string, sessionId : string): Promise
     return {
         currentSession : formattedSessions.find(session => session.id == sessionId),
         otherSessions : formattedSessions.filter(session => session.id !== sessionId),
+    }
+}
+
+export const deleteSession = async (userId : string, sessionId : string | null | undefined) => {
+    if(!sessionId) {
+        throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "bad request");
+    }
+
+    const document = await Session.findOneAndDelete({
+        _id : sessionId,
+        userId,
+    });
+
+    if(!document) {
+        throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Session Not found");
     }
 }
