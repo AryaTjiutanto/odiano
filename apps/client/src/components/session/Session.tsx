@@ -8,6 +8,7 @@ import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler"
 import { sessionKeys } from "../../queries/sessionKeys"
 import DotsLoader from "../loader/DotsLoader"
 import { notify } from "../../helpers/notification/notify.helper"
+import { useConfirmationModal } from "../../providers/ConfirmationModalProvider"
 
 type Props = {
     session: SessionDTO | undefined | null,
@@ -17,6 +18,8 @@ type Props = {
 }
 
 const Session = ({ session, withLogoutButton = true, withDate = true, isActive = true }: Props) => {
+    const confirmationModal = useConfirmationModal();
+
     const setQueryDataHandler = useSetQueryDataHandler();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -27,6 +30,17 @@ const Session = ({ session, withLogoutButton = true, withDate = true, isActive =
     const device = getSessionDevice(session.device.userAgent);
 
     async function logoutHandler(sessionId: string) {
+        const confirmation = await confirmationModal.confirm(
+            "Log Out This Session?",
+            `You’ll be signed out of ${device.browser} (${device.os}) and will need to sign in again to access your account.`,
+            "Log Out",
+            "Cancel"
+        );
+
+        if (!confirmation) {
+            return;
+        }
+
         if (!session?.id || isLoading) return;
         setIsLoading(true);
 
