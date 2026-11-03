@@ -58,9 +58,11 @@ const StackRoutes = () => {
                                     </Route>
                                 </Route>
 
-                                <Route path='/settings' element={<SettingLayout />}>
-                                    <Route path="devices-and-sessions" element={<DeviceAndSessions />} />
-                                    <Route path="two-factor-authentication" element={<TwoFactorAuthentication />} />
+                                <Route element={<RequireAuthGuard/>}>
+                                    <Route path='/settings' element={<SettingLayout />}>
+                                        <Route path="devices-and-sessions" element={<DeviceAndSessions />} />
+                                        <Route path="two-factor-authentication" element={<TwoFactorAuthentication />} />
+                                    </Route>
                                 </Route>
 
                                 <Route path='*' element={<NotFoundPage />} />

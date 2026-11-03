@@ -1,6 +1,8 @@
 import axios, { AxiosError, AxiosHeaders, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 import { store } from "../app/store";
 import { refreshAccessToken } from "../features/auth/auth.thunk";
+import { ERROR_RESPONSE_CODE, type ErrorResponseData } from "@odiano/shared";
+import { deleteAuth } from "../features/auth/auth.slice";
 
 let refreshPromise : Promise<string> | null = null;
 
@@ -30,14 +32,18 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
     (res) => res,
-    async (error: AxiosError) => {
+    async (error: AxiosError<ErrorResponseData>) => {
         const originalConfig = error.config;
 
         if (!originalConfig) {
             return Promise.reject(error);
         }
 
-        if (error.response?.status == 401 && !originalConfig?._retry && !originalConfig?.url?.includes("/auth/refresh")) {
+        if(error.response?.status == 401 && error.response.data.code == ERROR_RESPONSE_CODE.invalidSession) {
+            store.dispatch(deleteAuth());
+        }
+
+        if (error.response?.status == 401 && error.response.data.code != ERROR_RESPONSE_CODE.invalidSession && !originalConfig?._retry && !originalConfig?.url?.includes("/auth/refresh")) {
             try {
                 originalConfig._retry = true;
 

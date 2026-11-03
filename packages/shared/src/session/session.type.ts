@@ -12,3 +12,8 @@ export type SessionsDTO = {
     currentSession : SessionDTO | undefined | null,
     otherSessions : SessionDTO[],
 }
+
+export type SessionCache = {
+    userId : string,
+    status : "active" | "revoked",
+}

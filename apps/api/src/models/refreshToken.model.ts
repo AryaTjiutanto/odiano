@@ -5,6 +5,7 @@ type RefreshToken = {
     tokenId : string,
     tokenHash : string,
     userId : Types.ObjectId,
+    sessionId : Types.ObjectId,
     expiresAt : Date,
 }
 
@@ -23,6 +24,11 @@ const refreshTokenSchema = new mongoose.Schema<RefreshToken>({
         required : true,
         ref : "User",
         index : true,
+    },
+    sessionId : {
+        type : mongoose.Schema.Types.ObjectId,
+        required : true,
+        ref : "Session",  
     },
     expiresAt : {
         type : Date,

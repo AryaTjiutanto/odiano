@@ -23,9 +23,16 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        setAccessToken(state, action: PayloadAction<string>) {
+        setAccessToken(state, action: PayloadAction<string | null>) {
             state.accessToken = action.payload;
             state.isAuthLoading = false;
+        },
+        deleteAuth(state) {
+            state.accessToken = null;
+            state.isAuthenticated = false;
+            state.user = null;
+            state.isAuthLoading = false;
+            state.isInitialized = true;
         },
         setCurrentUserProfile(state, action : PayloadAction<UploadedFileData>) {
             if(!state.user) return;
@@ -86,5 +93,5 @@ const authSlice = createSlice({
     }
 })
 
-export const { setAccessToken, setCurrentUserProfile, setEmailVerified } = authSlice.actions;
+export const { setAccessToken, setCurrentUserProfile, setEmailVerified, deleteAuth } = authSlice.actions;
 export default authSlice.reducer; 

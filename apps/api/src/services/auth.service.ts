@@ -15,11 +15,11 @@ import { createSession, findOrCreateSession } from "./session.service.js";
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
 type SigninData = {
-    email : string,
-    password : string,
-    ip : string,
-    userAgent : string | null,
-    deviceId : string
+    email: string,
+    password: string,
+    ip: string,
+    userAgent: string | null,
+    deviceId: string
 }
 
 type SignupData = {
@@ -27,11 +27,11 @@ type SignupData = {
     email: string,
     password: string,
     ip: string,
-    deviceId : string,
-    userAgent : string | null,
+    deviceId: string,
+    userAgent: string | null,
 }
 
-export const signIn = async ({email, password, ip, userAgent, deviceId} : SigninData): Promise<AuthToken> => {
+export const signIn = async ({ email, password, ip, userAgent, deviceId }: SigninData): Promise<AuthToken> => {
     const MAX_EMAIL_SIGNIN_ATTEMPT = 3;
     const MAX_SIGNIN_ATTEMPT = MAX_EMAIL_SIGNIN_ATTEMPT * 6;
 
@@ -98,7 +98,7 @@ export const signIn = async ({email, password, ip, userAgent, deviceId} : Signin
     return token;
 }
 
-export const signUp = async ({dateOfBirth, deviceId, email, ip, password, userAgent} : SignupData): Promise<AuthToken> => {
+export const signUp = async ({ dateOfBirth, deviceId, email, ip, password, userAgent }: SignupData): Promise<AuthToken> => {
     const MAX_SIGNUP_COUNT = 2;
 
     // get and check signup count
@@ -138,7 +138,7 @@ export const signUp = async ({dateOfBirth, deviceId, email, ip, password, userAg
     return token;
 }
 
-export const createAuthToken = async (sessionId : string, userId: string): Promise<AuthToken> => {
+export const createAuthToken = async (sessionId: string, userId: string): Promise<AuthToken> => {
     const accessToken = generateAccessToken({ sessionId, userId });
     const refreshToken = await createRefreshToken(sessionId, userId);
 
@@ -166,11 +166,11 @@ export const me = async (userId: string): Promise<CurrentUserDTO> => {
         profileImage: user?.profileImage,
         dateOfBirth: user?.dateOfBirth,
         isEmailVerified: !!user?.emailVerifiedAt,
-        role : user?.role || ROLES.USER,
+        role: user?.role || ROLES.USER,
     }
 }
 
-export const refresh = async (userId: string, tokenId: string, token: string, sessionId : string): Promise<AuthToken> => {
+export const refresh = async (userId: string, tokenId: string, token: string, sessionId: string): Promise<AuthToken> => {
     const refreshToken = await RefreshToken.findOne({ tokenId });
 
     if (!refreshToken) {
@@ -202,15 +202,15 @@ export const refresh = async (userId: string, tokenId: string, token: string, se
     }
 }
 
-export const createRefreshToken = async (sessionId : string, userId: string) => {
+export const createRefreshToken = async (sessionId: string, userId: string) => {
     const tokenId = nanoid(12);
-
     const refreshToken = generateRefreshToken({ sessionId, userId, tokenId });
 
     await RefreshToken.create({
         tokenHash: refreshToken,
         tokenId,
         userId: userId,
+        sessionId,
         expiresAt: new Date(Date.now() + oneDayAge * 30)
     })
 
@@ -218,15 +218,9 @@ export const createRefreshToken = async (sessionId : string, userId: string) => 
 }
 
 export const logout = async (refreshToken: string) => {
-    try {
-        const decoded = verifyRefreshToken(refreshToken);
-
-        const result = await RefreshToken.deleteOne({ tokenId: decoded.tokenId });
-
-        return result;
-    } catch {
-
-    }
+    const decoded = verifyRefreshToken(refreshToken);
+    const result = await RefreshToken.deleteOne({ tokenId: decoded.tokenId });
+    return result;
 };
 
 export const sendEmailVerification = async (currentUserId: string) => {

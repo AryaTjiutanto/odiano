@@ -6,4 +6,6 @@ export const AUTH_CACHE_KEYS = {
 
     SEND_OTP : (target : string) => `auth:send-email-verification:${target}`,
     VERIFY_EMAIL : (email : string) => `auth:verify-email:${email}`,
+
+    SESSION : (sessionId : string) => `auth:session:${sessionId}`,
 } as const;
