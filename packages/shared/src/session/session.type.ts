@@ -4,8 +4,7 @@ export type SessionDTO = {
         deviceId : string | null,
         userAgent: string | null,
     }
-    lastActive: Date | null,
-    logoutAt: Date | null,
+    lastLogin: Date | null,
 }
 
 export type SessionsDTO = {

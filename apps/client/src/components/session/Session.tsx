@@ -72,7 +72,7 @@ const Session = ({ session, withLogoutButton = true, withDate = true, isActive =
                     {
                         withDate ?
                             <div className="text-neutral-400 text-xs">
-                                {session.lastActive ? formatDistanceToNow(new Date(session.lastActive)) : "-"}
+                                {session.lastLogin ? formatDistanceToNow(new Date(session.lastLogin)) : "-"}
                             </div>
                             :
                             isActive ?

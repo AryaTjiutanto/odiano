@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @layer utilities {
+  html, body {
+    background-color: #000000;
+  }
+
   * {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.4) #000000;

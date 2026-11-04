@@ -11,6 +11,7 @@ import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.h
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper.js";
 import { createAndSendOTP, verifyOTP } from "./otp.service.js";
 import { createSession, findOrCreateSession } from "./session.service.js";
+import { Session } from "../models/session.model.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -196,6 +197,15 @@ export const refresh = async (userId: string, tokenId: string, token: string, se
 
     await refreshToken.deleteOne();
 
+    // update session last login
+    await Session.findOneAndUpdate({
+        _id : sessionId
+    }, {
+        $set : {
+            lastLogin : new Date()
+        }
+    })
+
     return {
         [AUTH_TOKEN.ACCESS]: newAccessToken,
         [AUTH_TOKEN.REFRESH]: newRefreshToken,
@@ -220,6 +230,7 @@ export const createRefreshToken = async (sessionId: string, userId: string) => {
 export const logout = async (refreshToken: string) => {
     const decoded = verifyRefreshToken(refreshToken);
     const result = await RefreshToken.deleteOne({ tokenId: decoded.tokenId });
+
     return result;
 };
 

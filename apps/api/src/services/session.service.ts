@@ -27,7 +27,7 @@ export const createSession = async (deviceId: string, userAgent: string | null, 
             deviceId
         },
         userId,
-        lastActive: new Date(),
+        lastLogin: new Date(),
     })
 
     await setSessionCache(session._id.toString(), userId.toString());
@@ -36,12 +36,11 @@ export const createSession = async (deviceId: string, userAgent: string | null, 
 }
 
 export const getAllSession = async (userId: string, sessionId : string): Promise<SessionsDTO> => {
-    const sessions = await Session.find({ userId }).select("_id device lastActive logoutAt");
+    const sessions = await Session.find({ userId }).select("_id device lastLogin");
     
     const formattedSessions = sessions.map(session => ({
         id: session._id.toString(),
-        lastActive: session.lastActive,
-        logoutAt: session.logoutAt,
+        lastLogin: session.lastLogin,
         device: {
             deviceId : session.device.deviceId,
             userAgent : session.device.userAgent,

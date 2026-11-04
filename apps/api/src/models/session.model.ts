@@ -8,8 +8,7 @@ type DeviceSchema = {
 type SessionSchema = {
     device: DeviceSchema,
     userId: Types.ObjectId,
-    lastActive: Date,
-    logoutAt: Date | null,
+    lastLogin: Date,
 }
 
 const deviceSchema = new Schema<DeviceSchema>({
@@ -31,14 +30,9 @@ const sessionSchema = new Schema<SessionSchema>({
         ref : "User",
         required : true,
     },
-    lastActive : {
+    lastLogin : {
         type : Date,
         required : true,
-    },
-    logoutAt : {
-        type : Date,
-        required : false,
-        default : null
     }
 }, {timestamps : true});
 
