@@ -10,7 +10,7 @@ import { delCache, getCache, setCache } from "@odiano/redis";
 import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper.js";
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper.js";
 import { createAndSendOTP, verifyOTP } from "./otp.service.js";
-import { createSession, findOrCreateSession } from "./session.service.js";
+import { createSession, updateOrCreateSession } from "./session.service.js";
 import { Session } from "../models/session.model.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
@@ -90,7 +90,7 @@ export const signIn = async ({ email, password, ip, userAgent, deviceId }: Signi
     }
 
     // create session
-    const sessionId = await findOrCreateSession(deviceId, userAgent, currentUser._id);
+    const sessionId = await updateOrCreateSession(deviceId, userAgent, currentUser._id);
     const token = await createAuthToken(sessionId.toString(), currentUser._id.toString());
 
     // delete attempt cache

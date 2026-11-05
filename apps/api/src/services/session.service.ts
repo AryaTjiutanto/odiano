@@ -2,21 +2,32 @@ import { AUTH_CACHE_KEYS, AUTH_TOKEN, ERROR_RESPONSE_CODE, SESSION_STATUS, Sessi
 import { Session } from "../models/session.model.js";
 import { Types } from "mongoose";
 import { AppError } from "../errors/appError.error.js";
-import { delCache, getCache, setCache } from "@odiano/redis";
+import { getCache, setCache } from "@odiano/redis";
 import { Response } from "express";
 import { RefreshToken } from "../models/refreshToken.model.js";
 import { authCookieOptions } from "../libs/auth/auth.cookie.js";
 
-export const findOrCreateSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId): Promise<Types.ObjectId> => {
-    let session;
-    session = await Session.findOne({
-        "device.deviceId": deviceId,
-        userId,
-    }).select("_id");
+export const updateOrCreateSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId): Promise<Types.ObjectId> => {
+    const session = await Session.findOneAndUpdate({
+        userId: new Types.ObjectId(userId),
+        "device.deviceId": deviceId
+    }, {
+        $set: {
+            device: {
+                userAgent: userAgent,
+                deviceId: deviceId,
+            },
+            lastLogin: new Date(),
+            status: SESSION_STATUS.ACTIVE,
+            expire_at: null
+        }
+    }, {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true
+    })
 
-    if (!session) {
-        session = await createSession(deviceId, userAgent, userId);
-    }
+    await setSessionCache(session._id.toString(), userId.toString(), SESSION_STATUS.ACTIVE);
 
     return session._id;
 };
@@ -36,8 +47,8 @@ export const createSession = async (deviceId: string, userAgent: string | null, 
     return session;
 }
 
-export const getAllSession = async (userId: string, sessionId: string): Promise<SessionsDTO> => {
-    const sessions = await Session.find({ userId }).select("_id device lastLogin");
+export const getActiveSession = async (userId: string, sessionId: string): Promise<SessionsDTO> => {
+    const sessions = await Session.find({ userId, status: SESSION_STATUS.ACTIVE }).select("_id device lastLogin");
 
     const formattedSessions = sessions.map(session => ({
         id: session._id.toString(),
@@ -54,23 +65,27 @@ export const getAllSession = async (userId: string, sessionId: string): Promise<
     }
 }
 
-export const deleteSession = async (userId: string, sessionId: string | null | undefined) => {
+export const revokeSession = async (userId: string, sessionId: string | null | undefined) => {
     if (!sessionId) {
         throw new AppError(400, ERROR_RESPONSE_CODE.badRequest, "bad request");
     }
 
-    // delete session
-    const document = await Session.findOneAndDelete({
+    // update session status
+    const document = await Session.findOneAndUpdate({
         _id: sessionId,
-        userId,
+    }, {
+        $set: {
+            status: SESSION_STATUS.REVOKED,
+            expire_at: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000)
+        }
     });
 
     if (!document) {
         throw new AppError(404, ERROR_RESPONSE_CODE.notFound, "Session Not found");
     }
 
-    // delete cache
-    await delCache(AUTH_CACHE_KEYS.SESSION(sessionId));
+    // update cache
+    await setSessionCache(sessionId, userId, SESSION_STATUS.REVOKED);
 
     // delete refresh token
     await RefreshToken.deleteOne({
@@ -99,7 +114,7 @@ export const checkSessionStatus = async (userId: string, sessionId: string): Pro
     return session.status;
 }
 
-export const validateRequestSession = async (res : Response, userId : string, sessionId : string) => {
+export const validateRequestSession = async (res: Response, userId: string, sessionId: string) => {
     const sessionStatus = await checkSessionStatus(userId, sessionId);
 
     if (!sessionStatus) {
@@ -108,13 +123,13 @@ export const validateRequestSession = async (res : Response, userId : string, se
 
     if (sessionStatus == SESSION_STATUS.REVOKED) {
         res.clearCookie(AUTH_TOKEN.REFRESH, authCookieOptions());
-        throw new AppError(401, ERROR_RESPONSE_CODE.revokedSession, "rovked session");
+        throw new AppError(401, ERROR_RESPONSE_CODE.revokedSession, "revoked session");
     }
 }
 
-export const setSessionCache = async (sessionId: string, userId: string) => {
+export const setSessionCache = async (sessionId: string, userId: string, status: SessionStatus = SESSION_STATUS.ACTIVE) => {
     await setCache(AUTH_CACHE_KEYS.SESSION(sessionId), {
-        status: "active",
+        status,
         userId
     } satisfies SessionCache, {
         PX: 5 * 24 * 60 * 60 * 10000,

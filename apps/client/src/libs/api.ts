@@ -4,7 +4,7 @@ import { refreshAccessToken } from "../features/auth/auth.thunk";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData } from "@odiano/shared";
 import { deleteAuth } from "../features/auth/auth.slice";
 
-let refreshPromise : Promise<string> | null = null;
+let refreshPromise: Promise<string> | null = null;
 
 export const api: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -39,15 +39,20 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        if(error.response?.status == 401 && error.response.data.code == ERROR_RESPONSE_CODE.invalidSession) {
+        if (error.response?.data.code == ERROR_RESPONSE_CODE.revokedSession) {
             store.dispatch(deleteAuth());
+            return Promise.reject(error);
         }
 
-        if (error.response?.status == 401 && error.response.data.code != ERROR_RESPONSE_CODE.invalidSession && !originalConfig?._retry && !originalConfig?.url?.includes("/auth/refresh")) {
+        if (error.response?.data.code == ERROR_RESPONSE_CODE.noSession) {
+            return Promise.reject(error);
+        }
+
+        if (error.response?.status == 401 && !originalConfig?._retry && !originalConfig?.url?.includes("/auth/refresh")) {
             try {
                 originalConfig._retry = true;
 
-                if(!refreshPromise) {
+                if (!refreshPromise) {
                     refreshPromise = store.dispatch(refreshAccessToken()).unwrap()
                         .finally(() => {
                             refreshPromise = null;

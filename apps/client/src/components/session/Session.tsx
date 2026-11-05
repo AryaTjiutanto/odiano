@@ -3,7 +3,7 @@ import { Globe } from "lucide-react"
 import { getSessionDevice } from "../../utils/userAgent.util"
 import { formatDistanceToNow } from "date-fns"
 import { useState } from "react"
-import { deleteSession } from "../../services/session.service"
+import { revokeSession } from "../../services/session.service"
 import useSetQueryDataHandler from "../../hooks/useSetQueryDataHandler"
 import { sessionKeys } from "../../queries/sessionKeys"
 import DotsLoader from "../loader/DotsLoader"
@@ -44,7 +44,7 @@ const Session = ({ session, withLogoutButton = true, withDate = true, isActive =
         if (!session?.id || isLoading) return;
         setIsLoading(true);
 
-        await deleteSession(sessionId);
+        await revokeSession(sessionId);
 
         notify.success({
             title: "Session logged out",

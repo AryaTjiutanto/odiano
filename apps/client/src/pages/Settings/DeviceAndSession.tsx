@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { sessionKeys } from "../../queries/sessionKeys";
 import { DEFAULT_GC_TIME } from "../../consts/queryTime.const";
-import { getSessions } from "../../services/session.service";
 import type { SessionsDTO } from "@odiano/shared";
 import SessionSkelatonLoading from "../../components/session/SessionSkelatonLoading";
 import Session from "../../components/session/Session";
+import { getActiveSessions } from "../../services/session.service";
 
 const DeviceAndSessions = () => {
     const sessionData = useQuery<SessionsDTO>({
-        queryFn: getSessions,
+        queryFn: getActiveSessions,
         queryKey: sessionKeys.all,
         staleTime: 1 * 60 * 1000,
         gcTime: DEFAULT_GC_TIME,
@@ -61,7 +61,6 @@ const DeviceAndSessions = () => {
                                 <div className="w-full h-20 border border-dashed border-neutral-700 rounded grid place-content-center text-xs text-neutral-500">
                                     No other sessions found
                                 </div>
-
                     }
                 </div>
             </div>

@@ -7,7 +7,7 @@ import { AUTH_PROVIDERS } from "../consts/user.const.js";
 import { nanoid } from "nanoid";
 import { AppError } from "../errors/appError.error.js";
 import { createAuthToken } from "./auth.service.js";
-import { createSession, findOrCreateSession } from "./session.service.js";
+import { createSession, updateOrCreateSession } from "./session.service.js";
 
 export const authentication = async (credential: string, deviceId: string, userAgent: string | null): Promise<AuthToken> => {
     const ticket = await googleClient.verifyIdToken({
@@ -26,7 +26,7 @@ export const authentication = async (credential: string, deviceId: string, userA
 
     // signin
     if (currentUser) {
-        const session = await findOrCreateSession(deviceId, userAgent, currentUser._id);
+        const session = await updateOrCreateSession(deviceId, userAgent, currentUser._id);
         const token = await createAuthToken(session._id.toString(), currentUser._id.toString());
 
         return token;
