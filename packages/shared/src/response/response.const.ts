@@ -10,7 +10,8 @@ export const ERROR_RESPONSE_CODE = {
     tooManyRequests: "TOO_MANY_REQUESTS",
     internalServerError: "INTERNAL_SERVER_ERROR",
     serviceUnavailable: "SERVICE_UNAVAILABLE",
-    invalidSession : "INVALID_SESSION",
+    noSession : "NO_SESSION",
+    revokedSession : "REVOKED_SESSION",
 } as const;
 
 export type ErrorResponseCode = typeof ERROR_RESPONSE_CODE[keyof typeof ERROR_RESPONSE_CODE];

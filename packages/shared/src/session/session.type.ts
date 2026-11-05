@@ -1,3 +1,5 @@
+import { SessionStatus } from "./session.const.js"
+
 export type SessionDTO = {
     id: string,
     device: {
@@ -14,5 +16,5 @@ export type SessionsDTO = {
 
 export type SessionCache = {
     userId : string,
-    status : "active" | "revoked",
+    status : SessionStatus,
 }

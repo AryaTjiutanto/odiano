@@ -1,3 +1,4 @@
+import { SESSION_STATUS, SessionStatus } from "@odiano/shared";
 import { model, Schema, Types } from "mongoose";
 
 type DeviceSchema = {
@@ -9,6 +10,7 @@ type SessionSchema = {
     device: DeviceSchema,
     userId: Types.ObjectId,
     lastLogin: Date,
+    status : SessionStatus
 }
 
 const deviceSchema = new Schema<DeviceSchema>({
@@ -32,6 +34,12 @@ const sessionSchema = new Schema<SessionSchema>({
     },
     lastLogin : {
         type : Date,
+        required : true,
+    },
+    status : {
+        type : String,
+        enum : Object.values(SESSION_STATUS),
+        default : SESSION_STATUS.ACTIVE,
         required : true,
     }
 }, {timestamps : true});
