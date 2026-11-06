@@ -14,6 +14,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import HomeAdminDashboard from "../pages/admin/Dashboard/Home";
 import StackRoutes from "./StackRoutes";
 import SocialWrapper from "../layouts/SocialWrapper";
+import SessionVerification from "../pages/Auth/SessionVerification";
 
 const AppRoutes = () => {
     return (
@@ -32,6 +33,9 @@ const AppRoutes = () => {
                 />}>
                     <Route path='/email/verify' element={<EmailVerification />} />
                 </Route>
+
+                {/* session verification */}
+                <Route path='/verify' element={<SessionVerification/>}/>
 
                 {/* onboarding */}
                 <Route element={<RequireUnOnboarded />}>

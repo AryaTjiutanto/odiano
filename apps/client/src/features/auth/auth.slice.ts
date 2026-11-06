@@ -9,6 +9,7 @@ type AuthState = {
     isInitialized : boolean,
     accessToken: string | null,
     user : CurrentUserDTO | null,
+    isSessionVerified : boolean,
 }
 
 const initialState: AuthState = {
@@ -17,6 +18,7 @@ const initialState: AuthState = {
     isAuthenticated: false,
     isInitialized : false,
     user : null,
+    isSessionVerified : false,
 }
 
 const authSlice = createSlice({
