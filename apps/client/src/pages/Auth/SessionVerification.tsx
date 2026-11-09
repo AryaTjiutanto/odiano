@@ -73,7 +73,7 @@ const SessionVerification = () => {
 
     return (
         <>
-            <SEO title="Verify your email"/>
+            <SEO title="Verify"/>
 
             <div className="w-screen h-screen grid place-content-center p-7 sm:p-0">
                 <div className="flex flex-col items-center justify-center text-center">

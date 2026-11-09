@@ -15,6 +15,7 @@ import HomeAdminDashboard from "../pages/admin/Dashboard/Home";
 import StackRoutes from "./StackRoutes";
 import SocialWrapper from "../layouts/SocialWrapper";
 import SessionVerification from "../pages/Auth/SessionVerification";
+import RequireUnverifiedSession from "../guard/RequireUnverifiedSession";
 
 const AppRoutes = () => {
     return (
@@ -29,13 +30,14 @@ const AppRoutes = () => {
                 </Route>
 
                 {/* email verification */}
-                <Route element={<RequireUnVerify
-                />}>
+                <Route element={<RequireUnVerify />}>
                     <Route path='/email/verify' element={<EmailVerification />} />
                 </Route>
 
                 {/* session verification */}
-                <Route path='/verify' element={<SessionVerification/>}/>
+                <Route element={<RequireUnverifiedSession />}>
+                    <Route path='/verify' element={<SessionVerification />} />
+                </Route>
 
                 {/* onboarding */}
                 <Route element={<RequireUnOnboarded />}>
@@ -53,7 +55,7 @@ const AppRoutes = () => {
 
                 {/* stack routes */}
 
-                <Route element={<SocialWrapper/>}>
+                <Route element={<SocialWrapper />}>
                     <Route path="*" element={<StackRoutes />} />
                 </Route>
 

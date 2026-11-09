@@ -8,18 +8,15 @@ import StackLink from "../../stack/StackLink";
 import { useSearchInputContext } from "../../../providers/SearchInputProvider";
 
 const LeftSidebar = () => {
+    const { isSessionVerified, isAuthenticated, user } = useAppSelector(state => state.auth);
+    const unreadNotificationCount = useAppSelector((state) => state.notification.unreadCount);
+
     const { handleSetQuery } = useSearchInputContext();
     const postForm = usePostForm();
-
-    const unreadNotificationCount = useAppSelector((state) => state.notification.unreadCount);
 
     // location
     const location = useLocation();
     const pathName = location.pathname;
-
-    // user data
-    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const userData = useAppSelector((state) => state.auth.user);
 
     return (
         <>
@@ -28,7 +25,7 @@ const LeftSidebar = () => {
                     <img src={ConnectLogo} className="w-9 xl:w-auto" />
 
                     {
-                        (isAuthenticated && userData?.isOnboarded) &&
+                        (isAuthenticated && isSessionVerified && user?.isOnboarded) &&
                         <>
                             <nav className="mt-20 xl:mt-16 w-full">
                                 <ul className="w-full space-y-7 xl:space-y-5 text-neutral-200">
@@ -91,11 +88,11 @@ const LeftSidebar = () => {
                                     </li> */}
 
                                     {
-                                        userData?.isOnboarded &&
+                                        user?.isOnboarded &&
                                         <>
                                             <li className="w-full">
-                                                <StackLink to={`profile/${userData && userData?.username}`}>
-                                                    <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${userData.username}`) && "text-white font-semibold"} duration-100`}>
+                                                <StackLink to={`profile/${user && user?.username}`}>
+                                                    <div className={`w-full flex justify-center xl:justify-start items-center xl:space-x-5 text-lg 2xl:text-xl ${pathName.includes(`profile/${user.username}`) && "text-white font-semibold"} duration-100`}>
                                                         <User className="size-7 xl:size-auto" />
                                                         <span className="hidden xl:inline-block">
                                                             Profile

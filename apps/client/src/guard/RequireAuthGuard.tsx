@@ -3,12 +3,7 @@ import { useAppSelector } from "../hooks/useRedux";
 
 const RequireAuthGuard = () => {
     const location = useLocation();
-
-    const isAuthLoading = useAppSelector(state => state.auth.isAuthLoading);
-    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-    const isInitialized = useAppSelector(state => state.auth.isInitialized);
-    const userData = useAppSelector(state => state.auth.user);
-
+    const {isAuthLoading, isAuthenticated, isInitialized, user, isSessionVerified} = useAppSelector(state => state.auth);
 
     if (isAuthLoading || !isInitialized) {
         return null;
@@ -19,13 +14,18 @@ const RequireAuthGuard = () => {
         return <Navigate to="/signin" replace />
     }
 
+    // is session verified
+    if (!isSessionVerified) {
+        return <Navigate to="/verify" replace/>
+    }
+
     // is email verified
-    if (userData && !userData.isEmailVerified) {
+    if (user && !user.isEmailVerified) {
         return <Navigate to="/email/verify" replace />
     }
 
     // if not boarded, redirect to onboarding page
-    if (userData && !userData.isOnboarded && location.pathname != "/onboarding") {
+    if (user && !user.isOnboarded && location.pathname != "/onboarding") {
         return <Navigate to="/onboarding" replace />
     }
 
