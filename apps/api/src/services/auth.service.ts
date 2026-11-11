@@ -10,8 +10,10 @@ import { delCache, getCache, setCache } from "@odiano/redis";
 import { failedAttemptHandler } from "../helpers/attempts/failedAttemptHandler.helper.js";
 import { tooManyAttemptHandler } from "../helpers/attempts/tooManyAttemptHandler.helper.js";
 import { createAndSendOTP, verifyOTP } from "./otp.service.js";
-import { createSession, updateOrCreateSession } from "./session.service.js";
+import { createSession, updateExistsSession } from "./session.service.js";
 import { Session } from "../models/session.model.js";
+import { SigninResult } from "../types/auth.type.js";
+import { createRequestVerificationToken } from "./verification.service.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -32,7 +34,7 @@ type SignupData = {
     userAgent: string | null,
 }
 
-export const signIn = async ({ email, password, ip, userAgent, deviceId }: SigninData): Promise<AuthToken> => {
+export const signIn = async ({ email, password, ip, userAgent, deviceId }: SigninData): Promise<SigninResult> => {
     const MAX_EMAIL_SIGNIN_ATTEMPT = 3;
     const MAX_SIGNIN_ATTEMPT = MAX_EMAIL_SIGNIN_ATTEMPT * 6;
 
@@ -89,14 +91,34 @@ export const signIn = async ({ email, password, ip, userAgent, deviceId }: Signi
         })
     }
 
-    // create session
-    const sessionId = await updateOrCreateSession(deviceId, userAgent, currentUser._id);
-    const token = await createAuthToken(sessionId.toString(), currentUser._id.toString());
-
     // delete attempt cache
     await delCache(emailSigninAttemptsCacheKey);
 
-    return token;
+    // update session or request verification
+    const sessionId = await updateExistsSession(deviceId, userAgent, currentUser._id);
+
+    // session unverified
+    if(!sessionId) {
+        const requestVerificationToken = await createRequestVerificationToken(currentUser._id.toString());
+
+        await createAndSendOTP(currentUser.email, OTP_CHANNELS.EMAIL, {
+            purpose : OTP_PURPOSES.NEW_DEVICE_LOGIN,
+            userAgent,
+        });
+
+        return {
+            requireVerification : true,
+            requestVerificationToken
+        }
+    }
+
+    // session verified
+    const token = await createAuthToken(sessionId.toString(), currentUser._id.toString());
+
+    return {
+        requireVerification : false,
+        token,
+    };
 }
 
 export const signUp = async ({ dateOfBirth, deviceId, email, ip, password, userAgent }: SignupData): Promise<AuthToken> => {
@@ -130,7 +152,7 @@ export const signUp = async ({ dateOfBirth, deviceId, email, ip, password, userA
     const token = await createAuthToken(session._id.toString(), currentUser._id.toString());
 
     // send verification email
-    await createAndSendOTP(email, OTP_CHANNELS.EMAIL, OTP_PURPOSES.VERIFY_EMAIL);
+    await createAndSendOTP(email, OTP_CHANNELS.EMAIL, {purpose : OTP_PURPOSES.VERIFY_EMAIL});
 
     // increate signup count
     count++;
@@ -246,7 +268,7 @@ export const sendEmailVerification = async (currentUserId: string) => {
     }
 
     // send otp to email
-    await createAndSendOTP(user.email, OTP_CHANNELS.EMAIL, OTP_PURPOSES.VERIFY_EMAIL);
+    await createAndSendOTP(user.email, OTP_CHANNELS.EMAIL, {purpose : OTP_PURPOSES.VERIFY_EMAIL});
 }
 
 export const verifyEmail = async (currentUserId: string, code: null | undefined | string) => {

@@ -1,21 +1,18 @@
 import loginImage from "../../assets/img/login-img.webp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { AUTH_TOKEN, authenticateUserSchema, type SuccessResponseData, type AuthenticateUserSchema, type AuthenticationResponse } from "@odiano/shared";
+import { authenticateUserSchema, type AuthenticateUserSchema } from "@odiano/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "../../libs/api";
-import { useAppDispatch } from "../../hooks/useRedux";
-import { setAccessToken } from "../../features/auth/auth.slice";
 import DotsLoader from "../../components/loader/DotsLoader";
-import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import SEO from "../../components/seo/SEO";
 import { useEffect } from "react";
 import { getDeviceId } from "../../helpers/deviceId";
+import { signin } from "../../services/auth.service";
 
 const Signin = () => {
-    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const {
         register,
@@ -34,13 +31,10 @@ const Signin = () => {
 
     const onSubmit: SubmitHandler<AuthenticateUserSchema> = async (data) => {
         try {
-            const response = await api.post<SuccessResponseData<AuthenticationResponse>>("/auth/signin", data);
+            const responseData = await signin(data);
 
-            const accessToken = response.data.data?.[AUTH_TOKEN.ACCESS];
-
-            if (accessToken) {
-                dispatch(setAccessToken(accessToken));
-                dispatch(intitializeAuth());
+            if(responseData.requireVerification) {
+                navigate("/verify");
             }
         } catch (err: unknown) {
             handleApiErrorNotification<AuthenticateUserSchema>(err, {
@@ -52,7 +46,7 @@ const Signin = () => {
     return (
         <>
             {/* head */}
-            <SEO title="Welcome back"/>
+            <SEO title="Welcome back" />
 
             {/* body */}
             <div className="h-full min-h-screen flex items-center py-32 xl:py-0">
@@ -111,7 +105,7 @@ const Signin = () => {
                                     <div className="w-[45%] h-px bg-neutral-200"></div>
                                 </div>
                                 <div className="mt-5 2xl:mt-10">
-                                    <GoogleLoginButton/>
+                                    <GoogleLoginButton />
                                 </div>
 
                                 {/* sign up */}

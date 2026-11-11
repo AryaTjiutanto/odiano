@@ -8,7 +8,7 @@ import StackLink from "../../stack/StackLink";
 import { useSearchInputContext } from "../../../providers/SearchInputProvider";
 
 const LeftSidebar = () => {
-    const { isSessionVerified, isAuthenticated, user } = useAppSelector(state => state.auth);
+    const { isRequireVerification, isAuthenticated, user } = useAppSelector(state => state.auth);
     const unreadNotificationCount = useAppSelector((state) => state.notification.unreadCount);
 
     const { handleSetQuery } = useSearchInputContext();
@@ -25,7 +25,7 @@ const LeftSidebar = () => {
                     <img src={ConnectLogo} className="w-9 xl:w-auto" />
 
                     {
-                        (isAuthenticated && isSessionVerified && user?.isOnboarded) &&
+                        (isAuthenticated && !isRequireVerification && user?.isOnboarded) &&
                         <>
                             <nav className="mt-20 xl:mt-16 w-full">
                                 <ul className="w-full space-y-7 xl:space-y-5 text-neutral-200">

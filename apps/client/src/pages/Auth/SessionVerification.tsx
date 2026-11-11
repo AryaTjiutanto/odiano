@@ -24,7 +24,7 @@ const SessionVerification = () => {
         try {
             setIsResending(true);
 
-            await api.post("/auth/email-verification/resend");
+            await api.post("/session/verification/resend");
 
             notify.info({ title: "OTP sent", description: "Please check your email for the OTP." });
         } catch (err: unknown) {

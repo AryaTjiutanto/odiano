@@ -3,7 +3,7 @@ import { useAppSelector } from "../hooks/useRedux";
 
 const RequireAuthGuard = () => {
     const location = useLocation();
-    const {isAuthLoading, isAuthenticated, isInitialized, user, isSessionVerified} = useAppSelector(state => state.auth);
+    const {isAuthLoading, isAuthenticated, isInitialized, user, isRequireVerification} = useAppSelector(state => state.auth);
 
     if (isAuthLoading || !isInitialized) {
         return null;
@@ -15,7 +15,7 @@ const RequireAuthGuard = () => {
     }
 
     // is session verified
-    if (!isSessionVerified) {
+    if (!isRequireVerification) {
         return <Navigate to="/verify" replace/>
     }
 

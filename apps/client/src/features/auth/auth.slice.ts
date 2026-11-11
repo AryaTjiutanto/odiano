@@ -9,7 +9,8 @@ type AuthState = {
     isInitialized : boolean,
     accessToken: string | null,
     user : CurrentUserDTO | null,
-    isSessionVerified : boolean,
+    isRequireVerification : boolean,
+    requestVerificationToken : string | null,
 }
 
 const initialState: AuthState = {
@@ -18,7 +19,9 @@ const initialState: AuthState = {
     isAuthenticated: false,
     isInitialized : false,
     user : null,
-    isSessionVerified : false,
+
+    isRequireVerification : false,
+    requestVerificationToken : null,
 }
 
 const authSlice = createSlice({
@@ -48,6 +51,16 @@ const authSlice = createSlice({
             if(!state.user) return;
 
             state.user.isEmailVerified = action.payload;
+        },
+        requireSessionVerification(state, action : PayloadAction<string>) {
+            state.isRequireVerification = true;
+            state.requestVerificationToken = action.payload;
+
+            state.isInitialized = true;
+            state.accessToken = null;
+            state.isAuthLoading = false;
+            state.isAuthenticated = false;
+            state.user = null;
         }
     },
     extraReducers: (builder) => {
@@ -95,5 +108,5 @@ const authSlice = createSlice({
     }
 })
 
-export const { setAccessToken, setCurrentUserProfile, setEmailVerified, deleteAuth } = authSlice.actions;
+export const { setAccessToken, setCurrentUserProfile, setEmailVerified, deleteAuth, requireSessionVerification } = authSlice.actions;
 export default authSlice.reducer; 

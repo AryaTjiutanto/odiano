@@ -4,7 +4,8 @@ export const OTP_CHANNELS = {
 }
 
 export const OTP_PURPOSES = {
-    "VERIFY_EMAIL" : "verify email" as const
+    "VERIFY_EMAIL" : "verify email" as const,
+    "NEW_DEVICE_LOGIN" : "new device login" as const
 }
 
 export const DEFAULT_OTP_EXPIRES_TIME = 1 * 60 * 60 * 1000;

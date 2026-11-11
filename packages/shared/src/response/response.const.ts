@@ -12,6 +12,8 @@ export const ERROR_RESPONSE_CODE = {
     serviceUnavailable: "SERVICE_UNAVAILABLE",
     noSession : "NO_SESSION",
     revokedSession : "REVOKED_SESSION",
+    noRequestVerificationToken : "NO_REQUEST_VERIFICATION_TOKEN",
+    invalidRequestVerificationToken : "INVALID_REQUEST_VERIFICATION_TOKEN"
 } as const;
 
 export type ErrorResponseCode = typeof ERROR_RESPONSE_CODE[keyof typeof ERROR_RESPONSE_CODE];

@@ -8,6 +8,7 @@ declare global {
             userId? : string,
             tokenId? : string,
             sessionId? : string,
+            verificationChallengeId? : string
         }
     }
 }

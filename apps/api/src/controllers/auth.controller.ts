@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service.js";
 import { AppError } from "../errors/appError.error.js";
 import { successResponseData } from "../utils/response.util.js";
-import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse, SUCCESS_RESPONSE_CODE, type CurrentUserDTO } from "@odiano/shared";
+import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse, SUCCESS_RESPONSE_CODE, type CurrentUserDTO, VerificationResponse } from "@odiano/shared";
 import { authCookieOptions } from "../libs/auth/auth.cookie.js";
 import { ReqBody } from "../types/request.type.js";
 import { type AuthenticateUserSchema } from "@odiano/shared";
@@ -20,12 +20,22 @@ export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response
 
         const userAgent = req.headers["user-agent"] || null;
         const ip = req?.ip || "anonymous";
+
         const authData = await authServices.signIn({ email, password, ip, deviceId, userAgent });
 
-        res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
+        // require verification
+        if (authData.requireVerification) {
+            res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.ok, "Ok", authData))
 
-        res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
-            [AUTH_TOKEN.ACCESS]: authData.access_token,
+            return;
+        }
+
+        // verified
+        res.cookie(AUTH_TOKEN.REFRESH, authData.token.refresh_token, authCookieOptions());
+
+        res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
+            requireVerification: false,
+            [AUTH_TOKEN.ACCESS]: authData.token[AUTH_TOKEN.ACCESS],
         }))
     } catch (err) {
         next(err);
@@ -74,7 +84,7 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {userId, tokenId, sessionId} = req;
+        const { userId, tokenId, sessionId } = req;
         const refreshToken = req.cookies?.["refresh_token"];
 
         if (!userId || !tokenId || !refreshToken || !sessionId) {

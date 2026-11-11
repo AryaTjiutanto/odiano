@@ -1,4 +1,4 @@
-import { AUTH_CACHE_KEYS, AUTH_TOKEN, ERROR_RESPONSE_CODE, SESSION_STATUS, SessionCache, SessionsDTO, SessionStatus } from "@odiano/shared";
+import { AUTH_CACHE_KEYS, AUTH_TOKEN, ERROR_RESPONSE_CODE, OTP_CHANNELS, OTP_PURPOSES, SESSION_STATUS, SessionCache, SessionsDTO, SessionStatus } from "@odiano/shared";
 import { Session } from "../models/session.model.js";
 import { Types } from "mongoose";
 import { AppError } from "../errors/appError.error.js";
@@ -6,6 +6,35 @@ import { getCache, setCache } from "@odiano/redis";
 import { Response } from "express";
 import { RefreshToken } from "../models/refreshToken.model.js";
 import { authCookieOptions } from "../libs/auth/auth.cookie.js";
+import addTimeToCurrentDate from "../utils/addTimeToCurrentDate.js";
+import VerificationChallenge from "../models/verificationChallenge.model.js";
+import { VERIFICATION_CHALLENGE_STATUS } from "../consts/verificationChallenge.const.js";
+import { createAndSendOTP } from "./otp.service.js";
+
+export const updateExistsSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId): Promise<Types.ObjectId | null> => {
+    const session = await Session.findOneAndUpdate({
+        userId: new Types.ObjectId(userId),
+        "device.deviceId": deviceId
+    }, {
+        $set: {
+            device: {
+                userAgent: userAgent,
+                deviceId: deviceId,
+            },
+            lastLogin: new Date(),
+            status: SESSION_STATUS.ACTIVE,
+            expire_at: null
+        }
+    })
+
+    if (!session) {
+        return null;
+    }
+
+    await setSessionCache(session._id.toString(), userId.toString(), SESSION_STATUS.ACTIVE);
+
+    return session._id;
+};
 
 export const updateOrCreateSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId): Promise<Types.ObjectId> => {
     const session = await Session.findOneAndUpdate({
@@ -76,7 +105,7 @@ export const revokeSession = async (userId: string, sessionId: string | null | u
     }, {
         $set: {
             status: SESSION_STATUS.REVOKED,
-            expire_at: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000)
+            expire_at: addTimeToCurrentDate(14 * 24 * 60 * 60 * 1000)
         }
     });
 
@@ -134,4 +163,25 @@ export const setSessionCache = async (sessionId: string, userId: string, status:
     } satisfies SessionCache, {
         PX: 5 * 24 * 60 * 60 * 10000,
     });
+}
+
+export const resendSessionVerification = async (verificationChallengeId: string, userAgent: string | null | undefined) => {
+    const verificationChallenge = await VerificationChallenge.findById(verificationChallengeId).populate<{ user: { email: string } }>("user", "email");
+
+    if (!verificationChallenge || verificationChallenge?.status != VERIFICATION_CHALLENGE_STATUS.PENDING) {
+        throw new AppError(403, ERROR_RESPONSE_CODE.invalidRequestVerificationToken, "forbidden");
+    }
+
+    if (verificationChallenge.expireAt < new Date()) {
+        throw new AppError(
+            403,
+            ERROR_RESPONSE_CODE.invalidRequestVerificationToken,
+            "Verification challenge expired"
+        );
+    }
+
+    await createAndSendOTP(verificationChallenge.user.email, OTP_CHANNELS.EMAIL, {
+        purpose : OTP_PURPOSES.NEW_DEVICE_LOGIN,
+        userAgent,
+    })
 }

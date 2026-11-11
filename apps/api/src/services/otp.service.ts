@@ -1,4 +1,4 @@
-import { AUTH_CACHE_KEYS, DEFAULT_OTP_EXPIRES_TIME, ERROR_RESPONSE_CODE, OtpChannels, OtpPurposes } from "@odiano/shared";
+import { AUTH_CACHE_KEYS, DEFAULT_OTP_EXPIRES_TIME, ERROR_RESPONSE_CODE, OTP_PURPOSES, OtpChannels, OtpPurposes } from "@odiano/shared";
 import OTP from "../models/otp.model.js";
 import { customAlphabet } from "nanoid";
 import { render } from "@react-email/components";
@@ -9,8 +9,21 @@ import { JOB_NAMES, QUEUE_NAMES, registerEmailJob } from "@odiano/queue";
 
 import bcrypt from "bcrypt";
 import VerifyEmail from "../emails/verifyEmail.js";
+import NewDeviceLoginEmail from "../emails/NewDeviceLogin.js";
+import { getSessionDevice } from "../utils/userAgent.util.js";
 
-export const createAndSendOTP = async (target: string, channel: OtpChannels, purpose: OtpPurposes) => {
+type VerifyEmailData = {
+    purpose : typeof OTP_PURPOSES.VERIFY_EMAIL,
+}
+
+type NewDeviceLoginData = {
+    purpose : typeof OTP_PURPOSES.NEW_DEVICE_LOGIN,
+    userAgent : string | undefined | null,
+}
+
+type Data = VerifyEmailData | NewDeviceLoginData;
+
+export const createAndSendOTP = async (target: string, channel: OtpChannels, data : Data) => {
     // check send email verification attempt
     const sendEmailVerificationCacheKey = AUTH_CACHE_KEYS.SEND_OTP(target);
 
@@ -32,14 +45,33 @@ export const createAndSendOTP = async (target: string, channel: OtpChannels, pur
         code,
         attempt: 0,
         channel,
-        purpose,
+        purpose : data.purpose,
         target,
     }]);
 
-    const content = await render(React.createElement(VerifyEmail, {
-        code,
-        expiresIn: DEFAULT_OTP_EXPIRES_TIME / 1000,
-    }));
+
+    let content;
+
+    switch (data.purpose) {
+        case OTP_PURPOSES.VERIFY_EMAIL:
+            content = await render(React.createElement(VerifyEmail, {
+                code,
+                expiresIn: DEFAULT_OTP_EXPIRES_TIME / 1000,
+            }));
+
+            break;
+        case OTP_PURPOSES.NEW_DEVICE_LOGIN:
+            const device = data.userAgent ? getSessionDevice(data.userAgent) : null;
+
+            content = await render(React.createElement(NewDeviceLoginEmail, {
+                code,
+                os : device?.os,
+                browser : device?.browser,
+                expiresIn: 10 * 60,
+            }));
+
+            break;
+    }
 
     registerEmailJob(JOB_NAMES[QUEUE_NAMES.EMAIL].SEND_OTP, {
         id: `email-otp-${otp[0]._id.toString()}`,
