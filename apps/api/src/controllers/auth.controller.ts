@@ -170,3 +170,42 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
         next(err);
     }
 }
+
+export const resendSessionVerification = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userAgent = req.headers["user-agent"] || null;
+        const verificationChallengeId = req.verificationChallengeId;
+
+        if (!verificationChallengeId) {
+            throw new AppError(403, ERROR_RESPONSE_CODE.noRequestVerificationToken, "forbidden");
+        }
+
+        await authServices.resendSessionVerification(verificationChallengeId, userAgent);
+
+        res.status(201).json(successResponseData(SUCCESS_RESPONSE_CODE.created, "Success"));
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const verifySession = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const verificationChallengeId = req.verificationChallengeId;
+        const { code, deviceId } = req.body;
+        const userAgent = req.headers["user-agent"] || null;
+
+        if (!verificationChallengeId) {
+            throw new AppError(403, ERROR_RESPONSE_CODE.noRequestVerificationToken, "Something is missing");
+        }
+
+        const data = await authServices.verifySession(verificationChallengeId, code, deviceId, userAgent);
+
+        res.cookie(AUTH_TOKEN.REFRESH, data.refresh_token, authCookieOptions());
+        res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
+            requireVerification: false,
+            [AUTH_TOKEN.ACCESS]: data[AUTH_TOKEN.ACCESS],
+        }))
+    } catch (err) {
+        next(err)
+    }
+}

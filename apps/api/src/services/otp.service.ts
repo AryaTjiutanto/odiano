@@ -21,11 +21,13 @@ type NewDeviceLoginData = {
     userAgent : string | undefined | null,
 }
 
-type Data = VerifyEmailData | NewDeviceLoginData;
+type Data = (VerifyEmailData | NewDeviceLoginData) & {
+    target : string
+};
 
-export const createAndSendOTP = async (target: string, channel: OtpChannels, data : Data) => {
+export const createAndSendOTP = async (email:string, channel: OtpChannels, data : Data) => {
     // check send email verification attempt
-    const sendEmailVerificationCacheKey = AUTH_CACHE_KEYS.SEND_OTP(target);
+    const sendEmailVerificationCacheKey = AUTH_CACHE_KEYS.SEND_OTP(data.target);
 
     const emailVerificationAttempt = parseInt(await getCache(sendEmailVerificationCacheKey) || "0");
 
@@ -46,7 +48,7 @@ export const createAndSendOTP = async (target: string, channel: OtpChannels, dat
         attempt: 0,
         channel,
         purpose : data.purpose,
-        target,
+        target : data.target,
     }]);
 
 
@@ -75,7 +77,7 @@ export const createAndSendOTP = async (target: string, channel: OtpChannels, dat
 
     registerEmailJob(JOB_NAMES[QUEUE_NAMES.EMAIL].SEND_OTP, {
         id: `email-otp-${otp[0]._id.toString()}`,
-        email: target,
+        email: email,
         content,
     })
 

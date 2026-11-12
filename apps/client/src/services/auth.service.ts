@@ -2,7 +2,7 @@ import { AUTH_TOKEN, type VerificationResponse, type AuthenticateUserSchema, typ
 import { api } from "../libs/api";
 import { getDeviceId } from "../helpers/deviceId";
 import { store } from "../app/store";
-import { requireSessionVerification, setAccessToken } from "../features/auth/auth.slice";
+import { requireSessionVerification, setCredentials } from "../features/auth/auth.slice";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 
 export const googleAuth = async (credential: string) => {
@@ -27,7 +27,7 @@ export const signin = async (data: AuthenticateUserSchema): Promise<Verification
         const accessToken = responseData?.[AUTH_TOKEN.ACCESS];
 
         if (accessToken) {
-            store.dispatch(setAccessToken(accessToken));
+            store.dispatch(setCredentials(accessToken));
             store.dispatch(intitializeAuth());
         }
     }

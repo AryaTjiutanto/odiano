@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosHeaders, type AxiosInstance, type InternalAxios
 import { store } from "../app/store";
 import { refreshAccessToken } from "../features/auth/auth.thunk";
 import { ERROR_RESPONSE_CODE, type ErrorResponseData } from "@odiano/shared";
-import { deleteAuth } from "../features/auth/auth.slice";
+import { deleteCredentials } from "../features/auth/auth.slice";
 
 let refreshPromise: Promise<string> | null = null;
 
@@ -40,7 +40,7 @@ api.interceptors.response.use(
         }
 
         if (error.response?.data.code == ERROR_RESPONSE_CODE.revokedSession) {
-            store.dispatch(deleteAuth());
+            store.dispatch(deleteCredentials());
             return Promise.reject(error);
         }
 

@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
-import { setAccessToken } from "../../features/auth/auth.slice";
 import { intitializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import DateInputSection from "../../components/input/DateInputSection";
 import SEO from "../../components/seo/SEO";
 import { useEffect } from "react";
 import { getDeviceId } from "../../helpers/deviceId";
+import { setCredentials } from "../../features/auth/auth.slice";
 
 const Signup = () => {
     const dispatch = useAppDispatch();
@@ -34,7 +34,7 @@ const Signup = () => {
             const accessToken = response.data.data?.access_token;
 
             if (accessToken) {
-                dispatch(setAccessToken(accessToken));
+                dispatch(setCredentials(accessToken));
                 dispatch(intitializeAuth());
             }
         } catch (err: unknown) {

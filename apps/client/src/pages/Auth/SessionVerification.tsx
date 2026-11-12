@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import connectLogo from "../../assets/img/logo/odiano.svg";
 import CustomOTPInput from "../../components/input/CustomOTPInput";
@@ -10,6 +11,7 @@ import type { SuccessResponseData } from "@odiano/shared";
 import { useNavigate } from "react-router-dom";
 import { setEmailVerified } from "../../features/auth/auth.slice";
 import SEO from "../../components/seo/SEO";
+import { resendSessionVerification } from "../../services/session.service";
 
 const SessionVerification = () => {
     const navigate = useNavigate();
@@ -24,7 +26,7 @@ const SessionVerification = () => {
         try {
             setIsResending(true);
 
-            await api.post("/session/verification/resend");
+            await resendSessionVerification();
 
             notify.info({ title: "OTP sent", description: "Please check your email for the OTP." });
         } catch (err: unknown) {

@@ -1,11 +1,11 @@
 import type { CredentialResponse } from "@react-oauth/google";
-import { setAccessToken } from "../features/auth/auth.slice";
 import { intitializeAuth } from "../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 import { googleAuth } from "../services/auth.service";
 import { useAppDispatch } from "./useRedux"
 import { notify } from "../helpers/notification/notify.helper";
 import { useNavigate } from "react-router-dom";
+import { setCredentials } from "../features/auth/auth.slice";
 
 const useGoogleAuth = () => {
     const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ const useGoogleAuth = () => {
                 throw new Error("Authentication fail")
             }
 
-            dispatch(setAccessToken(accessToken));
+            dispatch(setCredentials(accessToken));
             dispatch(intitializeAuth());
 
             navigate("/onboarding", { replace: true });

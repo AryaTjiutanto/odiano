@@ -14,6 +14,8 @@ import { createSession, updateExistsSession } from "./session.service.js";
 import { Session } from "../models/session.model.js";
 import { SigninResult } from "../types/auth.type.js";
 import { createRequestVerificationToken } from "./verification.service.js";
+import VerificationChallenge from "../models/verificationChallenge.model.js";
+import { VERIFICATION_CHALLENGE_STATUS } from "../consts/verificationChallenge.const.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -98,17 +100,18 @@ export const signIn = async ({ email, password, ip, userAgent, deviceId }: Signi
     const sessionId = await updateExistsSession(deviceId, userAgent, currentUser._id);
 
     // session unverified
-    if(!sessionId) {
-        const requestVerificationToken = await createRequestVerificationToken(currentUser._id.toString());
+    if (!sessionId) {
+        const verificationData = await createRequestVerificationToken(currentUser._id.toString());
 
         await createAndSendOTP(currentUser.email, OTP_CHANNELS.EMAIL, {
-            purpose : OTP_PURPOSES.NEW_DEVICE_LOGIN,
+            purpose: OTP_PURPOSES.NEW_DEVICE_LOGIN,
             userAgent,
+            target: verificationData.challengeId
         });
 
         return {
-            requireVerification : true,
-            requestVerificationToken
+            requireVerification: true,
+            requestVerificationToken: verificationData.requestVerificationToken
         }
     }
 
@@ -116,7 +119,7 @@ export const signIn = async ({ email, password, ip, userAgent, deviceId }: Signi
     const token = await createAuthToken(sessionId.toString(), currentUser._id.toString());
 
     return {
-        requireVerification : false,
+        requireVerification: false,
         token,
     };
 }
@@ -152,7 +155,7 @@ export const signUp = async ({ dateOfBirth, deviceId, email, ip, password, userA
     const token = await createAuthToken(session._id.toString(), currentUser._id.toString());
 
     // send verification email
-    await createAndSendOTP(email, OTP_CHANNELS.EMAIL, {purpose : OTP_PURPOSES.VERIFY_EMAIL});
+    await createAndSendOTP(email, OTP_CHANNELS.EMAIL, { purpose: OTP_PURPOSES.VERIFY_EMAIL, target: email });
 
     // increate signup count
     count++;
@@ -221,10 +224,10 @@ export const refresh = async (userId: string, tokenId: string, token: string, se
 
     // update session last login
     await Session.findOneAndUpdate({
-        _id : sessionId
+        _id: sessionId
     }, {
-        $set : {
-            lastLogin : new Date()
+        $set: {
+            lastLogin: new Date()
         }
     })
 
@@ -268,7 +271,7 @@ export const sendEmailVerification = async (currentUserId: string) => {
     }
 
     // send otp to email
-    await createAndSendOTP(user.email, OTP_CHANNELS.EMAIL, {purpose : OTP_PURPOSES.VERIFY_EMAIL});
+    await createAndSendOTP(user.email, OTP_CHANNELS.EMAIL, { purpose: OTP_PURPOSES.VERIFY_EMAIL, target: user.email });
 }
 
 export const verifyEmail = async (currentUserId: string, code: null | undefined | string) => {
@@ -295,4 +298,52 @@ export const verifyEmail = async (currentUserId: string, code: null | undefined 
     await verifyOTP(user.email, code, OTP_PURPOSES.VERIFY_EMAIL);
 
     await User.updateOne({ _id: currentUserId }, { emailVerifiedAt: new Date() });
+}
+
+export const resendSessionVerification = async (verificationChallengeId: string, userAgent: string | null | undefined) => {
+    const verificationChallenge = await VerificationChallenge.findById(verificationChallengeId).populate<{ user: { email: string } }>("user", "email");
+
+    if (
+        !verificationChallenge ||
+        verificationChallenge.status !== VERIFICATION_CHALLENGE_STATUS.PENDING ||
+        verificationChallenge.expireAt < new Date()
+    ) {
+        throw new AppError(
+            403,
+            ERROR_RESPONSE_CODE.invalidRequestVerificationToken,
+            "Invalid or expired verification challenge"
+        );
+    }
+
+    await createAndSendOTP(verificationChallenge.user.email, OTP_CHANNELS.EMAIL, {
+        purpose: OTP_PURPOSES.NEW_DEVICE_LOGIN,
+        userAgent,
+        target: verificationChallenge._id.toString(),
+    })
+}
+
+export const verifySession = async (verificationChallengeId: string, code: string, deviceId: string, userAgent: string | null | undefined): Promise<AuthToken> => {
+    // get and validate verification challenge
+    const verificationChallenge = await VerificationChallenge.findById(verificationChallengeId);
+
+    if (
+        !verificationChallenge ||
+        verificationChallenge.status !== VERIFICATION_CHALLENGE_STATUS.PENDING ||
+        verificationChallenge.expireAt < new Date()
+    ) {
+        throw new AppError(
+            403,
+            ERROR_RESPONSE_CODE.invalidRequestVerificationToken,
+            "Invalid or expired verification challenge"
+        );
+    }
+
+    // validate otp
+    await verifyOTP(verificationChallengeId, code, OTP_PURPOSES.NEW_DEVICE_LOGIN);
+
+    // validated
+    const sessionId = await createSession(deviceId, userAgent, verificationChallenge.user);
+    const token = await createAuthToken(sessionId.toString(), verificationChallenge.user.toString());
+
+    return token;
 }

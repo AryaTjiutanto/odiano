@@ -13,3 +13,4 @@ export * from "./search/index.js";
 export * from "./searchHistory/index.js";
 export * from "./user/index.js";
 export * from "./session/index.js";
+export * from "./request/index.js";

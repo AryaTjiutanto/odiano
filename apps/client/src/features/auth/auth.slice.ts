@@ -6,53 +6,56 @@ import type { UploadedFileData } from "../../types/file.type";
 type AuthState = {
     isAuthLoading: boolean,
     isAuthenticated: boolean,
-    isInitialized : boolean,
+    isInitialized: boolean,
     accessToken: string | null,
-    user : CurrentUserDTO | null,
-    isRequireVerification : boolean,
-    requestVerificationToken : string | null,
+    user: CurrentUserDTO | null,
+    isRequireVerification: boolean,
+    requestVerificationToken: string | null,
 }
 
 const initialState: AuthState = {
     isAuthLoading: true,
     accessToken: null,
     isAuthenticated: false,
-    isInitialized : false,
-    user : null,
+    isInitialized: false,
+    user: null,
 
-    isRequireVerification : false,
-    requestVerificationToken : null,
+    isRequireVerification: false,
+    requestVerificationToken: null,
 }
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        setAccessToken(state, action: PayloadAction<string | null>) {
+        setCredentials(state, action: PayloadAction<string>) {
             state.accessToken = action.payload;
             state.isAuthLoading = false;
+            state.isAuthenticated = true;
+            state.isRequireVerification = false;
+            state.requestVerificationToken = null;
         },
-        deleteAuth(state) {
+        deleteCredentials(state) {
             state.accessToken = null;
             state.isAuthenticated = false;
             state.user = null;
             state.isAuthLoading = false;
             state.isInitialized = true;
         },
-        setCurrentUserProfile(state, action : PayloadAction<UploadedFileData>) {
-            if(!state.user) return;
+        setCurrentUserProfile(state, action: PayloadAction<UploadedFileData>) {
+            if (!state.user) return;
 
             state.user.profileImage = {
-                publicId : action.payload.publicId,
-                url : action.payload.url,
+                publicId: action.payload.publicId,
+                url: action.payload.url,
             };
         },
-        setEmailVerified(state, action : PayloadAction<boolean>) {
-            if(!state.user) return;
+        setEmailVerified(state, action: PayloadAction<boolean>) {
+            if (!state.user) return;
 
             state.user.isEmailVerified = action.payload;
         },
-        requireSessionVerification(state, action : PayloadAction<string>) {
+        requireSessionVerification(state, action: PayloadAction<string>) {
             state.isRequireVerification = true;
             state.requestVerificationToken = action.payload;
 
@@ -83,7 +86,7 @@ const authSlice = createSlice({
             .addCase(intitializeAuth.pending, (state) => {
                 state.isAuthLoading = true;
             })
-            .addCase(intitializeAuth.fulfilled, (state, action : PayloadAction<CurrentUserDTO | null>) => {
+            .addCase(intitializeAuth.fulfilled, (state, action: PayloadAction<CurrentUserDTO | null>) => {
                 state.user = action.payload;
                 state.isAuthLoading = false;
                 state.isAuthenticated = !!action.payload;
@@ -108,5 +111,5 @@ const authSlice = createSlice({
     }
 })
 
-export const { setAccessToken, setCurrentUserProfile, setEmailVerified, deleteAuth, requireSessionVerification } = authSlice.actions;
+export const { deleteCredentials, setCredentials, setCurrentUserProfile, setEmailVerified, requireSessionVerification } = authSlice.actions;
 export default authSlice.reducer; 
