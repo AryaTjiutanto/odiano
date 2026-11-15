@@ -5,55 +5,59 @@ import { store } from "../app/store";
 import { setCredentials } from "../features/auth/auth.slice";
 import { getDeviceId } from "../helpers/deviceId";
 
-export const getActiveSessions = async () : Promise<SessionsDTO> => {
+export const getActiveSessions = async (): Promise<SessionsDTO> => {
     const response = await api.get<SuccessResponseData<SessionsDTO>>("/session/active");
 
-    if(!response.data.data) {
+    if (!response.data.data) {
         throw new Error("No data found")
     }
-    
+
     return response.data.data;
 }
 
-export const revokeSession = async (sessionId : string) : Promise<boolean> => {
+export const revokeSession = async (sessionId: string): Promise<boolean> => {
     const response = await api.post<SuccessResponseData>(`/session/${sessionId}`);
-    
+
     return response.data.success;
 }
 
 export const resendSessionVerification = async () => {
     const token = store.getState().auth.requestVerificationToken;
 
-    if(!token) {
+    if (!token) {
         throw new Error("Require request verification token");
     }
 
     await api.post("/auth/session-verification/resend", {
-        headers : {
-            [REQUEST_HEADERS.REQUEST_VERIFICATION_TOKEN] : token,
+        headers: {
+            [REQUEST_HEADERS.REQUEST_VERIFICATION_TOKEN]: token,
         }
     });
 }
 
-export const verifySessionVerification = async (code : string) => {
+export const verifySessionVerification = async (code: string) => {
     const token = store.getState().auth.requestVerificationToken;
-    
 
-    if(!token) {
+    if (!token) {
         throw new Error("Require request verification token");
     }
 
-    const response = await api.post<SuccessResponseData<AuthenticationResponse>>("/auth/session-verification/verify", {
-        headers : {
-            [REQUEST_HEADERS.REQUEST_VERIFICATION_TOKEN] : token,
-        },
-        data : {
+    const response = await api.post<SuccessResponseData<AuthenticationResponse>>(
+        "/auth/session-verification/verify",
+        {
             code,
-            deviceId : getDeviceId()
+            deviceId: getDeviceId()
+        },
+        {
+            headers: {
+                [REQUEST_HEADERS.REQUEST_VERIFICATION_TOKEN]: token,
+            }
         }
-    });
+    );
 
-    if(response.data.success || !response.data.data?.access_token) {
+    console.log(response);
+
+    if (response.data.success || !response.data.data?.access_token) {
         throw new Error("Authentication fail");
     }
 

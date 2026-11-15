@@ -322,7 +322,7 @@ export const resendSessionVerification = async (verificationChallengeId: string,
     })
 }
 
-export const verifySession = async (verificationChallengeId: string, code: string, deviceId: string, userAgent: string | null | undefined): Promise<AuthToken> => {
+export const verifySession = async (verificationChallengeId: string, code: string, deviceId: string, userAgent: string | null): Promise<AuthToken> => {
     // get and validate verification challenge
     const verificationChallenge = await VerificationChallenge.findById(verificationChallengeId);
 

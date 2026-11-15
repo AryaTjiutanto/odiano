@@ -2,21 +2,14 @@
 import { useState } from "react";
 import connectLogo from "../../assets/img/logo/odiano.svg";
 import CustomOTPInput from "../../components/input/CustomOTPInput";
-import { useAppDispatch, useAppSelector } from "../../hooks/useRedux";
+import { useAppSelector } from "../../hooks/useRedux";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { notify } from "../../helpers/notification/notify.helper";
-import { api } from "../../libs/api";
-import type { SuccessResponseData } from "@odiano/shared";
-import { useNavigate } from "react-router-dom";
-import { setEmailVerified } from "../../features/auth/auth.slice";
 import SEO from "../../components/seo/SEO";
-import { resendSessionVerification } from "../../services/session.service";
+import { resendSessionVerification, verifySessionVerification } from "../../services/session.service";
 
 const SessionVerification = () => {
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    
     const userData = useAppSelector((state) => state.auth.user);
     const [isResending, setIsResending] = useState<boolean>(false);
 
@@ -45,14 +38,7 @@ const SessionVerification = () => {
         setIsloading(true);
 
         try {
-            const response = await api.post<SuccessResponseData>("/auth/email-verification/verify", {
-                code: value,
-            });
-
-            if(response.data.success) {
-                dispatch(setEmailVerified(true));
-                navigate("/onboarding");
-            }
+            await verifySessionVerification(value)
         } catch (err : unknown) {
             handleApiErrorNotification(err);
         } finally {
