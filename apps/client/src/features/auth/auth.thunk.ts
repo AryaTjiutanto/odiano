@@ -22,7 +22,7 @@ export const logout = createAsyncThunk("auth/logout", async() => {
     return true;
 })
 
-export const intitializeAuth = createAsyncThunk("auth/initializeAuth", async (_, thunkAPi) => {
+export const initializeAuth = createAsyncThunk("auth/initializeAuth", async (_, thunkAPi) => {
     try {
         const response = await api.get<SuccessResponseData<CurrentUserDTO>>("/auth/me");
         

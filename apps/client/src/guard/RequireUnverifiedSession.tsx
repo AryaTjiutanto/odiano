@@ -8,7 +8,6 @@ const RequireUnverifiedSession = () => {
         return null;
     }
 
-
     if(!isRequireVerification && !isAuthenticated) {
         return <Navigate to={`/signin`}/>;
     }

@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import { verifyRefreshToken } from "../libs/auth/auth.token.js";
 import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import { validateRequestSession } from "../services/session.service.js";
+import { COOKIE_VALUES } from "@odiano/shared";
 
 export const requireRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies?.["refresh_token"];
+        const token = req.cookies?.[COOKIE_VALUES.REFRESH_TOKEN];
 
         if (!token) {
             throw new UnauthorizedError();

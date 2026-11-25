@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import { lazy, Suspense, useEffect, useLayoutEffect, type ReactNode } from "react";
-import { intitializeAuth } from "../features/auth/auth.thunk";
+import { initializeAuth } from "../features/auth/auth.thunk";
 import { Toaster } from "react-hot-toast";
 import ConfirmationModal from "../components/modal/ConfirmationModal";
 import { useConfirmationModal } from "../providers/ConfirmationModalProvider";
@@ -9,8 +9,10 @@ import { getRules } from "@odiano/shared";
 import { AbilityProvider } from '@casl/react';
 import { createAppAbility } from "../helpers/ability.helper";
 import PageLoader from "../components/loader/PageLoader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useStackProvider } from "../providers/StackProvider";
+import { isRequireVerification } from "../helpers/verificationChallenge.helper";
+import { getRequestVerificationToken } from "../services/auth.service";
 
 const ImageEditor = lazy(() => import("../components/editor/ImageEditor"));
 
@@ -20,11 +22,22 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
     const dispatch = useAppDispatch();
     const currentUser = useAppSelector(state => state.auth.user);
     const location = useLocation();
+    const navigate = useNavigate();
     const { stack } = useStackProvider();
 
+
     useEffect(() => {
-        dispatch(intitializeAuth());
-    }, [dispatch])
+        async function initialize() {
+            if (isRequireVerification()) {
+                await getRequestVerificationToken();
+                return navigate("/verify", { replace: true });
+            }
+
+            dispatch(initializeAuth());
+        }
+
+        initialize();
+    }, [dispatch, navigate]);
 
     const ability = createAppAbility(currentUser ? getRules(currentUser.id, currentUser.role) ?? [] : []);
 
@@ -32,10 +45,9 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
     useLayoutEffect(() => {
         const currentStack = stack[stack.length - 1];
 
-        if(currentStack?.location?.pathname != location.pathname) return;
+        if (currentStack?.location?.pathname != location.pathname) return;
 
         window.scrollTo(0, currentStack.scrollY);
-
     }, [location, stack]);
 
     return (

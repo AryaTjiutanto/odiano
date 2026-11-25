@@ -16,6 +16,7 @@ import { SigninResult } from "../types/auth.type.js";
 import { createRequestVerificationToken } from "./verification.service.js";
 import VerificationChallenge from "../models/verificationChallenge.model.js";
 import { VERIFICATION_CHALLENGE_STATUS } from "../consts/verificationChallenge.const.js";
+import { generateRequestVerificationToken } from "../libs/request-verification/verification.token.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -110,6 +111,7 @@ export const signIn = async ({ email, password, ip, userAgent, deviceId }: Signi
         });
 
         return {
+            verificationChallengeId: verificationData.challengeId,
             requireVerification: true,
             requestVerificationToken: verificationData.requestVerificationToken
         }
@@ -346,4 +348,17 @@ export const verifySession = async (verificationChallengeId: string, code: strin
     const token = await createAuthToken(sessionId.toString(), verificationChallenge.user.toString());
 
     return token;
+}
+
+export const getRequestVerificationToken = async (challengeId: string) : Promise<string> => {
+    const challenge = await VerificationChallenge.findById(challengeId).select("expireAt user status");
+
+    if (!challenge || challenge.expireAt < new Date() || challenge.status != VERIFICATION_CHALLENGE_STATUS.PENDING) {
+        throw new UnauthorizedError();
+    }
+
+    return generateRequestVerificationToken({
+        expireAt: challenge.expireAt,
+        verificationChallengeId: challengeId
+    });
 }

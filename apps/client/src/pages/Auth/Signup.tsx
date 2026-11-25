@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../../components/loader/DotsLoader";
 import { api } from "../../libs/api";
 import { useAppDispatch } from "../../hooks/useRedux";
-import { intitializeAuth } from "../../features/auth/auth.thunk";
+import { initializeAuth } from "../../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../../helpers/errors/apiError.helper";
 import DateInputSection from "../../components/input/DateInputSection";
 import SEO from "../../components/seo/SEO";
@@ -35,7 +35,7 @@ const Signup = () => {
 
             if (accessToken) {
                 dispatch(setCredentials(accessToken));
-                dispatch(intitializeAuth());
+                dispatch(initializeAuth());
             }
         } catch (err: unknown) {
             handleApiErrorNotification<CreateUserSchema>(err, {

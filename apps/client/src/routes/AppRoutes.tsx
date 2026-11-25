@@ -54,7 +54,6 @@ const AppRoutes = () => {
                 </Route>
 
                 {/* stack routes */}
-
                 <Route element={<SocialWrapper />}>
                     <Route path="*" element={<StackRoutes />} />
                 </Route>

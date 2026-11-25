@@ -5,7 +5,7 @@ import { createUserProfileSchema, type CreateUserProfileSchema, BIO_LENGTH, MEDI
 import { zodResolver } from "@hookform/resolvers/zod";
 import DotsLoader from "../components/loader/DotsLoader";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import { intitializeAuth } from "../features/auth/auth.thunk";
+import { initializeAuth } from "../features/auth/auth.thunk";
 import { Check, RotateCcw, Upload, User, X } from "lucide-react";
 import useDragAndDrop from "../hooks/useDragAndDrop";
 import { checkUsername, createUserProfile } from "../services/user.service";
@@ -124,7 +124,7 @@ const OnBoarding = () => {
             await createUserProfile(dataToSubmit);
 
             // onboarding success
-            await dispatch(intitializeAuth());
+            await dispatch(initializeAuth());
 
             navigate(`/profile/${dataToSubmit.username}`);
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { googleAuth, logout, me, refresh, resendEmailVerification, resendSessionVerification, signin, signup, verifyEmail, verifySession } from "../controllers/auth.controller.js";
+import { getRequestVerificationToken, googleAuth, logout, me, refresh, resendEmailVerification, resendSessionVerification, signin, signup, verifyEmail, verifySession } from "../controllers/auth.controller.js";
 import { requireGuest } from "../middlewares/requireGuest.middleware.js";
 import requireAccessToken from "../middlewares/requireAccessToken.middleware.js";
 import { requireRefreshToken } from "../middlewares/requireRefreshToken.middleware.js";
@@ -18,6 +18,8 @@ router.post("/logout", logout);
 
 router.post("/email-verification/resend", consume(otpLimiter), requireAccessToken, resendEmailVerification);
 router.post("/email-verification/verify", consume(verifyLimiter), requireAccessToken, verifyEmail);
+
+router.get("/verification-challenge/token", consume(apiLimiter), getRequestVerificationToken);
 
 router.post("/session-verification/verify", consume(verifyLimiter), requireRequestVerificationToken, verifySession);
 router.post("/session-verification/resend", consume(otpLimiter), requireRequestVerificationToken, resendSessionVerification);

@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import { intitializeAuth, logout, refreshAccessToken } from "./auth.thunk";
+import { initializeAuth, logout, refreshAccessToken } from "./auth.thunk";
 import type { CurrentUserDTO } from "@odiano/shared";
 import type { UploadedFileData } from "../../types/file.type";
 
@@ -83,16 +83,16 @@ const authSlice = createSlice({
             })
 
             // initialize auth
-            .addCase(intitializeAuth.pending, (state) => {
+            .addCase(initializeAuth.pending, (state) => {
                 state.isAuthLoading = true;
             })
-            .addCase(intitializeAuth.fulfilled, (state, action: PayloadAction<CurrentUserDTO | null>) => {
+            .addCase(initializeAuth.fulfilled, (state, action: PayloadAction<CurrentUserDTO | null>) => {
                 state.user = action.payload;
                 state.isAuthLoading = false;
                 state.isAuthenticated = !!action.payload;
                 state.isInitialized = true;
             })
-            .addCase(intitializeAuth.rejected, (state) => {
+            .addCase(initializeAuth.rejected, (state) => {
                 state.isAuthLoading = false;
                 state.isInitialized = true;
                 state.isAuthenticated = false;

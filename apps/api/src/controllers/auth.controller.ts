@@ -3,12 +3,13 @@ import { Request, Response, NextFunction } from "express";
 import * as authServices from "../services/auth.service.js";
 import { AppError } from "../errors/appError.error.js";
 import { successResponseData } from "../utils/response.util.js";
-import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse, SUCCESS_RESPONSE_CODE, type CurrentUserDTO, VerificationResponse } from "@odiano/shared";
+import { AUTH_TOKEN, CreateUserSchema, ERROR_RESPONSE_CODE, AuthenticationResponse, SUCCESS_RESPONSE_CODE, type CurrentUserDTO, VerificationResponse, COOKIE_VALUES } from "@odiano/shared";
 import { authCookieOptions } from "../libs/auth/auth.cookie.js";
 import { ReqBody } from "../types/request.type.js";
 import { type AuthenticateUserSchema } from "@odiano/shared";
 import { UnauthorizedError } from "../errors/unauthorized.error.js";
 import * as googleService from "../services/google.service.js";
+import { generateCookieOptions } from "../utils/cookieOptions.js";
 
 export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response, next: NextFunction) => {
     try {
@@ -25,13 +26,15 @@ export const signin = async (req: ReqBody<AuthenticateUserSchema>, res: Response
 
         // require verification
         if (authData.requireVerification) {
-            res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.ok, "Ok", authData))
+            res.cookie(COOKIE_VALUES.VERIFICATION_CHALLENGE, authData.verificationChallengeId, generateCookieOptions(10 * 60 * 1000, true));
+
+            res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.ok, "Ok", authData));
 
             return;
         }
 
         // verified
-        res.cookie(AUTH_TOKEN.REFRESH, authData.token.refresh_token, authCookieOptions());
+        res.cookie(COOKIE_VALUES.REFRESH_TOKEN, authData.token.refresh_token, authCookieOptions());
 
         res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
             requireVerification: false,
@@ -57,7 +60,7 @@ export const signup = async (req: ReqBody<CreateUserSchema>, res: Response, next
         const authData = await authServices.signUp({ dateOfBirth, email, password, ip, deviceId, userAgent });
 
         // response
-        res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
+        res.cookie(COOKIE_VALUES.REFRESH_TOKEN, authData.refresh_token, authCookieOptions());
         res.status(201).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.created, "Register successfully", {
             [AUTH_TOKEN.ACCESS]: authData.access_token,
         }))
@@ -93,7 +96,7 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
 
         const authData = await authServices.refresh(userId, tokenId, refreshToken, sessionId);
 
-        res.cookie(AUTH_TOKEN.REFRESH, authData.refresh_token, authCookieOptions());
+        res.cookie(COOKIE_VALUES.REFRESH_TOKEN, authData.refresh_token, authCookieOptions());
 
         res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.success, "Successfully refresh the session", {
             access_token: authData.access_token
@@ -131,7 +134,7 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
         const userAgent = req.headers["user-agent"] || null;
         const result = await googleService.authentication(credential, deviceId, userAgent);
 
-        res.cookie(AUTH_TOKEN.REFRESH, result.refresh_token, authCookieOptions());
+        res.cookie(COOKIE_VALUES.REFRESH_TOKEN, result.refresh_token, authCookieOptions());
         res.status(200).json(successResponseData<AuthenticationResponse>(SUCCESS_RESPONSE_CODE.ok, "ok", { access_token: result.access_token }))
     } catch (err) {
         next(err);
@@ -200,12 +203,31 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
 
         const data = await authServices.verifySession(verificationChallengeId, code, deviceId, userAgent);
 
-        res.cookie(AUTH_TOKEN.REFRESH, data.refresh_token, authCookieOptions());
+        res.cookie(COOKIE_VALUES.REFRESH_TOKEN, data.refresh_token, authCookieOptions());
         res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.success, "Login successfully", {
             requireVerification: false,
             [AUTH_TOKEN.ACCESS]: data[AUTH_TOKEN.ACCESS],
         }))
     } catch (err) {
         next(err)
+    }
+}
+
+export const getRequestVerificationToken = async (req : Request, res : Response, next : NextFunction) => {
+    try {
+        const challengeId = req.cookies?.[COOKIE_VALUES.VERIFICATION_CHALLENGE];
+    
+        if(!challengeId) {
+            throw new UnauthorizedError();
+        }
+    
+        const token = await authServices.getRequestVerificationToken(challengeId);
+        
+        res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.success, "success", {
+            requireVerification : true,
+            requestVerificationToken : token,
+        }));
+    } catch (err) {
+        next(err);
     }
 }

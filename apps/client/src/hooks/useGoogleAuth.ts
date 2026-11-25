@@ -1,5 +1,5 @@
 import type { CredentialResponse } from "@react-oauth/google";
-import { intitializeAuth } from "../features/auth/auth.thunk";
+import { initializeAuth } from "../features/auth/auth.thunk";
 import { handleApiErrorNotification } from "../helpers/errors/apiError.helper";
 import { googleAuth } from "../services/auth.service";
 import { useAppDispatch } from "./useRedux"
@@ -26,7 +26,7 @@ const useGoogleAuth = () => {
             }
 
             dispatch(setCredentials(accessToken));
-            dispatch(intitializeAuth());
+            dispatch(initializeAuth());
 
             navigate("/onboarding", { replace: true });
         } catch (err) {

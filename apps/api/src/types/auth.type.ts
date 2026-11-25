@@ -4,6 +4,7 @@ import { AuthToken } from "@odiano/shared"
 type RequireVerificationData = {
     requireVerification : true,
     requestVerificationToken : string,
+    verificationChallengeId : string,
 }
 
 export type SigninResult = RequireVerificationData | {
