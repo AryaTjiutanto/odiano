@@ -17,6 +17,7 @@ import { createRequestVerificationToken } from "./verification.service.js";
 import VerificationChallenge from "../models/verificationChallenge.model.js";
 import { VERIFICATION_CHALLENGE_STATUS } from "../consts/verificationChallenge.const.js";
 import { generateRequestVerificationToken } from "../libs/request-verification/verification.token.js";
+import logger from "../libs/log/logger.js";
 
 const oneDayAge = 1 * 24 * 60 * 60 * 1000;
 
@@ -153,8 +154,8 @@ export const signUp = async ({ dateOfBirth, deviceId, email, ip, password, userA
     });
 
     // create session
-    const session = await createSession(deviceId, userAgent, currentUser._id);
-    const token = await createAuthToken(session._id.toString(), currentUser._id.toString());
+    const sessionId = await createSession(deviceId, userAgent, currentUser._id);
+    const token = await createAuthToken(sessionId, currentUser._id.toString());
 
     // send verification email
     await createAndSendOTP(email, OTP_CHANNELS.EMAIL, { purpose: OTP_PURPOSES.VERIFY_EMAIL, target: email });
@@ -345,17 +346,17 @@ export const verifySession = async (verificationChallengeId: string, code: strin
 
     // validated
     const sessionId = await createSession(deviceId, userAgent, verificationChallenge.user);
-    const token = await createAuthToken(sessionId.toString(), verificationChallenge.user.toString());
+    const token = await createAuthToken(sessionId, verificationChallenge.user.toString());
 
     return token;
 }
 
-export const getRequestVerificationToken = async (challengeId: string) : Promise<string> => {
+export const getRequestVerificationToken = async (challengeId: string | null | undefined) : Promise<string | null> => {
+    if(!challengeId) return null;
+
     const challenge = await VerificationChallenge.findById(challengeId).select("expireAt user status");
 
-    if (!challenge || challenge.expireAt < new Date() || challenge.status != VERIFICATION_CHALLENGE_STATUS.PENDING) {
-        throw new UnauthorizedError();
-    }
+    if (!challenge || challenge.expireAt < new Date() || challenge.status != VERIFICATION_CHALLENGE_STATUS.PENDING) return null;
 
     return generateRequestVerificationToken({
         expireAt: challenge.expireAt,

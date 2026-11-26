@@ -58,7 +58,7 @@ export const updateOrCreateSession = async (deviceId: string, userAgent: string 
     return session._id;
 };
 
-export const createSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId) => {
+export const createSession = async (deviceId: string, userAgent: string | null, userId: Types.ObjectId) : Promise<string> => {
     const session = await Session.create({
         device: {
             userAgent,
@@ -70,7 +70,7 @@ export const createSession = async (deviceId: string, userAgent: string | null, 
 
     await setSessionCache(session._id.toString(), userId.toString());
 
-    return session;
+    return session._id.toString();
 }
 
 export const getActiveSession = async (userId: string, sessionId: string): Promise<SessionsDTO> => {

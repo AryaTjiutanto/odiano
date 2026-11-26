@@ -15,3 +15,4 @@ export * from "./user/index.js";
 export * from "./session/index.js";
 export * from "./request/index.js";
 export * from "./cookie/index.js";
+export * from "./verificationChallenge/index.js";

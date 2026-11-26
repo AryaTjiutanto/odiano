@@ -1,7 +1,7 @@
 import { AUTH_TOKEN } from "../authentication/auth.const.js";
 
 export const COOKIE_VALUES = {
-    VERIFICATION_CHALLENGE : "verificationChallenge",
+    VERIFICATION_CHALLENGE : "verification_challenge",
     REFRESH_TOKEN : AUTH_TOKEN.REFRESH
 } as const
 

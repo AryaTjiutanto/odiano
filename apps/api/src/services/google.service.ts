@@ -58,8 +58,8 @@ export const authentication = async (credential: string, deviceId: string, userA
         emailVerifiedAt: Date.now(),
     })
 
-    const session = await createSession(deviceId, userAgent, user._id);
-    const token = await createAuthToken(session._id.toString(), user._id.toString());
+    const sessionId = await createSession(deviceId, userAgent, user._id);
+    const token = await createAuthToken(sessionId, user._id.toString());
 
     return token;
 }

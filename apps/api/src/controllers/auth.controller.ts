@@ -213,19 +213,23 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     }
 }
 
-export const getRequestVerificationToken = async (req : Request, res : Response, next : NextFunction) => {
+export const getRequestVerificationToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const challengeId = req.cookies?.[COOKIE_VALUES.VERIFICATION_CHALLENGE];
-    
-        if(!challengeId) {
-            throw new UnauthorizedError();
-        }
-    
+
         const token = await authServices.getRequestVerificationToken(challengeId);
-        
-        res.status(200).json(successResponseData<VerificationResponse<AuthenticationResponse>>(SUCCESS_RESPONSE_CODE.success, "success", {
-            requireVerification : true,
-            requestVerificationToken : token,
+
+        if (!token) {
+            res.status(200).json(successResponseData<VerificationResponse>(SUCCESS_RESPONSE_CODE.ok, "ok", {
+                requireVerification: false,
+            }));
+            
+            return;
+        }
+
+        res.status(200).json(successResponseData<VerificationResponse>(SUCCESS_RESPONSE_CODE.success, "success", {
+            requireVerification: true,
+            requestVerificationToken: token,
         }));
     } catch (err) {
         next(err);

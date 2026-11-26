@@ -16,12 +16,13 @@ router.get("/me", consume(apiLimiter), requireAccessToken, me);
 router.post("/refresh", consume(refreshLimiter), requireRefreshToken, refresh);
 router.post("/logout", logout);
 
+
 router.post("/email-verification/resend", consume(otpLimiter), requireAccessToken, resendEmailVerification);
 router.post("/email-verification/verify", consume(verifyLimiter), requireAccessToken, verifyEmail);
 
-router.get("/verification-challenge/token", consume(apiLimiter), getRequestVerificationToken);
+router.get("/verification-challenge/token", consume(verifyLimiter), getRequestVerificationToken);
 
-router.post("/session-verification/verify", consume(verifyLimiter), requireRequestVerificationToken, verifySession);
+router.post("/session-verification/verify", consume(apiLimiter), requireRequestVerificationToken, verifySession);
 router.post("/session-verification/resend", consume(otpLimiter), requireRequestVerificationToken, resendSessionVerification);
 
 router.post("/google", consume(signinLimiter), requireGuest, googleAuth);

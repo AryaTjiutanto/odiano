@@ -38,16 +38,16 @@ export const signin = async (data: AuthenticateUserSchema): Promise<Verification
     return responseData;
 }
 
-export const getRequestVerificationToken = async () => {
-    const response = await api.post<SuccessResponseData<VerificationResponse<AuthenticationResponse>>>("/auth/verification-challenge/token");
+export const getRequestVerificationToken = async () : Promise<string | null> => {
+    const response = await api.get<SuccessResponseData<VerificationResponse<AuthenticationResponse>>>("/auth/verification-challenge/token");
 
     const responseData = response.data.data;
 
     if (!responseData) {
         throw new Error("Data is empty")
     }
+    
+    if (!responseData.requireVerification) return null;
 
-    if (!responseData.requireVerification) return;
-
-    store.dispatch(requireSessionVerification(responseData.requestVerificationToken));
+    return responseData.requestVerificationToken;
 }

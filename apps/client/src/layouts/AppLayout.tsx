@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useStackProvider } from "../providers/StackProvider";
 import { isRequireVerification } from "../helpers/verificationChallenge.helper";
 import { getRequestVerificationToken } from "../services/auth.service";
+import { requireSessionVerification } from "../features/auth/auth.slice";
 
 const ImageEditor = lazy(() => import("../components/editor/ImageEditor"));
 
@@ -29,8 +30,17 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         async function initialize() {
             if (isRequireVerification()) {
-                await getRequestVerificationToken();
-                return navigate("/verify", { replace: true });
+                try {
+                    const token = await getRequestVerificationToken();
+    
+                    if (token) {
+                        dispatch(requireSessionVerification
+                            (token));
+                        return navigate("/verify", { replace: true });
+                    }
+                } catch (err) {
+                    console.log("Request Verification rejected");
+                }
             }
 
             dispatch(initializeAuth());
